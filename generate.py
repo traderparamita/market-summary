@@ -6,6 +6,7 @@ Daily Market Summary Report Generator
 """
 
 import yfinance as yf
+import FinanceDataReader as fdr
 import datetime as dt
 import json
 import os
@@ -14,6 +15,15 @@ import requests
 # ── Config ──────────────────────────────────────────────────────
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# yfinance 지수 데이터 누락 시 FinanceDataReader로 보완
+FDR_FALLBACK = {
+    "^KS11":  "KS11",    # KOSPI
+    "^KQ11":  "KQ11",    # KOSDAQ
+    "^N225":  "N225",    # Nikkei225
+    "^HSI":   "HSI",     # Hang Seng
+    "000001.SS": "SSEC", # Shanghai
+}
 
 # 수집 대상 티커
 TICKERS = {
@@ -101,7 +111,58 @@ def fetch_data(end_date=None):
         raw = yf.download(symbols, period="6mo", interval="1d", group_by="ticker", threads=True)
 
     today = dt.date.today()
+    target = dt.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
     result = {}
+
+    def calc_metrics(df, ref_date):
+        """DataFrame에서 지표 계산."""
+        df = df.dropna(subset=["Close"])
+        if df.empty:
+            return None
+
+        last_date = df.index[-1].date() if hasattr(df.index[-1], 'date') else df.index[-1]
+        close = float(df.iloc[-1]["Close"])
+
+        # 해당 시장이 휴일이었는지 판단
+        is_holiday = last_date < ref_date
+
+        daily_chg = 0.0
+        if not is_holiday and len(df) >= 2:
+            prev = float(df.iloc[-2]["Close"])
+            daily_chg = (close - prev) / prev * 100 if prev else 0
+
+        weekly_chg = 0.0
+        if len(df) >= 6:
+            w = float(df.iloc[-6]["Close"])
+            weekly_chg = (close - w) / w * 100 if w else 0
+
+        monthly_chg = 0.0
+        if len(df) >= 23:
+            m = float(df.iloc[-23]["Close"])
+            monthly_chg = (close - m) / m * 100 if m else 0
+
+        ytd_chg = 0.0
+        yr_start = df[df.index.year == ref_date.year]
+        if not yr_start.empty:
+            y = float(yr_start.iloc[0]["Close"])
+            ytd_chg = (close - y) / y * 100 if y else 0
+
+        spark = []
+        tail = df.tail(20)
+        if not tail.empty:
+            first_val = float(tail.iloc[0]["Close"])
+            spark = [round((float(r["Close"]) / first_val - 1) * 100, 2) for _, r in tail.iterrows()]
+
+        return {
+            "close": close,
+            "date": str(last_date),
+            "daily": round(daily_chg, 2),
+            "weekly": round(weekly_chg, 2),
+            "monthly": round(monthly_chg, 2),
+            "ytd": round(ytd_chg, 2),
+            "spark": spark,
+            "holiday": is_holiday,
+        }
 
     for key, ticker in all_tickers.items():
         cat, name = key.split("|")
@@ -111,62 +172,33 @@ def fetch_data(end_date=None):
             else:
                 df = raw[ticker] if ticker in raw.columns.get_level_values(0) else None
 
-            if df is None or df.empty:
+            metrics = None
+            if df is not None and not df.empty:
+                df = df.dropna(subset=["Close"])
+                metrics = calc_metrics(df, target) if not df.empty else None
+
+            # Fallback: yfinance 데이터가 없거나 휴일이면 FDR로 보완
+            if (metrics is None or metrics["holiday"]) and ticker in FDR_FALLBACK:
+                fdr_code = FDR_FALLBACK[ticker]
+                try:
+                    fdr_start = (target - dt.timedelta(days=200)).strftime("%Y-%m-%d")
+                    fdr_end = (target + dt.timedelta(days=1)).strftime("%Y-%m-%d")
+                    fdr_df = fdr.DataReader(fdr_code, fdr_start, fdr_end)
+                    if not fdr_df.empty:
+                        fdr_metrics = calc_metrics(fdr_df, target)
+                        if fdr_metrics and not fdr_metrics["holiday"]:
+                            metrics = fdr_metrics
+                            print(f"  [FDR] {name}: {fdr_metrics['close']:.2f} ({fdr_metrics['daily']:+.2f}%) via {fdr_code}")
+                except Exception as fe:
+                    print(f"  [FDR WARN] {name}: {fe}")
+
+            if metrics is None:
                 continue
-
-            df = df.dropna(subset=["Close"])
-            if df.empty:
-                continue
-
-            # 최근 종가
-            last = df.iloc[-1]
-            close = float(last["Close"])
-            date = df.index[-1].date()
-
-            # 전일 대비
-            daily_chg = 0.0
-            if len(df) >= 2:
-                prev = float(df.iloc[-2]["Close"])
-                daily_chg = (close - prev) / prev * 100 if prev else 0
-
-            # 전주 대비 (5 거래일)
-            weekly_chg = 0.0
-            if len(df) >= 6:
-                w = float(df.iloc[-6]["Close"])
-                weekly_chg = (close - w) / w * 100 if w else 0
-
-            # 전월 대비 (약 22 거래일)
-            monthly_chg = 0.0
-            if len(df) >= 23:
-                m = float(df.iloc[-23]["Close"])
-                monthly_chg = (close - m) / m * 100 if m else 0
-
-            # YTD
-            ytd_chg = 0.0
-            yr_start = df[df.index.year == today.year]
-            if not yr_start.empty:
-                y = float(yr_start.iloc[0]["Close"])
-                ytd_chg = (close - y) / y * 100 if y else 0
 
             if cat not in result:
                 result[cat] = {}
 
-            # 최근 20일 종가 (스파크라인용)
-            spark = []
-            tail = df.tail(20)
-            if not tail.empty:
-                first_val = float(tail.iloc[0]["Close"])
-                spark = [round((float(r["Close"]) / first_val - 1) * 100, 2) for _, r in tail.iterrows()]
-
-            result[cat][name] = {
-                "close": close,
-                "date": str(date),
-                "daily": round(daily_chg, 2),
-                "weekly": round(weekly_chg, 2),
-                "monthly": round(monthly_chg, 2),
-                "ytd": round(ytd_chg, 2),
-                "spark": spark,
-            }
+            result[cat][name] = metrics
         except Exception as e:
             print(f"  [WARN] {name} ({ticker}): {e}")
 
