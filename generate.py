@@ -794,8 +794,13 @@ new Chart(document.getElementById('cmChart'),{{
 
 
 def prev_business_day(ref=None):
-    """한국 영업일 기준 전 영업일 (주말 제외, 공휴일은 미반영)"""
-    d = ref or dt.date.today()
+    """한국 영업일 기준 전 영업일 (주말 제외, 공휴일은 미반영). KST 기준."""
+    if ref:
+        d = ref
+    else:
+        # UTC 환경에서도 KST(+9) 기준으로 오늘 날짜 계산
+        kst = dt.timezone(dt.timedelta(hours=9))
+        d = dt.datetime.now(kst).date()
     d -= dt.timedelta(days=1)
     while d.weekday() >= 5:  # 토=5, 일=6
         d -= dt.timedelta(days=1)
