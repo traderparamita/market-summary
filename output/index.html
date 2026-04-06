@@ -7,28 +7,60 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap');
   body { font-family:'Noto Sans KR',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }
-  h1 { font-size:28px; font-weight:700; margin-bottom:8px; }
-  .sub { font-size:14px; color:#7c8298; margin-bottom:32px; }
+  h1 { font-size:28px; font-weight:700; margin-bottom:4px; }
+  .sub { font-size:14px; color:#7c8298; margin-bottom:24px; }
+  .month-bar { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .month-btn {
+    padding:8px 18px; border:1px solid #e0e3ed; border-radius:20px;
+    background:#fff; color:#7c8298; font-size:13px; font-weight:600;
+    cursor:pointer; transition:all .15s; font-family:inherit;
+  }
+  .month-btn:hover { border-color:#3b6ee6; color:#3b6ee6; }
+  .month-btn.active { background:#3b6ee6; color:#fff; border-color:#3b6ee6; }
+  .month-panel { display:none; }
+  .month-panel.active { display:block; }
   ul { list-style:none; padding:0; }
   li { margin-bottom:8px; }
   li a {
     display:block; padding:14px 20px; background:#fff; border:1px solid #e0e3ed;
     border-radius:10px; text-decoration:none; color:#2d3148; font-size:15px;
     font-weight:500; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
+    font-family:'JetBrains Mono','Noto Sans KR',monospace;
   }
   li a:hover { border-color:#3b6ee6; color:#3b6ee6; transform:translateX(4px); }
-  .empty { color:#7c8298; font-style:italic; }
 </style>
 </head>
 <body>
   <h1>Daily Market Summary</h1>
   <p class="sub">Auto-generated market reports</p>
-  <ul>
-      <li><a href="2026-04-06.html">2026-04-06 (Mon)</a></li>
-      <li><a href="2026-04-03.html">2026-04-03 (Fri)</a></li>
-      <li><a href="2026-03-27.html">2026-03-27 (Fri)</a></li>
-      <li><a href="2026-03-26.html">2026-03-26 (Thu)</a></li>
+  <div class="month-bar">
+    <button class="month-btn active" onclick="showMonth('2026-04')">2026 Apr</button>
+    <button class="month-btn" onclick="showMonth('2026-03')">2026 Mar</button>
+  </div>
+    <div class="month-panel active" id="m-2026-04">
+      <ul>
+        <li><a href="2026-04/2026-04-06.html">2026-04-06 (Mon)</a></li>
+        <li><a href="2026-04/2026-04-03.html">2026-04-03 (Fri)</a></li>
+        <li><a href="2026-04/2026-04-02.html">2026-04-02 (Thu)</a></li>
+        <li><a href="2026-04/2026-04-01.html">2026-04-01 (Wed)</a></li>
+      </ul>
+    </div>
+    <div class="month-panel" id="m-2026-03">
+      <ul>
+        <li><a href="2026-03/2026-03-31.html">2026-03-31 (Tue)</a></li>
+        <li><a href="2026-03/2026-03-30.html">2026-03-30 (Mon)</a></li>
+        <li><a href="2026-03/2026-03-27.html">2026-03-27 (Fri)</a></li>
+        <li><a href="2026-03/2026-03-26.html">2026-03-26 (Thu)</a></li>
+      </ul>
+    </div>
 
-  </ul>
+  <script>
+  function showMonth(m) {
+    document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('m-'+m).classList.add('active');
+    event.target.classList.add('active');
+  }
+  </script>
 </body>
 </html>

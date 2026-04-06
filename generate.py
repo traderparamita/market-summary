@@ -803,20 +803,42 @@ def prev_business_day(ref=None):
 
 
 def generate_index():
-    """output 폴더의 모든 보고서를 목록화하는 index.html 생성"""
+    """월별 폴더 기반 index.html 생성 (최신 월을 기본 표시)"""
     import glob
-    reports = sorted(glob.glob(os.path.join(OUTPUT_DIR, "????-??-??.html")), reverse=True)
-    items = ""
-    for path in reports:
+
+    # 월별 보고서 수집
+    months = {}  # {"2026-04": [("2026-04-03", "Fri"), ...]}
+    for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "????-??", "????-??-??.html")), reverse=True):
         fname = os.path.basename(path)
         date = fname.replace(".html", "")
+        month = date[:7]
         try:
             d = dt.datetime.strptime(date, "%Y-%m-%d")
             day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
-            label = f"{date} ({day_name})"
         except:
-            label = date
-        items += f'      <li><a href="{fname}">{label}</a></li>\n'
+            day_name = ""
+        if month not in months:
+            months[month] = []
+        months[month].append((date, day_name))
+
+    sorted_months = sorted(months.keys(), reverse=True)
+    latest_month = sorted_months[0] if sorted_months else ""
+
+    # 월 탭 버튼
+    tab_btns = ""
+    for m in sorted_months:
+        active = " active" if m == latest_month else ""
+        label = dt.datetime.strptime(m, "%Y-%m").strftime("%Y %b")
+        tab_btns += f'    <button class="month-btn{active}" onclick="showMonth(\'{m}\')">{label}</button>\n'
+
+    # 월별 리스트
+    month_panels = ""
+    for m in sorted_months:
+        active = " active" if m == latest_month else ""
+        items = ""
+        for date, day in months[m]:
+            items += f'        <li><a href="{m}/{date}.html">{date} ({day})</a></li>\n'
+        month_panels += f'    <div class="month-panel{active}" id="m-{m}">\n      <ul>\n{items}      </ul>\n    </div>\n'
 
     index_html = f"""<!DOCTYPE html>
 <html lang="ko">
@@ -827,25 +849,43 @@ def generate_index():
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap');
   body {{ font-family:'Noto Sans KR',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
-  h1 {{ font-size:28px; font-weight:700; margin-bottom:8px; }}
-  .sub {{ font-size:14px; color:#7c8298; margin-bottom:32px; }}
+  h1 {{ font-size:28px; font-weight:700; margin-bottom:4px; }}
+  .sub {{ font-size:14px; color:#7c8298; margin-bottom:24px; }}
+  .month-bar {{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }}
+  .month-btn {{
+    padding:8px 18px; border:1px solid #e0e3ed; border-radius:20px;
+    background:#fff; color:#7c8298; font-size:13px; font-weight:600;
+    cursor:pointer; transition:all .15s; font-family:inherit;
+  }}
+  .month-btn:hover {{ border-color:#3b6ee6; color:#3b6ee6; }}
+  .month-btn.active {{ background:#3b6ee6; color:#fff; border-color:#3b6ee6; }}
+  .month-panel {{ display:none; }}
+  .month-panel.active {{ display:block; }}
   ul {{ list-style:none; padding:0; }}
   li {{ margin-bottom:8px; }}
   li a {{
     display:block; padding:14px 20px; background:#fff; border:1px solid #e0e3ed;
     border-radius:10px; text-decoration:none; color:#2d3148; font-size:15px;
     font-weight:500; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
+    font-family:'JetBrains Mono','Noto Sans KR',monospace;
   }}
   li a:hover {{ border-color:#3b6ee6; color:#3b6ee6; transform:translateX(4px); }}
-  .empty {{ color:#7c8298; font-style:italic; }}
 </style>
 </head>
 <body>
   <h1>Daily Market Summary</h1>
   <p class="sub">Auto-generated market reports</p>
-  <ul>
-{items if items else '    <li class="empty">No reports yet.</li>'}
-  </ul>
+  <div class="month-bar">
+{tab_btns}  </div>
+{month_panels}
+  <script>
+  function showMonth(m) {{
+    document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('m-'+m).classList.add('active');
+    event.target.classList.add('active');
+  }}
+  </script>
 </body>
 </html>"""
 
@@ -865,14 +905,18 @@ def main(target_date=None):
 
     data = fetch_data(end_date=target_date)
 
-    json_path = os.path.join(OUTPUT_DIR, f"{target_date}_data.json")
+    # 월별 폴더에 저장
+    month_dir = os.path.join(OUTPUT_DIR, target_date[:7])
+    os.makedirs(month_dir, exist_ok=True)
+
+    json_path = os.path.join(month_dir, f"{target_date}_data.json")
     with open(json_path, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     print(f"Data saved: {json_path}")
 
     html, report_date = generate_html(data)
 
-    html_path = os.path.join(OUTPUT_DIR, f"{report_date}.html")
+    html_path = os.path.join(month_dir, f"{report_date}.html")
     with open(html_path, "w") as f:
         f.write(html)
     print(f"Report saved: {html_path}")
