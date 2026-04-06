@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Summary | 2026-03-26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#3b6ee6; --accent2:#6b5ce7;
+  --up:#0d9b6a; --down:#d9304f; --warn:#d48b07;
+  --gold:#b8860b; --oil:#d35400;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans KR',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
+}
+
+/* ── Header ── */
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.header-right{display:flex;gap:20px;align-items:center}
+.mood-badge{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:600}
+
+/* ── KPI Strip ── */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:28px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:1px}
+.kpi-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+
+/* ── Top Movers ── */
+.movers-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.movers-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.movers-card h3{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px}
+.mover-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f1f5}
+.mover-item:last-child{border:none}
+.mover-name{font-size:13px;font-weight:500}
+.mover-val{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+/* ── Heatmap Table ── */
+.heatmap-section{margin-bottom:28px}
+.heatmap-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.heatmap-section h2 .badge{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--card2);color:var(--muted);font-weight:500}
+.heatmap{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.heatmap th{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}
+.heatmap th:first-child,.heatmap th:nth-child(2),.heatmap th:nth-child(3){text-align:left}
+.heatmap td{padding:8px 12px;font-size:13px;border-bottom:1px solid #f3f4f8}
+.heatmap tr:last-child td{border-bottom:none}
+.name-cell{font-weight:600;color:#1a1d2e;white-space:nowrap;min-width:100px}
+.close-cell{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:left;white-space:nowrap}
+.spark-cell{text-align:center;padding:4px 8px}
+.heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;border-radius:0;transition:all 0.15s}
+.heatmap tr:hover{filter:brightness(0.97)}
+
+/* ── Charts ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.chart-card .title{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px}
+.chart-box{position:relative;height:260px}
+
+/* ── Risk ── */
+.risk-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.risk-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.risk-card .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.risk-card .value{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.risk-card .desc{font-size:11px;font-weight:600;margin-top:2px}
+.risk-card .bar-track{height:6px;background:#ecedf2;border-radius:3px;margin-top:8px;overflow:hidden}
+.risk-card .bar-fill{height:100%;border-radius:3px}
+
+/* ── Tabs ── */
+.tab-bar{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border)}
+.tab-btn{padding:12px 28px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Story Tab ── */
+.story-hero{background:linear-gradient(135deg,#eef1f8,#e8e5f3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:32px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text strong{color:#1a1d2e}.story-text .hl-up{color:var(--up);font-weight:600}.story-text .hl-down{color:var(--down);font-weight:600}.story-text .hl-warn{color:var(--warn);font-weight:600}.story-text .hl-accent{color:var(--accent);font-weight:600}
+
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text)}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+
+.session-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.session-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.session-block::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.session-block.asia::before{background:linear-gradient(90deg,#d48b07,#e06818)}
+.session-block.europe::before{background:linear-gradient(90deg,#3b6ee6,#6b5ce7)}
+.session-block.us::before{background:linear-gradient(90deg,#6b5ce7,#a78bfa)}
+.session-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.session-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.session-icon.asia{background:rgba(212,139,7,0.1)}.session-icon.europe{background:rgba(59,110,230,0.1)}.session-icon.us{background:rgba(107,92,231,0.1)}
+.session-name{font-size:15px;font-weight:600;color:#1a1d2e}
+.session-time{font-size:11px;color:var(--muted)}
+.session-verdict{display:inline-block;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;margin-bottom:10px}
+.verdict-up{background:rgba(13,155,106,0.1);color:var(--up)}.verdict-down{background:rgba(217,48,79,0.1);color:var(--down)}.verdict-mixed{background:rgba(212,139,7,0.1);color:var(--warn)}
+.session-events{list-style:none}.session-events li{font-size:12px;padding:6px 0 6px 12px;border-bottom:1px solid #f3f4f8;position:relative}
+.session-events li:last-child{border:none}.session-events li::before{content:'';position:absolute;left:0;top:12px;width:4px;height:4px;border-radius:50%;background:var(--muted)}
+.session-events .ev-time{color:var(--muted);font-size:10px;font-weight:600}
+.session-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.s-kpi{text-align:center;padding:6px;border-radius:6px;background:var(--card2)}
+.s-kpi-label{font-size:10px;color:var(--muted)}.s-kpi-value{font-size:15px;font-weight:700}
+
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}.metric-label{font-size:10px;color:var(--muted)}.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+.cross-asset{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:28px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cross-asset h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:6px}
+.cross-asset .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.af-map{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:10px 6px}
+.af-node{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;min-width:120px}
+.af-node-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.af-node-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.af-node-chg{font-size:12px;font-weight:600}
+.af-arrow{text-align:center;color:var(--muted);font-size:12px;line-height:1.3}
+.af-arrow .arr{font-size:16px;display:block}.af-arrow .lbl{font-size:10px}
+
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:28px;margin-bottom:28px}
+.risk-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:12px;line-height:1.6}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}
+.risk-tag.high{background:rgba(217,48,79,0.15);color:var(--down)}.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}
+
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+
+@media(max-width:900px){
+  .session-grid,.insight-grid,.chart-grid,.movers-row{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .af-map{grid-template-columns:1fr}.risk-items{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-left">
+    <h1>Daily Market Summary</h1>
+    <div class="date">Thu, 2026-03-26</div>
+  </div>
+  <div class="header-right">
+    <div class="mood-badge" style="background:#fef2f2;color:#d48b07;border:1px solid #d48b0733">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d48b07"></span>
+      VIX 27.4 &mdash; Elevated
+    </div>
+  </div>
+</div>
+
+<!-- ══ TABS ══ -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('data')">Data Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
+</div>
+
+<!-- ══════ TAB 1: DATA ══════ -->
+<div id="tab-data" class="tab-panel active">
+
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">KOSPI</div>
+    <div class="kpi-value">5,460</div>
+    <div class="kpi-chg down">-3.22%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">S&P500</div>
+    <div class="kpi-value">6,477</div>
+    <div class="kpi-chg down">-1.74%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">NASDAQ</div>
+    <div class="kpi-value">21,408</div>
+    <div class="kpi-chg down">-2.38%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Nikkei</div>
+    <div class="kpi-value">53,604</div>
+    <div class="kpi-chg down">-0.27%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">US 10Y</div>
+    <div class="kpi-value">4.42%</div>
+    <div class="kpi-chg up">+2.03%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">USD/KRW</div>
+    <div class="kpi-value">1,501</div>
+    <div class="kpi-chg up">+0.24%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">WTI</div>
+    <div class="kpi-value">$94.48</div>
+    <div class="kpi-chg up">+4.61%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Gold</div>
+    <div class="kpi-value">$4,375.50</div>
+    <div class="kpi-chg down">-3.83%</div>
+  </div>
+</div>
+<div class="movers-row">
+<div class="movers-card"><h3>Top Gainers</h3>
+<div class="mover-item"><span class="mover-name">Brent</span><span class="mover-val up">+5.66%</span></div>
+<div class="mover-item"><span class="mover-name">WTI</span><span class="mover-val up">+4.61%</span></div>
+<div class="mover-item"><span class="mover-name">NIFTY50</span><span class="mover-val up">+1.72%</span></div>
+</div>
+<div class="movers-card"><h3>Top Losers</h3>
+<div class="mover-item"><span class="mover-name">TSMC</span><span class="mover-val down">-6.22%</span></div>
+<div class="mover-item"><span class="mover-name">Silver</span><span class="mover-val down">-6.48%</span></div>
+<div class="mover-item"><span class="mover-name">META</span><span class="mover-val down">-7.96%</span></div>
+</div>
+</div>
+<div class="heatmap-section">
+<h2>Equity <span class="badge">13</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">KOSPI</td>
+          <td class="close-cell">5,460</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,2.1 8.4,10.3 12.6,23.0 16.8,14.1 21.1,14.1 25.3,20.1 29.5,15.0 33.7,13.6 37.9,14.1 42.1,15.9 46.3,14.7 50.5,13.1 54.7,7.9 58.9,10.9 63.2,10.5 67.4,17.3 71.6,14.7 75.8,13.1 80.0,16.4" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.4" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.22%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.25%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.60%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+26.70%</td>
+        </tr><tr>
+          <td class="name-cell">KOSDAQ</td>
+          <td class="close-cell">1,137</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.5 4.2,1.0 8.4,6.7 12.6,23.0 16.8,8.8 21.1,4.9 25.3,10.3 29.5,6.7 33.7,6.7 37.9,5.6 42.1,5.1 46.3,6.6 50.5,6.7 54.7,3.9 58.9,6.1 63.2,4.2 67.4,10.8 71.6,8.3 75.8,4.4 80.0,6.8" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.8" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.98%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.60%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.33%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+20.21%</td>
+        </tr><tr>
+          <td class="name-cell">S&P500</td>
+          <td class="close-cell">6,477</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.1 4.2,1.0 8.4,4.5 12.6,1.7 16.8,3.8 21.1,8.7 25.3,5.6 29.5,6.5 33.7,6.8 37.9,12.4 42.1,14.6 46.3,10.9 50.5,10.0 54.7,15.0 58.9,16.0 63.2,21.4 67.4,17.4 71.6,18.7 75.8,16.8 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.74%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.96%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.99%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.56%</td>
+        </tr><tr>
+          <td class="name-cell">NASDAQ</td>
+          <td class="close-cell">21,408</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.2 4.2,1.9 8.4,5.6 12.6,1.0 16.8,1.9 21.1,7.6 25.3,2.7 29.5,2.7 33.7,2.4 37.9,8.8 42.1,12.0 46.3,7.8 50.5,6.1 54.7,11.3 58.9,12.3 63.2,19.2 67.4,14.5 71.6,17.4 75.8,14.8 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.38%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.09%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.37%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-7.87%</td>
+        </tr><tr>
+          <td class="name-cell">Russell2K</td>
+          <td class="close-cell">2,493</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.4 4.2,1.0 8.4,5.8 12.6,3.0 16.8,8.1 21.1,14.2 25.3,11.3 29.5,11.9 33.7,12.4 37.9,17.9 42.1,18.8 46.3,16.4 50.5,14.8 54.7,18.9 58.9,17.3 63.2,23.0 67.4,17.4 71.6,16.2 75.8,13.1 80.0,17.4" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.4" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.70%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.06%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.00%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.59%</td>
+        </tr><tr>
+          <td class="name-cell">STOXX50</td>
+          <td class="close-cell">5,566</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,6.2 8.4,13.7 12.6,10.2 16.8,13.3 21.1,15.5 25.3,16.6 29.5,11.4 33.7,12.9 37.9,14.5 42.1,15.6 46.3,14.8 50.5,13.7 54.7,14.9 58.9,19.1 63.2,23.0 67.4,20.5 71.6,20.2 75.8,17.9 80.0,20.8" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.8" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.48%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.85%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.00%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.04%</td>
+        </tr><tr>
+          <td class="name-cell">FTSE100</td>
+          <td class="close-cell">9,972</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,3.8 8.4,10.2 12.6,8.4 16.8,11.7 21.1,14.5 25.3,15.3 29.5,11.8 33.7,13.0 37.9,14.1 42.1,15.0 46.3,13.8 50.5,12.0 54.7,14.1 58.9,19.3 63.2,22.5 67.4,23.0 71.6,21.4 75.8,18.4 80.0,21.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.3" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.33%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.91%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.63%</td><td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.21%</td>
+        </tr><tr>
+          <td class="name-cell">DAX</td>
+          <td class="close-cell">22,613</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,5.9 8.4,12.3 12.6,9.2 16.8,12.1 21.1,13.8 25.3,15.2 29.5,11.0 33.7,13.4 37.9,13.8 42.1,14.9 46.3,14.0 50.5,12.8 54.7,14.5 58.9,19.5 63.2,23.0 67.4,20.9 71.6,21.0 75.8,18.6 80.0,21.2" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.2" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.50%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.99%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.50%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-7.85%</td>
+        </tr><tr>
+          <td class="name-cell">CAC40</td>
+          <td class="close-cell">7,769</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,5.5 8.4,12.5 12.6,10.9 16.8,13.9 21.1,15.1 25.3,17.0 29.5,13.6 33.7,14.0 37.9,15.3 42.1,17.1 46.3,16.5 50.5,15.6 54.7,15.7 58.9,19.6 63.2,23.0 67.4,21.6 71.6,21.1 75.8,18.7 80.0,20.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.98%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.49%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.80%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.20%</td>
+        </tr><tr>
+          <td class="name-cell">Shanghai</td>
+          <td class="close-cell">3,889</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.2 4.2,1.0 8.4,4.6 12.6,7.0 16.8,5.4 21.1,4.5 25.3,6.1 29.5,4.5 33.7,3.9 37.9,4.2 42.1,6.2 46.3,6.8 50.5,8.9 54.7,8.1 58.9,11.5 63.2,14.4 67.4,23.0 71.6,18.9 75.8,15.9 80.0,18.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="18.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.09%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.93%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.55%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.34%</td>
+        </tr><tr>
+          <td class="name-cell">HSI</td>
+          <td class="close-cell">24,856</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,6.6 8.4,9.4 12.6,14.5 16.8,13.8 21.1,9.5 25.3,13.0 29.5,7.6 33.7,8.2 37.9,9.9 42.1,12.4 46.3,8.8 50.5,8.5 54.7,6.9 58.9,12.1 63.2,14.2 67.4,23.0 71.6,16.3 75.8,13.7 80.0,18.4" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="18.4" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.89%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.53%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.52%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.63%</td>
+        </tr><tr>
+          <td class="name-cell">Nikkei225</td>
+          <td class="close-cell">53,604</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.3 4.2,1.0 8.4,3.4 12.6,8.7 16.8,14.8 21.1,11.7 25.3,10.7 29.5,19.4 33.7,14.8 37.9,12.5 42.1,14.2 46.3,16.1 50.5,16.3 54.7,16.4 58.9,11.8 63.2,17.4 67.4,23.0 71.6,20.8 75.8,16.3 80.0,16.7" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.7" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.27%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.96%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.67%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.42%</td>
+        </tr><tr>
+          <td class="name-cell">NIFTY50</td>
+          <td class="close-cell">23,306</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.1 4.2,1.0 8.4,3.3 12.6,5.7 16.8,8.5 21.1,6.4 25.3,8.7 29.5,11.8 33.7,10.1 37.9,13.0 42.1,14.7 46.3,18.3 50.5,16.4 54.7,15.1 58.9,13.7 63.2,19.4 67.4,18.6 71.6,23.0 75.8,20.1 80.0,17.2" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.2" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.72%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.98%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.86%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-10.86%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Bonds & Rates <span class="badge">6</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">KR CD 91D</td>
+          <td class="close-cell">2.81</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.0 20.0,1.0 40.0,1.0 60.0,1.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.71%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.35%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">KR 3Y</td>
+          <td class="close-cell">3.41</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.2 20.0,13.7 40.0,23.0 60.0,13.0 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.43%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.33%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">KR 10Y</td>
+          <td class="close-cell">3.62</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.0 20.0,9.6 40.0,23.0 60.0,7.8 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.95%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.83%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">US 2Y</td>
+          <td class="close-cell">3.62</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.5 4.2,14.1 8.4,11.9 12.6,11.9 16.8,15.1 21.1,23.0 25.3,12.9 29.5,11.9 33.7,9.9 37.9,7.6 42.1,8.4 46.3,7.6 50.5,7.6 54.7,5.4 58.9,4.5 63.2,1.8 67.4,4.5 71.6,1.0 75.8,1.0 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td><td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.22%</td><td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.89%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+2.46%</td>
+        </tr><tr>
+          <td class="name-cell">US 10Y</td>
+          <td class="close-cell">4.42</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,18.8 8.4,18.5 12.6,17.3 16.8,14.1 21.1,14.7 25.3,14.6 29.5,14.6 33.7,11.1 37.9,7.9 42.1,7.4 46.3,10.5 50.5,11.4 54.7,8.6 58.9,7.5 63.2,2.2 67.4,5.0 71.6,2.2 75.8,5.3 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.03%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.15%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+9.50%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.47%</td>
+        </tr><tr>
+          <td class="name-cell">US 30Y</td>
+          <td class="close-cell">4.94</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,18.6 8.4,18.4 12.6,17.4 16.8,15.0 21.1,14.8 25.3,15.8 29.5,13.7 33.7,7.9 37.9,6.0 42.1,4.5 46.3,7.8 50.5,8.3 54.7,6.3 58.9,8.3 63.2,1.0 67.4,4.2 71.6,2.3 75.8,5.2 80.0,2.6" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="2.6" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.80%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.73%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.27%</td><td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.48%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Bond ETF <span class="badge">4</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">TLT</td>
+          <td class="close-cell">$85.77</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,5.2 8.4,6.1 12.6,7.4 16.8,9.1 21.1,10.6 25.3,7.0 29.5,11.5 33.7,16.8 37.9,17.6 42.1,19.7 46.3,16.5 50.5,15.4 54.7,17.7 58.9,15.2 63.2,23.0 67.4,20.4 71.6,22.2 75.8,18.2 80.0,21.7" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.7" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.84%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.58%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.90%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.35%</td>
+        </tr><tr>
+          <td class="name-cell">LQD</td>
+          <td class="close-cell">$107.44</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,3.4 8.4,3.7 12.6,3.1 16.8,5.9 21.1,8.2 25.3,4.1 29.5,8.9 33.7,14.6 37.9,18.4 42.1,20.9 46.3,17.6 50.5,13.7 54.7,17.5 58.9,14.4 63.2,23.0 67.4,18.5 71.6,19.9 75.8,17.4 80.0,22.8" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="22.8" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.78%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.20%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.07%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.37%</td>
+        </tr><tr>
+          <td class="name-cell">HYG</td>
+          <td class="close-cell">$78.54</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.1 4.2,2.8 8.4,5.2 12.6,1.0 16.8,5.8 21.1,11.5 25.3,4.3 29.5,6.4 33.7,9.0 37.9,16.7 42.1,18.8 46.3,15.1 50.5,9.7 54.7,15.8 58.9,12.0 63.2,23.0 67.4,15.2 71.6,19.3 75.8,15.6 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.63%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.93%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.86%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.20%</td>
+        </tr><tr>
+          <td class="name-cell">EMB</td>
+          <td class="close-cell">$93.01</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,2.8 8.4,5.1 12.6,3.4 16.8,6.0 21.1,9.3 25.3,8.2 29.5,8.2 33.7,9.9 37.9,14.1 42.1,16.5 46.3,14.6 50.5,12.7 54.7,16.6 58.9,15.2 63.2,23.0 67.4,18.2 71.6,20.7 75.8,16.3 80.0,21.4" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.4" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.03%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.24%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.89%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.13%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>FX <span class="badge">7</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">DXY</td>
+          <td class="close-cell">99.90</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,16.8 8.4,11.5 12.6,13.7 16.8,9.3 21.1,12.0 25.3,10.4 29.5,13.2 33.7,10.0 37.9,6.0 42.1,1.0 46.3,6.2 50.5,7.2 54.7,3.2 58.9,10.0 63.2,6.7 67.4,12.3 71.6,8.5 75.8,7.1 80.0,4.7" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.7" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.30%</td><td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.68%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+2.06%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.50%</td>
+        </tr><tr>
+          <td class="name-cell">USD/KRW</td>
+          <td class="close-cell">1,501</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,21.1 8.4,17.0 12.6,7.7 16.8,14.4 21.1,8.8 25.3,7.4 29.5,13.3 33.7,10.8 37.9,10.0 42.1,11.5 46.3,2.0 50.5,5.9 54.7,7.1 58.9,1.0 63.2,5.6 67.4,1.3 71.6,7.0 75.8,3.4 80.0,2.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="2.3" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.24%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.28%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+4.08%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.97%</td>
+        </tr><tr>
+          <td class="name-cell">EUR/USD</td>
+          <td class="close-cell">1.16</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,3.6 8.4,7.3 12.6,12.4 16.8,11.0 21.1,12.6 25.3,17.7 29.5,12.1 33.7,12.4 37.9,16.5 42.1,17.8 46.3,23.0 50.5,19.1 54.7,16.7 58.9,21.2 63.2,14.5 67.4,15.5 71.6,12.7 75.8,12.3 80.0,15.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="15.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.46%</td><td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.85%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.97%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.61%</td>
+        </tr><tr>
+          <td class="name-cell">GBP/USD</td>
+          <td class="close-cell">1.34</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,8.7 8.4,8.3 12.6,13.4 16.8,11.9 21.1,13.0 25.3,18.1 29.5,7.0 33.7,7.6 37.9,10.8 42.1,13.5 46.3,23.0 50.5,16.9 54.7,12.9 58.9,21.4 63.2,7.0 67.4,15.5 71.6,7.1 75.8,7.8 80.0,12.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.39%</td><td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.74%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.99%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.82%</td>
+        </tr><tr>
+          <td class="name-cell">AUD/USD</td>
+          <td class="close-cell">0.69</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.3 4.2,9.4 8.4,3.8 12.6,11.5 16.8,7.3 21.1,14.9 25.3,20.2 29.5,8.2 33.7,2.0 37.9,1.0 42.1,7.4 46.3,15.6 50.5,8.2 54.7,3.4 58.9,12.8 63.2,6.7 67.4,15.3 71.6,15.6 75.8,16.6 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.77%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.23%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.67%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.96%</td>
+        </tr><tr>
+          <td class="name-cell">USD/JPY</td>
+          <td class="close-cell">159</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,18.7 8.4,15.2 12.6,12.3 16.8,16.7 21.1,13.7 25.3,8.7 29.5,11.9 33.7,10.4 37.9,5.1 42.1,4.3 46.3,2.3 50.5,4.9 54.7,6.1 58.9,1.0 63.2,11.5 67.4,4.1 71.6,8.4 75.8,7.1 80.0,3.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="3.3" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.42%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.26%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.07%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.69%</td>
+        </tr><tr>
+          <td class="name-cell">USD/CNY</td>
+          <td class="close-cell">6.90</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,19.7 8.4,15.1 12.6,11.7 16.8,12.3 21.1,12.3 25.3,12.4 29.5,9.6 33.7,16.2 37.9,18.3 42.1,17.6 46.3,12.4 50.5,1.0 54.7,14.4 58.9,17.0 63.2,11.7 67.4,14.5 71.6,15.5 75.8,13.3 80.0,11.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.5" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.13%</td><td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.41%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.10%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.36%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Commodities <span class="badge">6</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">WTI</td>
+          <td class="close-cell">$94.48</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,20.1 8.4,17.8 12.6,17.7 16.8,13.3 21.1,6.4 25.3,3.7 29.5,11.6 33.7,9.0 37.9,3.1 42.1,1.0 46.3,4.6 50.5,2.7 54.7,2.7 58.9,2.8 63.2,1.3 67.4,8.3 71.6,5.4 75.8,6.8 80.0,3.9" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="3.9" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+4.61%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.73%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+43.96%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+64.83%</td>
+        </tr><tr>
+          <td class="name-cell">Brent</td>
+          <td class="close-cell">$108.01</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,20.1 8.4,18.1 12.6,18.1 16.8,15.8 21.1,11.8 25.3,8.3 29.5,14.5 33.7,12.2 37.9,7.5 42.1,6.0 46.3,7.6 50.5,5.9 54.7,3.7 58.9,3.0 63.2,1.0 67.4,7.8 71.6,5.3 75.8,6.5 80.0,3.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="3.3" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.66%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.59%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+52.62%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+77.79%</td>
+        </tr><tr>
+          <td class="name-cell">Gold</td>
+          <td class="close-cell">$4,375.50</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.5 4.2,1.0 8.4,5.5 12.6,5.2 16.8,6.5 21.1,4.5 25.3,5.9 29.5,2.6 33.7,4.0 37.9,5.3 42.1,6.8 46.3,8.2 50.5,8.0 54.7,10.7 58.9,17.6 63.2,18.3 67.4,22.3 71.6,22.4 75.8,18.8 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.83%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.89%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-15.13%</td><td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.42%</td>
+        </tr><tr>
+          <td class="name-cell">Silver</td>
+          <td class="close-cell">$67.67</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,4.9 8.4,9.6 12.6,9.8 16.8,10.7 21.1,8.8 25.3,8.6 29.5,4.2 33.7,7.7 37.9,8.0 42.1,11.4 46.3,11.9 50.5,12.6 54.7,14.6 58.9,20.2 63.2,21.5 67.4,21.8 71.6,21.6 75.8,18.9 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.48%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.56%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-22.62%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.09%</td>
+        </tr><tr>
+          <td class="name-cell">Copper</td>
+          <td class="close-cell">$5.45</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,4.7 8.4,8.7 12.6,6.0 16.8,9.4 21.1,9.2 25.3,7.8 29.5,4.3 33.7,6.3 37.9,7.0 42.1,10.6 46.3,8.1 50.5,10.2 54.7,16.0 58.9,20.0 63.2,23.0 67.4,19.8 71.6,20.3 75.8,16.8 80.0,19.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.49%</td><td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.25%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.04%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.43%</td>
+        </tr><tr>
+          <td class="name-cell">Nat Gas</td>
+          <td class="close-cell">$3.00</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,17.1 8.4,11.5 12.6,19.6 16.8,14.5 21.1,3.8 25.3,7.6 29.5,13.5 33.7,2.4 37.9,1.0 42.1,7.0 46.3,13.3 50.5,12.8 54.7,10.9 58.9,4.9 63.2,9.1 67.4,21.1 71.6,18.1 75.8,17.5 80.0,14.8" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="14.8" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.59%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.27%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+2.88%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-17.11%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Major Stocks <span class="badge">10</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">NVIDIA</td>
+          <td class="close-cell">$171.24</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.2 4.2,6.3 8.4,9.9 12.6,5.5 16.8,5.0 21.1,13.2 25.3,6.0 29.5,2.9 33.7,1.0 37.9,5.3 42.1,9.6 46.3,5.2 50.5,7.1 54.7,9.4 58.9,12.1 63.2,20.8 67.4,16.5 71.6,17.1 75.8,11.9 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.16%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.10%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-11.20%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.32%</td>
+        </tr><tr>
+          <td class="name-cell">Broadcom</td>
+          <td class="close-cell">$309.42</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.2 4.2,17.6 8.4,20.7 12.6,18.4 16.8,9.0 21.1,10.4 25.3,1.0 29.5,2.9 33.7,3.6 37.9,7.0 42.1,15.5 46.3,13.8 50.5,16.1 54.7,19.4 58.9,17.0 63.2,22.7 67.4,14.9 71.6,17.5 75.8,17.2 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.95%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.05%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.74%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-10.80%</td>
+        </tr><tr>
+          <td class="name-cell">Alphabet</td>
+          <td class="close-cell">$280.92</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,4.8 8.4,6.9 12.6,7.2 16.8,8.8 21.1,10.5 25.3,4.7 29.5,4.2 33.7,3.0 37.9,6.7 42.1,7.6 46.3,5.3 50.5,1.4 54.7,3.8 58.9,4.2 63.2,8.6 67.4,7.8 71.6,16.2 75.8,15.8 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.44%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.53%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.58%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-10.80%</td>
+        </tr><tr>
+          <td class="name-cell">Amazon</td>
+          <td class="close-cell">$207.54</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.5 4.2,18.1 8.4,17.6 12.6,4.4 16.8,1.0 21.1,10.3 25.3,9.9 29.5,8.5 33.7,11.2 37.9,16.3 42.1,19.3 46.3,12.7 50.5,7.1 54.7,15.7 58.9,17.5 63.2,23.0 67.4,15.3 71.6,20.0 75.8,12.7 80.0,19.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.97%</td><td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.58%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.49%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.37%</td>
+        </tr><tr>
+          <td class="name-cell">META</td>
+          <td class="close-cell">$547.54</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.6 4.2,3.6 8.4,3.3 12.6,1.0 16.8,2.3 21.1,5.2 25.3,4.7 29.5,3.5 33.7,3.4 37.9,6.4 42.1,10.9 46.3,8.3 50.5,9.2 54.7,10.5 58.9,12.1 63.2,14.5 67.4,12.6 71.6,14.7 75.8,14.3 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-7.96%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.75%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-14.28%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-15.74%</td>
+        </tr><tr>
+          <td class="name-cell">Apple</td>
+          <td class="close-cell">$252.89</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.7 4.2,1.0 8.4,2.3 12.6,3.9 16.8,6.8 21.1,10.5 25.3,7.4 29.5,6.1 33.7,6.1 37.9,12.8 42.1,20.2 46.3,16.6 50.5,14.8 54.7,20.4 58.9,21.7 63.2,23.0 67.4,18.4 71.6,18.2 75.8,16.9 80.0,16.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.11%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.58%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-7.07%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.60%</td>
+        </tr><tr>
+          <td class="name-cell">Microsoft</td>
+          <td class="close-cell">$365.97</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.8 4.2,7.0 8.4,4.3 12.6,3.7 16.8,1.0 21.1,1.8 25.3,1.6 29.5,3.4 33.7,3.9 37.9,5.3 42.1,8.4 46.3,6.3 50.5,6.5 54.7,10.3 58.9,11.7 63.2,15.2 67.4,14.6 71.6,19.7 75.8,20.5 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.37%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.93%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.92%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-22.44%</td>
+        </tr><tr>
+          <td class="name-cell">Tesla</td>
+          <td class="close-cell">$372.11</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.9 4.2,3.5 8.4,9.5 12.6,2.0 16.8,2.2 21.1,7.1 25.3,6.0 29.5,5.7 33.7,1.0 37.9,8.1 42.1,10.2 46.3,7.8 50.5,5.7 54.7,9.3 58.9,16.2 63.2,23.0 67.4,15.9 71.6,14.7 75.8,13.1 80.0,20.7" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.7" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.59%</td><td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.15%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.10%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-15.06%</td>
+        </tr><tr>
+          <td class="name-cell">TSMC</td>
+          <td class="close-cell">$326.11</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,3.5 8.4,10.9 12.6,8.9 16.8,10.6 21.1,17.5 25.3,13.0 29.5,13.7 33.7,10.3 37.9,18.5 42.1,17.8 46.3,16.9 50.5,13.8 54.7,16.8 58.9,17.1 63.2,21.6 67.4,17.3 71.6,15.1 75.8,13.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.22%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.74%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-15.22%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+2.32%</td>
+        </tr><tr>
+          <td class="name-cell">Samsung</td>
+          <td class="close-cell">$180,100</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,1.7 8.4,12.0 12.6,23.0 16.8,13.7 21.1,15.3 25.3,22.4 29.5,15.5 33.7,14.4 37.9,15.5 42.1,17.6 46.3,15.1 50.5,12.6 54.7,5.6 58.9,9.4 63.2,9.9 67.4,16.2 71.6,14.6 75.8,14.9 80.0,19.2" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.2" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.71%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-10.17%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.68%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+40.16%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section"><h2>Risk Dashboard</h2></div>
+<div class="risk-strip">
+<div class="risk-card">
+  <div class="label">VIX</div>
+  <div class="value" style="color:#d48b07">27.4</div>
+  <div class="desc" style="color:#d48b07">Elevated</div>
+  <div class="bar-track"><div class="bar-fill" style="width:55%;background:#d48b07"></div></div>
+</div>
+<div class="risk-card">
+  <div class="label">HYG</div>
+  <div class="value">78.5</div>
+  <div class="desc down">-0.63%</div>
+</div>
+<div class="risk-card">
+  <div class="label">EMB</div>
+  <div class="value">93.0</div>
+  <div class="desc down">-1.03%</div>
+</div>
+</div>
+
+<!-- ══ CHARTS ══ -->
+<div class="chart-grid">
+  <div class="chart-card">
+    <div class="title">Equity: Daily Change (%)</div>
+    <div class="chart-box"><canvas id="eqChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Stocks: Daily Change (%)</div>
+    <div class="chart-box"><canvas id="stChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Daily vs Weekly (Cross-Asset)</div>
+    <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Commodity YTD (%)</div>
+    <div class="chart-box"><canvas id="cmChart"></canvas></div>
+  </div>
+</div>
+
+
+</div><!-- /tab-data -->
+
+<!-- ══════ TAB 2: STORY ══════ -->
+<div id="tab-story" class="tab-panel">
+
+<!-- ── Today's Story ── -->
+<div class="story-hero">
+  <h2>Today's Story</h2>
+  <p class="story-text">
+    세 가지 공포가 동시에 덮친 하루였다.
+    트럼프 대통령의 <span class="hl-warn">이란 발전소 공격 유예 시한(3/27)</span>이 코앞으로 다가오며 호르무즈 해협 리스크가 재점화됐고,
+    <span class="hl-down">WTI는 +4.6%</span> 급등해 $94.5를 찍었다.
+    동시에 구글이 공개한 <strong>TurboQuant 알고리즘</strong>이 AI 메모리 수요를 대폭 줄일 수 있다는 전망이 퍼지며
+    <span class="hl-down">반도체주가 일제히 급락</span>했다.
+    여기에 메타와 알파벳에 대한 <span class="hl-down">총 $3.8억 규모 배심 판결</span>이 겹치며
+    <span class="hl-down">나스닥은 -2.4%</span>, S&P500은 <span class="hl-down">-1.7%</span>로 마감했다.
+    <strong>유가 공포 + AI 서사 균열 + 빅테크 법률 리스크</strong> &mdash;
+    시장의 세 기둥이 동시에 흔들린 날이다.
+  </p>
+</div>
+
+<!-- ── Cause & Effect ── -->
+<h2 style="font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px;">Cause &amp; Effect</h2>
+
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">Trigger 1</div>
+    <div class="node-title">이란 공격 시한 임박</div>
+    <div class="node-detail">트럼프 3/27 유예 만료<br>호르무즈 리스크 재점화</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">유가 급등</div>
+    <div class="node-detail">WTI $94.48</div>
+    <div class="node-impact" style="color:#e06818">+4.61%</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">스태그플레이션 공포</div>
+    <div class="node-detail">Fed 인상 확률 52%<br>10Y +2bp (4.42%)</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">글로벌 매도</div>
+    <div class="node-detail">S&P -1.7%, DAX -1.5%<br>KOSPI -3.2%</div>
+    <div class="node-impact" style="color:#d9304f">Risk-Off</div>
+  </div>
+</div>
+
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">Trigger 2</div>
+    <div class="node-title">Google TurboQuant</div>
+    <div class="node-detail">AI 메모리 수요<br>대폭 감소 전망</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">반도체 급락</div>
+    <div class="node-detail">Micron 5일간 -20%<br>TSM -6.2%</div>
+    <div class="node-impact" style="color:#d9304f">-6.22%</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">삼성전자 직격탄</div>
+    <div class="node-detail">메모리 수출 비중 최대<br>KOSPI 하락 주도</div>
+    <div class="node-impact" style="color:#d9304f">-4.71%</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">KOSPI 급락</div>
+    <div class="node-detail">반도체 + 유가 이중 부담<br>아시아 최약세</div>
+    <div class="node-impact" style="color:#d9304f">-3.22%</div>
+  </div>
+</div>
+
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">Trigger 3</div>
+    <div class="node-title">빅테크 배심 판결</div>
+    <div class="node-detail">Meta $3.75억 벌금<br>Instagram/YouTube 중독 소송</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">META -7.96%</div>
+    <div class="node-detail">추가 소송 리스크<br>규제 비용 증가 우려</div>
+    <div class="node-impact" style="color:#d9304f">-7.96%</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">GOOGL -3.44%</div>
+    <div class="node-detail">YouTube 연대 책임<br>$600만 배상 판결</div>
+    <div class="node-impact" style="color:#d9304f">-3.44%</div>
+  </div>
+  <div class="cause-arrow">&#x279C;</div>
+  <div class="cause-node">
+    <div class="node-title">NASDAQ -2.38%</div>
+    <div class="node-detail">빅테크 총체적 리스크<br>3월 -6.8%</div>
+    <div class="node-impact" style="color:#d9304f">Correction</div>
+  </div>
+</div>
+
+<!-- ── Session by Session ── -->
+<h2 style="font-size:17px;font-weight:600;color:#1a1d2e;margin:32px 0 16px;">Session by Session</h2>
+<div class="session-grid">
+  <!-- Asia -->
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">&#127774;</div>
+      <div><div class="session-name">Asia</div><div class="session-time">09:00~15:30 KST</div></div>
+    </div>
+    <span class="session-verdict verdict-down">Sell-Off</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> 전일 미국 유가 급등 + TurboQuant 뉴스에 KOSPI 갭하락 출발</li>
+      <li><span class="ev-time">10:00</span> 삼성전자 -4.71% 급락. 메모리 수요 둔화 공포 직격</li>
+      <li><span class="ev-time">11:00</span> 원/달러 1,501원 돌파. 외국인 순매도 가속</li>
+      <li><span class="ev-time">13:00</span> 중국 상해 -1.09%, 홍콩 HSI -1.89%. 아시아 전면 하락</li>
+      <li><span class="ev-time">15:30</span> KOSPI -3.22%(5,460) 마감. 3월 최대 일간 낙폭</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value down">-3.22%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">Samsung</div><div class="s-kpi-value down">-4.71%</div></div>
+    </div>
+  </div>
+
+  <!-- Europe -->
+  <div class="session-block europe">
+    <div class="session-header">
+      <div class="session-icon europe">&#127758;</div>
+      <div><div class="session-name">Europe</div><div class="session-time">16:00~22:00 KST</div></div>
+    </div>
+    <span class="session-verdict verdict-down">Broad Weakness</span>
+    <ul class="session-events">
+      <li><span class="ev-time">16:00</span> 유럽 전면 하락 출발. 이란 시한 임박에 공포 확산</li>
+      <li><span class="ev-time">18:00</span> DAX -1.50%, CAC40 -0.98%. 에너지 비용 상승 우려</li>
+      <li><span class="ev-time">19:00</span> FTSE -1.33%. 에너지 섹터도 수급 불확실성에 하락</li>
+      <li><span class="ev-time">21:00</span> 미국 프리마켓에서 META -7% 급락 확인, 센티먼트 추가 악화</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value down">-1.50%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">STOXX50</div><div class="s-kpi-value down">-1.48%</div></div>
+    </div>
+  </div>
+
+  <!-- US -->
+  <div class="session-block us">
+    <div class="session-header">
+      <div class="session-icon us">&#127479;&#127480;</div>
+      <div><div class="session-name">US</div><div class="session-time">22:30~05:00 KST</div></div>
+    </div>
+    <span class="session-verdict verdict-down">Triple Shock</span>
+    <ul class="session-events">
+      <li><span class="ev-time">22:30</span> 개장 즉시 META -7.96%, GOOGL -3.44%. 법률 리스크 반영</li>
+      <li><span class="ev-time">23:00</span> WTI $94.48(+4.6%). 이란 시한 D-1 리스크 프리미엄 급등</li>
+      <li><span class="ev-time">00:00</span> NVDA -4.16%, TSM -6.22%. TurboQuant 충격파 확산</li>
+      <li><span class="ev-time">02:00</span> VIX 27.44(+8.3%). 3월 최고치. 공포 지수 급등</li>
+      <li><span class="ev-time">04:00</span> 금 -3.83%($4,375). 마진콜에 안전자산도 청산</li>
+      <li><span class="ev-time">05:00</span> S&P -1.74% 마감. 3월 누적 -6.8%, 2022년 이후 최악의 월간 성적</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">S&P500</div><div class="s-kpi-value down">-1.74%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">VIX</div><div class="s-kpi-value down">27.44</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Cross-Asset Flow ── -->
+<div class="cross-asset">
+  <h2>Cross-Asset Flow Map</h2>
+  <p class="sub">오늘 시장의 돈은 어디서 빠지고 어디로도 가지 못했다</p>
+  <div class="af-map">
+    <div class="af-node">
+      <div class="af-node-title">WTI</div>
+      <div class="af-node-value">$94.48</div>
+      <div class="af-node-chg down">+4.61%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&#x2192;</span><span class="lbl">인플레 공포</span></div>
+    <div class="af-node">
+      <div class="af-node-title">US 10Y</div>
+      <div class="af-node-value">4.42%</div>
+      <div class="af-node-chg down">+2.0bp</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&#x2192;</span><span class="lbl">할인율 상승</span></div>
+    <div class="af-node">
+      <div class="af-node-title">NASDAQ</div>
+      <div class="af-node-value">21,408</div>
+      <div class="af-node-chg down">-2.38%</div>
+    </div>
+
+    <div class="af-node">
+      <div class="af-node-title">Gold</div>
+      <div class="af-node-value">$4,376</div>
+      <div class="af-node-chg down">-3.83%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&#x2190;</span><span class="lbl">마진콜 청산</span></div>
+    <div class="af-node">
+      <div class="af-node-title">VIX</div>
+      <div class="af-node-value">27.44</div>
+      <div class="af-node-chg down">+8.33%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&#x2190;</span><span class="lbl">패닉 확산</span></div>
+    <div class="af-node">
+      <div class="af-node-title">USD/KRW</div>
+      <div class="af-node-value">1,501</div>
+      <div class="af-node-chg down">+0.24%</div>
+    </div>
+
+    <div class="af-node">
+      <div class="af-node-title">Samsung</div>
+      <div class="af-node-value">180,100</div>
+      <div class="af-node-chg down">-4.71%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&#x2190;</span><span class="lbl">TurboQuant</span></div>
+    <div class="af-node">
+      <div class="af-node-title">TSM</div>
+      <div class="af-node-value">$326</div>
+      <div class="af-node-chg down">-6.22%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&#x2190;</span><span class="lbl">메모리 수요 우려</span></div>
+    <div class="af-node">
+      <div class="af-node-title">KOSPI</div>
+      <div class="af-node-value">5,460</div>
+      <div class="af-node-chg down">-3.22%</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Deep Dive ── -->
+<h2 style="font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px;">Deep Dive</h2>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(224,104,24,0.12);color:#e06818;">OIL</span>
+    <h3>WTI $94, 내일이 D-Day</h3>
+    <p>
+      트럼프 대통령이 밝힌 이란 발전소 공격 유예 시한이 내일(3/27)로 다가왔다.
+      시한 연장 없이 공격이 실행되면 이란의 호르무즈 해협 완전 봉쇄 가능성이 높아진다.
+      일일 2,000만 배럴 원유 수송이 멈추면 유가 $120~$150 시나리오가 현실화된다.
+      시장은 이미 "worst case"를 프라이싱하기 시작했다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">WTI</div><div class="metric-value" style="color:#e06818">$94.48</div></div>
+      <div class="metric-item"><div class="metric-label">Daily</div><div class="metric-value" style="color:#d9304f">+4.61%</div></div>
+      <div class="metric-item"><div class="metric-label">Nat Gas</div><div class="metric-value" style="color:#d9304f">+1.59%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(217,48,79,0.12);color:#d9304f;">AI</span>
+    <h3>TurboQuant, AI 메모리 서사의 균열</h3>
+    <p>
+      구글이 공개한 TurboQuant 알고리즘은 AI 모델의 메모리 사용량을 획기적으로 줄일 수 있다는 연구 결과다.
+      이는 "AI = 메모리 수요 폭증"이라는 투자 논리의 핵심을 흔드는 것이다.
+      Micron이 5일간 -20% 폭락했고, TSM -6.2%, 삼성전자 -4.7%가 동반 급락했다.
+      반도체 투자 논리가 재점검되어야 할 시점이다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">TSM</div><div class="metric-value" style="color:#d9304f">-6.22%</div></div>
+      <div class="metric-item"><div class="metric-label">NVDA</div><div class="metric-value" style="color:#d9304f">-4.16%</div></div>
+      <div class="metric-item"><div class="metric-label">Samsung</div><div class="metric-value" style="color:#d9304f">-4.71%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(107,92,231,0.12);color:#6b5ce7;">LEGAL</span>
+    <h3>빅테크, 법정에서도 무너지다</h3>
+    <p>
+      LA 배심원단이 Instagram·YouTube 중독으로 인한 청소년 우울증에 $600만 배상 판결을 내렸고,
+      뉴멕시코주는 Meta에 $3.75억 민사벌금을 부과했다. 단순 벌금이 아니라,
+      "플랫폼 설계 자체가 유해하다"는 법적 선례가 만들어진 것이다.
+      수백 건의 유사 소송이 줄줄이 대기 중이어서 빅테크 규제 비용은 구조적으로 증가할 전망이다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">META</div><div class="metric-value" style="color:#d9304f">-7.96%</div></div>
+      <div class="metric-item"><div class="metric-label">GOOGL</div><div class="metric-value" style="color:#d9304f">-3.44%</div></div>
+      <div class="metric-item"><div class="metric-label">NASDAQ</div><div class="metric-value" style="color:#d9304f">-2.38%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(212,139,7,0.12);color:#d48b07;">GOLD</span>
+    <h3>금 -3.8%, 안전자산마저 팔렸다</h3>
+    <p>
+      리스크오프 국면에서 금이 급락한 것은 이례적이다.
+      이는 "공포 매도"가 아니라 "마진콜 청산"으로 읽어야 한다.
+      주식에서 대규모 손실이 발생하면 증거금 충당을 위해 수익이 나 있던 금 포지션을 청산하는 것이다.
+      금 YTD가 여전히 +20% 이상이었기에, 차익 실현 + 유동성 확보가 겹쳤다.
+      진짜 공포의 신호가 아니라 기술적 매도다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">Gold</div><div class="metric-value" style="color:#d9304f">-3.83%</div></div>
+      <div class="metric-item"><div class="metric-label">VIX</div><div class="metric-value" style="color:#d9304f">27.44</div></div>
+      <div class="metric-item"><div class="metric-label">DXY</div><div class="metric-value" style="color:#0d9b6a">+0.30%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Risk ── -->
+<div class="risk-section">
+  <h2>Key Risk Factors</h2>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high">HIGH</span>
+      <span>내일(3/27) 이란 공격 유예 시한 만료 &rarr; 공격 실행 시 호르무즈 완전 봉쇄, 유가 $120+ 시나리오</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag high">HIGH</span>
+      <span>스태그플레이션 프라이싱 가속 &rarr; Fed 금리인상 확률 52%까지 상승, 성장주 추가 하방 압력</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">MED</span>
+      <span>TurboQuant 이후 AI 메모리 수요 전망 재평가 &rarr; 반도체 밸류에이션 조정 지속 가능성</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">MED</span>
+      <span>빅테크 소송 도미노 &rarr; 수백 건 유사 소송 대기 중, 플랫폼 규제 비용 구조적 증가</span>
+    </li>
+  </ul>
+</div>
+
+</div><!-- /tab-story -->
+
+<div class="footer">Daily Market Summary | yfinance auto-generated | 2026-03-26</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+  // 차트 리사이즈 (탭 전환 후)
+  if(id==='data') setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+}
+Chart.defaults.color='#7c8298';
+Chart.defaults.borderColor='#e8eaf0';
+Chart.defaults.font.family="'Noto Sans KR',sans-serif";
+Chart.defaults.font.size=11;
+const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4',GD='#b8860b';
+function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
+
+// Equity bar
+new Chart(document.getElementById('eqChart'),{
+  type:'bar',
+  data:{labels:["NIFTY50", "Nikkei225", "CAC40", "Shanghai", "FTSE100", "STOXX50", "DAX", "Russell2K", "S&P500", "HSI", "KOSDAQ", "NASDAQ", "KOSPI"],datasets:[{data:[1.72, -0.27, -0.98, -1.09, -1.33, -1.48, -1.5, -1.7, -1.74, -1.89, -1.98, -2.38, -3.22],backgroundColor:bc([1.72, -0.27, -0.98, -1.09, -1.33, -1.48, -1.5, -1.7, -1.74, -1.89, -1.98, -2.38, -3.22]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600',size:11}}}}}
+});
+
+// Stocks bar
+new Chart(document.getElementById('stChart'),{
+  type:'bar',
+  data:{labels:["Apple", "Microsoft", "Amazon", "Broadcom", "Alphabet", "Tesla", "NVIDIA", "Samsung", "TSMC", "META"],datasets:[{data:[0.11, -1.37, -1.97, -2.95, -3.44, -3.59, -4.16, -4.71, -6.22, -7.96],backgroundColor:bc([0.11, -1.37, -1.97, -2.95, -3.44, -3.59, -4.16, -4.71, -6.22, -7.96]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600',size:11}}}}}
+});
+
+// Scatter: daily vs weekly
+new Chart(document.getElementById('scatterChart'),{
+  type:'scatter',
+  data:{
+    datasets:[
+      {label:'Equity',data:[{"x": -5.25, "y": -3.22, "label": "KOSPI", "cat": "equity"}, {"x": -0.6, "y": -1.98, "label": "KOSDAQ", "cat": "equity"}, {"x": -1.96, "y": -1.74, "label": "S&P500", "cat": "equity"}, {"x": -3.09, "y": -2.38, "label": "NASDAQ", "cat": "equity"}, {"x": -0.06, "y": -1.7, "label": "Russell2K", "cat": "equity"}, {"x": -0.85, "y": -1.48, "label": "STOXX50", "cat": "equity"}, {"x": -0.99, "y": -1.5, "label": "DAX", "cat": "equity"}, {"x": -0.49, "y": -0.98, "label": "CAC40", "cat": "equity"}, {"x": -0.91, "y": -1.33, "label": "FTSE100", "cat": "equity"}, {"x": -2.96, "y": -0.27, "label": "Nikkei225", "cat": "equity"}, {"x": -2.93, "y": -1.09, "label": "Shanghai", "cat": "equity"}, {"x": -2.53, "y": -1.89, "label": "HSI", "cat": "equity"}, {"x": -1.98, "y": 1.72, "label": "NIFTY50", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'Stocks',data:[{"x": -4.1, "y": -4.16, "label": "NVIDIA", "cat": "stocks"}, {"x": -3.05, "y": -2.95, "label": "Broadcom", "cat": "stocks"}, {"x": -8.53, "y": -3.44, "label": "Alphabet", "cat": "stocks"}, {"x": -0.58, "y": -1.97, "label": "Amazon", "cat": "stocks"}, {"x": -9.75, "y": -7.96, "label": "META", "cat": "stocks"}, {"x": 1.58, "y": 0.11, "label": "Apple", "cat": "stocks"}, {"x": -5.93, "y": -1.37, "label": "Microsoft", "cat": "stocks"}, {"x": -2.15, "y": -3.59, "label": "Tesla", "cat": "stocks"}, {"x": -3.74, "y": -6.22, "label": "TSMC", "cat": "stocks"}, {"x": -10.17, "y": -4.71, "label": "Samsung", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
+      {label:'Commodity',data:[{"x": -1.73, "y": 4.61, "label": "WTI", "cat": "commodity"}, {"x": -0.59, "y": 5.66, "label": "Brent", "cat": "commodity"}, {"x": -4.89, "y": -3.83, "label": "Gold", "cat": "commodity"}, {"x": -4.56, "y": -6.48, "label": "Silver", "cat": "commodity"}, {"x": 0.25, "y": -1.49, "label": "Copper", "cat": "commodity"}, {"x": -5.27, "y": 1.59, "label": "Nat Gas", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{boxWidth:8}},
+      tooltip:{callbacks:{label:c=>c.raw.label+' (W:'+c.raw.x.toFixed(1)+'%, D:'+c.raw.y.toFixed(1)+'%)'}}
+    },
+    scales:{
+      x:{title:{display:true,text:'Weekly %',color:'#7c8298'},grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},
+      y:{title:{display:true,text:'Daily %',color:'#7c8298'},grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}}
+    }
+  }
+});
+
+// Commodity YTD
+new Chart(document.getElementById('cmChart'),{
+  type:'bar',
+  data:{labels:["WTI", "Brent", "Gold", "Silver", "Copper", "Nat Gas"],datasets:[{data:[64.83, 77.79, 1.42, -4.09, -3.43, -17.11],backgroundColor:bc([64.83, 77.79, 1.42, -4.09, -3.43, -17.11]),borderRadius:4,barPercentage:.55}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
+});
+</script>
+</body>
+</html>
