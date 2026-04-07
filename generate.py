@@ -1054,7 +1054,98 @@ def main(target_date=None):
 
     generate_index()
 
+    # 당일이 포함된 주간/월간 보고서 자동 갱신
+    update_current_periodic(target_date)
+
     return html_path
+
+
+def update_current_periodic(target_date):
+    """target_date가 포함된 주간 및 월간 보고서를 갱신"""
+    try:
+        from generate_periodic import (
+            load_daily_data, get_week_ranges, aggregate_period,
+            generate_periodic_html
+        )
+        import glob
+
+        td = dt.datetime.strptime(target_date, "%Y-%m-%d").date()
+        year = td.year
+
+        # ── 당일 포함 주간 보고서 갱신 ──
+        iso = td.isocalendar()
+        iso_week = iso[1]
+        weeks = get_week_ranges(year)
+        week_key = (iso[0], iso_week)
+
+        if week_key in weeks:
+            daily_data = load_daily_data()
+            dates = weeks[week_key]
+            available = [d for d in dates if d in daily_data]
+            if available:
+                agg = aggregate_period(daily_data, dates)
+                if agg:
+                    first, last = available[0], available[-1]
+                    week_label = f"W{iso_week:02d}"
+                    title = f"Weekly Summary | {year} {week_label}"
+                    subtitle = f"{first} ~ {last} ({len(available)} trading days)"
+                    filename = f"{year}-W{iso_week:02d}.html"
+
+                    weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
+                    os.makedirs(weekly_dir, exist_ok=True)
+                    html = generate_periodic_html(agg, title, subtitle, "Weekly", filename)
+                    path = os.path.join(weekly_dir, filename)
+
+                    # 기존 Story 보존
+                    _inject_existing_story(path, html)
+                    print(f"Weekly updated: {filename}")
+
+        # ── 당일 포함 월간 보고서 갱신 ──
+        month_str = target_date[:7]
+        daily_data = load_daily_data()
+        month_dates = sorted([d for d in daily_data if d.startswith(month_str)])
+        if month_dates:
+            agg = aggregate_period(daily_data, month_dates)
+            if agg:
+                month_name = td.strftime("%B")
+                title = f"Monthly Summary | {year} {month_name}"
+                subtitle = f"{month_dates[0]} ~ {month_dates[-1]} ({len(month_dates)} trading days)"
+                filename = f"{year}-{td.month:02d}.html"
+
+                monthly_dir = os.path.join(OUTPUT_DIR, "monthly")
+                os.makedirs(monthly_dir, exist_ok=True)
+                html = generate_periodic_html(agg, title, subtitle, "Monthly", filename)
+                path = os.path.join(monthly_dir, filename)
+
+                _inject_existing_story(path, html)
+                print(f"Monthly updated: {filename}")
+
+    except Exception as e:
+        print(f"[WARN] Periodic update failed: {e}")
+
+
+def _inject_existing_story(path, new_html):
+    """기존 파일에 Story가 있으면 새 HTML의 placeholder에 주입"""
+    import re
+    old_story = ""
+    if os.path.exists(path):
+        with open(path) as f:
+            old_content = f.read()
+        # tab-story 내용 추출
+        m = re.search(
+            r'<div id="tab-story" class="tab-panel">\s*\n(.*?)\n</div><!-- /tab-story -->',
+            old_content, re.DOTALL
+        )
+        if m:
+            story_content = m.group(1).strip()
+            if story_content and "STORY_CONTENT_PLACEHOLDER" not in story_content:
+                old_story = story_content
+
+    if old_story:
+        new_html = new_html.replace("<!-- STORY_CONTENT_PLACEHOLDER -->", old_story)
+
+    with open(path, "w") as f:
+        f.write(new_html)
 
 
 if __name__ == "__main__":
