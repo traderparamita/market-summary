@@ -529,7 +529,125 @@ body{
 <!-- ══════ TAB 2: STORY ══════ -->
 <div id="tab-story" class="tab-panel">
 
-<!-- STORY_CONTENT_PLACEHOLDER -->
+<!-- ── Story Hero ── -->
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>"블랙 먼데이" &mdash; 테슬라 -15%, NASDAQ -4%, 공포가 밀려왔습니다.</strong><br><br>
+    월요일 시장이 무너졌습니다. NASDAQ이 하루 만에 <span class="hl-down">-4.0%</span>(17,468)로 폭락했고,
+    S&P500도 <span class="hl-down">-2.7%</span>(5,615)로 급락했습니다. 테슬라는 <span class="hl-down">-15.43%</span>라는 충격적인 하락을 기록했고,
+    NVIDIA도 <span class="hl-down">-5.07%</span> 떨어졌습니다.<br><br>
+    주말 동안 트럼프 대통령이 인터뷰에서 "경기침체(recession) 가능성을 배제하지 않는다"고 발언한 것이 방아쇠를 당겼습니다.
+    대통령 본인이 경기침체를 인정한 셈이니, 투자자들의 공포가 극에 달한 것입니다.
+    VIX(공포지수)는 <span class="hl-warn">27.9</span>까지 치솟았고, 금은 다소 하락했지만 여전히 높은 수준을 유지했습니다.
+    <strong>관세 전쟁이 실물 경제를 흔들기 시작</strong>한 것 아닌지, 공포가 시장을 지배하고 있습니다.
+  </div>
+</div>
+
+<!-- ── Causal Chain ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">왜 이렇게 폭락했을까?</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">트럼프 발언이 공포의 연쇄반응을 일으킨 과정입니다.</div>
+<div class="causal-chain">
+  <div class="cause-node"><div class="node-label">주말</div><div class="node-title">트럼프 "침체 가능" 발언</div><div class="node-detail">대통령이 경기침체 가능성 인정</div><div class="node-impact hl-down">공포 촉발</div></div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node"><div class="node-label">개장 직후</div><div class="node-title">투매(panic selling)</div><div class="node-detail">공포에 사로잡힌 투자자들이 무차별 매도</div><div class="node-impact hl-down">테슬라 -15.4%</div></div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node"><div class="node-label">연쇄 하락</div><div class="node-title">기술주 전면 하락</div><div class="node-detail">NVIDIA -5%, NASDAQ -4%</div><div class="node-impact hl-down">S&P -2.7%</div></div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node"><div class="node-label">결과</div><div class="node-title">VIX 27.9 급등</div><div class="node-detail">공포지수 "고열" 직전</div><div class="node-impact hl-warn">공포 확산</div></div>
+</div>
+
+<!-- ── Session Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장 릴레이</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">전 세계가 동반 하락한 하루.</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header"><div class="session-icon asia">&#127471;&#127477;</div><div><div class="session-name">아시아</div><div class="session-time">한국 09:00 ~ 15:30</div></div></div>
+    <span class="session-verdict verdict-mixed">혼조</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> KOSPI <span class="hl-up">+0.27%</span>(2,570) &mdash; 주말 악재를 아직 반영 전</li>
+      <li><span class="ev-time">14:00</span> KOSDAQ <span class="hl-down">-0.26%</span>(726)</li>
+    </ul>
+    <div class="session-kpi"><div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value up">+0.27%</div></div><div class="s-kpi"><div class="s-kpi-label">KOSDAQ</div><div class="s-kpi-value down">-0.26%</div></div></div>
+  </div>
+  <div class="session-block europe">
+    <div class="session-header"><div class="session-icon europe">&#127466;&#127482;</div><div><div class="session-name">유럽</div><div class="session-time">한국 17:00 ~ 01:30</div></div></div>
+    <span class="session-verdict verdict-down">하락</span>
+    <ul class="session-events">
+      <li><span class="ev-time">17:00</span> DAX <span class="hl-down">-1.69%</span> &mdash; 미국 침체 우려 전이</li>
+    </ul>
+    <div class="session-kpi"><div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value down">-1.69%</div></div></div>
+  </div>
+  <div class="session-block us">
+    <div class="session-header"><div class="session-icon us">&#127482;&#127480;</div><div><div class="session-name">미국</div><div class="session-time">한국 23:30 ~ 06:00</div></div></div>
+    <span class="session-verdict verdict-down">폭락</span>
+    <ul class="session-events">
+      <li><span class="ev-time">23:30</span> S&P500 <span class="hl-down">-2.7%</span>, NASDAQ <span class="hl-down">-4.0%</span></li>
+      <li><span class="ev-time">00:00</span> 테슬라 <span class="hl-down">-15.43%</span> &mdash; 하루 만에 시총(시가총액) 수백억 달러 증발</li>
+      <li><span class="ev-time">03:00</span> VIX 27.9 &mdash; 공포 수준 급등</li>
+    </ul>
+    <div class="session-kpi"><div class="s-kpi"><div class="s-kpi-label">S&P500</div><div class="s-kpi-value down">-2.70%</div></div><div class="s-kpi"><div class="s-kpi-label">NASDAQ</div><div class="s-kpi-value down">-4.00%</div></div></div>
+  </div>
+</div>
+
+<!-- ── Cross-Asset ── -->
+<div class="cross-asset">
+  <h2>자산 간 연결 고리</h2>
+  <div class="sub">공포가 모든 자산에 어떻게 전파되었는지 봅니다.</div>
+  <div class="af-map">
+    <div class="af-node"><div class="af-node-title">트럼프 침체 발언</div><div class="af-node-value">경기침체 인정</div><div class="af-node-chg hl-down">공포 촉발</div></div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">투매</span></div>
+    <div class="af-node"><div class="af-node-title">테슬라</div><div class="af-node-value">$222</div><div class="af-node-chg hl-down">-15.43%</div></div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">기술주 전반</span></div>
+    <div class="af-node"><div class="af-node-title">NASDAQ</div><div class="af-node-value">17,468</div><div class="af-node-chg hl-down">-4.0%</div></div>
+    <div class="af-node"><div class="af-node-title">VIX (공포)</div><div class="af-node-value">27.9</div><div class="af-node-chg hl-warn">+19.2%</div></div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">공포 확산</span></div>
+    <div class="af-node"><div class="af-node-title">WTI 원유</div><div class="af-node-value">$66.0</div><div class="af-node-chg hl-down">-1.51%</div></div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">수요 감소 우려</span></div>
+    <div class="af-node"><div class="af-node-title">Gold</div><div class="af-node-value">$2,891</div><div class="af-node-chg down">-0.47%</div></div>
+  </div>
+</div>
+
+<!-- ── Insight Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">알아두면 좋은 시장 상식</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">오늘 같은 폭락장을 이해하는 4가지 핵심 개념.</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(217,48,79,0.1);color:var(--down)">투매</span>
+    <h3>패닉 셀링(Panic Selling)이란?</h3>
+    <p>공포에 사로잡힌 투자자들이 가격에 관계없이 주식을 팔아치우는 현상입니다. 한 사람이 팔기 시작하면 "나도 빨리 팔아야 한다"는 심리가 퍼져 눈덩이처럼 커집니다.<br><br>오늘 테슬라가 하루에 <span class="hl-down">-15.4%</span> 빠진 것이 바로 패닉 셀링입니다. 이런 날은 냉정함을 유지하는 것이 가장 중요합니다.</p>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">테슬라</div><div class="metric-value down">-15.4%</div></div><div class="metric-item"><div class="metric-label">NVIDIA</div><div class="metric-value down">-5.1%</div></div></div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(217,48,79,0.1);color:var(--down)">VIX</span>
+    <h3>VIX 27.9 &mdash; 고열 직전</h3>
+    <p>VIX가 30을 넘으면 "시장이 극심한 공포 상태"라는 뜻입니다. 오늘 27.9까지 올라 거의 그 수준에 도달했습니다.<br><br><span class="hl-up">20 이하</span> 건강 | <span class="hl-warn">20~30</span> 불안 | <span class="hl-down">30+</span> 공포<br>연초 대비 <span class="hl-warn">+55%</span>나 올라 올해 시장이 얼마나 불안한지 보여줍니다.</p>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">VIX</div><div class="metric-value hl-warn">27.9</div></div><div class="metric-item"><div class="metric-label">연초 대비</div><div class="metric-value hl-warn">+55.4%</div></div></div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(59,110,230,0.1);color:var(--accent)">약세장</span>
+    <h3>테슬라, 약세장(Bear Market) 진입</h3>
+    <p>주가가 고점 대비 20% 이상 하락하면 "약세장"이라고 합니다. 테슬라는 연초 대비 <span class="hl-down">-41.4%</span>로 이미 깊은 약세장에 빠졌습니다.<br><br>관세 + 불매운동 + 경쟁 심화라는 삼중고가 원인입니다.</p>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">테슬라</div><div class="metric-value down">$222</div></div><div class="metric-item"><div class="metric-label">연초 대비</div><div class="metric-value down">-41.4%</div></div></div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(13,155,106,0.1);color:var(--up)">한국</span>
+    <h3>한국은 왜 선방했나?</h3>
+    <p>KOSPI는 <span class="hl-up">+0.27%</span>로 소폭 올랐습니다. 미국의 침체 발언이 한국 장 마감 후 나왔기 때문입니다. 내일 한국 시장이 오늘 미국 충격을 어떻게 소화할지가 관건입니다.</p>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">KOSPI</div><div class="metric-value up">2,570</div></div><div class="metric-item"><div class="metric-label">연초 대비</div><div class="metric-value up">+7.2%</div></div></div>
+  </div>
+</div>
+
+<!-- ── Risk ── -->
+<div class="risk-section">
+  <h2>앞으로 주의할 점</h2>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>내일 아시아 시장 충격 예상</strong><br>오늘 미국 폭락이 아시아 장에 반영되지 않았습니다. 내일 한국/일본 시장이 큰 폭 하락할 가능성이 높습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>경기침체 현실화 우려</strong><br>대통령이 직접 침체 가능성을 인정한 것은 매우 이례적입니다. 소비자 신뢰와 기업 투자가 위축될 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>VIX 30 돌파 시 패닉 확대</strong><br>VIX가 30을 넘으면 시장 변동성이 극대화되어 대규모 자금 이탈이 일어날 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag med">보통</span><span><strong>이번 주 CPI(소비자물가지수) 발표</strong><br>수요일 물가 지표가 높게 나오면 "스태그플레이션" 우려가 현실화됩니다.</span></li>
+  </ul>
+</div>
 
 </div><!-- /tab-story -->
 
