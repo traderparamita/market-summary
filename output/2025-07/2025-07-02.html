@@ -529,7 +529,135 @@ body{
 <!-- ══════ TAB 2: STORY ══════ -->
 <div id="tab-story" class="tab-panel">
 
-<!-- STORY_CONTENT_PLACEHOLDER -->
+<!-- ── Story Hero ── -->
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>기술주가 반격에 나선 하루.</strong><br><br>
+    어제 AI 대장주들이 숨 고르기를 했다면, 오늘은 정반대였습니다. Tesla <span class="hl-up">+4.97%</span>, TSMC <span class="hl-up">+3.97%</span>가 급등하며 NASDAQ을 <span class="hl-up">+0.94%</span>(20,393)까지 끌어올렸습니다. S&P500도 <span class="hl-up">+0.47%</span>(6,227)로 반등했습니다. 반면 한국 시장은 다른 그림이었습니다. KOSPI <span class="hl-down">-0.47%</span>(3,075)로 아시아가 약세를 보였습니다. 미국과 아시아가 엇갈린 하루, 원유(WTI)도 <span class="hl-up">+3.06%</span>($67.45) 급등하며 인플레이션 우려를 자극했습니다.
+  </div>
+</div>
+
+<!-- ── Causal Chain ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 큰 흐름 &mdash; 하나의 체인으로 이해하기</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">왼쪽의 원인이 오른쪽의 결과로 이어지는 과정입니다. 화살표(&rarr;)를 따라가 보세요.</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">어제</div>
+    <div class="node-title">AI주 차익실현</div>
+    <div class="node-detail">기술주 급락으로 과매도 구간</div>
+    <div class="node-impact hl-down">반발 매수 기회</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">오늘 미국</div>
+    <div class="node-title">기술주 반등</div>
+    <div class="node-detail">Tesla +4.97%, TSMC +3.97%</div>
+    <div class="node-impact up">NASDAQ +0.94%</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">오늘 아시아</div>
+    <div class="node-title">별개의 약세</div>
+    <div class="node-detail">원화 약세 + 외국인 매도</div>
+    <div class="node-impact hl-down">KOSPI -0.47%</div>
+  </div>
+</div>
+
+<!-- ── Session Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">지구가 돌면서 한국&middot;일본이 먼저 장을 열고, 유럽이 이어받고, 미국이 마지막으로 거래합니다.</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header"><div class="session-icon asia">&#127471;&#127477;</div><div><div class="session-name">아시아 세션</div><div class="session-time">한국 09:00 ~ 15:30</div></div></div>
+    <span class="session-verdict verdict-down">약세</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> KOSPI <span class="hl-down">-0.47%</span> &mdash; 외국인 매도세 지속</li>
+      <li><span class="ev-time">10:30</span> 닛케이 <span class="hl-down">-0.56%</span> &mdash; 엔화 강세 부담</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value down">-0.47%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">닛케이</div><div class="s-kpi-value down">-0.56%</div></div>
+    </div>
+  </div>
+  <div class="session-block europe">
+    <div class="session-header"><div class="session-icon europe">&#127466;&#127482;</div><div><div class="session-name">유럽 세션</div><div class="session-time">한국 17:00 ~ 01:30</div></div></div>
+    <span class="session-verdict verdict-mixed">혼조</span>
+    <ul class="session-events"><li><span class="ev-time">17:00</span> 미국 선물 상승에 힘입어 유럽도 반등 시도</li></ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value up">+0.13%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">FTSE</div><div class="s-kpi-value up">+0.30%</div></div>
+    </div>
+  </div>
+  <div class="session-block us">
+    <div class="session-header"><div class="session-icon us">&#127482;&#127480;</div><div><div class="session-name">미국 세션</div><div class="session-time">한국 23:30 ~ 06:00</div></div></div>
+    <span class="session-verdict verdict-up">상승 마감</span>
+    <ul class="session-events">
+      <li><span class="ev-time">23:30</span> Tesla <span class="hl-up">+4.97%</span>, TSMC <span class="hl-up">+3.97%</span> 급등</li>
+      <li><span class="ev-time">02:00</span> S&P500 <span class="hl-up">+0.47%</span>, NASDAQ <span class="hl-up">+0.94%</span></li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">S&P 500</div><div class="s-kpi-value up">+0.47%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">NASDAQ</div><div class="s-kpi-value up">+0.94%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Cross-Asset ── -->
+<div class="cross-asset">
+  <h2>자산 간 연결 고리</h2>
+  <div class="sub">금융시장은 서로 연결되어 있습니다. 하나가 움직이면 다른 것도 따라 움직입니다.</div>
+  <div class="af-map">
+    <div class="af-node"><div class="af-node-title">S&P500</div><div class="af-node-value">6,227</div><div class="af-node-chg up">+0.47%</div></div>
+    <div class="af-arrow"><span class="arr">&harr;</span><span class="lbl">동반</span></div>
+    <div class="af-node"><div class="af-node-title">KOSPI</div><div class="af-node-value">3,075</div><div class="af-node-chg down">-0.47%</div></div>
+    <div class="af-arrow"><span class="arr">&harr;</span><span class="lbl">환율</span></div>
+    <div class="af-node"><div class="af-node-title">원/달러</div><div class="af-node-value">1,356원</div><div class="af-node-chg hl-warn">+0.53%</div></div>
+    <div class="af-node"><div class="af-node-title">10년 국채</div><div class="af-node-value">4.29%</div><div class="af-node-chg hl-warn">+0.99%</div></div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">에너지</span></div>
+    <div class="af-node"><div class="af-node-title">WTI 원유</div><div class="af-node-value">$67.45</div><div class="af-node-chg up">+3.06%</div></div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">안전자산</span></div>
+    <div class="af-node"><div class="af-node-title">Gold</div><div class="af-node-value">$3,348</div><div class="af-node-chg up">+0.34%</div></div>
+  </div>
+</div>
+
+<!-- ── Insight Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">알아두면 좋은 시장 상식 4가지</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">오늘의 뉴스를 이해하기 위해 꼭 알아야 할 개념들을 쉽게 설명합니다.</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(59,110,230,0.1);color:var(--accent)">로테이션</span>
+    <h3>시장 로테이션이란?</h3>
+    <p>"로테이션(Rotation)"이란 투자자들의 돈이 한 분야에서 다른 분야로 이동하는 현상입니다. 기술주가 비싸 보이면 금융주나 중소형주로 돈이 옮겨갑니다. 오늘처럼 미국은 올랐는데 아시아가 빠진 것도 글로벌 자금 이동의 한 형태입니다.</p>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(212,139,7,0.1);color:var(--warn)">차익실현</span>
+    <h3>차익실현이란?</h3>
+    <p>주가가 올랐을 때 주식을 팔아 이익을 확정짓는 행동입니다. 어제 Tesla가 -5.34% 빠진 것은 상반기 급등 후 이익 실현 때문이었고, 오늘 +4.97% 반등한 것은 "너무 떨어졌으니 다시 살 만하다"고 판단한 투자자들 덕분입니다.</p>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(107,92,231,0.1);color:var(--accent2)">TSMC</span>
+    <h3>TSMC가 왜 중요한가?</h3>
+    <p>TSMC(대만적체전로제조)는 세계 최대 반도체 위탁생산(파운드리) 기업입니다. 엔비디아, 애플, AMD 등의 칩을 만들어줍니다. TSMC 주가가 오르면 반도체 산업 전체의 건강 상태가 좋다는 신호이고, 한국의 삼성전자에도 긍정적입니다.</p>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(184,134,11,0.1);color:var(--gold)">원유</span>
+    <h3>원유 +3%, 왜 중요할까?</h3>
+    <p>WTI 원유가 하루에 +3% 오른 것은 꽤 큰 움직임입니다. 원유 가격이 오르면 휘발유비, 택배비, 공장 운영비가 올라 전반적인 물가가 상승합니다. 물가가 오르면 Fed(미국 중앙은행)가 금리를 내리기 어려워져 주식시장에 부담이 됩니다.</p>
+  </div>
+</div>
+
+<!-- ── Risk Section ── -->
+<div class="risk-section">
+  <h2>앞으로 주의해야 할 점</h2>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">투자를 하지 않더라도 경제 뉴스를 이해하기 위해 알아두면 좋습니다.</div>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>기술주 변동성 확대</strong><br>어제 -5%, 오늘 +5% &mdash; Tesla처럼 큰 등락이 반복되면 투자자 심리가 불안해집니다. 이런 구간에서는 냉정한 판단이 중요합니다.</span></li>
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>고용 지표 발표 임박</strong><br>금요일 미국 비농업 고용자 수 발표가 예정되어 있습니다. 결과에 따라 Fed 금리 인하 기대가 조정됩니다.</span></li>
+    <li class="risk-item"><span class="risk-tag med">보통</span><span><strong>원유 가격 상승</strong><br>유가가 계속 오르면 물가 상승 &rarr; 금리 인하 지연이라는 악순환이 생길 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag med">보통</span><span><strong>원화 약세</strong><br>원/달러 환율 1,356원 &mdash; 원화가 약해지면 수입품이 비싸지고 해외여행 비용이 늘어납니다.</span></li>
+  </ul>
+</div>
 
 </div><!-- /tab-story -->
 
