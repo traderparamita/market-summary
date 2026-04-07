@@ -12,6 +12,12 @@ import json
 import os
 import requests
 
+try:
+    from investiny import historical_data as inv_historical
+    HAS_INVESTINY = True
+except ImportError:
+    HAS_INVESTINY = False
+
 # ── Config ──────────────────────────────────────────────────────
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -23,6 +29,19 @@ FDR_FALLBACK = {
     "^N225":  "N225",    # Nikkei225
     "^HSI":   "HSI",     # Hang Seng
     "000001.SS": "SSEC", # Shanghai
+}
+
+# yfinance + FDR 모두 실패 시 investiny(investing.com) fallback
+# key: yfinance ticker, value: investing.com ID
+INVESTINY_FALLBACK = {
+    "^STOXX50E": 175,    # Euro Stoxx 50
+    "^GDAXI":    172,    # DAX
+    "^FCHI":     167,    # CAC 40
+    "^FTSE":      27,    # FTSE 100
+    "^N225":     178,    # Nikkei 225
+    "^HSI":      179,    # Hang Seng
+    "000001.SS": 40820,  # Shanghai Composite
+    "^NSEI":     17940,  # Nifty 50
 }
 
 # 수집 대상 티커
@@ -178,7 +197,7 @@ def fetch_data(end_date=None):
                 df = df.dropna(subset=["Close"])
                 metrics = calc_metrics(df, target) if not df.empty else None
 
-            # Fallback: yfinance 데이터가 없거나 휴일이면 FDR로 보완
+            # Fallback 1: yfinance 데이터가 없거나 휴일이면 FDR로 보완
             if (metrics is None or metrics["holiday"]) and ticker in FDR_FALLBACK:
                 fdr_code = FDR_FALLBACK[ticker]
                 try:
@@ -192,6 +211,29 @@ def fetch_data(end_date=None):
                             print(f"  [FDR] {name}: {fdr_metrics['close']:.2f} ({fdr_metrics['daily']:+.2f}%) via {fdr_code}")
                 except Exception as fe:
                     print(f"  [FDR WARN] {name}: {fe}")
+
+            # Fallback 2: FDR도 실패하면 investiny(investing.com)로 보완
+            if (metrics is None or metrics["holiday"]) and HAS_INVESTINY and ticker in INVESTINY_FALLBACK:
+                inv_id = INVESTINY_FALLBACK[ticker]
+                try:
+                    inv_start = (target - dt.timedelta(days=200)).strftime("%m/%d/%Y")
+                    inv_end = (target + dt.timedelta(days=1)).strftime("%m/%d/%Y")
+                    inv_data = inv_historical(investing_id=inv_id, from_date=inv_start, to_date=inv_end)
+                    if inv_data and "date" in inv_data and inv_data["date"]:
+                        import pandas as pd
+                        inv_df = pd.DataFrame(inv_data)
+                        inv_df["date_parsed"] = pd.to_datetime(inv_df["date"], format="%m/%d/%Y")
+                        inv_df = inv_df.set_index("date_parsed").sort_index()
+                        inv_df = inv_df.rename(columns={"close": "Close"})
+                        inv_df["Close"] = pd.to_numeric(inv_df["Close"], errors="coerce")
+                        inv_df = inv_df.dropna(subset=["Close"])
+                        if not inv_df.empty:
+                            inv_metrics = calc_metrics(inv_df, target)
+                            if inv_metrics and not inv_metrics["holiday"]:
+                                metrics = inv_metrics
+                                print(f"  [INV] {name}: {inv_metrics['close']:.2f} ({inv_metrics['daily']:+.2f}%) via investing.com id={inv_id}")
+                except Exception as ie:
+                    print(f"  [INV WARN] {name}: {ie}")
 
             if metrics is None:
                 continue
