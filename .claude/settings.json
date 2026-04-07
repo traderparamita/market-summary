@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a chronological data-fetching order enforcer for market story writing.\n\nThe user is about to make a web search/fetch. Determine if this is related to writing a Market Story (generate_stories.py CONTEXT dict) for a specific date.\n\nIf it is NOT related to market story writing, respond: {\"decision\": \"allow\"}\n\nIf it IS related to market story writing for a specific target date:\n1. Check that the search query targets information available ON or BEFORE the target date (no future data).\n2. Apply the 08:00 KST cutoff rule: the report for date D is generated at D 08:00 KST. Only data confirmed BEFORE D 08:00 KST is valid.\n   - Valid: previous day's full sessions (Asia/Europe/US all closed), pre-market news before 08:00 KST on day D.\n   - Invalid: day D's 09:00+ market data, day D's economic releases during trading hours, anything after day D.\n3. Remind the model to follow chronological session order via additionalContext.\n\nRespond with:\n{\"decision\": \"allow\", \"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"[Market Story 시간순 수집 규칙] 보고서는 해당일 08:00 KST 기준으로 생성됩니다. 08:00 KST 이전에 확정된 데이터만 사용하세요. 전일 이벤트를 시간순으로 수집: (1) 아시아 세션 (09:00~15:30 KST): 한국/일본/중국 시장 + 경제지표 → (2) 유럽 세션 (16:00~22:00 KST): 유럽 시장 + ECB/BOE 관련 → (3) 미국 세션 (22:30~05:00 KST): 미국 경제지표 + Fed 발언 + 장중 흐름. 각 세션이 다음 세션에 미친 영향(인과관계)을 파악하세요. 당일 09시 이후 장중 데이터는 절대 사용하지 마세요.\"}}\n\nIf the search query explicitly targets a date AFTER the story's target date, or targets intraday data from the report date (after 08:00 KST), block it:\n{\"decision\": \"block\", \"reason\": \"Forward-looking: 보고서 생성 시점(08:00 KST) 이후의 데이터를 검색하려 합니다. 해당 시점 이전의 정보만 검색하세요.\"}\n\nTool input: $ARGUMENTS",
+            "statusMessage": "시간순 데이터 수집 규칙 확인 중..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a market story content validator for generate_stories.py.\n\nThe user just edited a file. Check if the file is `generate_stories.py` (the CONTEXT dict containing market story content).\n\nIf it is NOT `generate_stories.py`, respond with: {\"decision\": \"allow\"}\n\nIf it IS `generate_stories.py`, perform TWO checks on the edited content:\n\n## Check 1: FORWARD-LOOKING BIAS\n- Each entry in the CONTEXT dict is keyed by a date (e.g. \"2025-11-04\").\n- The narrative, causal_chain, insights, and risks for that date must ONLY reference information available ON or BEFORE that date (08:00 KST cutoff).\n- VIOLATIONS: mentioning events/data/results from AFTER that date, hindsight phrases like \"as we later saw\", \"this turned out to be\", \"in the following weeks\", referencing future price movements, describing outcomes that hadn't happened yet.\n- OK: speculative phrases like \"could\", \"may\", \"if X happens\" (forward-looking ANALYSIS, not bias).\n\n## Check 2: CHRONOLOGICAL ORDER\n- The narrative must follow time-sequential order: Asia session (09:00~15:30 KST) → Europe session (16:00~22:00 KST) → US session (22:30~05:00 KST).\n- The causal_chain tuples must be ordered chronologically — earlier events first, later reactions after.\n- VIOLATIONS: describing US session events before Asia/Europe events, mixing session order, presenting effects before causes.\n- The narrative should clearly show how earlier sessions influenced later ones (e.g., Asia weakness → Europe followed suit → US reacted to both).\n\nIf you find a violation in EITHER check, respond with:\n{\"decision\": \"block\", \"reason\": \"[Check 1 or 2 label]: [specific description of the violation in CONTEXT['YYYY-MM-DD']]\"}\n\nIf both checks pass, respond with: {\"decision\": \"allow\"}\n\nFile path: $FILE_PATH\nTool input: $ARGUMENTS",
+            "statusMessage": "Forward-looking bias + 시간순 구성 검사 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
