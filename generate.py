@@ -885,12 +885,36 @@ def generate_index():
             items += f'          <li><a href="{m}/{date}.html">{date} ({day})</a></li>\n'
         daily_panels += f'      <div class="sub-panel{active}" id="daily-{m}"><ul>\n{items}      </ul></div>\n'
 
-    # ── 주간 보고서 수집 ──
-    weekly_items = ""
+    # ── 주간 보고서 수집 (월별 그룹) ──
+    weekly_by_month = {}  # {"2026-01": [("2026-W02", "Jan 5 ~ Jan 9"), ...]}
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*.html")), reverse=True):
         fname = os.path.basename(path)
-        label = fname.replace(".html", "")
-        weekly_items += f'      <li><a href="weekly/{fname}">{label}</a></li>\n'
+        week_label = fname.replace(".html", "")  # e.g. "2026-W02"
+        try:
+            year = int(week_label[:4])
+            week_num = int(week_label.split("W")[1])
+            # ISO week → 해당 주의 월요일 날짜로 월 판단
+            monday = dt.datetime.strptime(f"{year}-W{week_num:02d}-1", "%Y-W%W-%w").date()
+            month_key = monday.strftime("%Y-%m")
+        except:
+            month_key = week_label[:7]
+        if month_key not in weekly_by_month:
+            weekly_by_month[month_key] = []
+        weekly_by_month[month_key].append((week_label, fname))
+
+    sorted_weekly_months = sorted(weekly_by_month.keys(), reverse=True)
+    latest_weekly_month = sorted_weekly_months[0] if sorted_weekly_months else ""
+
+    weekly_month_btns = ""
+    weekly_panels = ""
+    for m in sorted_weekly_months:
+        active = " active" if m == latest_weekly_month else ""
+        label = dt.datetime.strptime(m, "%Y-%m").strftime("%Y %b")
+        weekly_month_btns += f'      <button class="month-btn{active}" onclick="showSub(\'weekly\',\'{m}\')">{label}</button>\n'
+        items = ""
+        for week_label, fname in weekly_by_month[m]:
+            items += f'          <li><a href="weekly/{fname}">{week_label}</a></li>\n'
+        weekly_panels += f'      <div class="sub-panel{active}" id="weekly-{m}"><ul>\n{items}      </ul></div>\n'
 
     # ── 월간 보고서 수집 ──
     monthly_items = ""
@@ -967,9 +991,9 @@ def generate_index():
   </div>
 
   <div id="tab-weekly" class="tab-content">
-    <ul>
-{weekly_items if weekly_items else '      <li style="color:#7c8298;font-style:italic">No weekly reports yet.</li>'}
-    </ul>
+    <div class="month-bar">
+{weekly_month_btns}    </div>
+{weekly_panels}
   </div>
 
   <div id="tab-monthly" class="tab-content">
