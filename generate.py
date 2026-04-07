@@ -885,22 +885,37 @@ def generate_index():
             items += f'          <li><a href="{m}/{date}.html">{date} ({day})</a></li>\n'
         daily_panels += f'      <div class="sub-panel{active}" id="daily-{m}"><ul>\n{items}      </ul></div>\n'
 
-    # ── 주간 보고서 수집 (월별 그룹) ──
-    weekly_by_month = {}  # {"2026-01": [("2026-W02", "Jan 5 ~ Jan 9"), ...]}
+    # ── 주간 보고서 수집 (월별 그룹, 날짜 범위 표시) ──
+    import re as _re
+    weekly_by_month = {}
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*.html")), reverse=True):
         fname = os.path.basename(path)
         week_label = fname.replace(".html", "")  # e.g. "2026-W02"
+
+        # HTML에서 날짜 범위 추출
+        date_range = ""
+        try:
+            with open(path) as _f:
+                head = _f.read(2000)
+            m = _re.search(r'class="date">([\d-]+)\s*~\s*([\d-]+)', head)
+            if m:
+                date_range = f"{m.group(1)} ~ {m.group(2)}"
+        except:
+            pass
+
+        # 월 판단
         try:
             year = int(week_label[:4])
             week_num = int(week_label.split("W")[1])
-            # ISO week → 해당 주의 월요일 날짜로 월 판단
             monday = dt.datetime.strptime(f"{year}-W{week_num:02d}-1", "%Y-W%W-%w").date()
             month_key = monday.strftime("%Y-%m")
         except:
             month_key = week_label[:7]
+
         if month_key not in weekly_by_month:
             weekly_by_month[month_key] = []
-        weekly_by_month[month_key].append((week_label, fname))
+        display = f"{week_label} ({date_range})" if date_range else week_label
+        weekly_by_month[month_key].append((display, fname))
 
     sorted_weekly_months = sorted(weekly_by_month.keys(), reverse=True)
     latest_weekly_month = sorted_weekly_months[0] if sorted_weekly_months else ""
@@ -912,8 +927,8 @@ def generate_index():
         label = dt.datetime.strptime(m, "%Y-%m").strftime("%Y %b")
         weekly_month_btns += f'      <button class="month-btn{active}" onclick="showSub(\'weekly\',\'{m}\')">{label}</button>\n'
         items = ""
-        for week_label, fname in weekly_by_month[m]:
-            items += f'          <li><a href="weekly/{fname}">{week_label}</a></li>\n'
+        for display, fname in weekly_by_month[m]:
+            items += f'          <li><a href="weekly/{fname}">{display}</a></li>\n'
         weekly_panels += f'      <div class="sub-panel{active}" id="weekly-{m}"><ul>\n{items}      </ul></div>\n'
 
     # ── 월간 보고서 수집 ──
