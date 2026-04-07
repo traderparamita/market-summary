@@ -529,7 +529,243 @@ body{
 <!-- ══════ TAB 2: STORY ══════ -->
 <div id="tab-story" class="tab-panel">
 
-<!-- STORY_CONTENT_PLACEHOLDER -->
+<!-- ── Story Hero ── -->
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>NVIDIA 실적은 좋았지만... 시장은 폭락했다!</strong><br><br>
+    어젯밤 NVIDIA 실적이 발표됐습니다. 매출은 시장 예상을 넘었고, AI 수요는 여전히 폭발적이었습니다.
+    그런데 오늘 NASDAQ이 <span class="hl-down">-2.78%</span>(18,544)로 폭락! NVIDIA도 <span class="hl-down">-8.48%</span>($120.1) 급락!
+    도대체 왜? 실적이 좋았는데 왜 떨어질까요?<br><br>
+    답은 <strong>"기대가 너무 높았다"</strong>는 것입니다. 실적이 좋아도 시장의 기대에 <em>충분히</em> 좋지 않으면 주가는 빠집니다.
+    특히 NVIDIA의 다음 분기 가이던스(전망)가 "놀랍도록 좋지는 않았다"는 실망감이 컸습니다.
+    S&P500 <span class="hl-down">-1.59%</span>(5,862), VIX <span class="hl-warn">21.1</span>로 20을 돌파!
+    한국 KOSPI도 <span class="hl-down">-0.73%</span>(2,622). 트럼프의 새로운 관세 위협까지 겹치며 공포가 확산됐습니다.
+  </div>
+</div>
+
+<!-- ── Causal Chain ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 큰 흐름</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">"좋은 실적인데 왜 폭락?"의 과정을 따라가 보세요.</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">어젯밤</div>
+    <div class="node-title">NVIDIA 실적 발표</div>
+    <div class="node-detail">매출 예상 초과! 하지만 가이던스가 "놀랍지 않음"</div>
+    <div class="node-impact hl-warn">기대에 못 미침</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">추가 악재</div>
+    <div class="node-title">트럼프 관세 위협</div>
+    <div class="node-detail">새로운 관세 부과 시사, 무역 긴장 고조</div>
+    <div class="node-impact hl-down">공포 가중</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">반응</div>
+    <div class="node-title">기술주 투매</div>
+    <div class="node-detail">NVIDIA -8.48%, 기술주 전반 급락</div>
+    <div class="node-impact hl-down">NASDAQ -2.78%</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">결과</div>
+    <div class="node-title">VIX 21 돌파</div>
+    <div class="node-detail">공포지수가 "불안 구간" 진입</div>
+    <div class="node-impact hl-down">21.1</div>
+  </div>
+</div>
+
+<!-- ── Session Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">NVIDIA 충격이 전 세계로 퍼졌습니다.</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">&#127472;&#127479;</div>
+      <div><div class="session-name">아시아 세션</div><div class="session-time">한국 09:00 ~ 15:30</div></div>
+    </div>
+    <span class="session-verdict verdict-down">하락</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> KOSPI <span class="hl-down">-0.73%</span>(2,622) &mdash; NVIDIA 실적 실망 + 관세 우려</li>
+      <li><span class="ev-time">11:00</span> KOSDAQ <span class="hl-down">-0.07%</span> 소폭 하락</li>
+      <li><span class="ev-time">14:00</span> 닛케이(일본) 약세, 아시아 전반 불안</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value down">-0.73%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">KOSDAQ</div><div class="s-kpi-value down">-0.07%</div></div>
+    </div>
+  </div>
+  <div class="session-block europe">
+    <div class="session-header">
+      <div class="session-icon europe">&#127466;&#127482;</div>
+      <div><div class="session-name">유럽 세션</div><div class="session-time">한국 17:00 ~ 01:30</div></div>
+    </div>
+    <span class="session-verdict verdict-down">하락</span>
+    <ul class="session-events">
+      <li><span class="ev-time">17:00</span> 유럽도 NVIDIA + 관세 이중 충격에 하락</li>
+      <li><span class="ev-time">20:00</span> DAX <span class="hl-down">-1.00%</span>, FTSE <span class="hl-down">-0.50%</span></li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value down">-1.00%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">FTSE</div><div class="s-kpi-value down">-0.50%</div></div>
+    </div>
+  </div>
+  <div class="session-block us">
+    <div class="session-header">
+      <div class="session-icon us">&#127482;&#127480;</div>
+      <div><div class="session-name">미국 세션</div><div class="session-time">한국 23:30 ~ 06:00</div></div>
+    </div>
+    <span class="session-verdict verdict-down">폭락</span>
+    <ul class="session-events">
+      <li><span class="ev-time">23:30</span> S&P500 <span class="hl-down">-1.59%</span> &mdash; 이번 달 최대 낙폭</li>
+      <li><span class="ev-time">01:00</span> NVIDIA <span class="hl-down">-8.48%</span>($120.1) &mdash; 하루에 시총 3,000억 달러 증발</li>
+      <li><span class="ev-time">04:00</span> VIX <span class="hl-warn">21.1</span> &mdash; "불안 구간" 진입! 올해 최고 수준</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">S&P 500</div><div class="s-kpi-value down">-1.59%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">NASDAQ</div><div class="s-kpi-value down">-2.78%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Cross-Asset Flow Map ── -->
+<div class="cross-asset">
+  <h2>자산 간 연결 고리</h2>
+  <div class="sub">이중 충격(NVIDIA 실망 + 관세)이 시장을 뒤흔들었습니다.</div>
+  <div class="af-map">
+    <div class="af-node">
+      <div class="af-node-title">NVIDIA 실적 실망</div>
+      <div class="af-node-value">-8.48%</div>
+      <div class="af-node-chg hl-down">AI 기대 후퇴</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">기술주 급락</span></div>
+    <div class="af-node">
+      <div class="af-node-title">NASDAQ</div>
+      <div class="af-node-value">18,544</div>
+      <div class="af-node-chg down">YTD -3.82%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">공포 급등</span></div>
+    <div class="af-node">
+      <div class="af-node-title">VIX</div>
+      <div class="af-node-value">21.1</div>
+      <div class="af-node-chg hl-down">+10.63%</div>
+    </div>
+
+    <div class="af-node">
+      <div class="af-node-title">관세 위협 추가</div>
+      <div class="af-node-value">트럼프 발언</div>
+      <div class="af-node-chg hl-warn">무역 긴장</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">달러 강세</span></div>
+    <div class="af-node">
+      <div class="af-node-title">달러(DXY)</div>
+      <div class="af-node-value">107.2</div>
+      <div class="af-node-chg up">+0.77%</div>
+    </div>
+    <div class="af-arrow"><span class="arr">&rarr;</span><span class="lbl">원화 약세</span></div>
+    <div class="af-node">
+      <div class="af-node-title">원/달러</div>
+      <div class="af-node-value">1,434원</div>
+      <div class="af-node-chg hl-warn">+0.34%</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Insight Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">알아두면 좋은 시장 상식 4가지</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">NVIDIA 실적 충격과 시장 반응을 이해하기 위한 개념들입니다.</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(217,48,79,0.1);color:var(--down)">실적</span>
+    <h3>"좋은 실적인데 왜 하락?"</h3>
+    <p>
+      주식시장의 가장 역설적인 현상 중 하나입니다. NVIDIA 매출은 예상을 넘었는데 주가는 <span class="hl-down">-8.48%</span> 급락했습니다.<br><br>
+      이유: 시장은 이미 "엄청나게 좋은 실적"을 기대하고 주가에 반영해 놓았습니다. 실제 결과가 "좋기는 하지만 엄청나게 좋지는 않았다"면, 이미 올라간 기대값에서 빠지는 것입니다.
+      이를 <strong>"Sell the news(뉴스에 팔기)"</strong>라 합니다. 특히 가이던스(다음 분기 전망)가 "놀랍지 않았다"는 점이 투자자들을 실망시켰습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">NVIDIA</div><div class="metric-value down">$120.1</div></div>
+      <div class="metric-item"><div class="metric-label">오늘</div><div class="metric-value down">-8.48%</div></div>
+      <div class="metric-item"><div class="metric-label">시총 감소</div><div class="metric-value down">~$3,000억</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(217,48,79,0.1);color:var(--down)">VIX</span>
+    <h3>VIX 21 &mdash; "불안 구간" 진입</h3>
+    <p>
+      VIX가 <span class="hl-warn">21.1</span>로 20을 돌파했습니다. 이는 "미열"에서 <strong>"불안"</strong> 구간으로 넘어갔다는 의미입니다.<br><br>
+      <span class="hl-up">20 이하</span> = 정상 / <span class="hl-warn">20~30</span> = 불안 (지금 여기!) / <span class="hl-down">30+</span> = 공포<br><br>
+      VIX가 20을 넘으면 시장의 하루 변동폭이 커지고, 예상치 못한 급락/급등이 잦아집니다.
+      이런 시기에는 "차분하게 장기 관점"을 유지하는 것이 중요합니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">VIX</div><div class="metric-value hl-warn">21.1</div></div>
+      <div class="metric-item"><div class="metric-label">오늘</div><div class="metric-value hl-down">+10.63%</div></div>
+      <div class="metric-item"><div class="metric-label">연초 대비</div><div class="metric-value hl-warn">+17.85%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(212,139,7,0.1);color:var(--warn)">관세</span>
+    <h3>관세 유예 만료 D-4</h3>
+    <p>
+      트럼프 대통령이 오늘 새로운 관세 부과를 시사했습니다. 캐나다/멕시코 25% 관세 유예가 4일 뒤 만료됩니다.<br><br>
+      NVIDIA 실적 실망에 관세 위협까지 겹치면서 시장에 <strong>"퍼펙트 스톰(완벽한 폭풍)"</strong>이 몰아쳤습니다.
+      두 가지 악재가 동시에 터지면 시장의 하락폭은 단순 합산보다 커집니다 &mdash; 공포가 공포를 부르기 때문입니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">만료</div><div class="metric-value hl-warn">D-4</div></div>
+      <div class="metric-item"><div class="metric-label">DXY</div><div class="metric-value up">107.2</div></div>
+      <div class="metric-item"><div class="metric-label">S&P YTD</div><div class="metric-value down">-0.12%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(13,155,106,0.1);color:var(--up)">한국</span>
+    <h3>KOSPI, 미국보다 선방하는 이유</h3>
+    <p>
+      미국 S&P500 연초 <span class="hl-down">-0.12%</span>, NASDAQ <span class="hl-down">-3.82%</span>인데, KOSPI는 <span class="hl-up">+9.29%</span>!<br><br>
+      한국이 선방하는 이유: NVIDIA 의존도가 미국보다 낮고, 한국 반도체(삼성전자, SK하이닉스)는 메모리 중심이라 AI 투자의 직접 수혜 분야입니다.
+      또한 지난해 정치 불안으로 과도하게 빠졌던 것이 회복되는 과정이기도 합니다.
+      하지만 내일 미국 급락 여파가 본격적으로 반영될 수 있어 주의가 필요합니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">KOSPI YTD</div><div class="metric-value up">+9.29%</div></div>
+      <div class="metric-item"><div class="metric-label">S&P YTD</div><div class="metric-value down">-0.12%</div></div>
+      <div class="metric-item"><div class="metric-label">NASDAQ YTD</div><div class="metric-value down">-3.82%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Risk Section ── -->
+<div class="risk-section">
+  <h2>앞으로 주의해야 할 점</h2>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high">높음</span>
+      <span><strong>내일 한국 시장 충격 예상</strong><br>
+      미국의 급락(NASDAQ -2.78%)이 내일 KOSPI에 반영될 것입니다. 특히 반도체 관련주 하락에 주의하세요.</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag high">높음</span>
+      <span><strong>관세 유예 만료 D-4</strong><br>
+      캐나다/멕시코 25% 관세가 시행되면 자동차, 농산물, 에너지 가격이 크게 올라 미국 소비자와 기업 모두에 타격을 줍니다.</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag high">높음</span>
+      <span><strong>VIX 21 &mdash; 추가 상승 가능</strong><br>
+      공포지수가 "불안 구간"에 진입했습니다. 악재가 추가로 나오면 VIX 25~30까지 상승할 수 있습니다.</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">보통</span>
+      <span><strong>AI 투자 전망 재평가</strong><br>
+      NVIDIA 가이던스가 기대에 못 미치면서 AI 투자에 대한 전면적인 재평가가 시작될 수 있습니다. 관련 종목 변동성에 주의하세요.</span>
+    </li>
+  </ul>
+</div>
 
 </div><!-- /tab-story -->
 
