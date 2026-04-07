@@ -162,6 +162,7 @@ def fetch_data(end_date=None):
             "ytd": round(ytd_chg, 2),
             "spark": spark,
             "holiday": is_holiday,
+            "holiday_note": "" if not is_holiday else "Holiday",
         }
 
     for key, ticker in all_tickers.items():
@@ -365,20 +366,32 @@ def generate_html(data):
     # === 히트맵 행 생성 ===
     def heatmap_row(name, d, show_dollar=False):
         close = d["close"]
+        is_hol = d.get("holiday", False)
+        hol_note = d.get("holiday_note", "")
+
         if show_dollar:
             close_str = f"${fmt(close)}" if close < 10000 else f"${close:,.0f}"
         else:
             close_str = fmt(close, 0) if close > 100 else fmt(close, 2)
 
+        # 휴일이면 이름 옆에 표시
+        name_display = name
+        if is_hol:
+            name_display = f'{name} <span style="font-size:10px;color:var(--warn);font-weight:400;">(Holiday)</span>'
+
         spark = spark_svg(d.get("spark", []))
         cells = ""
         for period in ["daily", "weekly", "monthly", "ytd"]:
             v = d[period]
-            bg = heat_color(v)
-            tc = heat_text(v)
-            cells += f'<td class="heat-cell" style="background:{bg};color:{tc}">{chg_sign(v)}</td>'
+            if is_hol and period == "daily":
+                # 휴일: 전일 종가 유지, 0.00%, 회색 배경
+                cells += f'<td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td>'
+            else:
+                bg = heat_color(v)
+                tc = heat_text(v)
+                cells += f'<td class="heat-cell" style="background:{bg};color:{tc}">{chg_sign(v)}</td>'
         return f"""<tr>
-          <td class="name-cell">{name}</td>
+          <td class="name-cell">{name_display}</td>
           <td class="close-cell">{close_str}</td>
           <td class="spark-cell">{spark}</td>
           {cells}
@@ -840,11 +853,11 @@ def prev_business_day(ref=None):
 
 
 def generate_index():
-    """월별 폴더 기반 index.html 생성 (최신 월을 기본 표시)"""
+    """일간/주간/월간 탭이 있는 index.html 생성"""
     import glob
 
-    # 월별 보고서 수집
-    months = {}  # {"2026-04": [("2026-04-03", "Fri"), ...]}
+    # ── 일간 보고서 수집 ──
+    months = {}
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "????-??", "????-??-??.html")), reverse=True):
         fname = os.path.basename(path)
         date = fname.replace(".html", "")
@@ -861,49 +874,76 @@ def generate_index():
     sorted_months = sorted(months.keys(), reverse=True)
     latest_month = sorted_months[0] if sorted_months else ""
 
-    # 월 탭 버튼
-    tab_btns = ""
+    daily_month_btns = ""
+    daily_panels = ""
     for m in sorted_months:
         active = " active" if m == latest_month else ""
         label = dt.datetime.strptime(m, "%Y-%m").strftime("%Y %b")
-        tab_btns += f'    <button class="month-btn{active}" onclick="showMonth(\'{m}\')">{label}</button>\n'
-
-    # 월별 리스트
-    month_panels = ""
-    for m in sorted_months:
-        active = " active" if m == latest_month else ""
+        daily_month_btns += f'      <button class="month-btn{active}" onclick="showSub(\'daily\',\'{m}\')">{label}</button>\n'
         items = ""
         for date, day in months[m]:
-            items += f'        <li><a href="{m}/{date}.html">{date} ({day})</a></li>\n'
-        month_panels += f'    <div class="month-panel{active}" id="m-{m}">\n      <ul>\n{items}      </ul>\n    </div>\n'
+            items += f'          <li><a href="{m}/{date}.html">{date} ({day})</a></li>\n'
+        daily_panels += f'      <div class="sub-panel{active}" id="daily-{m}"><ul>\n{items}      </ul></div>\n'
+
+    # ── 주간 보고서 수집 ──
+    weekly_items = ""
+    for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*.html")), reverse=True):
+        fname = os.path.basename(path)
+        label = fname.replace(".html", "")
+        weekly_items += f'      <li><a href="weekly/{fname}">{label}</a></li>\n'
+
+    # ── 월간 보고서 수집 ──
+    monthly_items = ""
+    for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "monthly", "*.html")), reverse=True):
+        fname = os.path.basename(path)
+        label = fname.replace(".html", "")
+        try:
+            d = dt.datetime.strptime(label, "%Y-%m")
+            label = d.strftime("%Y %B")
+        except:
+            pass
+        monthly_items += f'      <li><a href="monthly/{fname}">{label}</a></li>\n'
 
     index_html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Market Summary</title>
+<title>Market Summary</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="Daily Market Summary">
+<meta property="og:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/favicon.svg">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap');
   body {{ font-family:'Noto Sans KR',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
   h1 {{ font-size:28px; font-weight:700; margin-bottom:4px; }}
   .sub {{ font-size:14px; color:#7c8298; margin-bottom:24px; }}
-  .month-bar {{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }}
+  .main-tabs {{ display:flex; gap:0; margin-bottom:24px; border-bottom:2px solid #e0e3ed; }}
+  .main-tab {{
+    padding:10px 24px; font-size:14px; font-weight:600; color:#7c8298; background:none;
+    border:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px;
+    transition:all .2s; font-family:inherit;
+  }}
+  .main-tab:hover {{ color:#2d3148; }}
+  .main-tab.active {{ color:#3b6ee6; border-bottom-color:#3b6ee6; }}
+  .tab-content {{ display:none; }}
+  .tab-content.active {{ display:block; }}
+  .month-bar {{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }}
   .month-btn {{
-    padding:8px 18px; border:1px solid #e0e3ed; border-radius:20px;
-    background:#fff; color:#7c8298; font-size:13px; font-weight:600;
+    padding:6px 14px; border:1px solid #e0e3ed; border-radius:16px;
+    background:#fff; color:#7c8298; font-size:12px; font-weight:600;
     cursor:pointer; transition:all .15s; font-family:inherit;
   }}
   .month-btn:hover {{ border-color:#3b6ee6; color:#3b6ee6; }}
   .month-btn.active {{ background:#3b6ee6; color:#fff; border-color:#3b6ee6; }}
-  .month-panel {{ display:none; }}
-  .month-panel.active {{ display:block; }}
+  .sub-panel {{ display:none; }}
+  .sub-panel.active {{ display:block; }}
   ul {{ list-style:none; padding:0; }}
   li {{ margin-bottom:8px; }}
   li a {{
-    display:block; padding:14px 20px; background:#fff; border:1px solid #e0e3ed;
-    border-radius:10px; text-decoration:none; color:#2d3148; font-size:15px;
+    display:block; padding:12px 18px; background:#fff; border:1px solid #e0e3ed;
+    border-radius:10px; text-decoration:none; color:#2d3148; font-size:14px;
     font-weight:500; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
     font-family:'JetBrains Mono','Noto Sans KR',monospace;
   }}
@@ -911,16 +951,45 @@ def generate_index():
 </style>
 </head>
 <body>
-  <h1>Daily Market Summary</h1>
+  <h1>Market Summary</h1>
   <p class="sub">Auto-generated market reports</p>
-  <div class="month-bar">
-{tab_btns}  </div>
-{month_panels}
+
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="showTab('daily')">Daily</button>
+    <button class="main-tab" onclick="showTab('weekly')">Weekly</button>
+    <button class="main-tab" onclick="showTab('monthly')">Monthly</button>
+  </div>
+
+  <div id="tab-daily" class="tab-content active">
+    <div class="month-bar">
+{daily_month_btns}    </div>
+{daily_panels}
+  </div>
+
+  <div id="tab-weekly" class="tab-content">
+    <ul>
+{weekly_items if weekly_items else '      <li style="color:#7c8298;font-style:italic">No weekly reports yet.</li>'}
+    </ul>
+  </div>
+
+  <div id="tab-monthly" class="tab-content">
+    <ul>
+{monthly_items if monthly_items else '      <li style="color:#7c8298;font-style:italic">No monthly reports yet.</li>'}
+    </ul>
+  </div>
+
   <script>
-  function showMonth(m) {{
-    document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('m-'+m).classList.add('active');
+  function showTab(id) {{
+    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    event.target.classList.add('active');
+  }}
+  function showSub(tab, key) {{
+    const container = document.getElementById('tab-'+tab);
+    container.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+    container.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tab+'-'+key).classList.add('active');
     event.target.classList.add('active');
   }}
   </script>
