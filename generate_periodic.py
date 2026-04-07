@@ -248,6 +248,11 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .footer{{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}}
 .back-link{{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}}
 .back-link:hover{{text-decoration:underline}}
+.tab-bar{{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border)}}
+.tab-btn{{padding:12px 28px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}}
+.tab-btn:hover{{color:var(--text)}}
+.tab-btn.active{{color:var(--accent);border-bottom-color:var(--accent)}}
+.tab-panel{{display:none}}.tab-panel.active{{display:block}}
 @media(max-width:900px){{.chart-grid,.movers-row{{grid-template-columns:1fr}}.kpi-strip{{grid-template-columns:repeat(3,1fr)}}}}
 </style>
 </head>
@@ -266,6 +271,12 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
   </div>
 </div>
 
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('data')">Data Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('story')">{period_label} Story</button>
+</div>
+
+<div id="tab-data" class="tab-panel active">
 <div class="kpi-strip">
 """
     for k in kpi_items:
@@ -324,9 +335,23 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
   </div>
 </div>
 
+
+</div><!-- /tab-data -->
+
+<div id="tab-story" class="tab-panel">
+<!-- STORY_CONTENT_PLACEHOLDER -->
+</div><!-- /tab-story -->
+
 <div class="footer">{title} | Auto-generated</div>
 
 <script>
+function switchTab(id){{
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='data') setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+}}
 Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
 Chart.defaults.font.family="'Noto Sans KR',sans-serif";Chart.defaults.font.size=11;
 const UP='#0d9b6a',DN='#d9304f',MU='#b0b4c4';

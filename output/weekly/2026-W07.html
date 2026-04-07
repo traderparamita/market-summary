@@ -51,6 +51,11 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
 .back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}
 .back-link:hover{text-decoration:underline}
+.tab-bar{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border)}
+.tab-btn{padding:12px 28px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
 @media(max-width:900px){.chart-grid,.movers-row{grid-template-columns:1fr}.kpi-strip{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
@@ -69,6 +74,12 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
   </div>
 </div>
 
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('data')">Data Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('story')">Weekly Story</button>
+</div>
+
+<div id="tab-data" class="tab-panel active">
 <div class="kpi-strip">
   <div class="kpi">
     <div class="kpi-label">KOSPI</div>
@@ -529,24 +540,10 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
   </div>
 </div>
 
-<div class="footer">Weekly Summary | 2026 W07 | Auto-generated</div>
 
-<script>
-Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
-Chart.defaults.font.family="'Noto Sans KR',sans-serif";Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',MU='#b0b4c4';
-function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
-new Chart(document.getElementById('eqChart'),{
-  type:'bar',
-  data:{labels:["KOSPI", "Nikkei225", "FTSE100", "CAC40", "DAX", "Shanghai", "STOXX50", "NIFTY50", "Russell2K", "HSI", "S&P500", "KOSDAQ", "NASDAQ"],datasets:[{data:[3.94, 1.03, 0.58, -0.14, -0.4, -0.99, -1.22, -1.53, -1.57, -1.7, -1.85, -1.9, -2.98],backgroundColor:bc([3.94, 1.03, 0.58, -0.14, -0.4, -0.99, -1.22, -1.53, -1.57, -1.7, -1.85, -1.9, -2.98]),borderRadius:4,barPercentage:.6}]},
-  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
-});
-new Chart(document.getElementById('stChart'),{
-  type:'bar',
-  data:{labels:["Samsung", "TSMC", "Tesla", "Microsoft", "NVIDIA", "Amazon", "Broadcom", "META", "Alphabet", "Apple"],datasets:[{data:[8.89, 3.08, 0.03, -2.97, -3.8, -4.76, -5.46, -5.53, -5.74, -6.86],backgroundColor:bc([8.89, 3.08, 0.03, -2.97, -3.8, -4.76, -5.46, -5.53, -5.74, -6.86]),borderRadius:4,barPercentage:.6}]},
-  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
-});
-</script>
+</div><!-- /tab-data -->
+
+<div id="tab-story" class="tab-panel">
 <div style="margin-top:40px;border-top:2px solid var(--border);padding-top:32px;">
 <div class="story-hero" style="background:linear-gradient(135deg,#eef1f8,#e8e5f3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:32px;">
   <h2 style="font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">WEEKLY STORY</h2>
@@ -586,6 +583,32 @@ new Chart(document.getElementById('stChart'),{
   </div>
 </div>
 </div>
+</div><!-- /tab-story -->
 
+<div class="footer">Weekly Summary | 2026 W07 | Auto-generated</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='data') setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+}
+Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
+Chart.defaults.font.family="'Noto Sans KR',sans-serif";Chart.defaults.font.size=11;
+const UP='#0d9b6a',DN='#d9304f',MU='#b0b4c4';
+function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
+new Chart(document.getElementById('eqChart'),{
+  type:'bar',
+  data:{labels:["KOSPI", "Nikkei225", "FTSE100", "CAC40", "DAX", "Shanghai", "STOXX50", "NIFTY50", "Russell2K", "HSI", "S&P500", "KOSDAQ", "NASDAQ"],datasets:[{data:[3.94, 1.03, 0.58, -0.14, -0.4, -0.99, -1.22, -1.53, -1.57, -1.7, -1.85, -1.9, -2.98],backgroundColor:bc([3.94, 1.03, 0.58, -0.14, -0.4, -0.99, -1.22, -1.53, -1.57, -1.7, -1.85, -1.9, -2.98]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
+});
+new Chart(document.getElementById('stChart'),{
+  type:'bar',
+  data:{labels:["Samsung", "TSMC", "Tesla", "Microsoft", "NVIDIA", "Amazon", "Broadcom", "META", "Alphabet", "Apple"],datasets:[{data:[8.89, 3.08, 0.03, -2.97, -3.8, -4.76, -5.46, -5.53, -5.74, -6.86],backgroundColor:bc([8.89, 3.08, 0.03, -2.97, -3.8, -4.76, -5.46, -5.53, -5.74, -6.86]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
+});
+</script>
 </body>
 </html>
