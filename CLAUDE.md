@@ -25,15 +25,15 @@ history/market_data.csv  # 일별 종가 시계열 축적 (date,category,ticker,
 
 ### 데이터 소스
 
-| 섹션 | 1차 소스 | 폴백 |
-|------|---------|------|
-| **Equity** | yfinance | FinanceDataReader → investiny(investing.com) |
-| **Bonds & Rates** | yfinance (US), ECOS 한국은행 API (KR) | — |
-| **Bond ETF** | yfinance | — |
-| **FX** | investiny(investing.com) | FinanceDataReader (yfinance =X 티커는 날짜 밀림으로 사실상 미사용) |
-| **Commodities** | investiny(investing.com) | yfinance (=F 선물 데이터 보정) |
-| **Risk (VIX, VKOSPI)** | yfinance | FinanceDataReader |
-| **Major Stocks** | yfinance | — |
+| 섹션                   | 1차 소스                              | 폴백                                                               |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------------------ |
+| **Equity**             | yfinance                              | FinanceDataReader → investiny(investing.com)                       |
+| **Bonds & Rates**      | yfinance (US), ECOS 한국은행 API (KR) | —                                                                  |
+| **Bond ETF**           | yfinance                              | —                                                                  |
+| **FX**                 | investiny(investing.com)              | FinanceDataReader (yfinance =X 티커는 날짜 밀림으로 사실상 미사용) |
+| **Commodities**        | investiny(investing.com)              | yfinance (=F 선물 데이터 보정)                                     |
+| **Risk (VIX, VKOSPI)** | yfinance                              | FinanceDataReader                                                  |
+| **Major Stocks**       | yfinance                              | —                                                                  |
 
 - FX/Commodity는 `needs_inv_fix = True`로 **항상 FDR → investiny 순 보정 시도**
 - 모든 Data Dashboard (일간/주간/월간): `history/market_data.csv`가 단일 소스 (Single Source of Truth)
@@ -93,6 +93,7 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 output/ 폴더)
 ## Market Story 작성 규칙
 
 ### Forward Looking 금지 (일간/주간/월간 모두 적용)
+
 - 일간, 주간, 월간 보고서 모두 **해당 기간 마지막 날까지만 알 수 있는 정보**로 작성
 - 이후 날짜의 사건/데이터/결과를 절대 참조하지 않는다
 - 주간 보고서: 해당 주 금요일(또는 마지막 영업일)까지의 정보만 사용
@@ -100,6 +101,7 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 output/ 폴더)
 - "~할 수 있다", "~가능성이 있다" 같은 전망은 허용 (분석), "이후 실제로 ~했다" 같은 사후 참조는 금지 (바이어스)
 
 ### 기간 내 일간 간 미래 참조 금지 (주간/월간)
+
 - 주간·월간 보고서에서 전체 기간을 요약하는 것은 허용 (예: "롤러코스터 같은 한 주")
 - 단, **특정 날짜를 설명할 때 그 날짜 이후의 이벤트를 원인·맥락으로 사용하면 안 됨**
 - 금지: "월요일의 하락은 수요일의 대반등의 서막이었다" (월요일 시점에서 수요일을 알 수 없음)
@@ -108,6 +110,7 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 output/ 폴더)
 - 허용: 전체 주를 시간순으로 나열하며 각 날짜의 팩트를 기술하는 것
 
 ### 보고서 생성 시점 기준 데이터 제한
+
 - 보고서는 매일 08:00 KST에 생성된다고 가정
 - 예: 2026-04-07 보고서 → **2026-04-08** 08:00 KST에 생성 → 4/8 08:00 KST 이전에 확정된 데이터만 사용
 - 이 시점 기준으로 사용 가능한 데이터:
@@ -116,7 +119,18 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 output/ 폴더)
   - 4/7까지의 가격 데이터 (_data.json)
 - 사용 불가: 4/8 09시 이후 아시아 장중 데이터, 유럽/미국 세션 데이터
 
+### 요일·휴일 정확성 (일간/주간/월간 모두 적용)
+
+- Market Story 작성 시 **날짜와 요일이 정확히 일치하는지 반드시 확인**한다
+- Claude는 요일을 잘못 추정하는 경우가 많으므로, `datetime` 또는 달력으로 검증 필수
+- 한국 공휴일(삼일절, 광복절, 추석, 설날, 대체공휴일 등)이 포함된 주간/월간 보고서에서:
+  - 해당 날짜에 KOSPI/KOSDAQ이 휴장이었는지 `_data.json`의 `holiday` 필드로 확인
+  - "3/1(월) 삼일절 휴장"처럼 쓰기 전에 실제 요일을 대조 (예: 2026-03-01은 일요일 → 대체공휴일은 3/2 월요일)
+  - 미국 공휴일(Presidents' Day, Memorial Day 등)도 동일하게 확인
+- **금지**: 요일을 추측으로 쓰는 것 (예: "금요일에 발표된 고용지표"라고 쓰기 전에 실제 금요일인지 확인)
+
 ### 시간순 데이터 수집 및 작성
+
 - 웹 검색 시 해당 날짜의 이벤트를 **시간 순서대로** 수집한다
 - 수집 순서: 아시아 세션(09:00~15:30 KST) → 유럽 세션(16:00~22:00 KST) → 미국 세션(22:30~05:00 KST)
 - 각 세션별로 발생한 경제지표 발표, 중앙은행 발언, 지정학 이벤트, 기업 실적을 시간순 정리
