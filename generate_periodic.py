@@ -274,16 +274,22 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 :root {{
   --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
   --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
-  --accent:#3b6ee6; --accent2:#6b5ce7;
-  --up:#0d9b6a; --down:#d9304f; --warn:#d48b07;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#0d9b6a; --down:#d9304f; --warn:#CB6015;
   --gold:#b8860b; --oil:#d35400;
 }}
+::selection{{background:#F58220;color:#ffffff}}
+::-moz-selection{{background:#F58220;color:#ffffff}}
+/* Story Hero keeps original blue — brand accents apply elsewhere */
+.story-hero{{border-left-color:#3b6ee6!important}}
+.story-hero h2{{color:#3b6ee6!important}}
+.story-text .hl-accent{{color:#3b6ee6!important}}
 *{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:24px;max-width:1360px;margin:0 auto}}
+body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 고딕',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:24px;max-width:1360px;margin:0 auto}}
 .header{{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}}
 .header-left h1{{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}}
 .header-left .date{{font-size:13px;color:var(--muted);letter-spacing:1px}}
@@ -354,8 +360,8 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .session-block{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}}
 .session-block::before{{content:'';position:absolute;top:0;left:0;right:0;height:3px}}
 .session-block.asia::before{{background:linear-gradient(90deg,#d48b07,#e06818)}}
-.session-block.europe::before{{background:linear-gradient(90deg,#3b6ee6,#6b5ce7)}}
-.session-block.us::before{{background:linear-gradient(90deg,#6b5ce7,#a78bfa)}}
+.session-block.europe::before{{background:linear-gradient(90deg,#F58220,#043B72)}}
+.session-block.us::before{{background:linear-gradient(90deg,#043B72,#7F9FC3)}}
 .session-header{{display:flex;align-items:center;gap:10px;margin-bottom:12px}}
 .session-icon{{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}}
 .session-icon.asia{{background:rgba(212,139,7,0.1)}}.session-icon.europe{{background:rgba(59,110,230,0.1)}}.session-icon.us{{background:rgba(107,92,231,0.1)}}
@@ -547,8 +553,8 @@ function switchTab(id){{
   if(id==='data') setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
 }}
 Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
-Chart.defaults.font.family="'Noto Sans KR',sans-serif";Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4';
+Chart.defaults.font.family="'Spoqa Han Sans Neo','Spoqa Han Sans',sans-serif";Chart.defaults.font.size=11;
+const UP='#0d9b6a',DN='#d9304f',AC='#F58220',WN='#CB6015',MU='#b0b4c4';
 function bc(d){{return d.map(v=>v>0?UP:v<0?DN:MU)}}
 new Chart(document.getElementById('eqChart'),{{
   type:'bar',
@@ -566,7 +572,7 @@ new Chart(document.getElementById('scatterChart'),{{
   data:{{
     datasets:[
       {{label:'Equity',data:{json.dumps([s for s in scatter_data if s['cat']=='equity'])},backgroundColor:AC+'aa',pointRadius:6}},
-      {{label:'Stocks',data:{json.dumps([s for s in scatter_data if s['cat']=='stocks'])},backgroundColor:'#6b5ce7aa',pointRadius:6}},
+      {{label:'Stocks',data:{json.dumps([s for s in scatter_data if s['cat']=='stocks'])},backgroundColor:'#043B72aa',pointRadius:6}},
       {{label:'Commodity',data:{json.dumps([s for s in scatter_data if s['cat']=='commodity'])},backgroundColor:WN+'aa',pointRadius:6}}
     ]
   }},

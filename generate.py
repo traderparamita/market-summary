@@ -420,7 +420,7 @@ def heat_text(val):
     if val > -1.5:  return "#b91c1c"
     return "#7f1d1d"
 
-def spark_svg(data, w=80, h=24, color="#3b6ee6"):
+def spark_svg(data, w=80, h=24, color="#F58220"):
     """미니 SVG 스파크라인"""
     if not data or len(data) < 2:
         return ""
@@ -519,17 +519,23 @@ def generate_html(data):
 <title>Market Summary | {report_date}</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 :root {{
   --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
   --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
-  --accent:#3b6ee6; --accent2:#6b5ce7;
-  --up:#0d9b6a; --down:#d9304f; --warn:#d48b07;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#0d9b6a; --down:#d9304f; --warn:#CB6015;
   --gold:#b8860b; --oil:#d35400;
 }}
+::selection{{background:#F58220;color:#ffffff}}
+::-moz-selection{{background:#F58220;color:#ffffff}}
+/* Story Hero keeps original blue — brand accents apply elsewhere */
+.story-hero{{border-left-color:#3b6ee6!important}}
+.story-hero h2{{color:#3b6ee6!important}}
+.story-text .hl-accent{{color:#3b6ee6!important}}
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{
-  font-family:'Noto Sans KR',-apple-system,sans-serif;
+  font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 고딕',-apple-system,sans-serif;
   background:var(--bg);color:var(--text);
   line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
 }}
@@ -615,8 +621,8 @@ body{{
 .session-block{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}}
 .session-block::before{{content:'';position:absolute;top:0;left:0;right:0;height:3px}}
 .session-block.asia::before{{background:linear-gradient(90deg,#d48b07,#e06818)}}
-.session-block.europe::before{{background:linear-gradient(90deg,#3b6ee6,#6b5ce7)}}
-.session-block.us::before{{background:linear-gradient(90deg,#6b5ce7,#a78bfa)}}
+.session-block.europe::before{{background:linear-gradient(90deg,#F58220,#043B72)}}
+.session-block.us::before{{background:linear-gradient(90deg,#043B72,#7F9FC3)}}
 .session-header{{display:flex;align-items:center;gap:10px;margin-bottom:12px}}
 .session-icon{{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}}
 .session-icon.asia{{background:rgba(212,139,7,0.1)}}.session-icon.europe{{background:rgba(59,110,230,0.1)}}.session-icon.us{{background:rgba(107,92,231,0.1)}}
@@ -889,9 +895,9 @@ function switchTab(id){{
 }}
 Chart.defaults.color='#7c8298';
 Chart.defaults.borderColor='#e8eaf0';
-Chart.defaults.font.family="'Noto Sans KR',sans-serif";
+Chart.defaults.font.family="'Spoqa Han Sans Neo','Spoqa Han Sans',sans-serif";
 Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4',GD='#b8860b';
+const UP='#0d9b6a',DN='#d9304f',AC='#F58220',WN='#CB6015',MU='#b0b4c4',GD='#b8860b';
 function bc(d){{return d.map(v=>v>0?UP:v<0?DN:MU)}}
 
 // Equity bar
@@ -914,7 +920,7 @@ new Chart(document.getElementById('scatterChart'),{{
   data:{{
     datasets:[
       {{label:'Equity',data:{json.dumps([s for s in scatter_data if s['cat']=='equity'])},backgroundColor:AC+'aa',pointRadius:6}},
-      {{label:'Stocks',data:{json.dumps([s for s in scatter_data if s['cat']=='stocks'])},backgroundColor:'#6b5ce7aa',pointRadius:6}},
+      {{label:'Stocks',data:{json.dumps([s for s in scatter_data if s['cat']=='stocks'])},backgroundColor:'#043B72aa',pointRadius:6}},
       {{label:'Commodity',data:{json.dumps([s for s in scatter_data if s['cat']=='commodity'])},backgroundColor:WN+'aa',pointRadius:6}}
     ]
   }},
@@ -1064,8 +1070,8 @@ def generate_index():
 <meta property="og:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서">
 <meta property="og:image" content="https://traderparamita.github.io/market-summary/favicon.svg">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap');
-  body {{ font-family:'Noto Sans KR',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
+  @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+  body {{ font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 고딕',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
   h1 {{ font-size:28px; font-weight:700; margin-bottom:4px; }}
   .sub {{ font-size:14px; color:#7c8298; margin-bottom:24px; }}
   .main-tabs {{ display:flex; gap:0; margin-bottom:24px; border-bottom:2px solid #e0e3ed; }}
@@ -1075,7 +1081,7 @@ def generate_index():
     transition:all .2s; font-family:inherit;
   }}
   .main-tab:hover {{ color:#2d3148; }}
-  .main-tab.active {{ color:#3b6ee6; border-bottom-color:#3b6ee6; }}
+  .main-tab.active {{ color:#F58220; border-bottom-color:#F58220; }}
   .tab-content {{ display:none; }}
   .tab-content.active {{ display:block; }}
   .month-bar {{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }}
@@ -1084,8 +1090,8 @@ def generate_index():
     background:#fff; color:#7c8298; font-size:12px; font-weight:600;
     cursor:pointer; transition:all .15s; font-family:inherit;
   }}
-  .month-btn:hover {{ border-color:#3b6ee6; color:#3b6ee6; }}
-  .month-btn.active {{ background:#3b6ee6; color:#fff; border-color:#3b6ee6; }}
+  .month-btn:hover {{ border-color:#F58220; color:#F58220; }}
+  .month-btn.active {{ background:#F58220; color:#fff; border-color:#F58220; }}
   .sub-panel {{ display:none; }}
   .sub-panel.active {{ display:block; }}
   ul {{ list-style:none; padding:0; }}
@@ -1094,9 +1100,9 @@ def generate_index():
     display:block; padding:12px 18px; background:#fff; border:1px solid #e0e3ed;
     border-radius:10px; text-decoration:none; color:#2d3148; font-size:14px;
     font-weight:500; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
-    font-family:'JetBrains Mono','Noto Sans KR',monospace;
+    font-family:'JetBrains Mono','Spoqa Han Sans Neo',monospace;
   }}
-  li a:hover {{ border-color:#3b6ee6; color:#3b6ee6; transform:translateX(4px); }}
+  li a:hover {{ border-color:#F58220; color:#F58220; transform:translateX(4px); }}
 </style>
 </head>
 <body>
