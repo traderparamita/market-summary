@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulation Dashboard | 2026 W10 (3/2~3/6)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root {
+    --bg: #f4f5f9;
+    --card: #ffffff;
+    --text: #1a1d2e;
+    --muted: #7c8298;
+    --border: #e6e8f0;
+    --up: #0d9b6a;
+    --down: #d9304f;
+    --warn: #d97706;
+    --accent: #3b6ee6;
+    --accent2: #6b5ce7;
+    --oil: #d35400;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 32px 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 4px 0 28px;
+  }
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(217, 48, 79, 0.1);
+    color: var(--down);
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .verdict-badge.warn {
+    background: rgba(217, 119, 6, 0.1);
+    color: var(--warn);
+  }
+
+  /* ─── Hero Story ─── */
+  .hero {
+    background: linear-gradient(135deg, #1a1d2e 0%, #2d3148 100%);
+    color: #fff;
+    padding: 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+  }
+  .hero h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+  }
+  .hero-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .hero-text strong { color: #fff; }
+  .hl-up { color: #4ade80; font-weight: 700; }
+  .hl-down { color: #f87171; font-weight: 700; }
+  .hl-warn { color: #fbbf24; font-weight: 700; }
+
+  /* ─── KPI Cards ─── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .kpi-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  .warn { color: var(--warn); }
+
+  /* ─── Section ─── */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .section h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+  .section .desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* ─── KOSPI Bar Chart ─── */
+  .chart-bars {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    align-items: end;
+    height: 220px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .chart-bar-col {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .bar-mid {
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    border-top: 1px dashed var(--border);
+  }
+  .bar {
+    width: 60%;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    min-height: 4px;
+    transition: opacity .2s;
+  }
+  .bar.up { background: linear-gradient(180deg, #34d399 0%, #0d9b6a 100%); }
+  .bar.down { background: linear-gradient(180deg, #d9304f 0%, #b91c3c 100%); border-radius: 0 0 4px 4px; }
+  .bar.flat { background: #cbd5e1; }
+  .bar-label {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .bar.down .bar-label { top: auto; bottom: -20px; }
+  .col-label {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ─── Daily Cards ─── */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+    display: block;
+  }
+  .day-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 110, 230, 0.12);
+  }
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .day-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .day-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 8px;
+    text-transform: uppercase;
+  }
+  .tag-down { background: rgba(217, 48, 79, 0.1); color: var(--down); }
+  .tag-up { background: rgba(13, 155, 106, 0.1); color: var(--up); }
+  .tag-warn { background: rgba(217, 119, 6, 0.1); color: var(--warn); }
+  .day-headline {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 12px;
+    min-height: 36px;
+  }
+  .day-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    font-size: 11px;
+  }
+  .day-metric {
+    display: flex;
+    flex-direction: column;
+  }
+  .day-metric-label {
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .day-metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+
+  /* ─── Asset Table ─── */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .asset-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f8f9fc;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .asset-name {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .asset-vals {
+    display: flex;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+  .asset-vals .val { color: var(--text); }
+
+  /* ─── Quick Links ─── */
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+  }
+  .link-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .link-icon.weekly { background: linear-gradient(135deg, #6b5ce7 0%, #4338ca 100%); }
+  .link-icon.monthly { background: linear-gradient(135deg, #d35400 0%, #b91c1c 100%); }
+  .link-icon.daily { background: linear-gradient(135deg, #3b6ee6 0%, #1e40af 100%); }
+  .link-text {
+    flex: 1;
+  }
+  .link-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .link-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 24px 0;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 900px) {
+    .kpi-grid, .day-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-bars { gap: 8px; }
+    .asset-grid, .links-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <h1>Simulation Dashboard</h1>
+      <div class="subtitle">2026 W10 · 3/2 ~ 3/6 · 미-이란 전쟁 + 호르무즈 해협 봉쇄 시뮬레이션</div>
+    </div>
+    <div class="verdict-badge">⚠ EXTREME VOLATILITY · CRISIS WEEK</div>
+  </div>
+
+  <!-- ─── Hero Story ─── -->
+  <div class="hero">
+    <h2>이번 주 시장 이야기 — W10 (3/2 ~ 3/6)</h2>
+    <div class="hero-sub">미-이란 전쟁 충격파 · 한국 증시 역사적 롤러코스터 · 오일 쇼크 2026</div>
+    <div class="hero-text">
+      이번 주는 한국 증시 역사에 기록될 극단적 변동성의 한 주였습니다.
+      2월 말 시작된 미국-이란 군사 충돌이 호르무즈 해협 봉쇄로 확대되면서,
+      WTI 원유는 일주일 만에 $67 → $91로 <span class="hl-up">+35%</span> 폭등했습니다.<br><br>
+      <strong>월(3/2)</strong> 한국 휴장 → <strong>화(3/3)</strong> KOSPI <span class="hl-down">-7.24%</span> →
+      <strong>수(3/4)</strong> KOSPI <span class="hl-down">-12.06%</span> 서킷브레이커 발동, 2일 누적 <span class="hl-down">-18.4%</span> →
+      <strong>목(3/5)</strong> 정부 긴급 대책 발표 후 KOSPI <span class="hl-up">+9.63%</span> 역사적 반등 →
+      <strong>금(3/6)</strong> 이란 유조선 나포로 WTI <span class="hl-up">+12.21%</span>($91), VIX <span class="hl-warn">29.49</span> 공포 영역 진입.<br><br>
+      <strong>주간 결산</strong>: KOSPI <span class="hl-down">-10.56%</span> · WTI <span class="hl-up">+35%</span> · VIX <span class="hl-warn">19.86 → 29.49</span>
+    </div>
+  </div>
+
+  <!-- ─── Weekly KPIs ─── -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">KOSPI 주간</div>
+      <div class="kpi-value">5,584</div>
+      <div class="kpi-change down">-10.56% (660pt↓)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">S&P 500 주간</div>
+      <div class="kpi-value">6,740</div>
+      <div class="kpi-change down">-2.01%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">WTI 주간</div>
+      <div class="kpi-value">$90.90</div>
+      <div class="kpi-change up">+35% (오일쇼크)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">VIX 주간</div>
+      <div class="kpi-value">29.49</div>
+      <div class="kpi-change down">+48% (공포)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">USD/KRW 주간</div>
+      <div class="kpi-value">1,482</div>
+      <div class="kpi-change down">+29원 (원화↓)</div>
+    </div>
+  </div>
+
+  <!-- ─── KOSPI Daily Move Chart ─── -->
+  <div class="section">
+    <h2>KOSPI 일별 등락률 — 한 주에 +9% / -12% 롤러코스터</h2>
+    <div class="desc">화·수 폭락 → 목 정부 대책 반등 → 금 유가 폭등 속 간신히 보합</div>
+    <div class="chart-bars">
+      <div class="bar-mid"></div>
+      <div class="chart-bar-col">
+        <div class="bar flat" style="height: 4px;">
+          <span class="bar-label warn">휴장</span>
+        </div>
+        <span class="col-label">3/2 (월)</span>
+      </div>
+      <div class="chart-bar-col">
+        <div class="bar down" style="height: 60%;">
+          <span class="bar-label down">-7.24%</span>
+        </div>
+        <span class="col-label">3/3 (화)</span>
+      </div>
+      <div class="chart-bar-col">
+        <div class="bar down" style="height: 100%;">
+          <span class="bar-label down">-12.06%</span>
+        </div>
+        <span class="col-label">3/4 (수) · 서킷브레이커</span>
+      </div>
+      <div class="chart-bar-col">
+        <div class="bar up" style="height: 80%;">
+          <span class="bar-label up">+9.63%</span>
+        </div>
+        <span class="col-label">3/5 (목) · 정부 대책</span>
+      </div>
+      <div class="chart-bar-col">
+        <div class="bar flat" style="height: 4px;">
+          <span class="bar-label">+0.02%</span>
+        </div>
+        <span class="col-label">3/6 (금)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Daily Cards ─── -->
+  <div class="section">
+    <h2>5거래일 일별 요약 — 클릭하여 상세 보고서 보기</h2>
+    <div class="desc">각 카드는 해당 날짜의 핵심 헤드라인과 주요 지표를 보여줍니다</div>
+    <div class="day-grid">
+      <a href="2026-03/2026-03-02.html" class="day-card">
+        <div class="day-header">
+          <span class="day-date">3/2 (월)</span>
+          <span class="day-tag tag-warn">한국 휴장</span>
+        </div>
+        <div class="day-headline">삼일절 대체공휴일 — 세계는 전쟁 공포에 흔들림</div>
+        <div class="day-metrics">
+          <div class="day-metric"><span class="day-metric-label">KOSPI</span><span class="day-metric-value warn">휴장</span></div>
+          <div class="day-metric"><span class="day-metric-label">DAX</span><span class="day-metric-value down">-2.56%</span></div>
+          <div class="day-metric"><span class="day-metric-label">WTI</span><span class="day-metric-value up">+6.28%</span></div>
+          <div class="day-metric"><span class="day-metric-label">VIX</span><span class="day-metric-value">21.44</span></div>
+        </div>
+      </a>
+
+      <a href="2026-03/2026-03-03.html" class="day-card">
+        <div class="day-header">
+          <span class="day-date">3/3 (화)</span>
+          <span class="day-tag tag-down">패닉</span>
+        </div>
+        <div class="day-headline">한국 재개장 폭락 — 3거래일치 악재를 한꺼번에</div>
+        <div class="day-metrics">
+          <div class="day-metric"><span class="day-metric-label">KOSPI</span><span class="day-metric-value down">-7.24%</span></div>
+          <div class="day-metric"><span class="day-metric-label">금</span><span class="day-metric-value down">-3.54%</span></div>
+          <div class="day-metric"><span class="day-metric-label">WTI</span><span class="day-metric-value up">+4.67%</span></div>
+          <div class="day-metric"><span class="day-metric-label">USDKRW</span><span class="day-metric-value down">1,481</span></div>
+        </div>
+      </a>
+
+      <a href="2026-03/2026-03-04.html" class="day-card">
+        <div class="day-header">
+          <span class="day-date">3/4 (수)</span>
+          <span class="day-tag tag-down">서킷브레이커</span>
+        </div>
+        <div class="day-headline">KOSPI -12.06%, KOSDAQ -14% — 역사적 대폭락</div>
+        <div class="day-metrics">
+          <div class="day-metric"><span class="day-metric-label">KOSPI</span><span class="day-metric-value down">-12.06%</span></div>
+          <div class="day-metric"><span class="day-metric-label">KOSDAQ</span><span class="day-metric-value down">-14.00%</span></div>
+          <div class="day-metric"><span class="day-metric-label">S&P</span><span class="day-metric-value up">+0.78%</span></div>
+          <div class="day-metric"><span class="day-metric-label">VIX</span><span class="day-metric-value up">21.15 (-10%)</span></div>
+        </div>
+      </a>
+
+      <a href="2026-03/2026-03-05.html" class="day-card">
+        <div class="day-header">
+          <span class="day-date">3/5 (목)</span>
+          <span class="day-tag tag-up">대반등</span>
+        </div>
+        <div class="day-headline">정부 긴급 대책 — KOSPI +9.63%, KOSDAQ +14.10%</div>
+        <div class="day-metrics">
+          <div class="day-metric"><span class="day-metric-label">KOSPI</span><span class="day-metric-value up">+9.63%</span></div>
+          <div class="day-metric"><span class="day-metric-label">KOSDAQ</span><span class="day-metric-value up">+14.10%</span></div>
+          <div class="day-metric"><span class="day-metric-label">WTI</span><span class="day-metric-value up">$81 (+8.5%)</span></div>
+          <div class="day-metric"><span class="day-metric-label">DAX</span><span class="day-metric-value down">-1.61%</span></div>
+        </div>
+      </a>
+
+      <a href="2026-03/2026-03-06.html" class="day-card">
+        <div class="day-header">
+          <span class="day-date">3/6 (금)</span>
+          <span class="day-tag tag-warn">유가 폭등</span>
+        </div>
+        <div class="day-headline">호르무즈 봉쇄 — WTI +12.21%, VIX 29.49 공포</div>
+        <div class="day-metrics">
+          <div class="day-metric"><span class="day-metric-label">KOSPI</span><span class="day-metric-value">+0.02%</span></div>
+          <div class="day-metric"><span class="day-metric-label">WTI</span><span class="day-metric-value up">$90.90 (+12%)</span></div>
+          <div class="day-metric"><span class="day-metric-label">VIX</span><span class="day-metric-value down">29.49 (+24%)</span></div>
+          <div class="day-metric"><span class="day-metric-label">S&P</span><span class="day-metric-value down">-1.33%</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ─── Cross-Asset Snapshot ─── -->
+  <div class="section">
+    <h2>주간 자산별 변동 (3/2 시가 → 3/6 종가)</h2>
+    <div class="desc">전쟁이 모든 자산을 흔든 한 주 — 유가·VIX 급등, KOSPI·서방 증시 약세</div>
+    <div class="asset-grid">
+      <div class="asset-row">
+        <span class="asset-name">📈 KOSPI</span>
+        <span class="asset-vals"><span class="val">6,244 → 5,584</span><span class="down">-10.56%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">📈 KOSDAQ</span>
+        <span class="asset-vals"><span class="val">1,192 → 1,154</span><span class="down">-3.20%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">📈 S&P 500</span>
+        <span class="asset-vals"><span class="val">6,878 → 6,740</span><span class="down">-2.01%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">📈 NASDAQ</span>
+        <span class="asset-vals"><span class="val">22,664 → 22,387</span><span class="down">-1.22%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">📈 DAX (독일)</span>
+        <span class="asset-vals"><span class="val">25,284 → 23,591</span><span class="down">-6.70%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">📈 닛케이 225</span>
+        <span class="asset-vals"><span class="val">58,852 → 55,620</span><span class="down">-5.49%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">🛢 WTI 원유</span>
+        <span class="asset-vals"><span class="val">$67.02 → $90.90</span><span class="up">+35.6%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">🛢 Brent 원유</span>
+        <span class="asset-vals"><span class="val">$72.48 → $92.69</span><span class="up">+27.9%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">🥇 금 (Gold)</span>
+        <span class="asset-vals"><span class="val">$5,248 → $5,158</span><span class="down">-1.71%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">⚪ 은 (Silver)</span>
+        <span class="asset-vals"><span class="val">$93.29 → $84.31</span><span class="down">-9.62%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">😱 VIX (공포지수)</span>
+        <span class="asset-vals"><span class="val">19.86 → 29.49</span><span class="down">+48.5%</span></span>
+      </div>
+      <div class="asset-row">
+        <span class="asset-name">💵 USD/KRW</span>
+        <span class="asset-vals"><span class="val">1,453 → 1,482</span><span class="down">+29원</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Quick Links ─── -->
+  <div class="section">
+    <h2>전체 보고서 바로가기</h2>
+    <div class="desc">일간 5개 + 주간 1개 + 월간 1개 — 총 7개 보고서</div>
+    <div class="links-grid">
+      <a href="weekly/2026-W10.html" class="link-card">
+        <div class="link-icon weekly">W</div>
+        <div class="link-text">
+          <div class="link-title">주간 보고서 W10</div>
+          <div class="link-sub">2026-03-02 ~ 2026-03-06 (5거래일)</div>
+        </div>
+      </a>
+      <a href="monthly/2026-03.html" class="link-card">
+        <div class="link-icon monthly">M</div>
+        <div class="link-text">
+          <div class="link-title">월간 보고서 March</div>
+          <div class="link-sub">2026년 3월 (시뮬레이션 기간)</div>
+        </div>
+      </a>
+      <a href="2026-03/2026-03-04.html" class="link-card">
+        <div class="link-icon daily">!</div>
+        <div class="link-text">
+          <div class="link-title">하이라이트: 3/4 대폭락</div>
+          <div class="link-sub">서킷브레이커 발동, KOSPI -12%</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Simulation Period: 2026-03-02 ~ 2026-03-06 · Generated by market_summary workflow<br>
+    Data Dashboard (simulate.py) → Market Story (Claude) → Story Injection (inject_stories.py)
+  </div>
+
+</body>
+</html>
