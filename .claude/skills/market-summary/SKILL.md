@@ -132,8 +132,38 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 - **Headline**: 하루를 한 문장으로
 - **Narrative**: 아시아 → 유럽 → 미국 순서의 시간순 서사
 - **Causal Chain**: 선행 세션이 후행 세션에 어떤 영향을 미쳤는지
+- **Weekly & Monthly Progress (WTD/MTD)**: 주간·월간 누적 진행 상황 요약 (아래 Step 3-1 참조)
 - **Key Insights**: 2~4개의 핵심 관찰
 - **Risks**: 2~3개의 리스크 요인 (전망 OK, 사후 참조 X)
+
+#### Step 3-1: Weekly & Monthly Progress 단락 작성
+
+주간/월간 Story는 **마지막 영업일에만** 작성되므로, 일간 Story 안에 WTD(Week-to-Date)·MTD(Month-to-Date) 한 단락씩을 포함해 주 중간에도 누적 흐름을 볼 수 있게 한다.
+
+**데이터 소스**: `_data.json`의 각 자산 `weekly`, `monthly` 필드 (이미 누적 수익률 계산되어 있음)
+
+**작성 형식** (예시):
+
+```html
+<h3>주간 누적 (W15, 3/5 영업일 경과)</h3>
+<ul>
+  <li>핵심 지수: KOSPI +1.8%, S&amp;P500 −0.6%, NASDAQ −1.2%, DXY +0.4%</li>
+  <li>이번 주 흐름: 월요일 중국 PMI 쇼크 이후 미국·유럽 약세 지속, 한국·일본은 반등 우위</li>
+</ul>
+
+<h3>월간 누적 (4월, 7/20 영업일 경과)</h3>
+<ul>
+  <li>핵심 지수: KOSPI +3.2%, S&amp;P500 +0.4%, Gold +2.1%, WTI −5.8%</li>
+  <li>월초 이후 테마: 관세 불확실성 완화 기대 + 한국 반도체 실적 모멘텀 유입</li>
+</ul>
+```
+
+**규칙**:
+- **경과 영업일 수 표기 필수**: "3/5 영업일 경과", "7/20 영업일 경과" 같이 중간본임을 명시. 독자가 완결본으로 오해하지 않도록.
+- **수치는 `_data.json`에서**: 직접 계산 말고 각 자산의 `weekly`/`monthly` 필드 그대로 사용
+- **테마 한 줄**: 일간 Narrative와 중복 피하며 주/월 전체 관점에서 한 문장 압축
+- **Forward looking 금지는 동일하게 적용**: 오늘 이후 이벤트 참조 금지
+- **마지막 영업일의 일간 Story**: 이 단락을 작성하되 "마지막 영업일"임을 표기 (예: "W15, 5/5 영업일 경과 — 주간 마감"). 별도 주간 Story가 같은 날 작성되므로 이 단락은 간결하게 유지.
 
 **작성 중 자가 검증**:
 - 각 문장의 인과관계가 시간순인가?
@@ -142,14 +172,32 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 
 ### Step 4: HTML 주입
 
-**두 가지 방법** 중 하나:
+#### (A) 신규 일간 생성 — `generate.py`가 자동 처리
 
-1. **권장 — 파이썬 헬퍼 사용**: `generate.py`의 `_inject_existing_story(html_path, new_html)` 재사용. 이 함수는 Story 탭 placeholder를 교체하고 `_save_story_file()`도 자동 호출한다.
-2. **직접 편집**: `output/YYYY-MM/YYYY-MM-DD.html`의 `<!-- STORY_CONTENT_PLACEHOLDER -->`를 찾아 작성한 HTML로 Edit. 그 다음 `_save_story_file()` 로직을 따라 `_story.html` 별도 저장.
+`python3.12 generate.py {date}` 실행 시 내부적으로 `_inject_existing_story()`가 호출되어 Story 탭 placeholder 처리와 `_story.html` 저장까지 모두 자동이다. **외부에서 이 함수를 직접 호출할 필요 없다.**
 
-주입 후 반드시:
-- `{date}.html`의 Story 탭이 정상 렌더링되는지 구조 확인
+#### (B) 이미 존재하는 Story를 수정할 때
+
+**방법 1 (권장) — `tab-story` 블록 직접 Edit**:
+1. `output/YYYY-MM/YYYY-MM-DD.html`에서 `<div id="tab-story" class="tab-panel">` ~ `</div><!-- /tab-story -->` 사이 블록을 Edit 도구로 교체
+2. 같은 내용으로 `output/YYYY-MM/YYYY-MM-DD_story.html`도 Edit (두 파일 동기화)
+- 장점: 대시보드·CSS·탭 구조 손상 위험 없음
+
+**방법 2 — placeholder 복원 후 치환**:
+1. `python3.12 generate.py {date}` 실행 → 쉘 재생성 (기존 HTML이 건강하면 Story 보존됨)
+2. `_story.html`을 수정한 뒤 짧은 Python 스니펫으로 daily HTML의 `<!-- STORY_CONTENT_PLACEHOLDER -->` 를 치환
+
+#### 함정: `_inject_existing_story()` 외부 직접 호출 금지
+
+`_inject_existing_story(path, new_html)`의 두 번째 인자는 **반드시 `<!-- STORY_CONTENT_PLACEHOLDER -->` 마커를 포함한 "새 HTML 템플릿 전체"**여야 한다. Story fragment만 넘기면 함수는 placeholder를 찾지 못하고 **fragment 자체를 `path` 파일에 통째로 덮어써서 대시보드·CSS·탭이 모두 사라진다.** 이 함수는 `generate.py` 내부에서만 쓰고, 외부에서 Story를 수정할 때는 위의 (B) 방법 1 또는 2를 사용할 것.
+
+**과거 사고 사례 (2026-04-08)**: `_inject_existing_story('.../2026-04-08.html', story_html)`을 외부에서 호출해 960줄 daily HTML이 345줄 fragment로 덮어써진 사고 발생. 복구를 위해 generate.py 재실행 + placeholder 치환이 필요했음.
+
+### 주입 후 검증 필수
+- `{date}.html`이 `<!DOCTYPE html>`, `tab-story`, `tab-data`, `<style>` 블록을 모두 포함하는지 확인
 - `{date}_story.html` 파일이 생성/갱신되었는지 확인
+- 두 파일의 Story 내용이 동일한지(동기화) 확인
+- 라인 수 감이 안 잡히면 이전 영업일 `{prev_date}.html`과 라인 수를 비교 (수백 줄 차이가 나면 의심)
 
 ---
 
@@ -221,4 +269,5 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 - [ ] 인과관계가 모두 과거 → 현재 방향인가?
 - [ ] "서막", "시작에 불과", "전초전" 같은 사후적 표현이 없는가?
 - [ ] (주간/월간) 특정 날짜 설명에 그 날짜 이후 이벤트가 원인으로 쓰이지 않았는가?
+- [ ] (일간) WTD/MTD 단락에 "N/M 영업일 경과" 표기가 있고, 수치가 `_data.json`의 `weekly`/`monthly` 필드와 일치하는가?
 - [ ] `_story.html` 파일이 정상 생성·갱신되었는가?
