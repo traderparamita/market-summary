@@ -81,9 +81,25 @@ def aggregate_period(market_data, trading_days, date_list):
 
     for cat in ["equity", "bond", "fx", "commodity", "risk", "stocks"]:
         result[cat] = {}
-        last_cat = last_day.get(cat, {})
 
-        for ticker, last_close in last_cat.items():
+        # 기간 내 모든 날짜에서 이 카테고리의 티커를 수집
+        all_tickers = set()
+        for d in available:
+            all_tickers.update(market_data.get(d, {}).get(cat, {}).keys())
+
+        for ticker in all_tickers:
+            # 기간 내 가장 최근 종가 찾기
+            last_close = None
+            ticker_last_date = None
+            for d in reversed(available):
+                c = market_data.get(d, {}).get(cat, {}).get(ticker)
+                if c:
+                    last_close = c
+                    ticker_last_date = d
+                    break
+            if not last_close:
+                continue
+
             # period_chg: 직전 영업일 종가 → 기간 마지막 종가
             base_close = prev_day.get(cat, {}).get(ticker)
             if not base_close:
@@ -135,7 +151,7 @@ def aggregate_period(market_data, trading_days, date_list):
                 "best_day": round(best_day, 2),
                 "worst_day": round(worst_day, 2),
                 "spark": spark,
-                "date": last_date,
+                "date": ticker_last_date,
                 "ytd": round(ytd, 2),
             }
 
@@ -152,21 +168,31 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
     rk = agg.get("risk", {})
     st = agg.get("stocks", {})
 
-    # KPI 목록
+    # KPI 목록 (일간과 동일한 8개)
+    kpi_list = [
+        ("KOSPI", eq.get("KOSPI")),
+        ("S&P500", eq.get("S&P500")),
+        ("NASDAQ", eq.get("NASDAQ")),
+        ("Nikkei", eq.get("Nikkei225")),
+        ("US 10Y", bd.get("US 10Y")),
+        ("USD/KRW", fx.get("USD/KRW")),
+        ("WTI", cm.get("WTI")),
+        ("Gold", cm.get("Gold")),
+    ]
     kpi_items = []
-    for label, cat, key in [
-        ("KOSPI", eq, "KOSPI"), ("S&P500", eq, "S&P500"), ("NASDAQ", eq, "NASDAQ"),
-        ("WTI", cm, "WTI"), ("Gold", cm, "Gold"), ("VIX", rk, "VIX"),
-    ]:
-        if key in cat:
-            d = cat[key]
-            if label in ["WTI", "Gold"]:
-                v = f"${fmt(d['close'])}"
-            elif label == "VIX":
-                v = f"{d['close']:.1f}"
-            else:
-                v = fmt(d["close"], 0)
-            kpi_items.append({"label": label, "value": v, "chg": d["period_chg"]})
+    for label, d in kpi_list:
+        if not d:
+            continue
+        c = d["close"]
+        if label in ["WTI", "Gold"]:
+            v = f"${fmt(c)}"
+        elif label == "US 10Y":
+            v = f"{c:.2f}%"
+        elif c > 100:
+            v = fmt(c, 0)
+        else:
+            v = fmt(c, 2)
+        kpi_items.append({"label": label, "value": v, "chg": d["period_chg"]})
 
     # 히트맵 행 생성
     def heatmap_row(name, d, show_dollar=False):
@@ -209,8 +235,8 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
 
-    # 상위/하위 종목
-    all_items = [(n, d) for c in [eq, st, cm] for n, d in c.items()]
+    # 상위/하위 종목 (일간과 동일: equity, stocks, commodity, fx)
+    all_items = [(n, d) for c in [eq, st, cm, fx] for n, d in c.items()]
     sorted_items = sorted(all_items, key=lambda x: x[1]["period_chg"], reverse=True)
     top3 = sorted_items[:3]
     bottom3 = sorted_items[-3:]
@@ -222,6 +248,14 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
     st_sorted = sorted(st.items(), key=lambda x: x[1]["period_chg"], reverse=True)
     st_names = [n for n, _ in st_sorted]
     st_chgs = [d["period_chg"] for _, d in st_sorted]
+    cm_names = list(cm.keys())
+    cm_ytd = [cm[n].get("ytd", 0) for n in cm_names]
+
+    # Scatter: period_chg vs ytd (cross-asset)
+    scatter_data = []
+    for cat_items, cat_label in [(eq, "equity"), (st, "stocks"), (cm, "commodity")]:
+        for name, d in cat_items.items():
+            scatter_data.append({"x": d.get("ytd", 0), "y": d["period_chg"], "label": name, "cat": cat_label})
 
     # VIX
     vix = rk.get("VIX", {})
@@ -277,6 +311,14 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .spark-cell{{text-align:center;padding:4px 8px}}
 .heat-cell{{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}}
 .heatmap tr:hover{{filter:brightness(0.97)}}
+.badge{{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--card2);color:var(--muted);font-weight:500}}
+.risk-strip{{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}}
+.risk-card{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;min-width:120px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.risk-card .label{{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:2px}}
+.risk-card .value{{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}}
+.risk-card .desc{{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}}
+.bar-track{{height:4px;background:var(--card2);border-radius:2px;margin-top:6px}}
+.bar-fill{{height:100%;border-radius:2px}}
 .chart-grid{{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}}
 .chart-card{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
 .chart-card .title{{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px}}
@@ -417,7 +459,7 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
         idx = {n: i for i, n in enumerate(order)}
         items = sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
         html += f"""<div class="heatmap-section">
-<h2>{sec_title}</h2>
+<h2>{sec_title} <span class="badge">{len(items)}</span></h2>
 <table class="heatmap">
 <thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>{period_label}</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
 <tbody>\n"""
@@ -425,7 +467,34 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
             html += heatmap_row(name, d, dollar)
         html += "</tbody></table></div>\n"
 
-    # Charts
+    # ── Risk Dashboard ──
+    html += '<div class="heatmap-section"><h2>Risk Dashboard</h2></div>\n<div class="risk-strip">\n'
+    vix_pct = min(vix_val / 50 * 100, 100) if vix_val else 0
+    html += f"""<div class="risk-card">
+  <div class="label">VIX</div>
+  <div class="value" style="color:{vix_color}">{vix_val:.1f}</div>
+  <div class="desc" style="color:{vix_color}">{vix_label}</div>
+  <div class="bar-track"><div class="bar-fill" style="width:{vix_pct:.0f}%;background:{vix_color}"></div></div>
+</div>\n"""
+    for name, d in rk.items():
+        if name == "VIX":
+            continue
+        html += f"""<div class="risk-card">
+  <div class="label">{name}</div>
+  <div class="value">{d['close']:.1f}</div>
+  <div class="desc {chg_class(d['period_chg'])}">{chg_sign(d['period_chg'])}</div>
+</div>\n"""
+    for name in ["HYG", "EMB"]:
+        if name in bd:
+            d = bd[name]
+            html += f"""<div class="risk-card">
+  <div class="label">{name}</div>
+  <div class="value">{d['close']:.1f}</div>
+  <div class="desc {chg_class(d['period_chg'])}">{chg_sign(d['period_chg'])}</div>
+</div>\n"""
+    html += '</div>\n'
+
+    # ── Charts (일간과 동일 4개) ──
     html += f"""
 <div class="chart-grid">
   <div class="chart-card">
@@ -435,6 +504,14 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
   <div class="chart-card">
     <div class="title">Stocks {period_label} Change (%)</div>
     <div class="chart-box"><canvas id="stChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">{period_label} vs YTD (Cross-Asset)</div>
+    <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Commodity YTD (%)</div>
+    <div class="chart-box"><canvas id="cmChart"></canvas></div>
   </div>
 </div>
 
@@ -457,7 +534,7 @@ function switchTab(id){{
 }}
 Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
 Chart.defaults.font.family="'Noto Sans KR',sans-serif";Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',MU='#b0b4c4';
+const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4';
 function bc(d){{return d.map(v=>v>0?UP:v<0?DN:MU)}}
 new Chart(document.getElementById('eqChart'),{{
   type:'bar',
@@ -467,6 +544,34 @@ new Chart(document.getElementById('eqChart'),{{
 new Chart(document.getElementById('stChart'),{{
   type:'bar',
   data:{{labels:{json.dumps(st_names)},datasets:[{{data:{json.dumps(st_chgs)},backgroundColor:bc({json.dumps(st_chgs)}),borderRadius:4,barPercentage:.6}}]}},
+  options:{{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:false}}}},scales:{{x:{{grid:{{color:'#ecedf2'}},ticks:{{callback:v=>v+'%'}}}},y:{{grid:{{display:false}},ticks:{{font:{{weight:'600'}}}}}}}}}}
+}});
+// Scatter: period vs YTD
+new Chart(document.getElementById('scatterChart'),{{
+  type:'scatter',
+  data:{{
+    datasets:[
+      {{label:'Equity',data:{json.dumps([s for s in scatter_data if s['cat']=='equity'])},backgroundColor:AC+'aa',pointRadius:6}},
+      {{label:'Stocks',data:{json.dumps([s for s in scatter_data if s['cat']=='stocks'])},backgroundColor:'#6b5ce7aa',pointRadius:6}},
+      {{label:'Commodity',data:{json.dumps([s for s in scatter_data if s['cat']=='commodity'])},backgroundColor:WN+'aa',pointRadius:6}}
+    ]
+  }},
+  options:{{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{{
+      legend:{{position:'top',labels:{{boxWidth:8}}}},
+      tooltip:{{callbacks:{{label:c=>c.raw.label+' (YTD:'+c.raw.x.toFixed(1)+'%, {period_label}:'+c.raw.y.toFixed(1)+'%)'}}}}
+    }},
+    scales:{{
+      x:{{title:{{display:true,text:'YTD %',color:'#7c8298'}},grid:{{color:'#ecedf2'}},ticks:{{callback:v=>v+'%'}}}},
+      y:{{title:{{display:true,text:'{period_label} %',color:'#7c8298'}},grid:{{color:'#ecedf2'}},ticks:{{callback:v=>v+'%'}}}}
+    }}
+  }}
+}});
+// Commodity YTD
+new Chart(document.getElementById('cmChart'),{{
+  type:'bar',
+  data:{{labels:{json.dumps(cm_names)},datasets:[{{data:{json.dumps(cm_ytd)},backgroundColor:bc({json.dumps(cm_ytd)}),borderRadius:4,barPercentage:.55}}]}},
   options:{{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:false}}}},scales:{{x:{{grid:{{color:'#ecedf2'}},ticks:{{callback:v=>v+'%'}}}},y:{{grid:{{display:false}},ticks:{{font:{{weight:'600'}}}}}}}}}}
 }});
 </script>

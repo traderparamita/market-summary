@@ -44,6 +44,14 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 .spark-cell{text-align:center;padding:4px 8px}
 .heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
 .heatmap tr:hover{filter:brightness(0.97)}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--card2);color:var(--muted);font-weight:500}
+.risk-strip{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.risk-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;min-width:120px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.risk-card .label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:2px}
+.risk-card .value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.risk-card .desc{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.bar-track{height:4px;background:var(--card2);border-radius:2px;margin-top:6px}
+.bar-fill{height:100%;border-radius:2px}
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .chart-card .title{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px}
@@ -131,12 +139,12 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 <div class="header">
   <div class="header-left">
     <h1>Weekly Summary | 2026 W13</h1>
-    <div class="date">2026-03-23 ~ 2026-03-29 (6 trading days)</div>
+    <div class="date">2026-03-23 ~ 2026-03-27 (5 trading days)</div>
   </div>
   <div class="header-right">
-    <div class="mood-badge" style="background:#f0fdf4;color:#0d9b6a;border:1px solid #0d9b6a33">
-      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0d9b6a"></span>
-      VIX 0.0 &mdash; Complacent
+    <div class="mood-badge" style="background:#fef2f2;color:#d9304f;border:1px solid #d9304f33">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d9304f"></span>
+      VIX 31.0 &mdash; Extreme Fear
     </div>
   </div>
 </div>
@@ -148,29 +156,482 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 
 <div id="tab-data" class="tab-panel active">
 <div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">KOSPI</div>
+    <div class="kpi-value">5,439</div>
+    <div class="kpi-chg down">-5.92%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">S&P500</div>
+    <div class="kpi-value">6,369</div>
+    <div class="kpi-chg down">-2.12%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">NASDAQ</div>
+    <div class="kpi-value">20,948</div>
+    <div class="kpi-chg down">-3.23%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Nikkei</div>
+    <div class="kpi-value">53,373</div>
+    <div class="kpi-chg up">+3.61%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">US 10Y</div>
+    <div class="kpi-value">4.44%</div>
+    <div class="kpi-chg up">+1.12%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">USD/KRW</div>
+    <div class="kpi-value">1,508</div>
+    <div class="kpi-chg up">+0.19%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">WTI</div>
+    <div class="kpi-value">$99.64</div>
+    <div class="kpi-chg up">+1.34%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Gold</div>
+    <div class="kpi-value">$4,508.60</div>
+    <div class="kpi-chg down">-2.19%</div>
+  </div>
 </div>
 <div class="movers-row">
 <div class="movers-card"><h3>Top Gainers (Weekly)</h3>
-<div class="mover-item"><span class="mover-name">Nikkei225</span><span class="mover-val down">-0.70%</span></div>
+<div class="mover-item"><span class="mover-name">Brent</span><span class="mover-val up">+5.79%</span></div>
+<div class="mover-item"><span class="mover-name">Nikkei225</span><span class="mover-val up">+3.61%</span></div>
+<div class="mover-item"><span class="mover-name">Copper</span><span class="mover-val up">+1.75%</span></div>
 </div>
 <div class="movers-card"><h3>Top Losers (Weekly)</h3>
-<div class="mover-item"><span class="mover-name">Nikkei225</span><span class="mover-val down">-0.70%</span></div>
+<div class="mover-item"><span class="mover-name">Alphabet</span><span class="mover-val down">-8.86%</span></div>
+<div class="mover-item"><span class="mover-name">Samsung</span><span class="mover-val down">-9.68%</span></div>
+<div class="mover-item"><span class="mover-name">META</span><span class="mover-val down">-11.44%</span></div>
 </div>
 </div>
 <div class="heatmap-section">
-<h2>Equity</h2>
+<h2>Equity <span class="badge">13</span></h2>
 <table class="heatmap">
 <thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>Weekly</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
 <tbody>
 <tr>
+          <td class="name-cell">KOSPI</td>
+          <td class="close-cell">5,439</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 16.0,23.0 32.0,14.3 48.0,9.1 64.0,19.8 80.0,21.1" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.1" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.92%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.74%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.49%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">KOSDAQ</td>
+          <td class="close-cell">1,142</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 16.0,23.0 32.0,14.7 48.0,1.7 64.0,9.5 80.0,7.8" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.8" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.72%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.40%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.56%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">S&P500</td>
+          <td class="close-cell">6,369</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.4 16.0,2.0 32.0,4.5 48.0,1.0 64.0,12.3 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.12%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.15%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.74%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.96%</td>
+        </tr><tr>
+          <td class="name-cell">NASDAQ</td>
+          <td class="close-cell">20,948</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,7.6 16.0,1.0 32.0,5.1 48.0,1.4 64.0,12.9 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.23%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.38%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.38%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.87%</td>
+        </tr><tr>
+          <td class="name-cell">Russell2K</td>
+          <td class="close-cell">2,450</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,10.5 32.0,8.0 48.0,1.0 64.0,10.7 80.0,20.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.5" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.46%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.29%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.75%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.30%</td>
+        </tr><tr>
+          <td class="name-cell">STOXX50</td>
+          <td class="close-cell">5,506</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,12.1 32.0,11.1 48.0,1.0 64.0,13.3 80.0,22.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="22.3" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.08%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.33%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.48%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">FTSE100</td>
+          <td class="close-cell">9,967</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,20.5 16.0,23.0 32.0,15.7 48.0,1.0 64.0,15.0 80.0,15.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="15.5" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.49%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.42%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.33%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.36%</td>
+        </tr><tr>
+          <td class="name-cell">DAX</td>
+          <td class="close-cell">22,301</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,20.4 16.0,11.2 32.0,11.7 48.0,1.0 64.0,12.6 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.35%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.41%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.50%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">CAC40</td>
+          <td class="close-cell">7,702</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,15.6 32.0,13.5 48.0,1.0 64.0,10.4 80.0,18.6" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="18.6" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.47%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.33%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.98%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.49%</td>
+        </tr><tr>
+          <td class="name-cell">Shanghai</td>
+          <td class="close-cell">3,914</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 16.0,23.0 32.0,12.6 48.0,4.9 64.0,11.4 80.0,7.6" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.6" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.09%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.78%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.63%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.39%</td>
+        </tr><tr>
+          <td class="name-cell">HSI</td>
+          <td class="close-cell">24,952</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.3 16.0,23.0 32.0,7.3 48.0,1.0 64.0,12.1 80.0,9.9" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="9.9" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.29%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.79%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.54%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.65%</td>
+        </tr><tr>
           <td class="name-cell">Nikkei225</td>
-          <td class="close-cell">50,830</td>
-          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,20.3 13.3,17.8 26.7,12.3 40.0,1.0 53.3,2.1 66.7,3.9 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
-          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.70%</td>
+          <td class="close-cell">53,373</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,23.0 32.0,15.8 48.0,1.0 64.0,2.5 80.0,4.7" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.7" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.61%</td>
           <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.87%</td>
-          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.77%</td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.43%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">NIFTY50</td>
+          <td class="close-cell">22,820</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,6.3 20.0,23.0 40.0,11.9 60.0,1.0 80.0,14.5" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="14.5" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.28%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.78%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.60%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-12.67%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Bonds & Rates <span class="badge">6</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>Weekly</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">KR CD 91D</td>
+          <td class="close-cell">2.82</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,23.0 32.0,23.0 48.0,1.0 64.0,1.0 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.36%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.36%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.36%</td>
+        </tr><tr>
+          <td class="name-cell">KR 3Y</td>
+          <td class="close-cell">3.58</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,1.0 32.0,11.0 48.0,7.3 64.0,7.9 80.0,4.7" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.7" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.04%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+6.07%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.60%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+21.30%</td>
+        </tr><tr>
+          <td class="name-cell">KR 10Y</td>
+          <td class="close-cell">3.84</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,1.1 32.0,9.4 48.0,6.3 64.0,4.7 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.99%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.97%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.14%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+18.46%</td>
+        </tr><tr>
+          <td class="name-cell">US 2Y</td>
+          <td class="close-cell">3.61</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.7 16.0,15.1 32.0,1.0 48.0,1.0 64.0,1.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.30%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.22%</td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.36%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.69%</td>
+        </tr><tr>
+          <td class="name-cell">US 10Y</td>
+          <td class="close-cell">4.44</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,10.7 16.0,21.9 32.0,10.5 48.0,23.0 64.0,5.7 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.12%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.03%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.46%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+6.65%</td>
+        </tr><tr>
+          <td class="name-cell">US 30Y</td>
+          <td class="close-cell">4.98</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,6.7 16.0,19.1 32.0,11.5 48.0,23.0 64.0,12.8 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.44%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.93%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.97%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.93%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Bond ETF <span class="badge">4</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>Weekly</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">TLT</td>
+          <td class="close-cell">$85.30</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.5 16.0,9.3 32.0,16.2 48.0,1.0 64.0,14.4 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.22%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.96%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.84%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.04%</td>
+        </tr><tr>
+          <td class="name-cell">LQD</td>
+          <td class="close-cell">$107.18</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.5 16.0,4.4 32.0,8.9 48.0,1.0 64.0,17.9 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.21%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.66%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.78%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.63%</td>
+        </tr><tr>
+          <td class="name-cell">HYG</td>
+          <td class="close-cell">$78.34</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.0 16.0,1.0 32.0,9.2 48.0,1.7 64.0,17.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.25%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.66%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.63%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.41%</td>
+        </tr><tr>
+          <td class="name-cell">EMB</td>
+          <td class="close-cell">$92.50</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,20.1 16.0,6.4 32.0,13.7 48.0,1.0 64.0,15.5 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.21%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.98%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.03%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.64%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>FX <span class="badge">7</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>Weekly</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">DXY</td>
+          <td class="close-cell">100</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,10.3 16.0,23.0 32.0,14.1 48.0,11.2 64.0,5.7 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.51%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.49%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.70%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.86%</td>
+        </tr><tr>
+          <td class="name-cell">USD/KRW</td>
+          <td class="close-cell">1,508</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.0 16.0,23.0 32.0,13.6 48.0,4.7 64.0,1.9 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.19%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.61%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.22%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+4.71%</td>
+        </tr><tr>
+          <td class="name-cell">EUR/USD</td>
+          <td class="close-cell">1.15</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.9 16.0,1.0 32.0,2.0 48.0,12.4 64.0,19.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.53%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.36%</td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.42%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.01%</td>
+        </tr><tr>
+          <td class="name-cell">GBP/USD</td>
+          <td class="close-cell">1.33</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.4 16.0,1.0 32.0,3.4 48.0,9.5 64.0,13.6 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.61%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.66%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.54%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.60%</td>
+        </tr><tr>
+          <td class="name-cell">AUD/USD</td>
+          <td class="close-cell">0.69</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 16.0,2.9 32.0,5.1 48.0,12.1 64.0,21.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.15%</td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.19%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.88%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.98%</td>
+        </tr><tr>
+          <td class="name-cell">USD/JPY</td>
+          <td class="close-cell">160</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,13.7 16.0,23.0 32.0,19.8 48.0,10.9 64.0,6.8 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+0.68%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.49%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.50%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.33%</td>
+        </tr><tr>
+          <td class="name-cell">USD/CNY</td>
+          <td class="close-cell">6.91</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.5 16.0,23.0 32.0,15.0 48.0,8.5 64.0,1.5 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.37%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.16%</td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.07%</td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-1.17%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Commodities <span class="badge">6</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>Weekly</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">WTI</td>
+          <td class="close-cell">$99.64</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.5 16.0,23.0 32.0,14.9 48.0,18.8 64.0,10.9 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.34%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.46%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-10.36%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+73.53%</td>
+        </tr><tr>
+          <td class="name-cell">Brent</td>
+          <td class="close-cell">$112.57</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.1 16.0,23.0 32.0,17.3 48.0,14.7 64.0,7.0 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.79%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+5.66%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.86%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+85.00%</td>
+        </tr><tr>
+          <td class="name-cell">Gold</td>
+          <td class="close-cell">$4,508.60</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 16.0,19.9 32.0,20.4 48.0,5.2 64.0,23.0 80.0,11.2" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.2" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.19%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.41%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.04%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">Silver</td>
+          <td class="close-cell">$69.56</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,13.8 16.0,16.4 32.0,15.4 48.0,1.0 64.0,23.0 80.0,14.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="14.3" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.15%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+4.44%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.49%</td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
+        </tr><tr>
+          <td class="name-cell">Copper</td>
+          <td class="close-cell">$5.47</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,13.1 32.0,15.6 48.0,1.0 64.0,12.6 80.0,10.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.75%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.94%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.51%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.76%</td>
+        </tr><tr>
+          <td class="name-cell">Nat Gas</td>
+          <td class="close-cell">$3.10</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.3 16.0,23.0 32.0,17.4 48.0,16.4 64.0,11.3 80.0,1.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.01%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.20%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-5.65%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-16.03%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>Major Stocks <span class="badge">10</span></h2>
+<table class="heatmap">
+<thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>Weekly</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">NVIDIA</td>
+          <td class="close-cell">$167.52</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.8 16.0,7.0 32.0,7.8 48.0,1.0 64.0,15.7 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.00%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.99%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-4.16%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-10.17%</td>
+        </tr><tr>
+          <td class="name-cell">Broadcom</td>
+          <td class="close-cell">$300.68</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,13.8 16.0,1.0 32.0,5.2 48.0,4.7 64.0,14.2 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.96%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+4.08%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.95%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-12.94%</td>
+        </tr><tr>
+          <td class="name-cell">Alphabet</td>
+          <td class="close-cell">$274.34</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.8 16.0,1.0 32.0,10.2 48.0,9.8 64.0,17.8 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.86%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.35%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.85%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-12.29%</td>
+        </tr><tr>
+          <td class="name-cell">Amazon</td>
+          <td class="close-cell">$199.34</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.3 16.0,3.8 32.0,9.0 48.0,1.0 64.0,8.4 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.94%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.32%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.95%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-13.64%</td>
+        </tr><tr>
+          <td class="name-cell">META</td>
+          <td class="close-cell">$525.72</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.9 16.0,1.0 32.0,4.1 48.0,3.6 64.0,16.9 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-11.44%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.75%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-7.96%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-20.29%</td>
+        </tr><tr>
+          <td class="name-cell">Apple</td>
+          <td class="close-cell">$248.80</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 16.0,7.3 32.0,6.7 48.0,2.2 64.0,1.0 80.0,19.3" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.3" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.33%</td>
+          <td class="heat-cell" style="background:#e8f5e9;color:#047857">+1.41%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.62%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-8.40%</td>
+        </tr><tr>
+          <td class="name-cell">Microsoft</td>
+          <td class="close-cell">$356.77</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.0 16.0,1.0 32.0,9.6 48.0,11.1 64.0,15.3 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.57%</td>
+          <td class="heat-cell" style="background:#f1f8f4;color:#047857">+0.30%</td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-2.68%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-26.06%</td>
+        </tr><tr>
+          <td class="name-cell">Tesla</td>
+          <td class="close-cell">$361.83</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.4 16.0,5.7 32.0,3.6 48.0,1.0 64.0,13.6 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#7f1d1d">-1.67%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+3.50%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-3.59%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-19.54%</td>
+        </tr><tr>
+          <td class="name-cell">TSMC</td>
+          <td class="close-cell">$326.74</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.8 16.0,10.4 32.0,5.6 48.0,1.0 64.0,23.0 80.0,22.4" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="22.4" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.76%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+2.80%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.22%</td>
+          <td class="heat-cell" style="background:#c6f6d5;color:#065f46">+7.82%</td>
+        </tr><tr>
+          <td class="name-cell">Samsung</td>
+          <td class="close-cell">$180,100</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 16.0,15.9 32.0,12.0 48.0,12.9 64.0,23.0 80.0,23.0" fill="none" stroke="#3b6ee6" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#d9304f"/></svg></td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-9.68%</td>
+          <td class="heat-cell" style="background:#d4edda;color:#065f46">+1.83%</td>
+          <td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-6.57%</td>
           <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td>
         </tr></tbody></table></div>
+<div class="heatmap-section"><h2>Risk Dashboard</h2></div>
+<div class="risk-strip">
+<div class="risk-card">
+  <div class="label">VIX</div>
+  <div class="value" style="color:#d9304f">31.0</div>
+  <div class="desc" style="color:#d9304f">Extreme Fear</div>
+  <div class="bar-track"><div class="bar-fill" style="width:62%;background:#d9304f"></div></div>
+</div>
+<div class="risk-card">
+  <div class="label">HYG</div>
+  <div class="value">78.3</div>
+  <div class="desc down">-0.25%</div>
+</div>
+<div class="risk-card">
+  <div class="label">EMB</div>
+  <div class="value">92.5</div>
+  <div class="desc down">-0.21%</div>
+</div>
+</div>
 
 <div class="chart-grid">
   <div class="chart-card">
@@ -180,6 +641,14 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
   <div class="chart-card">
     <div class="title">Stocks Weekly Change (%)</div>
     <div class="chart-box"><canvas id="stChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Weekly vs YTD (Cross-Asset)</div>
+    <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Commodity YTD (%)</div>
+    <div class="chart-box"><canvas id="cmChart"></canvas></div>
   </div>
 </div>
 
@@ -202,16 +671,44 @@ function switchTab(id){
 }
 Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
 Chart.defaults.font.family="'Noto Sans KR',sans-serif";Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',MU='#b0b4c4';
+const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4';
 function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
 new Chart(document.getElementById('eqChart'),{
   type:'bar',
-  data:{labels:["Nikkei225"],datasets:[{data:[-0.7],backgroundColor:bc([-0.7]),borderRadius:4,barPercentage:.6}]},
+  data:{labels:["Nikkei225", "FTSE100", "CAC40", "Russell2K", "STOXX50", "DAX", "Shanghai", "NIFTY50", "HSI", "KOSDAQ", "S&P500", "NASDAQ", "KOSPI"],datasets:[{data:[3.61, 0.49, 0.47, 0.46, 0.08, -0.35, -1.09, -1.28, -1.29, -1.72, -2.12, -3.23, -5.92],backgroundColor:bc([3.61, 0.49, 0.47, 0.46, 0.08, -0.35, -1.09, -1.28, -1.29, -1.72, -2.12, -3.23, -5.92]),borderRadius:4,barPercentage:.6}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 new Chart(document.getElementById('stChart'),{
   type:'bar',
-  data:{labels:[],datasets:[{data:[],backgroundColor:bc([]),borderRadius:4,barPercentage:.6}]},
+  data:{labels:["Apple", "TSMC", "Tesla", "Amazon", "Broadcom", "NVIDIA", "Microsoft", "Alphabet", "Samsung", "META"],datasets:[{data:[0.33, -0.76, -1.67, -2.94, -2.96, -3.0, -6.57, -8.86, -9.68, -11.44],backgroundColor:bc([0.33, -0.76, -1.67, -2.94, -2.96, -3.0, -6.57, -8.86, -9.68, -11.44]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
+});
+// Scatter: period vs YTD
+new Chart(document.getElementById('scatterChart'),{
+  type:'scatter',
+  data:{
+    datasets:[
+      {label:'Equity',data:[{"x": -12.67, "y": -1.28, "label": "NIFTY50", "cat": "equity"}, {"x": -1.3, "y": 0.46, "label": "Russell2K", "cat": "equity"}, {"x": 0, "y": 0.08, "label": "STOXX50", "cat": "equity"}, {"x": 0, "y": 3.61, "label": "Nikkei225", "cat": "equity"}, {"x": 0, "y": -1.72, "label": "KOSDAQ", "cat": "equity"}, {"x": -1.39, "y": -1.09, "label": "Shanghai", "cat": "equity"}, {"x": -5.49, "y": 0.47, "label": "CAC40", "cat": "equity"}, {"x": 0.36, "y": 0.49, "label": "FTSE100", "cat": "equity"}, {"x": -2.65, "y": -1.29, "label": "HSI", "cat": "equity"}, {"x": -6.96, "y": -2.12, "label": "S&P500", "cat": "equity"}, {"x": -9.87, "y": -3.23, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": -0.35, "label": "DAX", "cat": "equity"}, {"x": 0, "y": -5.92, "label": "KOSPI", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'Stocks',data:[{"x": -12.29, "y": -8.86, "label": "Alphabet", "cat": "stocks"}, {"x": -8.4, "y": 0.33, "label": "Apple", "cat": "stocks"}, {"x": -13.64, "y": -2.94, "label": "Amazon", "cat": "stocks"}, {"x": 0, "y": -9.68, "label": "Samsung", "cat": "stocks"}, {"x": -12.94, "y": -2.96, "label": "Broadcom", "cat": "stocks"}, {"x": -20.29, "y": -11.44, "label": "META", "cat": "stocks"}, {"x": -19.54, "y": -1.67, "label": "Tesla", "cat": "stocks"}, {"x": -10.17, "y": -3.0, "label": "NVIDIA", "cat": "stocks"}, {"x": 7.82, "y": -0.76, "label": "TSMC", "cat": "stocks"}, {"x": -26.06, "y": -6.57, "label": "Microsoft", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
+      {label:'Commodity',data:[{"x": 0, "y": -0.15, "label": "Silver", "cat": "commodity"}, {"x": 73.53, "y": 1.34, "label": "WTI", "cat": "commodity"}, {"x": 0, "y": -2.19, "label": "Gold", "cat": "commodity"}, {"x": -3.76, "y": 1.75, "label": "Copper", "cat": "commodity"}, {"x": -16.03, "y": 1.01, "label": "Nat Gas", "cat": "commodity"}, {"x": 85.0, "y": 5.79, "label": "Brent", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{boxWidth:8}},
+      tooltip:{callbacks:{label:c=>c.raw.label+' (YTD:'+c.raw.x.toFixed(1)+'%, Weekly:'+c.raw.y.toFixed(1)+'%)'}}
+    },
+    scales:{
+      x:{title:{display:true,text:'YTD %',color:'#7c8298'},grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},
+      y:{title:{display:true,text:'Weekly %',color:'#7c8298'},grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}}
+    }
+  }
+});
+// Commodity YTD
+new Chart(document.getElementById('cmChart'),{
+  type:'bar',
+  data:{labels:["Silver", "WTI", "Gold", "Copper", "Nat Gas", "Brent"],datasets:[{data:[0, 73.53, 0, -3.76, -16.03, 85.0],backgroundColor:bc([0, 73.53, 0, -3.76, -16.03, 85.0]),borderRadius:4,barPercentage:.55}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 </script>
