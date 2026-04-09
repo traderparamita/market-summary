@@ -84,7 +84,7 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
 
 - Python 3.12
 - 의존성: yfinance, FinanceDataReader, requests, python-dotenv, investiny
-- 환경변수: `ECOS_API_KEY` (한국은행 API, `../.env`에서 dotenv로 로딩)
+- 환경변수: `ECOS_API_KEY` (한국은행 API, 프로젝트 루트 `.env`에서 dotenv로 로딩)
 
 ## 주의사항
 
