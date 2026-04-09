@@ -3,7 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['output/**']
+    paths:
+      - 'output/**'
+      - 'simulation/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,9 +26,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Build deploy directory
+        run: |
+          mkdir -p _site
+          cp -r output/* _site/
+          if [ -d simulation ]; then
+            cp -r simulation _site/simulation
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: output
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
