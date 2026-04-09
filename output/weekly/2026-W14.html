@@ -9,8 +9,11 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root {
-  --bg:#f4f5f9;--card:#fff;--card2:#f0f1f6;--border:#e0e3ed;--text:#2d3148;--muted:#7c8298;
-  --accent:#3b6ee6;--accent2:#6b5ce7;--up:#0d9b6a;--down:#d9304f;--warn:#d48b07;--gold:#b8860b;--oil:#d35400;
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#3b6ee6; --accent2:#6b5ce7;
+  --up:#0d9b6a; --down:#d9304f; --warn:#d48b07;
+  --gold:#b8860b; --oil:#d35400;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:24px;max-width:1360px;margin:0 auto}
@@ -20,7 +23,7 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 .header-right{display:flex;gap:20px;align-items:center}
 .mood-badge{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:600}
 .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:28px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);text-align:center}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:1px}
 .kpi-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
 .kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
@@ -34,6 +37,7 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 .mover-val{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace}
 .heatmap-section{margin-bottom:28px}
 .heatmap-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.heatmap-section h2 .badge{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--card2);color:var(--muted);font-weight:500}
 .heatmap{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .heatmap th{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}
 .heatmap th:first-child,.heatmap th:nth-child(2),.heatmap th:nth-child(3){text-align:left}
@@ -42,20 +46,19 @@ body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);co
 .name-cell{font-weight:600;color:#1a1d2e;white-space:nowrap;min-width:100px}
 .close-cell{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:left;white-space:nowrap}
 .spark-cell{text-align:center;padding:4px 8px}
-.heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;border-radius:0;transition:all 0.15s}
 .heatmap tr:hover{filter:brightness(0.97)}
-.badge{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--card2);color:var(--muted);font-weight:500}
-.risk-strip{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}
-.risk-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;min-width:120px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-.risk-card .label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:2px}
-.risk-card .value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.risk-card .desc{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
-.bar-track{height:4px;background:var(--card2);border-radius:2px;margin-top:6px}
-.bar-fill{height:100%;border-radius:2px}
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .chart-card .title{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px}
-.chart-box{position:relative;height:280px}
+.chart-box{position:relative;height:260px}
+.risk-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.risk-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.risk-card .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.risk-card .value{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.risk-card .desc{font-size:11px;font-weight:600;margin-top:2px}
+.risk-card .bar-track{height:6px;background:#ecedf2;border-radius:3px;margin-top:8px;overflow:hidden}
+.risk-card .bar-fill{height:100%;border-radius:3px}
 .footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
 .back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}
 .back-link:hover{text-decoration:underline}
@@ -688,9 +691,9 @@ new Chart(document.getElementById('scatterChart'),{
   type:'scatter',
   data:{
     datasets:[
-      {label:'Equity',data:[{"x": 5.08, "y": 4.7, "label": "FTSE100", "cat": "equity"}, {"x": -2.24, "y": -0.86, "label": "Shanghai", "cat": "equity"}, {"x": 0, "y": -1.13, "label": "KOSPI", "cat": "equity"}, {"x": 1.94, "y": 3.28, "label": "Russell2K", "cat": "equity"}, {"x": -5.86, "y": 4.44, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": -6.81, "label": "KOSDAQ", "cat": "equity"}, {"x": 0, "y": 3.89, "label": "DAX", "cat": "equity"}, {"x": -3.84, "y": 3.36, "label": "S&P500", "cat": "equity"}, {"x": 0, "y": 3.4, "label": "STOXX50", "cat": "equity"}, {"x": -2.01, "y": 0.66, "label": "HSI", "cat": "equity"}, {"x": 0, "y": -0.47, "label": "Nikkei225", "cat": "equity"}, {"x": -2.3, "y": 3.38, "label": "CAC40", "cat": "equity"}, {"x": -13.08, "y": -0.47, "label": "NIFTY50", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
-      {label:'Stocks',data:[{"x": 0, "y": 3.39, "label": "Samsung", "cat": "stocks"}, {"x": -19.82, "y": -0.34, "label": "Tesla", "cat": "stocks"}, {"x": 11.88, "y": 3.76, "label": "TSMC", "cat": "stocks"}, {"x": -4.88, "y": 5.89, "label": "NVIDIA", "cat": "stocks"}, {"x": -12.9, "y": 9.27, "label": "META", "cat": "stocks"}, {"x": -22.6, "y": 4.68, "label": "Microsoft", "cat": "stocks"}, {"x": -8.93, "y": 4.61, "label": "Broadcom", "cat": "stocks"}, {"x": -5.44, "y": 7.81, "label": "Alphabet", "cat": "stocks"}, {"x": -5.78, "y": 2.86, "label": "Apple", "cat": "stocks"}, {"x": -9.12, "y": 5.23, "label": "Amazon", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
-      {label:'Commodity',data:[{"x": 0, "y": 3.79, "label": "Gold", "cat": "commodity"}, {"x": 79.18, "y": -3.14, "label": "Brent", "cat": "commodity"}, {"x": 0, "y": 4.83, "label": "Silver", "cat": "commodity"}, {"x": -1.73, "y": 2.1, "label": "Copper", "cat": "commodity"}, {"x": 94.25, "y": 11.94, "label": "WTI", "cat": "commodity"}, {"x": -24.04, "y": -9.53, "label": "Nat Gas", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
+      {label:'Equity',data:[{"x": 0, "y": 3.89, "label": "DAX", "cat": "equity"}, {"x": 0, "y": -0.47, "label": "Nikkei225", "cat": "equity"}, {"x": -5.86, "y": 4.44, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": 3.4, "label": "STOXX50", "cat": "equity"}, {"x": -2.24, "y": -0.86, "label": "Shanghai", "cat": "equity"}, {"x": 1.94, "y": 3.28, "label": "Russell2K", "cat": "equity"}, {"x": -13.08, "y": -0.47, "label": "NIFTY50", "cat": "equity"}, {"x": 0, "y": -6.81, "label": "KOSDAQ", "cat": "equity"}, {"x": -3.84, "y": 3.36, "label": "S&P500", "cat": "equity"}, {"x": -2.01, "y": 0.66, "label": "HSI", "cat": "equity"}, {"x": 5.08, "y": 4.7, "label": "FTSE100", "cat": "equity"}, {"x": -2.3, "y": 3.38, "label": "CAC40", "cat": "equity"}, {"x": 0, "y": -1.13, "label": "KOSPI", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'Stocks',data:[{"x": -5.78, "y": 2.86, "label": "Apple", "cat": "stocks"}, {"x": -5.44, "y": 7.81, "label": "Alphabet", "cat": "stocks"}, {"x": -22.6, "y": 4.68, "label": "Microsoft", "cat": "stocks"}, {"x": -19.82, "y": -0.34, "label": "Tesla", "cat": "stocks"}, {"x": -8.93, "y": 4.61, "label": "Broadcom", "cat": "stocks"}, {"x": 0, "y": 3.39, "label": "Samsung", "cat": "stocks"}, {"x": -12.9, "y": 9.27, "label": "META", "cat": "stocks"}, {"x": -4.88, "y": 5.89, "label": "NVIDIA", "cat": "stocks"}, {"x": -9.12, "y": 5.23, "label": "Amazon", "cat": "stocks"}, {"x": 11.88, "y": 3.76, "label": "TSMC", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
+      {label:'Commodity',data:[{"x": 0, "y": 3.79, "label": "Gold", "cat": "commodity"}, {"x": 94.25, "y": 11.94, "label": "WTI", "cat": "commodity"}, {"x": 79.18, "y": -3.14, "label": "Brent", "cat": "commodity"}, {"x": -24.04, "y": -9.53, "label": "Nat Gas", "cat": "commodity"}, {"x": 0, "y": 4.83, "label": "Silver", "cat": "commodity"}, {"x": -1.73, "y": 2.1, "label": "Copper", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
     ]
   },
   options:{
@@ -708,7 +711,7 @@ new Chart(document.getElementById('scatterChart'),{
 // Commodity YTD
 new Chart(document.getElementById('cmChart'),{
   type:'bar',
-  data:{labels:["Gold", "Brent", "Silver", "Copper", "WTI", "Nat Gas"],datasets:[{data:[0, 79.18, 0, -1.73, 94.25, -24.04],backgroundColor:bc([0, 79.18, 0, -1.73, 94.25, -24.04]),borderRadius:4,barPercentage:.55}]},
+  data:{labels:["Gold", "WTI", "Brent", "Nat Gas", "Silver", "Copper"],datasets:[{data:[0, 94.25, 79.18, -24.04, 0, -1.73],backgroundColor:bc([0, 94.25, 79.18, -24.04, 0, -1.73]),borderRadius:4,barPercentage:.55}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 </script>

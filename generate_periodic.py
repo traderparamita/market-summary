@@ -276,8 +276,11 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root {{
-  --bg:#f4f5f9;--card:#fff;--card2:#f0f1f6;--border:#e0e3ed;--text:#2d3148;--muted:#7c8298;
-  --accent:#3b6ee6;--accent2:#6b5ce7;--up:#0d9b6a;--down:#d9304f;--warn:#d48b07;--gold:#b8860b;--oil:#d35400;
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#3b6ee6; --accent2:#6b5ce7;
+  --up:#0d9b6a; --down:#d9304f; --warn:#d48b07;
+  --gold:#b8860b; --oil:#d35400;
 }}
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:24px;max-width:1360px;margin:0 auto}}
@@ -287,7 +290,7 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .header-right{{display:flex;gap:20px;align-items:center}}
 .mood-badge{{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:600}}
 .kpi-strip{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:28px}}
-.kpi{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);text-align:center}}
+.kpi{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
 .kpi-label{{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:1px}}
 .kpi-value{{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}}
 .kpi-chg{{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}}
@@ -301,6 +304,7 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .mover-val{{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace}}
 .heatmap-section{{margin-bottom:28px}}
 .heatmap-section h2{{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}}
+.heatmap-section h2 .badge{{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--card2);color:var(--muted);font-weight:500}}
 .heatmap{{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
 .heatmap th{{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}}
 .heatmap th:first-child,.heatmap th:nth-child(2),.heatmap th:nth-child(3){{text-align:left}}
@@ -309,20 +313,19 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .name-cell{{font-weight:600;color:#1a1d2e;white-space:nowrap;min-width:100px}}
 .close-cell{{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:left;white-space:nowrap}}
 .spark-cell{{text-align:center;padding:4px 8px}}
-.heat-cell{{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}}
+.heat-cell{{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;border-radius:0;transition:all 0.15s}}
 .heatmap tr:hover{{filter:brightness(0.97)}}
-.badge{{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--card2);color:var(--muted);font-weight:500}}
-.risk-strip{{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}}
-.risk-card{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;min-width:120px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
-.risk-card .label{{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:2px}}
-.risk-card .value{{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}}
-.risk-card .desc{{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}}
-.bar-track{{height:4px;background:var(--card2);border-radius:2px;margin-top:6px}}
-.bar-fill{{height:100%;border-radius:2px}}
 .chart-grid{{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}}
 .chart-card{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
 .chart-card .title{{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px}}
-.chart-box{{position:relative;height:280px}}
+.chart-box{{position:relative;height:260px}}
+.risk-strip{{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:28px}}
+.risk-card{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.risk-card .label{{font-size:12px;color:var(--muted);margin-bottom:4px}}
+.risk-card .value{{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace}}
+.risk-card .desc{{font-size:11px;font-weight:600;margin-top:2px}}
+.risk-card .bar-track{{height:6px;background:#ecedf2;border-radius:3px;margin-top:8px;overflow:hidden}}
+.risk-card .bar-fill{{height:100%;border-radius:3px}}
 .footer{{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}}
 .back-link{{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}}
 .back-link:hover{{text-decoration:underline}}
