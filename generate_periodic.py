@@ -6,6 +6,7 @@ Weekly & Monthly Market Summary Report Generator
 
 import json
 import os
+import re
 import glob
 import datetime as dt
 import csv

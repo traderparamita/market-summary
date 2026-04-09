@@ -14,15 +14,21 @@ prompt.md            # 원래 보고서 작성 가이드라인 (참고용)
 history/market_data.csv  # 일별 종가 시계열 축적 (date,category,ticker,close)
 ```
 
-## 데이터 흐름
+## 매일 영업일 08:00 KST 워크플로우
 
-1. `fetch_data()` → yfinance + FDR(한국지수) + investiny(FX/Commodity/일부 equity) + 한국은행 ECOS API(한국 금리)
-2. `append_to_history()` → `history/market_data.csv`에 종가 축적 (주말 데이터 자동 필터)
-3. `build_report_data()` → CSV에서 메트릭 계산 (daily/weekly/monthly/ytd/spark)
-4. 계산 결과 → `output/YYYY-MM/YYYY-MM-DD_data.json` 저장
-5. `generate_html()` → 히트맵/스파크라인/차트 포함 HTML 보고서 생성
-6. Story 탭: 기존 Story 콘텐츠 보존 (`_inject_existing_story`)
-7. 주간/월간: `generate_periodic.py`가 일간 JSON 집계하여 별도 보고서 생성
+1. **일간 데이터 수집** — `generate.py main()` → `fetch_data()` + `append_to_history()` → `market_data.csv` 축적
+2. **일간 Data Dashboard** — `build_report_data()` → CSV에서 메트릭 계산 → `generate_html()` → HTML 보고서
+3. **일간 Market Story** — Claude에게 요청하여 작성 → `_inject_existing_story()`로 HTML에 주입
+4. **주간 Data Dashboard** — `update_current_periodic()` → `generate_periodic.py`가 `market_data.csv`에서 직접 계산 (없으면 생성, 있으면 갱신)
+5. **주간 Market Story** — Claude에게 요청 (해당 주의 일간 Story들을 읽고 종합) → `_inject_existing_story()`로 주간 HTML에 주입
+6. **월간 Data Dashboard** — 4번과 동일 방식으로 월간 보고서 생성/갱신
+7. **월간 Market Story** — 5번과 동일 방식으로 월간 Story 작성/갱신
+8. **커밋 & 푸시** — git commit + push → GitHub Pages 자동 배포
+
+### 데이터 소스 원칙
+- **모든 Data Dashboard** (일간/주간/월간): `history/market_data.csv`가 단일 소스 (Single Source of Truth)
+- **모든 Market Story**: Claude가 작성. 주간/월간은 일간 Story를 기반으로 종합
+- **`_inject_existing_story()`**: 보고서 재생성 시 기존 Story 콘텐츠 보존 (일간/주간/월간 모두 적용)
 
 ## 수집 대상
 
