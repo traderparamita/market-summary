@@ -1181,8 +1181,7 @@ def main(target_date=None):
     html, report_date = generate_html(data)
 
     html_path = os.path.join(month_dir, f"{report_date}.html")
-    with open(html_path, "w") as f:
-        f.write(html)
+    _inject_existing_story(html_path, html)
     print(f"Report saved: {html_path}")
 
     generate_index()
