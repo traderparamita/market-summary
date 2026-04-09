@@ -11,6 +11,9 @@ import datetime as dt
 import json
 import os
 import requests
+from dotenv import load_dotenv
+
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 try:
     from investiny import historical_data as inv_historical
@@ -154,6 +157,7 @@ def fetch_data(end_date=None):
     today = dt.date.today()
     target = dt.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
     result = {}
+    history_rows = []  # (date_str, category, ticker_name, close)
 
     def calc_metrics(df, ref_date):
         """DataFrame에서 지표 계산."""
@@ -215,9 +219,12 @@ def fetch_data(end_date=None):
                 df = raw[ticker] if ticker in raw.columns.get_level_values(0) else None
 
             metrics = None
+            used_df = None  # DataFrame that ultimately provides the metrics
             if df is not None and not df.empty:
                 df = df.dropna(subset=["Close"])
-                metrics = calc_metrics(df, target) if not df.empty else None
+                if not df.empty:
+                    metrics = calc_metrics(df, target)
+                    used_df = df
 
             # FX/Commodity 티커는 yfinance 데이터 부정확 → 항상 investiny로 보정 시도
             needs_inv_fix = cat in ("fx", "commodity")
@@ -233,6 +240,7 @@ def fetch_data(end_date=None):
                         fdr_metrics = calc_metrics(fdr_df, target)
                         if fdr_metrics and not fdr_metrics["holiday"]:
                             metrics = fdr_metrics
+                            used_df = fdr_df
                             print(f"  [FDR] {name}: {fdr_metrics['close']:.2f} ({fdr_metrics['daily']:+.2f}%) via {fdr_code}")
                 except Exception as fe:
                     print(f"  [FDR WARN] {name}: {fe}")
@@ -257,12 +265,19 @@ def fetch_data(end_date=None):
                             inv_metrics = calc_metrics(inv_df, target)
                             if inv_metrics and not inv_metrics["holiday"]:
                                 metrics = inv_metrics
+                                used_df = inv_df
                                 print(f"  [INV] {name}: {inv_metrics['close']:.2f} ({inv_metrics['daily']:+.2f}%) via investing.com id={inv_id}")
                 except Exception as ie:
                     print(f"  [INV WARN] {name}: {ie}")
 
             if metrics is None:
                 continue
+
+            # Collect full history from the winning DataFrame
+            if used_df is not None:
+                for idx, row in used_df.iterrows():
+                    d = idx.date() if hasattr(idx, 'date') else idx
+                    history_rows.append((str(d), cat, name, float(row["Close"])))
 
             if cat not in result:
                 result[cat] = {}
@@ -272,18 +287,19 @@ def fetch_data(end_date=None):
             print(f"  [WARN] {name} ({ticker}): {e}")
 
     # ── 한국 금리: 한국은행 ECOS API ──
-    kr_rates = fetch_kr_rates(end_date)
+    kr_rates, kr_history = fetch_kr_rates(end_date)
     if kr_rates:
         if "bond" not in result:
             result["bond"] = {}
         result["bond"].update(kr_rates)
+    history_rows.extend(kr_history)
 
-    return result
+    return result, history_rows
 
 
 def fetch_kr_rates(end_date=None):
     """한국은행 ECOS API에서 한국 금리 데이터 수집"""
-    BOK_API_KEY = os.environ.get("BOK_API_KEY", "sample")
+    BOK_API_KEY = os.environ.get("BOK_API_KEY") or os.environ.get("ECOS_API_KEY", "sample")
     BASE_URL = "https://ecos.bok.or.kr/api/StatisticSearch"
     STAT_CODE = "817Y002"  # 시장금리(일별)
 
@@ -303,6 +319,7 @@ def fetch_kr_rates(end_date=None):
     end = ref_date.strftime("%Y%m%d")
 
     result = {}
+    history_rows = []
     for name, item_code in items.items():
         try:
             url = f"{BASE_URL}/{BOK_API_KEY}/json/kr/1/{max_rows}/{STAT_CODE}/D/{start}/{end}/{item_code}"
@@ -320,6 +337,11 @@ def fetch_kr_rates(end_date=None):
             valid = [(r["TIME"], float(r["DATA_VALUE"])) for r in rows if r.get("DATA_VALUE")]
             if not valid:
                 continue
+
+            # Collect full history for CSV
+            for t, v in valid:
+                d = f"{t[:4]}-{t[4:6]}-{t[6:8]}"
+                history_rows.append((d, "bond", name, v))
 
             close = valid[-1][1]
             date_str = valid[-1][0]
@@ -339,7 +361,7 @@ def fetch_kr_rates(end_date=None):
             if not is_sample:
                 if len(valid) >= 23:
                     monthly_chg = (close - valid[-23][1]) / valid[-23][1] * 100
-                yr_vals = [(t, v) for t, v in valid if t[:4] == str(today.year)]
+                yr_vals = [(t, v) for t, v in valid if t[:4] == str(ref_date.year)]
                 if yr_vals:
                     ytd_chg = (close - yr_vals[0][1]) / yr_vals[0][1] * 100
 
@@ -360,7 +382,7 @@ def fetch_kr_rates(end_date=None):
         except Exception as e:
             print(f"  [WARN] BOK {name}: {e}")
 
-    return result
+    return result, history_rows
 
 
 def fmt(val, decimals=2):
@@ -1109,25 +1131,31 @@ def generate_index():
     print(f"Index saved: {idx_path}")
 
 
-def append_to_history(data, target_date):
-    """Append one day's close prices to history/market_data.csv."""
+def append_to_history(history_rows):
+    """Append historical close prices to history/market_data.csv, skipping duplicates."""
     os.makedirs(HISTORY_DIR, exist_ok=True)
     file_exists = os.path.exists(HISTORY_CSV)
 
+    # Load existing (date, ticker) pairs for dedup
+    existing = set()
     if file_exists:
         with open(HISTORY_CSV) as f:
+            next(f, None)  # skip header
             for line in f:
-                if line.startswith(target_date + ","):
-                    return  # already have this date
+                parts = line.strip().split(",", 3)
+                if len(parts) >= 3:
+                    existing.add((parts[0], parts[2]))  # (date, ticker)
+
+    new_rows = [(d, cat, name, close) for d, cat, name, close in history_rows
+                if (d, name) not in existing]
+    if not new_rows:
+        return
 
     with open(HISTORY_CSV, "a") as f:
         if not file_exists:
             f.write("date,category,ticker,close\n")
-        for cat in ["equity", "bond", "fx", "commodity", "risk", "stocks"]:
-            for name, item in data.get(cat, {}).items():
-                close = item.get("close")
-                if close is not None:
-                    f.write(f"{target_date},{cat},{name},{close}\n")
+        for d, cat, name, close in sorted(new_rows):
+            f.write(f"{d},{cat},{name},{close}\n")
 
 
 def main(target_date=None):
@@ -1138,7 +1166,7 @@ def main(target_date=None):
     print("=== Daily Market Summary Generator ===")
     print(f"Target date: {target_date}")
 
-    data = fetch_data(end_date=target_date)
+    data, history_rows = fetch_data(end_date=target_date)
 
     # 월별 폴더에 저장
     month_dir = os.path.join(OUTPUT_DIR, target_date[:7])
@@ -1148,7 +1176,7 @@ def main(target_date=None):
     with open(json_path, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     print(f"Data saved: {json_path}")
-    append_to_history(data, target_date)
+    append_to_history(history_rows)
 
     html, report_date = generate_html(data)
 
