@@ -675,7 +675,7 @@ const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4';
 function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
 new Chart(document.getElementById('eqChart'),{
   type:'bar',
-  data:{labels:["FTSE100", "NASDAQ", "DAX", "STOXX50", "CAC40", "S&P500", "Russell2K", "HSI", "NIFTY50", "Nikkei225", "Shanghai", "KOSPI", "KOSDAQ"],datasets:[{data:[4.7, 4.44, 3.89, 3.4, 3.38, 3.36, 3.28, 0.66, -0.47, -0.47, -0.86, -1.13, -6.81],backgroundColor:bc([4.7, 4.44, 3.89, 3.4, 3.38, 3.36, 3.28, 0.66, -0.47, -0.47, -0.86, -1.13, -6.81]),borderRadius:4,barPercentage:.6}]},
+  data:{labels:["FTSE100", "NASDAQ", "DAX", "STOXX50", "CAC40", "S&P500", "Russell2K", "HSI", "Nikkei225", "NIFTY50", "Shanghai", "KOSPI", "KOSDAQ"],datasets:[{data:[4.7, 4.44, 3.89, 3.4, 3.38, 3.36, 3.28, 0.66, -0.47, -0.47, -0.86, -1.13, -6.81],backgroundColor:bc([4.7, 4.44, 3.89, 3.4, 3.38, 3.36, 3.28, 0.66, -0.47, -0.47, -0.86, -1.13, -6.81]),borderRadius:4,barPercentage:.6}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 new Chart(document.getElementById('stChart'),{
@@ -688,9 +688,9 @@ new Chart(document.getElementById('scatterChart'),{
   type:'scatter',
   data:{
     datasets:[
-      {label:'Equity',data:[{"x": -13.08, "y": -0.47, "label": "NIFTY50", "cat": "equity"}, {"x": 1.94, "y": 3.28, "label": "Russell2K", "cat": "equity"}, {"x": 0, "y": 3.4, "label": "STOXX50", "cat": "equity"}, {"x": 0, "y": -0.47, "label": "Nikkei225", "cat": "equity"}, {"x": 0, "y": -6.81, "label": "KOSDAQ", "cat": "equity"}, {"x": -2.24, "y": -0.86, "label": "Shanghai", "cat": "equity"}, {"x": -2.3, "y": 3.38, "label": "CAC40", "cat": "equity"}, {"x": 5.08, "y": 4.7, "label": "FTSE100", "cat": "equity"}, {"x": -2.01, "y": 0.66, "label": "HSI", "cat": "equity"}, {"x": -3.84, "y": 3.36, "label": "S&P500", "cat": "equity"}, {"x": -5.86, "y": 4.44, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": 3.89, "label": "DAX", "cat": "equity"}, {"x": 0, "y": -1.13, "label": "KOSPI", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
-      {label:'Stocks',data:[{"x": -5.44, "y": 7.81, "label": "Alphabet", "cat": "stocks"}, {"x": -5.78, "y": 2.86, "label": "Apple", "cat": "stocks"}, {"x": -9.12, "y": 5.23, "label": "Amazon", "cat": "stocks"}, {"x": 0, "y": 3.39, "label": "Samsung", "cat": "stocks"}, {"x": -8.93, "y": 4.61, "label": "Broadcom", "cat": "stocks"}, {"x": -12.9, "y": 9.27, "label": "META", "cat": "stocks"}, {"x": -19.82, "y": -0.34, "label": "Tesla", "cat": "stocks"}, {"x": -4.88, "y": 5.89, "label": "NVIDIA", "cat": "stocks"}, {"x": 11.88, "y": 3.76, "label": "TSMC", "cat": "stocks"}, {"x": -22.6, "y": 4.68, "label": "Microsoft", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
-      {label:'Commodity',data:[{"x": 0, "y": 4.83, "label": "Silver", "cat": "commodity"}, {"x": 94.25, "y": 11.94, "label": "WTI", "cat": "commodity"}, {"x": 0, "y": 3.79, "label": "Gold", "cat": "commodity"}, {"x": -1.73, "y": 2.1, "label": "Copper", "cat": "commodity"}, {"x": -24.04, "y": -9.53, "label": "Nat Gas", "cat": "commodity"}, {"x": 79.18, "y": -3.14, "label": "Brent", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
+      {label:'Equity',data:[{"x": 5.08, "y": 4.7, "label": "FTSE100", "cat": "equity"}, {"x": -2.24, "y": -0.86, "label": "Shanghai", "cat": "equity"}, {"x": 0, "y": -1.13, "label": "KOSPI", "cat": "equity"}, {"x": 1.94, "y": 3.28, "label": "Russell2K", "cat": "equity"}, {"x": -5.86, "y": 4.44, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": -6.81, "label": "KOSDAQ", "cat": "equity"}, {"x": 0, "y": 3.89, "label": "DAX", "cat": "equity"}, {"x": -3.84, "y": 3.36, "label": "S&P500", "cat": "equity"}, {"x": 0, "y": 3.4, "label": "STOXX50", "cat": "equity"}, {"x": -2.01, "y": 0.66, "label": "HSI", "cat": "equity"}, {"x": 0, "y": -0.47, "label": "Nikkei225", "cat": "equity"}, {"x": -2.3, "y": 3.38, "label": "CAC40", "cat": "equity"}, {"x": -13.08, "y": -0.47, "label": "NIFTY50", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'Stocks',data:[{"x": 0, "y": 3.39, "label": "Samsung", "cat": "stocks"}, {"x": -19.82, "y": -0.34, "label": "Tesla", "cat": "stocks"}, {"x": 11.88, "y": 3.76, "label": "TSMC", "cat": "stocks"}, {"x": -4.88, "y": 5.89, "label": "NVIDIA", "cat": "stocks"}, {"x": -12.9, "y": 9.27, "label": "META", "cat": "stocks"}, {"x": -22.6, "y": 4.68, "label": "Microsoft", "cat": "stocks"}, {"x": -8.93, "y": 4.61, "label": "Broadcom", "cat": "stocks"}, {"x": -5.44, "y": 7.81, "label": "Alphabet", "cat": "stocks"}, {"x": -5.78, "y": 2.86, "label": "Apple", "cat": "stocks"}, {"x": -9.12, "y": 5.23, "label": "Amazon", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
+      {label:'Commodity',data:[{"x": 0, "y": 3.79, "label": "Gold", "cat": "commodity"}, {"x": 79.18, "y": -3.14, "label": "Brent", "cat": "commodity"}, {"x": 0, "y": 4.83, "label": "Silver", "cat": "commodity"}, {"x": -1.73, "y": 2.1, "label": "Copper", "cat": "commodity"}, {"x": 94.25, "y": 11.94, "label": "WTI", "cat": "commodity"}, {"x": -24.04, "y": -9.53, "label": "Nat Gas", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
     ]
   },
   options:{
@@ -708,7 +708,7 @@ new Chart(document.getElementById('scatterChart'),{
 // Commodity YTD
 new Chart(document.getElementById('cmChart'),{
   type:'bar',
-  data:{labels:["Silver", "WTI", "Gold", "Copper", "Nat Gas", "Brent"],datasets:[{data:[0, 94.25, 0, -1.73, -24.04, 79.18],backgroundColor:bc([0, 94.25, 0, -1.73, -24.04, 79.18]),borderRadius:4,barPercentage:.55}]},
+  data:{labels:["Gold", "Brent", "Silver", "Copper", "WTI", "Nat Gas"],datasets:[{data:[0, 79.18, 0, -1.73, 94.25, -24.04],backgroundColor:bc([0, 79.18, 0, -1.73, 94.25, -24.04]),borderRadius:4,barPercentage:.55}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 </script>

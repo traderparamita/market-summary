@@ -675,7 +675,7 @@ const UP='#0d9b6a',DN='#d9304f',AC='#3b6ee6',WN='#d48b07',MU='#b0b4c4';
 function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
 new Chart(document.getElementById('eqChart'),{
   type:'bar',
-  data:{labels:["HSI", "Russell2K", "Shanghai", "FTSE100", "S&P500", "NASDAQ", "STOXX50", "Nikkei225", "KOSDAQ", "DAX", "KOSPI", "CAC40", "NIFTY50"],datasets:[{data:[6.85, 5.31, 3.76, 2.94, 1.37, 0.95, 0, 0, 0, 0, 0, -0.28, -3.1],backgroundColor:bc([6.85, 5.31, 3.76, 2.94, 1.37, 0.95, 0, 0, 0, 0, 0, -0.28, -3.1]),borderRadius:4,barPercentage:.6}]},
+  data:{labels:["HSI", "Russell2K", "Shanghai", "FTSE100", "S&P500", "NASDAQ", "KOSPI", "KOSDAQ", "DAX", "STOXX50", "Nikkei225", "CAC40", "NIFTY50"],datasets:[{data:[6.85, 5.31, 3.76, 2.94, 1.37, 0.95, 0, 0, 0, 0, 0, -0.28, -3.1],backgroundColor:bc([6.85, 5.31, 3.76, 2.94, 1.37, 0.95, 0, 0, 0, 0, 0, -0.28, -3.1]),borderRadius:4,barPercentage:.6}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 new Chart(document.getElementById('stChart'),{
@@ -688,9 +688,9 @@ new Chart(document.getElementById('scatterChart'),{
   type:'scatter',
   data:{
     datasets:[
-      {label:'Equity',data:[{"x": -3.1, "y": -3.1, "label": "NIFTY50", "cat": "equity"}, {"x": 5.31, "y": 5.31, "label": "Russell2K", "cat": "equity"}, {"x": 0, "y": 0, "label": "STOXX50", "cat": "equity"}, {"x": 0, "y": 0, "label": "Nikkei225", "cat": "equity"}, {"x": 0, "y": 0, "label": "KOSDAQ", "cat": "equity"}, {"x": 3.76, "y": 3.76, "label": "Shanghai", "cat": "equity"}, {"x": -0.28, "y": -0.28, "label": "CAC40", "cat": "equity"}, {"x": 2.94, "y": 2.94, "label": "FTSE100", "cat": "equity"}, {"x": 6.85, "y": 6.85, "label": "HSI", "cat": "equity"}, {"x": 1.37, "y": 1.37, "label": "S&P500", "cat": "equity"}, {"x": 0.95, "y": 0.95, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": 0, "label": "DAX", "cat": "equity"}, {"x": 0, "y": 0, "label": "KOSPI", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
-      {label:'Stocks',data:[{"x": 7.99, "y": 7.99, "label": "Alphabet", "cat": "stocks"}, {"x": -4.55, "y": -4.55, "label": "Apple", "cat": "stocks"}, {"x": 3.67, "y": 3.67, "label": "Amazon", "cat": "stocks"}, {"x": 0, "y": 0, "label": "Samsung", "cat": "stocks"}, {"x": -4.28, "y": -4.28, "label": "Broadcom", "cat": "stocks"}, {"x": 8.55, "y": 8.55, "label": "META", "cat": "stocks"}, {"x": -4.29, "y": -4.29, "label": "Tesla", "cat": "stocks"}, {"x": 2.48, "y": 2.48, "label": "NVIDIA", "cat": "stocks"}, {"x": 8.78, "y": 8.78, "label": "TSMC", "cat": "stocks"}, {"x": -11.03, "y": -11.03, "label": "Microsoft", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
-      {label:'Commodity',data:[{"x": 0, "y": 10.58, "label": "Silver", "cat": "commodity"}, {"x": 13.57, "y": 13.57, "label": "WTI", "cat": "commodity"}, {"x": 0, "y": 8.79, "label": "Gold", "cat": "commodity"}, {"x": 4.26, "y": 4.26, "label": "Copper", "cat": "commodity"}, {"x": 18.12, "y": 18.12, "label": "Nat Gas", "cat": "commodity"}, {"x": 16.17, "y": 16.17, "label": "Brent", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
+      {label:'Equity',data:[{"x": 2.94, "y": 2.94, "label": "FTSE100", "cat": "equity"}, {"x": 3.76, "y": 3.76, "label": "Shanghai", "cat": "equity"}, {"x": 0, "y": 0, "label": "KOSPI", "cat": "equity"}, {"x": 5.31, "y": 5.31, "label": "Russell2K", "cat": "equity"}, {"x": 0.95, "y": 0.95, "label": "NASDAQ", "cat": "equity"}, {"x": 0, "y": 0, "label": "KOSDAQ", "cat": "equity"}, {"x": 0, "y": 0, "label": "DAX", "cat": "equity"}, {"x": 1.37, "y": 1.37, "label": "S&P500", "cat": "equity"}, {"x": 0, "y": 0, "label": "STOXX50", "cat": "equity"}, {"x": 6.85, "y": 6.85, "label": "HSI", "cat": "equity"}, {"x": 0, "y": 0, "label": "Nikkei225", "cat": "equity"}, {"x": -0.28, "y": -0.28, "label": "CAC40", "cat": "equity"}, {"x": -3.1, "y": -3.1, "label": "NIFTY50", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'Stocks',data:[{"x": 0, "y": 0, "label": "Samsung", "cat": "stocks"}, {"x": -4.29, "y": -4.29, "label": "Tesla", "cat": "stocks"}, {"x": 8.78, "y": 8.78, "label": "TSMC", "cat": "stocks"}, {"x": 2.48, "y": 2.48, "label": "NVIDIA", "cat": "stocks"}, {"x": 8.55, "y": 8.55, "label": "META", "cat": "stocks"}, {"x": -11.03, "y": -11.03, "label": "Microsoft", "cat": "stocks"}, {"x": -4.28, "y": -4.28, "label": "Broadcom", "cat": "stocks"}, {"x": 7.99, "y": 7.99, "label": "Alphabet", "cat": "stocks"}, {"x": -4.55, "y": -4.55, "label": "Apple", "cat": "stocks"}, {"x": 3.67, "y": 3.67, "label": "Amazon", "cat": "stocks"}],backgroundColor:'#6b5ce7aa',pointRadius:6},
+      {label:'Commodity',data:[{"x": 0, "y": 8.79, "label": "Gold", "cat": "commodity"}, {"x": 16.17, "y": 16.17, "label": "Brent", "cat": "commodity"}, {"x": 0, "y": 10.58, "label": "Silver", "cat": "commodity"}, {"x": 4.26, "y": 4.26, "label": "Copper", "cat": "commodity"}, {"x": 13.57, "y": 13.57, "label": "WTI", "cat": "commodity"}, {"x": 18.12, "y": 18.12, "label": "Nat Gas", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
     ]
   },
   options:{
@@ -708,7 +708,7 @@ new Chart(document.getElementById('scatterChart'),{
 // Commodity YTD
 new Chart(document.getElementById('cmChart'),{
   type:'bar',
-  data:{labels:["Silver", "WTI", "Gold", "Copper", "Nat Gas", "Brent"],datasets:[{data:[0, 13.57, 0, 4.26, 18.12, 16.17],backgroundColor:bc([0, 13.57, 0, 4.26, 18.12, 16.17]),borderRadius:4,barPercentage:.55}]},
+  data:{labels:["Gold", "Brent", "Silver", "Copper", "WTI", "Nat Gas"],datasets:[{data:[0, 16.17, 0, 4.26, 13.57, 18.12],backgroundColor:bc([0, 16.17, 0, 4.26, 13.57, 18.12]),borderRadius:4,barPercentage:.55}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
 });
 </script>
