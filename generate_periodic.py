@@ -305,6 +305,7 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 .heatmap-section{{margin-bottom:28px}}
 .heatmap-section h2{{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}}
 .heatmap-section h2 .badge{{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--card2);color:var(--muted);font-weight:500}}
+.heatmap-section h2 .src-tag{{font-size:10px;padding:2px 8px;border-radius:10px;background:#f0f1f5;color:#9a9db5;font-weight:400;margin-left:6px;letter-spacing:0.3px}}
 .heatmap{{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
 .heatmap th{{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}}
 .heatmap th:first-child,.heatmap th:nth-child(2),.heatmap th:nth-child(3){{text-align:left}}
@@ -448,6 +449,14 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
     html += '</div>\n</div>\n'
 
     # 히트맵 테이블
+    DATA_SOURCES = {
+        "Equity":        "yfinance · FinanceDataReader · investiny",
+        "Bonds & Rates": "yfinance · ECOS(한국은행)",
+        "Bond ETF":      "yfinance",
+        "FX":            "investiny(investing.com) · FinanceDataReader",
+        "Commodities":   "investiny(investing.com) · yfinance",
+        "Major Stocks":  "yfinance",
+    }
     sections = [
         ("Equity", eq, False, EQUITY_ORDER),
         ("Bonds & Rates", bd_rates, False, BOND_ORDER),
@@ -461,8 +470,10 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
             continue
         idx = {n: i for i, n in enumerate(order)}
         items = sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
+        src = DATA_SOURCES.get(sec_title, "")
+        src_html = f' <span class="src-tag">{src}</span>' if src else ""
         html += f"""<div class="heatmap-section">
-<h2>{sec_title} <span class="badge">{len(items)}</span></h2>
+<h2>{sec_title} <span class="badge">{len(items)}</span>{src_html}</h2>
 <table class="heatmap">
 <thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>{period_label}</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
 <tbody>\n"""
@@ -471,7 +482,7 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
         html += "</tbody></table></div>\n"
 
     # ── Risk Dashboard ──
-    html += '<div class="heatmap-section"><h2>Risk Dashboard</h2></div>\n<div class="risk-strip">\n'
+    html += '<div class="heatmap-section"><h2>Risk Dashboard <span class="src-tag">yfinance · FinanceDataReader</span></h2></div>\n<div class="risk-strip">\n'
     vix_pct = min(vix_val / 50 * 100, 100) if vix_val else 0
     html += f"""<div class="risk-card">
   <div class="label">VIX</div>
