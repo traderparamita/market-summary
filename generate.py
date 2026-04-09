@@ -21,6 +21,8 @@ except ImportError:
 # ── Config ──────────────────────────────────────────────────────
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+HISTORY_DIR = os.path.join(os.path.dirname(__file__), "history")
+HISTORY_CSV = os.path.join(HISTORY_DIR, "market_data.csv")
 
 # yfinance 지수 데이터 누락 시 FinanceDataReader로 보완
 FDR_FALLBACK = {
@@ -29,6 +31,11 @@ FDR_FALLBACK = {
     "^N225":  "N225",    # Nikkei225
     "^HSI":   "HSI",     # Hang Seng
     "000001.SS": "SSEC", # Shanghai
+    # FX: yfinance =X 티커는 날짜가 1영업일 밀리므로 FDR로 보정
+    "KRW=X":    "USD/KRW",
+    "EURUSD=X": "EUR/USD",
+    "JPY=X":    "USD/JPY",
+    "CNY=X":    "USD/CNY",
 }
 
 # yfinance + FDR 모두 실패 시 investiny(investing.com) fallback
@@ -42,6 +49,21 @@ INVESTINY_FALLBACK = {
     "^HSI":      179,    # Hang Seng
     "000001.SS": 40820,  # Shanghai Composite
     "^NSEI":     17940,  # Nifty 50
+    # FX: yfinance =X 티커 날짜가 1영업일 밀리므로 investiny로 보정
+    "DX-Y.NYB":  1224074, # DXY (US Dollar Index)
+    "KRW=X":     650,     # USD/KRW
+    "EURUSD=X":  1,       # EUR/USD
+    "JPY=X":     3,       # USD/JPY
+    "CNY=X":     2111,    # USD/CNY
+    "AUDUSD=X":  5,       # AUD/USD
+    "GBPUSD=X":  2,       # GBP/USD
+    # Commodity: yfinance =F 선물 데이터 보정
+    "CL=F":      8849,    # WTI Crude Oil
+    "BZ=F":      8833,    # Brent Crude Oil
+    "GC=F":      8830,    # Gold
+    "SI=F":      8836,    # Silver
+    "HG=F":      8831,    # Copper
+    "NG=F":      8862,    # Natural Gas
 }
 
 # 수집 대상 티커
@@ -197,8 +219,11 @@ def fetch_data(end_date=None):
                 df = df.dropna(subset=["Close"])
                 metrics = calc_metrics(df, target) if not df.empty else None
 
-            # Fallback 1: yfinance 데이터가 없거나 휴일이면 FDR로 보완
-            if (metrics is None or metrics["holiday"]) and ticker in FDR_FALLBACK:
+            # FX/Commodity 티커는 yfinance 데이터 부정확 → 항상 investiny로 보정 시도
+            needs_inv_fix = cat in ("fx", "commodity")
+
+            # Fallback 1: yfinance 데이터가 없거나 휴일이거나 FX =X면 FDR로 보완
+            if (metrics is None or metrics["holiday"] or needs_inv_fix) and ticker in FDR_FALLBACK:
                 fdr_code = FDR_FALLBACK[ticker]
                 try:
                     fdr_start = (target - dt.timedelta(days=200)).strftime("%Y-%m-%d")
@@ -213,7 +238,7 @@ def fetch_data(end_date=None):
                     print(f"  [FDR WARN] {name}: {fe}")
 
             # Fallback 2: FDR도 실패하면 investiny(investing.com)로 보완
-            if (metrics is None or metrics["holiday"]) and HAS_INVESTINY and ticker in INVESTINY_FALLBACK:
+            if (metrics is None or metrics["holiday"] or needs_inv_fix) and HAS_INVESTINY and ticker in INVESTINY_FALLBACK:
                 inv_id = INVESTINY_FALLBACK[ticker]
                 try:
                     inv_start = (target - dt.timedelta(days=200)).strftime("%m/%d/%Y")
@@ -227,6 +252,7 @@ def fetch_data(end_date=None):
                         inv_df = inv_df.rename(columns={"close": "Close"})
                         inv_df["Close"] = pd.to_numeric(inv_df["Close"], errors="coerce")
                         inv_df = inv_df.dropna(subset=["Close"])
+                        inv_df = inv_df[inv_df.index.date <= target]
                         if not inv_df.empty:
                             inv_metrics = calc_metrics(inv_df, target)
                             if inv_metrics and not inv_metrics["holiday"]:
@@ -1083,6 +1109,27 @@ def generate_index():
     print(f"Index saved: {idx_path}")
 
 
+def append_to_history(data, target_date):
+    """Append one day's close prices to history/market_data.csv."""
+    os.makedirs(HISTORY_DIR, exist_ok=True)
+    file_exists = os.path.exists(HISTORY_CSV)
+
+    if file_exists:
+        with open(HISTORY_CSV) as f:
+            for line in f:
+                if line.startswith(target_date + ","):
+                    return  # already have this date
+
+    with open(HISTORY_CSV, "a") as f:
+        if not file_exists:
+            f.write("date,category,ticker,close\n")
+        for cat in ["equity", "bond", "fx", "commodity", "risk", "stocks"]:
+            for name, item in data.get(cat, {}).items():
+                close = item.get("close")
+                if close is not None:
+                    f.write(f"{target_date},{cat},{name},{close}\n")
+
+
 def main(target_date=None):
     """target_date: 'YYYY-MM-DD' 형식. None이면 전 영업일."""
     if not target_date:
@@ -1101,6 +1148,7 @@ def main(target_date=None):
     with open(json_path, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     print(f"Data saved: {json_path}")
+    append_to_history(data, target_date)
 
     html, report_date = generate_html(data)
 

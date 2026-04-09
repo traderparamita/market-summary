@@ -11,15 +11,17 @@ generate_periodic.py # 주간/월간 집계 보고서 생성 (generate.py의 함
 extract_data.py      # _data.json에서 주요 지표 추출/출력 (디버그/분석용)
 batch_*.py           # 과거 날짜 일괄 생성 스크립트
 prompt.md            # 원래 보고서 작성 가이드라인 (참고용)
+history/market_data.csv  # 일별 종가 시계열 축적 (date,category,ticker,close)
 ```
 
 ## 데이터 흐름
 
 1. `generate.py fetch_data()` → yfinance + FinanceDataReader(한국지수 fallback) + 한국은행 ECOS API(한국 금리)
 2. 수집 데이터 → `output/YYYY-MM/YYYY-MM-DD_data.json` 저장
-3. `generate_html()` → 히트맵/스파크라인/차트 포함 HTML 보고서 생성
-4. Story 탭: `generate_stories.py`의 CONTEXT dict에서 해당 날짜 콘텐츠 주입
-5. 주간/월간: `generate_periodic.py`가 일간 JSON 집계하여 별도 보고서 생성
+3. `append_to_history()` → `history/market_data.csv`에 종가 축적 (date,category,ticker,close)
+4. `generate_html()` → 히트맵/스파크라인/차트 포함 HTML 보고서 생성
+5. Story 탭: `generate_stories.py`의 CONTEXT dict에서 해당 날짜 콘텐츠 주입
+6. 주간/월간: `generate_periodic.py`가 일간 JSON 집계하여 별도 보고서 생성
 
 ## 수집 대상
 
