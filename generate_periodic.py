@@ -1,106 +1,141 @@
 #!/usr/local/bin/python3.12
 """
 Weekly & Monthly Market Summary Report Generator
-- 일간 _data.json을 집계하여 주간/월간 HTML 보고서 생성
+- history/market_data.csv 기준으로 주간/월간 HTML 보고서 생성
 """
 
 import json
 import os
 import glob
 import datetime as dt
+import csv
 from generate import generate_index, fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+HISTORY_CSV = os.path.join(os.path.dirname(__file__), "history", "market_data.csv")
 
 
-def load_daily_data(month_pattern=None):
-    """일간 JSON 데이터를 모두 로드. {date_str: data_dict}"""
-    pattern = os.path.join(OUTPUT_DIR, "????-??", "????-??-??_data.json")
-    all_data = {}
-    for f in sorted(glob.glob(pattern)):
-        date_str = os.path.basename(f).replace("_data.json", "")
-        if month_pattern and not date_str.startswith(month_pattern):
-            continue
-        with open(f) as fp:
-            all_data[date_str] = json.load(fp)
-    return all_data
+def load_market_data():
+    """
+    market_data.csv → 중첩 dict 로드.
+    반환: {date_str: {category: {ticker: close}}}
+    + 전체 거래일 목록 (sorted)
+    """
+    data = {}
+    with open(HISTORY_CSV, encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            d = row["date"]
+            cat = row["category"]
+            ticker = row["ticker"]
+            try:
+                close = float(row["close"])
+            except (ValueError, TypeError):
+                continue
+            data.setdefault(d, {}).setdefault(cat, {})[ticker] = close
+
+    trading_days = sorted(data.keys())
+    return data, trading_days
 
 
-def get_week_ranges(year=2026):
+def get_week_ranges(trading_days, year=2026):
     """ISO 주차 기반으로 주간 범위 반환. {(year, week): [date_str, ...]}"""
     weeks = {}
-    d = dt.date(year, 1, 1)
-    while d.year == year:
-        if d.weekday() < 5:  # 평일만
-            iso = d.isocalendar()
-            key = (iso[0], iso[1])
-            if key not in weeks:
-                weeks[key] = []
-            weeks[key].append(str(d))
-        d += dt.timedelta(days=1)
+    for d_str in trading_days:
+        d = dt.date.fromisoformat(d_str)
+        if d.year != year:
+            continue
+        iso = d.isocalendar()
+        key = (iso[0], iso[1])
+        weeks.setdefault(key, []).append(d_str)
     return weeks
 
 
-def aggregate_period(daily_data, date_list):
-    """여러 일간 데이터를 집계하여 기간 요약 생성"""
-    # 해당 기간에 데이터가 있는 날짜만 필터
-    available = [d for d in date_list if d in daily_data]
+def aggregate_period(market_data, trading_days, date_list):
+    """market_data.csv 기반으로 기간 요약 집계"""
+    available = [d for d in date_list if d in market_data]
     if not available:
         return None
 
     first_date = available[0]
     last_date = available[-1]
-    first_data = daily_data[first_date]
-    last_data = daily_data[last_date]
+
+    # 기간 직전 영업일 (기준가)
+    idx = trading_days.index(first_date) if first_date in trading_days else -1
+    prev_date = trading_days[idx - 1] if idx > 0 else None
+
+    # YTD 기준: 전년 마지막 영업일
+    year = int(first_date[:4])
+    ye_date = None
+    for d in reversed(trading_days):
+        if d < f"{year}-01-01":
+            ye_date = d
+            break
 
     result = {"dates": available, "first": first_date, "last": last_date}
 
-    # 각 카테고리별 집계
+    last_day = market_data[last_date]
+    prev_day = market_data[prev_date] if prev_date else {}
+    ye_day = market_data[ye_date] if ye_date else {}
+
     for cat in ["equity", "bond", "fx", "commodity", "risk", "stocks"]:
         result[cat] = {}
-        last_cat = last_data.get(cat, {})
-        first_cat = first_data.get(cat, {})
+        last_cat = last_day.get(cat, {})
 
-        for name, last_item in last_cat.items():
-            first_item = first_cat.get(name, {})
-            first_close = first_item.get("close")
-            last_close = last_item.get("close")
+        for ticker, last_close in last_cat.items():
+            # period_chg: 직전 영업일 종가 → 기간 마지막 종가
+            base_close = prev_day.get(cat, {}).get(ticker)
+            if not base_close:
+                base_close = market_data[first_date].get(cat, {}).get(ticker)
 
-            if first_close and last_close and first_close != 0:
-                period_chg = (last_close - first_close) / first_close * 100
+            if base_close and last_close and base_close != 0:
+                period_chg = (last_close - base_close) / base_close * 100
             else:
                 period_chg = 0
 
-            # 기간 중 일별 변동 수집 (스파크라인용)
+            # YTD: 전년 마지막 종가 → 기간 마지막 종가
+            ytd = 0
+            ye_close = ye_day.get(cat, {}).get(ticker)
+            if ye_close and last_close and ye_close != 0:
+                ytd = (last_close - ye_close) / ye_close * 100
+
+            # 스파크라인: 직전 영업일 종가를 기준점(0%)으로 포함
             daily_closes = []
+            if base_close:
+                daily_closes.append(base_close)
             for d in available:
-                d_data = daily_data.get(d, {}).get(cat, {}).get(name, {})
-                if d_data.get("close"):
-                    daily_closes.append(d_data["close"])
+                c = market_data.get(d, {}).get(cat, {}).get(ticker)
+                if c:
+                    daily_closes.append(c)
 
             spark = []
             if daily_closes and daily_closes[0] != 0:
                 spark = [round((c / daily_closes[0] - 1) * 100, 2) for c in daily_closes]
 
-            # 일별 변동 최대/최소
+            # 일별 변동률 최대/최소
             daily_chgs = []
-            for d in available:
-                d_item = daily_data.get(d, {}).get(cat, {}).get(name, {})
-                if "daily" in d_item:
-                    daily_chgs.append(d_item["daily"])
+            for i, d in enumerate(available):
+                cur = market_data.get(d, {}).get(cat, {}).get(ticker)
+                # 전일: 기간 내 이전일 또는 직전 영업일
+                if i == 0:
+                    prev_c = base_close
+                else:
+                    prev_c = market_data.get(available[i - 1], {}).get(cat, {}).get(ticker)
+                if cur and prev_c and prev_c != 0:
+                    daily_chgs.append((cur - prev_c) / prev_c * 100)
 
             best_day = max(daily_chgs) if daily_chgs else 0
             worst_day = min(daily_chgs) if daily_chgs else 0
 
-            result[cat][name] = {
-                "close": last_close or 0,
-                "open": first_close or 0,
+            result[cat][ticker] = {
+                "close": last_close,
+                "open": base_close or 0,
                 "period_chg": round(period_chg, 2),
                 "best_day": round(best_day, 2),
                 "worst_day": round(worst_day, 2),
                 "spark": spark,
-                "date": last_item.get("date", last_date),
-                "ytd": last_item.get("ytd", 0),
+                "date": last_date,
+                "ytd": round(ytd, 2),
             }
 
     return result
@@ -440,28 +475,25 @@ new Chart(document.getElementById('stChart'),{{
 
 
 def generate_weekly_reports(year=2026):
-    """주간 보고서 생성"""
-    daily_data = load_daily_data()
-    weeks = get_week_ranges(year)
+    """주간 보고서 생성 (market_data.csv 기반)"""
+    market_data, trading_days = load_market_data()
+    weeks = get_week_ranges(trading_days, year)
 
     weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
     os.makedirs(weekly_dir, exist_ok=True)
 
     count = 0
     for (iso_year, iso_week), dates in sorted(weeks.items()):
-        available = [d for d in dates if d in daily_data]
-        if not available:
-            continue
-
-        agg = aggregate_period(daily_data, dates)
+        agg = aggregate_period(market_data, trading_days, dates)
         if not agg:
             continue
 
-        first = available[0]
-        last = available[-1]
+        first = agg["first"]
+        last = agg["last"]
+        n_days = len(agg["dates"])
         week_label = f"W{iso_week:02d}"
         title = f"Weekly Summary | {year} {week_label}"
-        subtitle = f"{first} ~ {last} ({len(available)} trading days)"
+        subtitle = f"{first} ~ {last} ({n_days} trading days)"
         filename = f"{year}-W{iso_week:02d}.html"
 
         html = generate_periodic_html(agg, title, subtitle, "Weekly", filename)
@@ -476,8 +508,8 @@ def generate_weekly_reports(year=2026):
 
 
 def generate_monthly_reports(year=2026):
-    """월간 보고서 생성"""
-    daily_data = load_daily_data()
+    """월간 보고서 생성 (market_data.csv 기반)"""
+    market_data, trading_days = load_market_data()
 
     monthly_dir = os.path.join(OUTPUT_DIR, "monthly")
     os.makedirs(monthly_dir, exist_ok=True)
@@ -485,12 +517,12 @@ def generate_monthly_reports(year=2026):
     count = 0
     for month in range(1, 13):
         month_str = f"{year}-{month:02d}"
-        month_dates = sorted([d for d in daily_data if d.startswith(month_str)])
+        month_dates = sorted([d for d in trading_days if d.startswith(month_str)])
 
         if not month_dates:
             continue
 
-        agg = aggregate_period(daily_data, month_dates)
+        agg = aggregate_period(market_data, trading_days, month_dates)
         if not agg:
             continue
 

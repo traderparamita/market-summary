@@ -16,12 +16,13 @@ history/market_data.csv  # 일별 종가 시계열 축적 (date,category,ticker,
 
 ## 데이터 흐름
 
-1. `generate.py fetch_data()` → yfinance + FinanceDataReader(한국지수 fallback) + 한국은행 ECOS API(한국 금리)
-2. 수집 데이터 → `output/YYYY-MM/YYYY-MM-DD_data.json` 저장
-3. `append_to_history()` → `history/market_data.csv`에 종가 축적 (date,category,ticker,close)
-4. `generate_html()` → 히트맵/스파크라인/차트 포함 HTML 보고서 생성
-5. Story 탭: `generate_stories.py`의 CONTEXT dict에서 해당 날짜 콘텐츠 주입
-6. 주간/월간: `generate_periodic.py`가 일간 JSON 집계하여 별도 보고서 생성
+1. `fetch_data()` → yfinance + FDR(한국지수) + investiny(FX/Commodity/일부 equity) + 한국은행 ECOS API(한국 금리)
+2. `append_to_history()` → `history/market_data.csv`에 종가 축적 (주말 데이터 자동 필터)
+3. `build_report_data()` → CSV에서 메트릭 계산 (daily/weekly/monthly/ytd/spark)
+4. 계산 결과 → `output/YYYY-MM/YYYY-MM-DD_data.json` 저장
+5. `generate_html()` → 히트맵/스파크라인/차트 포함 HTML 보고서 생성
+6. Story 탭: 기존 Story 콘텐츠 보존 (`_inject_existing_story`)
+7. 주간/월간: `generate_periodic.py`가 일간 JSON 집계하여 별도 보고서 생성
 
 ## 수집 대상
 
@@ -35,12 +36,14 @@ history/market_data.csv  # 일별 종가 시계열 축적 (date,category,ticker,
 ## 실행
 
 ```bash
-# 특정 날짜 보고서 생성
-python3.12 generate.py 2026-04-03
+# 특정 날짜 보고서 생성 (반드시 날짜 지정)
+python3.12 generate.py 2026-04-08
 
-# 인자 없으면 오늘 날짜
+# 인자 없으면 전 영업일
 python3.12 generate.py
 ```
+
+**주의**: 미래 날짜의 보고서를 미리 생성하지 않는다.
 
 ## 출력
 
@@ -53,8 +56,8 @@ python3.12 generate.py
 ## 환경
 
 - Python 3.12
-- 의존성: yfinance, FinanceDataReader, requests
-- 환경변수: `BOK_API_KEY` (한국은행 API, 없으면 sample 키로 제한 동작)
+- 의존성: yfinance, FinanceDataReader, requests, python-dotenv, investiny
+- 환경변수: `ECOS_API_KEY` (한국은행 API, `../.env`에서 dotenv로 로딩)
 
 ## Market Story 작성 규칙
 
@@ -91,7 +94,8 @@ python3.12 generate.py
 
 ## 주의사항
 
-- `generate_stories.py`의 CONTEXT dict는 수천 줄 규모. 날짜별로 headline, narrative, causal_chain, insights, risks 구조
 - HTML 보고서는 Data 탭과 Story 탭 2개로 구성. Story가 없으면 placeholder 유지
-- `_inject_existing_story()`: 데이터 재생성 시 기존 Story 콘텐츠 보존
+- `_inject_existing_story()`: 일간/주간/월간 보고서 모두 재생성 시 기존 Story 콘텐츠 보존
+- `history/market_data.csv`: 종가 시계열 축적. git에 커밋됨. 보고서 재현의 단일 소스
 - `.gitignore`에 `_data.json`과 `data/` 포함 - 원시 데이터는 커밋하지 않음
+- investiny 소스가 주말 날짜 데이터를 반환할 수 있음 → 수집 시 자동 필터링

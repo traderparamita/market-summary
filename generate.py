@@ -137,6 +137,57 @@ TICKERS = {
 }
 
 
+def calc_metrics(df, ref_date):
+    """DataFrame(index=date, columns=[Close])에서 지표 계산."""
+    df = df.dropna(subset=["Close"])
+    if df.empty:
+        return None
+
+    last_date = df.index[-1].date() if hasattr(df.index[-1], 'date') else df.index[-1]
+    close = float(df.iloc[-1]["Close"])
+
+    is_holiday = last_date < ref_date
+
+    daily_chg = 0.0
+    if not is_holiday and len(df) >= 2:
+        prev = float(df.iloc[-2]["Close"])
+        daily_chg = (close - prev) / prev * 100 if prev else 0
+
+    weekly_chg = 0.0
+    if len(df) >= 6:
+        w = float(df.iloc[-6]["Close"])
+        weekly_chg = (close - w) / w * 100 if w else 0
+
+    monthly_chg = 0.0
+    if len(df) >= 23:
+        m = float(df.iloc[-23]["Close"])
+        monthly_chg = (close - m) / m * 100 if m else 0
+
+    ytd_chg = 0.0
+    yr_start = df[df.index.year == ref_date.year]
+    if not yr_start.empty:
+        y = float(yr_start.iloc[0]["Close"])
+        ytd_chg = (close - y) / y * 100 if y else 0
+
+    spark = []
+    tail = df.tail(20)
+    if not tail.empty:
+        first_val = float(tail.iloc[0]["Close"])
+        spark = [round((float(r["Close"]) / first_val - 1) * 100, 2) for _, r in tail.iterrows()]
+
+    return {
+        "close": close,
+        "date": str(last_date),
+        "daily": round(daily_chg, 2),
+        "weekly": round(weekly_chg, 2),
+        "monthly": round(monthly_chg, 2),
+        "ytd": round(ytd_chg, 2),
+        "spark": spark,
+        "holiday": is_holiday,
+        "holiday_note": "" if not is_holiday else "Holiday",
+    }
+
+
 def fetch_data(end_date=None):
     """yfinance로 전체 데이터 수집, dict 반환. end_date: 'YYYY-MM-DD' or None(최신)"""
     all_tickers = {}
@@ -158,57 +209,6 @@ def fetch_data(end_date=None):
     target = dt.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
     result = {}
     history_rows = []  # (date_str, category, ticker_name, close)
-
-    def calc_metrics(df, ref_date):
-        """DataFrame에서 지표 계산."""
-        df = df.dropna(subset=["Close"])
-        if df.empty:
-            return None
-
-        last_date = df.index[-1].date() if hasattr(df.index[-1], 'date') else df.index[-1]
-        close = float(df.iloc[-1]["Close"])
-
-        # 해당 시장이 휴일이었는지 판단
-        is_holiday = last_date < ref_date
-
-        daily_chg = 0.0
-        if not is_holiday and len(df) >= 2:
-            prev = float(df.iloc[-2]["Close"])
-            daily_chg = (close - prev) / prev * 100 if prev else 0
-
-        weekly_chg = 0.0
-        if len(df) >= 6:
-            w = float(df.iloc[-6]["Close"])
-            weekly_chg = (close - w) / w * 100 if w else 0
-
-        monthly_chg = 0.0
-        if len(df) >= 23:
-            m = float(df.iloc[-23]["Close"])
-            monthly_chg = (close - m) / m * 100 if m else 0
-
-        ytd_chg = 0.0
-        yr_start = df[df.index.year == ref_date.year]
-        if not yr_start.empty:
-            y = float(yr_start.iloc[0]["Close"])
-            ytd_chg = (close - y) / y * 100 if y else 0
-
-        spark = []
-        tail = df.tail(20)
-        if not tail.empty:
-            first_val = float(tail.iloc[0]["Close"])
-            spark = [round((float(r["Close"]) / first_val - 1) * 100, 2) for _, r in tail.iterrows()]
-
-        return {
-            "close": close,
-            "date": str(last_date),
-            "daily": round(daily_chg, 2),
-            "weekly": round(weekly_chg, 2),
-            "monthly": round(monthly_chg, 2),
-            "ytd": round(ytd_chg, 2),
-            "spark": spark,
-            "holiday": is_holiday,
-            "holiday_note": "" if not is_holiday else "Holiday",
-        }
 
     for key, ticker in all_tickers.items():
         cat, name = key.split("|")
@@ -277,6 +277,8 @@ def fetch_data(end_date=None):
             if used_df is not None:
                 for idx, row in used_df.iterrows():
                     d = idx.date() if hasattr(idx, 'date') else idx
+                    if d.weekday() >= 5:  # 토/일 제외
+                        continue
                     history_rows.append((str(d), cat, name, float(row["Close"])))
 
             if cat not in result:
@@ -341,6 +343,9 @@ def fetch_kr_rates(end_date=None):
             # Collect full history for CSV
             for t, v in valid:
                 d = f"{t[:4]}-{t[4:6]}-{t[6:8]}"
+                d_date = dt.datetime.strptime(d, "%Y-%m-%d").date()
+                if d_date.weekday() >= 5:  # 토/일 제외
+                    continue
                 history_rows.append((d, "bond", name, v))
 
             close = valid[-1][1]
@@ -1131,6 +1136,34 @@ def generate_index():
     print(f"Index saved: {idx_path}")
 
 
+def build_report_data(target_date):
+    """history/market_data.csv에서 읽어 지표를 계산하여 보고서 데이터 dict 반환."""
+    import pandas as pd
+
+    df = pd.read_csv(HISTORY_CSV)
+    df["date"] = pd.to_datetime(df["date"])
+    ref_date = dt.datetime.strptime(target_date, "%Y-%m-%d").date()
+    target_ts = pd.Timestamp(target_date)
+
+    result = {}
+    for (cat, ticker), group in df.groupby(["category", "ticker"]):
+        group = group.sort_values("date")
+        group = group[group["date"] <= target_ts]
+        if group.empty:
+            continue
+
+        metrics_df = group.set_index("date")[["close"]].rename(columns={"close": "Close"})
+        metrics = calc_metrics(metrics_df, ref_date)
+        if metrics is None:
+            continue
+
+        if cat not in result:
+            result[cat] = {}
+        result[cat][ticker] = metrics
+
+    return result
+
+
 def append_to_history(history_rows):
     """Append historical close prices to history/market_data.csv, skipping duplicates."""
     os.makedirs(HISTORY_DIR, exist_ok=True)
@@ -1166,7 +1199,13 @@ def main(target_date=None):
     print("=== Daily Market Summary Generator ===")
     print(f"Target date: {target_date}")
 
-    data, history_rows = fetch_data(end_date=target_date)
+    # Step 1: API에서 원시 데이터 수집 → CSV에 축적
+    _, history_rows = fetch_data(end_date=target_date)
+    append_to_history(history_rows)
+    print(f"History updated: {HISTORY_CSV}")
+
+    # Step 2: CSV에서 메트릭 계산
+    data = build_report_data(target_date)
 
     # 월별 폴더에 저장
     month_dir = os.path.join(OUTPUT_DIR, target_date[:7])
@@ -1176,7 +1215,6 @@ def main(target_date=None):
     with open(json_path, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     print(f"Data saved: {json_path}")
-    append_to_history(history_rows)
 
     html, report_date = generate_html(data)
 
@@ -1196,48 +1234,46 @@ def update_current_periodic(target_date):
     """target_date가 포함된 주간 및 월간 보고서를 갱신"""
     try:
         from generate_periodic import (
-            load_daily_data, get_week_ranges, aggregate_period,
+            load_market_data, get_week_ranges, aggregate_period,
             generate_periodic_html
         )
-        import glob
 
         td = dt.datetime.strptime(target_date, "%Y-%m-%d").date()
         year = td.year
 
+        market_data, trading_days = load_market_data()
+
         # ── 당일 포함 주간 보고서 갱신 ──
         iso = td.isocalendar()
         iso_week = iso[1]
-        weeks = get_week_ranges(year)
+        weeks = get_week_ranges(trading_days, year)
         week_key = (iso[0], iso_week)
 
         if week_key in weeks:
-            daily_data = load_daily_data()
             dates = weeks[week_key]
-            available = [d for d in dates if d in daily_data]
-            if available:
-                agg = aggregate_period(daily_data, dates)
-                if agg:
-                    first, last = available[0], available[-1]
-                    week_label = f"W{iso_week:02d}"
-                    title = f"Weekly Summary | {year} {week_label}"
-                    subtitle = f"{first} ~ {last} ({len(available)} trading days)"
-                    filename = f"{year}-W{iso_week:02d}.html"
+            agg = aggregate_period(market_data, trading_days, dates)
+            if agg:
+                first, last = agg["first"], agg["last"]
+                n_days = len(agg["dates"])
+                week_label = f"W{iso_week:02d}"
+                title = f"Weekly Summary | {year} {week_label}"
+                subtitle = f"{first} ~ {last} ({n_days} trading days)"
+                filename = f"{year}-W{iso_week:02d}.html"
 
-                    weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
-                    os.makedirs(weekly_dir, exist_ok=True)
-                    html = generate_periodic_html(agg, title, subtitle, "Weekly", filename)
-                    path = os.path.join(weekly_dir, filename)
+                weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
+                os.makedirs(weekly_dir, exist_ok=True)
+                html = generate_periodic_html(agg, title, subtitle, "Weekly", filename)
+                path = os.path.join(weekly_dir, filename)
 
-                    # 기존 Story 보존
-                    _inject_existing_story(path, html)
-                    print(f"Weekly updated: {filename}")
+                # 기존 Story 보존
+                _inject_existing_story(path, html)
+                print(f"Weekly updated: {filename}")
 
         # ── 당일 포함 월간 보고서 갱신 ──
         month_str = target_date[:7]
-        daily_data = load_daily_data()
-        month_dates = sorted([d for d in daily_data if d.startswith(month_str)])
+        month_dates = sorted([d for d in trading_days if d.startswith(month_str)])
         if month_dates:
-            agg = aggregate_period(daily_data, month_dates)
+            agg = aggregate_period(market_data, trading_days, month_dates)
             if agg:
                 month_name = td.strftime("%B")
                 title = f"Monthly Summary | {year} {month_name}"
