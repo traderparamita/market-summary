@@ -986,7 +986,7 @@ def generate_index():
         date_range = ""
         try:
             with open(path) as _f:
-                head = _f.read(8000)
+                head = _f.read(15000)
             m = _re.search(r'class="date">\s*([\d-]+)\s*~\s*([\d-]+)', head)
             if m:
                 date_range = f"{m.group(1)} ~ {m.group(2)}"
