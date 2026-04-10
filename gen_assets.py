@@ -165,10 +165,6 @@ def make_og_image(out_path: str):
 
     font_title = _load_font(84, bold=True)
     font_sub = _load_font(36, bold=False)
-    font_tag = _load_font(28, bold=True)
-
-    # Brand tag line
-    draw.text((title_x, title_y - 64), "MIRAE ASSET", font=font_tag, fill=ORANGE)
 
     # Main title
     draw.text((title_x, title_y), "Market Summary", font=font_title, fill=NEAR_BLACK)
@@ -188,7 +184,7 @@ def make_og_image(out_path: str):
     font_small = _load_font(24, bold=False)
     draw.text(
         (title_x, title_y + 210),
-        "Equity · Bonds · FX · Commodities · Risk",
+        "Data Dashboard · Market Story",
         font=font_small,
         fill=MUTED,
     )
