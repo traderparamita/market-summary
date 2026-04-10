@@ -292,9 +292,26 @@ def fetch_data(start_date=None, end_date=None):
     today = dt.date.today()
     target = dt.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
     if start_date:
+        # 명시적 재수집
         range_start = dt.datetime.strptime(start_date, "%Y-%m-%d").date()
     else:
-        range_start = target - dt.timedelta(days=200)
+        # Dynamic lookback: CSV 최신일 - 3일 (안전 마진).
+        # CSV 가 없거나 읽기 실패 시 target - 10일 fallback.
+        # 잡이 오래 스킵됐어도 CSV 최신일 기준으로 자동 복구.
+        range_start = None
+        if os.path.exists(HISTORY_CSV):
+            try:
+                import pandas as _pd
+                _df = _pd.read_csv(HISTORY_CSV, usecols=["DATE"])
+                if len(_df):
+                    _max = _pd.to_datetime(_df["DATE"]).max().date()
+                    # CSV 에 target 보다 미래 행이 섞여 있으면 target 기준으로 앵커
+                    anchor = min(_max, target)
+                    range_start = anchor - dt.timedelta(days=3)
+            except Exception as _e:
+                print(f"  [WARN] CSV lookback detect 실패 → fallback: {_e}")
+        if range_start is None:
+            range_start = target - dt.timedelta(days=10)
     # yfinance end 는 exclusive 이므로 +1
     yf_start = range_start.strftime("%Y-%m-%d")
     yf_end = (target + dt.timedelta(days=1)).strftime("%Y-%m-%d")
