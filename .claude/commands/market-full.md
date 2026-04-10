@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(python3.12:*), Bash(git:*), Bash(ls:*), Read, Edit, Write, WebSearch, WebFetch
+allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Read, Edit, Write, WebSearch, WebFetch
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
 description: "market_summary 전체 워크플로우: 데이터 수집 → Dashboard → Story(일/주/월) → 배포"
 ---
@@ -25,7 +25,7 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 ### Step 1~2: 데이터 수집 + Data Dashboard
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && python3.12 generate.py $ARGUMENTS
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py $ARGUMENTS
 ```
 
 - 이 명령 하나로 일간 데이터 수집 + 일간 HTML + 주간·월간 HTML 자동 갱신까지 수행된다.

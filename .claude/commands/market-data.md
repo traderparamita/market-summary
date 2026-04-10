@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(python3.12:*), Bash(ls:*), Read
+allowed-tools: Bash(.venv/bin/python:*), Bash(ls:*), Read
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
 description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (generate.py 실행)"
 ---
@@ -19,13 +19,13 @@ description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (ge
 인자로 받은 날짜($ARGUMENTS)로 `generate.py`를 실행한다:
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && python3.12 generate.py $ARGUMENTS
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py $ARGUMENTS
 ```
 
 **인자가 없으면** 날짜 없이 실행 (전 영업일 자동 선택):
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && python3.12 generate.py
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py
 ```
 
 ### 주의
