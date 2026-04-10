@@ -12,6 +12,13 @@ import datetime as dt
 import csv
 from generate import generate_index, fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg
 
+# Shared OG image version (bump in generate.py when the OG image changes)
+try:
+    from generate import OG_IMAGE_VERSION
+except ImportError:
+    OG_IMAGE_VERSION = "1"
+
+
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
 HISTORY_CSV = os.path.join(os.path.dirname(__file__), "history", "market_data.csv")
 
@@ -280,7 +287,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
 <meta property="og:type" content="article">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{subtitle} — {period_label} 시장 요약 보고서">
-<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png?v={OG_IMAGE_VERSION}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://traderparamita.github.io/market-summary/{period_dir}/{filename}">
@@ -289,7 +296,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{subtitle} — {period_label} 시장 요약 보고서">
-<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png?v={OG_IMAGE_VERSION}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');

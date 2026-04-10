@@ -15,6 +15,10 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
+# Bump when the OG image (og-image.png) changes so that social caches (KakaoTalk,
+# Slack, Facebook) refetch instead of showing the stale thumbnail.
+OG_IMAGE_VERSION = "20260410-1"
+
 try:
     from investiny import historical_data as inv_historical
     HAS_INVESTINY = True
@@ -526,7 +530,7 @@ def generate_html(data):
 <meta property="og:type" content="article">
 <meta property="og:title" content="Market Summary | {report_date}">
 <meta property="og:description" content="글로벌 시장 요약 보고서 — {report_date} (Equity · Bonds · FX · Commodities · Risk)">
-<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png?v={OG_IMAGE_VERSION}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://traderparamita.github.io/market-summary/{ym}/{report_date}.html">
@@ -535,7 +539,7 @@ def generate_html(data):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Market Summary | {report_date}">
 <meta name="twitter:description" content="글로벌 시장 요약 보고서 — {report_date}">
-<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png?v={OG_IMAGE_VERSION}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
@@ -1092,7 +1096,7 @@ def generate_index():
 <meta property="og:type" content="website">
 <meta property="og:title" content="Market Summary | Daily Global Markets">
 <meta property="og:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서 — Equity, Bonds, FX, Commodities, Risk">
-<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png?v={OG_IMAGE_VERSION}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://traderparamita.github.io/market-summary/">
@@ -1101,7 +1105,7 @@ def generate_index():
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Market Summary | Daily Global Markets">
 <meta name="twitter:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서">
-<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png?v={OG_IMAGE_VERSION}">
 <style>
   @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
   body {{ font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 고딕',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
