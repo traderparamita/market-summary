@@ -90,6 +90,11 @@ TICKERS = {
         "Shanghai": "000001.SS",
         "HSI":      "^HSI",
         "NIFTY50":  "^NSEI",
+        # MSCI ETF proxies
+        "MSCI World": "URTH",  # iShares MSCI World ETF
+        "MSCI ACWI":  "ACWI",  # iShares MSCI ACWI ETF
+        "MSCI LATAM": "ILF",   # iShares Latin America 40 ETF
+        "MSCI EMEA":  "EZA",   # iShares South Africa ETF (EMEA proxy)
     },
     # Bonds (yield proxies via ETFs + treasury rates)
     "bond": {
@@ -138,6 +143,10 @@ TICKERS = {
         "Tesla":    "TSLA",
         "TSMC":     "TSM",
         "Samsung":  "005930.KS",
+        "Palantir": "PLTR",
+        "Alibaba":  "9988.HK",
+        "Meituan":  "3690.HK",
+        "Tencent":  "0700.HK",
     },
 }
 
@@ -159,6 +168,10 @@ INDICATOR_CODES = {
     ("equity", "Shanghai"):  "EQ_SHANGHAI",
     ("equity", "HSI"):       "EQ_HSI",
     ("equity", "NIFTY50"):   "EQ_NIFTY50",
+    ("equity", "MSCI World"): "EQ_MSCI_WORLD",
+    ("equity", "MSCI ACWI"):  "EQ_MSCI_ACWI",
+    ("equity", "MSCI LATAM"): "EQ_MSCI_LATAM",
+    ("equity", "MSCI EMEA"):  "EQ_MSCI_EMEA",
     ("bond", "US 2Y"):  "BD_US_2Y",
     ("bond", "US 10Y"): "BD_US_10Y",
     ("bond", "US 30Y"): "BD_US_30Y",
@@ -194,6 +207,10 @@ INDICATOR_CODES = {
     ("stocks", "Tesla"):     "ST_TSLA",
     ("stocks", "TSMC"):      "ST_TSMC",
     ("stocks", "Samsung"):   "ST_SAMSUNG",
+    ("stocks", "Palantir"):  "ST_PLTR",
+    ("stocks", "Alibaba"):   "ST_BABA",
+    ("stocks", "Meituan"):   "ST_MEITUAN",
+    ("stocks", "Tencent"):   "ST_TENCENT",
 }
 
 # CSV 스키마 (Snowflake MKT100_MARKET_DAILY 1:1)
@@ -1445,6 +1462,20 @@ def main(target_date=None, start_date=None):
     _, history_rows = fetch_data(start_date=start_date, end_date=target_date)
     append_to_history(history_rows)
     print(f"History updated: {HISTORY_CSV}")
+
+    # Step 1b: Snowflake MKT100_MARKET_DAILY dual-write (best-effort)
+    #   - 일간 실행: target_date 한 날짜만 DELETE 후 INSERT.
+    #   - 전체 재수집(--start) 시엔 별도 snowflake_loader.py --truncate 로 벌크 적재.
+    #   - Snowflake 실패해도 CSV 는 이미 저장됐으므로 진행.
+    if history_rows and not start_date:
+        try:
+            import pandas as pd
+            df_hist = pd.DataFrame(history_rows, columns=HISTORY_CSV_COLUMNS)
+            from snowflake_loader import upsert_rows
+            upsert_rows(df_hist, target_date=target_date)
+            print(f"Snowflake MKT100_MARKET_DAILY updated for {target_date}")
+        except Exception as e:
+            print(f"[WARN] Snowflake upsert 실패 (CSV 는 저장됨): {e}")
 
     # Step 2: CSV에서 메트릭 계산
     data = build_report_data(target_date)
