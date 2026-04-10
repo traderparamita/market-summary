@@ -97,6 +97,7 @@ TICKERS = {
         "US 10Y":   "^TNX",
         "US 30Y":   "^TYX",
         "TLT":      "TLT",    # 20+Y Treasury ETF
+        "AGG":      "AGG",    # US Aggregate Bond ETF
         "HYG":      "HYG",    # High Yield
         "LQD":      "LQD",    # Investment Grade
         "EMB":      "EMB",    # EM Bond
@@ -139,6 +140,67 @@ TICKERS = {
         "Samsung":  "005930.KS",
     },
 }
+
+# (category, ticker) -> Snowflake MKT000_MARKET_INDICATOR.지표코드
+# 56개 지표. TICKERS/fetch_kr_rates에 추가되는 항목은 여기도 함께 업데이트.
+# 누락된 (cat, ticker)는 lookup이 None 이 되어 CSV에 빈 값으로 기록되고
+# Snowflake 적재에서 스킵된다 (ex. VKOSPI는 TICKERS에 있으나 MKT000에 없음).
+INDICATOR_CODES = {
+    ("equity", "KOSPI"):     "EQ_KOSPI",
+    ("equity", "KOSDAQ"):    "EQ_KOSDAQ",
+    ("equity", "S&P500"):    "EQ_SP500",
+    ("equity", "NASDAQ"):    "EQ_NASDAQ",
+    ("equity", "Russell2K"): "EQ_RUSSELL2000",
+    ("equity", "STOXX50"):   "EQ_EUROSTOXX50",
+    ("equity", "DAX"):       "EQ_DAX",
+    ("equity", "CAC40"):     "EQ_CAC40",
+    ("equity", "FTSE100"):   "EQ_FTSE100",
+    ("equity", "Nikkei225"): "EQ_NIKKEI225",
+    ("equity", "Shanghai"):  "EQ_SHANGHAI",
+    ("equity", "HSI"):       "EQ_HSI",
+    ("equity", "NIFTY50"):   "EQ_NIFTY50",
+    ("bond", "US 2Y"):  "BD_US_2Y",
+    ("bond", "US 10Y"): "BD_US_10Y",
+    ("bond", "US 30Y"): "BD_US_30Y",
+    ("bond", "TLT"):    "BD_TLT",
+    ("bond", "AGG"):    "BD_AGG",
+    ("bond", "HYG"):    "BD_HYG",
+    ("bond", "LQD"):    "BD_LQD",
+    ("bond", "EMB"):    "BD_EMB",
+    ("bond", "KR CD 91D"): "BD_KR_CD91D",
+    ("bond", "KR 3Y"):     "BD_KR_3Y",
+    ("bond", "KR 10Y"):    "BD_KR_10Y",
+    ("fx", "DXY"):     "FX_DXY",
+    ("fx", "USD/KRW"): "FX_USDKRW",
+    ("fx", "EUR/USD"): "FX_EURUSD",
+    ("fx", "USD/JPY"): "FX_USDJPY",
+    ("fx", "USD/CNY"): "FX_USDCNY",
+    ("fx", "AUD/USD"): "FX_AUDUSD",
+    ("fx", "GBP/USD"): "FX_GBPUSD",
+    ("commodity", "WTI"):     "CM_WTI",
+    ("commodity", "Brent"):   "CM_BRENT",
+    ("commodity", "Gold"):    "CM_GOLD",
+    ("commodity", "Silver"):  "CM_SILVER",
+    ("commodity", "Copper"):  "CM_COPPER",
+    ("commodity", "Nat Gas"): "CM_NATGAS",
+    ("risk", "VIX"): "RK_VIX",
+    ("stocks", "NVIDIA"):    "ST_NVDA",
+    ("stocks", "Broadcom"):  "ST_AVGO",
+    ("stocks", "Alphabet"):  "ST_GOOGL",
+    ("stocks", "Amazon"):    "ST_AMZN",
+    ("stocks", "META"):      "ST_META",
+    ("stocks", "Apple"):     "ST_AAPL",
+    ("stocks", "Microsoft"): "ST_MSFT",
+    ("stocks", "Tesla"):     "ST_TSLA",
+    ("stocks", "TSMC"):      "ST_TSMC",
+    ("stocks", "Samsung"):   "ST_SAMSUNG",
+}
+
+# CSV 스키마 (Snowflake MKT100_MARKET_DAILY 1:1)
+HISTORY_CSV_COLUMNS = [
+    "DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
+    "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE",
+]
 
 
 def calc_metrics(df, ref_date):
@@ -192,27 +254,81 @@ def calc_metrics(df, ref_date):
     }
 
 
-def fetch_data(end_date=None):
-    """yfinance로 전체 데이터 수집, dict 반환. end_date: 'YYYY-MM-DD' or None(최신)"""
+def fetch_data(start_date=None, end_date=None):
+    """yfinance 로 전체 데이터 수집.
+
+    Args:
+        start_date: 'YYYY-MM-DD' 수집 시작일. None 이면 end_date - 200일.
+        end_date:   'YYYY-MM-DD' 수집 종료일. None 이면 오늘.
+
+    Returns:
+        (result_dict, history_rows)
+        history_rows: list of 10-tuples
+            (date, indicator_code, category, ticker, close, open, high, low, volume, source)
+    """
     all_tickers = {}
     for cat, items in TICKERS.items():
         for name, ticker in items.items():
             all_tickers[f"{cat}|{name}"] = ticker
 
-    symbols = list(all_tickers.values())
-    print(f"Fetching {len(symbols)} tickers...")
-    if end_date:
-        end_dt = dt.datetime.strptime(end_date, "%Y-%m-%d") + dt.timedelta(days=1)
-        start_dt = end_dt - dt.timedelta(days=200)
-        raw = yf.download(symbols, start=start_dt.strftime("%Y-%m-%d"), end=end_dt.strftime("%Y-%m-%d"),
-                          interval="1d", group_by="ticker", threads=True)
-    else:
-        raw = yf.download(symbols, period="6mo", interval="1d", group_by="ticker", threads=True)
-
+    # --- 기간 결정 ---
     today = dt.date.today()
     target = dt.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else today
+    if start_date:
+        range_start = dt.datetime.strptime(start_date, "%Y-%m-%d").date()
+    else:
+        range_start = target - dt.timedelta(days=200)
+    # yfinance end 는 exclusive 이므로 +1
+    yf_start = range_start.strftime("%Y-%m-%d")
+    yf_end = (target + dt.timedelta(days=1)).strftime("%Y-%m-%d")
+
+    symbols = list(all_tickers.values())
+    print(f"Fetching {len(symbols)} tickers ({yf_start} ~ {target})...")
+    raw = yf.download(
+        symbols, start=yf_start, end=yf_end,
+        interval="1d", group_by="ticker", threads=True,
+    )
+
     result = {}
-    history_rows = []  # (date_str, category, ticker_name, close)
+    history_rows = []  # 10-tuple per row
+
+    def _num(row, *names):
+        """row 에서 첫 번째로 발견되는 컬럼의 값을 float 으로 반환. 없거나 NaN 이면 None."""
+        import math
+        for n in names:
+            if n in row.index:
+                v = row[n]
+                try:
+                    f = float(v)
+                    if math.isnan(f):
+                        continue
+                    return f
+                except (TypeError, ValueError):
+                    continue
+        return None
+
+    def _emit_rows(used_df, cat, name, source):
+        """used_df 의 전 행을 history_rows 로 push (주말 제외, range_start 이상만)."""
+        indicator_code = INDICATOR_CODES.get((cat, name))
+        if indicator_code is None:
+            return  # MKT000 에 없는 지표 (예: VKOSPI) — CSV/Snowflake 에 기록하지 않음
+        for idx, row in used_df.iterrows():
+            d = idx.date() if hasattr(idx, "date") else idx
+            if d.weekday() >= 5:   # 토/일 제외
+                continue
+            if d < range_start or d > target:
+                continue
+            close_val = _num(row, "Close", "close")
+            if close_val is None:
+                continue
+            open_val = _num(row, "Open", "open")
+            high_val = _num(row, "High", "high")
+            low_val = _num(row, "Low", "low")
+            vol_val = _num(row, "Volume", "volume")
+            history_rows.append((
+                str(d), indicator_code, cat, name,
+                close_val, open_val, high_val, low_val, vol_val, source,
+            ))
 
     for key, ticker in all_tickers.items():
         cat, name = key.split("|")
@@ -223,21 +339,23 @@ def fetch_data(end_date=None):
                 df = raw[ticker] if ticker in raw.columns.get_level_values(0) else None
 
             metrics = None
-            used_df = None  # DataFrame that ultimately provides the metrics
+            used_df = None        # winning DataFrame
+            used_source = None    # "yfinance" / "FDR" / "investiny"
             if df is not None and not df.empty:
                 df = df.dropna(subset=["Close"])
                 if not df.empty:
                     metrics = calc_metrics(df, target)
                     used_df = df
+                    used_source = "yfinance"
 
-            # FX/Commodity 티커는 yfinance 데이터 부정확 → 항상 investiny로 보정 시도
+            # FX/Commodity 는 yfinance 데이터 부정확 → 항상 FDR/investiny 로 재시도
             needs_inv_fix = cat in ("fx", "commodity")
 
-            # Fallback 1: yfinance 데이터가 없거나 휴일이거나 FX =X면 FDR로 보완
+            # Fallback 1: FDR
             if (metrics is None or metrics["holiday"] or needs_inv_fix) and ticker in FDR_FALLBACK:
                 fdr_code = FDR_FALLBACK[ticker]
                 try:
-                    fdr_start = (target - dt.timedelta(days=200)).strftime("%Y-%m-%d")
+                    fdr_start = (range_start - dt.timedelta(days=3)).strftime("%Y-%m-%d")
                     fdr_end = (target + dt.timedelta(days=1)).strftime("%Y-%m-%d")
                     fdr_df = fdr.DataReader(fdr_code, fdr_start, fdr_end)
                     if not fdr_df.empty:
@@ -245,15 +363,16 @@ def fetch_data(end_date=None):
                         if fdr_metrics and not fdr_metrics["holiday"]:
                             metrics = fdr_metrics
                             used_df = fdr_df
+                            used_source = "FDR"
                             print(f"  [FDR] {name}: {fdr_metrics['close']:.2f} ({fdr_metrics['daily']:+.2f}%) via {fdr_code}")
                 except Exception as fe:
                     print(f"  [FDR WARN] {name}: {fe}")
 
-            # Fallback 2: FDR도 실패하면 investiny(investing.com)로 보완
+            # Fallback 2: investiny
             if (metrics is None or metrics["holiday"] or needs_inv_fix) and HAS_INVESTINY and ticker in INVESTINY_FALLBACK:
                 inv_id = INVESTINY_FALLBACK[ticker]
                 try:
-                    inv_start = (target - dt.timedelta(days=200)).strftime("%m/%d/%Y")
+                    inv_start = (range_start - dt.timedelta(days=3)).strftime("%m/%d/%Y")
                     inv_end = (target + dt.timedelta(days=1)).strftime("%m/%d/%Y")
                     inv_data = inv_historical(investing_id=inv_id, from_date=inv_start, to_date=inv_end)
                     if inv_data and "date" in inv_data and inv_data["date"]:
@@ -270,6 +389,7 @@ def fetch_data(end_date=None):
                             if inv_metrics and not inv_metrics["holiday"]:
                                 metrics = inv_metrics
                                 used_df = inv_df
+                                used_source = "investiny"
                                 print(f"  [INV] {name}: {inv_metrics['close']:.2f} ({inv_metrics['daily']:+.2f}%) via investing.com id={inv_id}")
                 except Exception as ie:
                     print(f"  [INV WARN] {name}: {ie}")
@@ -277,23 +397,17 @@ def fetch_data(end_date=None):
             if metrics is None:
                 continue
 
-            # Collect full history from the winning DataFrame
-            if used_df is not None:
-                for idx, row in used_df.iterrows():
-                    d = idx.date() if hasattr(idx, 'date') else idx
-                    if d.weekday() >= 5:  # 토/일 제외
-                        continue
-                    history_rows.append((str(d), cat, name, float(row["Close"])))
+            if used_df is not None and used_source is not None:
+                _emit_rows(used_df, cat, name, used_source)
 
             if cat not in result:
                 result[cat] = {}
-
             result[cat][name] = metrics
         except Exception as e:
             print(f"  [WARN] {name} ({ticker}): {e}")
 
     # ── 한국 금리: 한국은행 ECOS API ──
-    kr_rates, kr_history = fetch_kr_rates(end_date)
+    kr_rates, kr_history = fetch_kr_rates(start_date=start_date, end_date=end_date)
     if kr_rates:
         if "bond" not in result:
             result["bond"] = {}
@@ -303,8 +417,13 @@ def fetch_data(end_date=None):
     return result, history_rows
 
 
-def fetch_kr_rates(end_date=None):
-    """한국은행 ECOS API에서 한국 금리 데이터 수집"""
+def fetch_kr_rates(start_date=None, end_date=None):
+    """한국은행 ECOS API 에서 한국 금리 데이터 수집.
+
+    Args:
+        start_date: 'YYYY-MM-DD' 수집 시작일. None 이면 end_date - 200 영업일 상당.
+        end_date:   'YYYY-MM-DD' 수집 종료일. None 이면 오늘.
+    """
     BOK_API_KEY = os.environ.get("BOK_API_KEY") or os.environ.get("ECOS_API_KEY", "sample")
     BASE_URL = "https://ecos.bok.or.kr/api/StatisticSearch"
     STAT_CODE = "817Y002"  # 시장금리(일별)
@@ -319,9 +438,15 @@ def fetch_kr_rates(end_date=None):
 
     ref_date = dt.datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else dt.date.today()
     is_sample = (BOK_API_KEY == "sample")
-    max_rows = 5 if is_sample else 200
-    lookback = 10 if is_sample else 200
-    start = (ref_date - dt.timedelta(days=lookback)).strftime("%Y%m%d")
+    if start_date:
+        range_start = dt.datetime.strptime(start_date, "%Y-%m-%d").date()
+        # ECOS max_rows 는 기간 길이에 맞춰 여유 있게
+        days_span = (ref_date - range_start).days + 10
+        max_rows = max(200, days_span)
+    else:
+        range_start = ref_date - dt.timedelta(days=10 if is_sample else 200)
+        max_rows = 5 if is_sample else 200
+    start = range_start.strftime("%Y%m%d")
     end = ref_date.strftime("%Y%m%d")
 
     result = {}
@@ -344,13 +469,21 @@ def fetch_kr_rates(end_date=None):
             if not valid:
                 continue
 
-            # Collect full history for CSV
+            # Collect full history for CSV (10-tuple)
+            indicator_code = INDICATOR_CODES.get(("bond", name))
             for t, v in valid:
                 d = f"{t[:4]}-{t[4:6]}-{t[6:8]}"
                 d_date = dt.datetime.strptime(d, "%Y-%m-%d").date()
                 if d_date.weekday() >= 5:  # 토/일 제외
                     continue
-                history_rows.append((d, "bond", name, v))
+                if d_date < range_start or d_date > ref_date:
+                    continue
+                if indicator_code is None:
+                    continue  # MKT000 에 없는 KR bond (KR 5Y, KR 30Y) → 스킵
+                history_rows.append((
+                    d, indicator_code, "bond", name,
+                    float(v), None, None, None, None, "ECOS",
+                ))
 
             close = valid[-1][1]
             date_str = valid[-1][0]
@@ -1195,22 +1328,36 @@ def generate_index():
 
 
 def build_report_data(target_date):
-    """history/market_data.csv에서 읽어 지표를 계산하여 보고서 데이터 dict 반환."""
+    """history/market_data.csv 에서 읽어 지표를 계산하여 보고서 데이터 dict 반환.
+
+    신규 스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
+    구 스키마(date,category,ticker,close) 도 하위호환으로 읽어들임.
+    """
     import pandas as pd
 
     df = pd.read_csv(HISTORY_CSV)
-    df["date"] = pd.to_datetime(df["date"])
+    # 하위호환: 구 소문자 헤더를 대문자로 정규화
+    rename_map = {}
+    for col in df.columns:
+        u = col.upper()
+        if u in ("DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
+                 "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE"):
+            rename_map[col] = u
+    if rename_map:
+        df = df.rename(columns=rename_map)
+
+    df["DATE"] = pd.to_datetime(df["DATE"])
     ref_date = dt.datetime.strptime(target_date, "%Y-%m-%d").date()
     target_ts = pd.Timestamp(target_date)
 
     result = {}
-    for (cat, ticker), group in df.groupby(["category", "ticker"]):
-        group = group.sort_values("date")
-        group = group[group["date"] <= target_ts]
+    for (cat, ticker), group in df.groupby(["CATEGORY", "TICKER"]):
+        group = group.sort_values("DATE")
+        group = group[group["DATE"] <= target_ts]
         if group.empty:
             continue
 
-        metrics_df = group.set_index("date")[["close"]].rename(columns={"close": "Close"})
+        metrics_df = group.set_index("DATE")[["CLOSE"]].rename(columns={"CLOSE": "Close"})
         metrics = calc_metrics(metrics_df, ref_date)
         if metrics is None:
             continue
@@ -1223,42 +1370,79 @@ def build_report_data(target_date):
 
 
 def append_to_history(history_rows):
-    """Append historical close prices to history/market_data.csv, skipping duplicates."""
-    os.makedirs(HISTORY_DIR, exist_ok=True)
-    file_exists = os.path.exists(HISTORY_CSV)
+    """Append history_rows (10-tuples) to history/market_data.csv, skipping duplicates.
 
-    # Load existing (date, ticker) pairs for dedup
+    Columns: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
+    Dedup 키: (DATE, INDICATOR_CODE).
+    """
+    import csv as _csv
+    os.makedirs(HISTORY_DIR, exist_ok=True)
+    file_exists = os.path.exists(HISTORY_CSV) and os.path.getsize(HISTORY_CSV) > 0
+
+    # Load existing (DATE, INDICATOR_CODE) keys for dedup
     existing = set()
     if file_exists:
-        with open(HISTORY_CSV) as f:
-            next(f, None)  # skip header
-            for line in f:
-                parts = line.strip().split(",", 3)
-                if len(parts) >= 3:
-                    existing.add((parts[0], parts[2]))  # (date, ticker)
+        with open(HISTORY_CSV, newline="", encoding="utf-8") as f:
+            reader = _csv.DictReader(f)
+            for row in reader:
+                d = row.get("DATE") or row.get("date")
+                code = row.get("INDICATOR_CODE")
+                if d and code:
+                    existing.add((d, code))
 
-    new_rows = [(d, cat, name, close) for d, cat, name, close in history_rows
-                if (d, name) not in existing]
+    def _norm(v):
+        """None → "", float → str(no trailing .0 for integers)."""
+        if v is None:
+            return ""
+        if isinstance(v, float):
+            if v.is_integer():
+                return str(int(v))
+            return repr(v)
+        return str(v)
+
+    new_rows = []
+    for row in history_rows:
+        if len(row) != 10:
+            continue  # 방어적: 구 포맷 튜플 무시
+        d, code, cat, tk, close, o, h, l, vol, src = row
+        if not code:
+            continue  # MKT000 매핑 없는 행 스킵
+        if (d, code) in existing:
+            continue
+        new_rows.append((d, code, cat, tk, close, o, h, l, vol, src))
+
     if not new_rows:
         return
 
-    with open(HISTORY_CSV, "a") as f:
-        if not file_exists:
-            f.write("date,category,ticker,close\n")
-        for d, cat, name, close in sorted(new_rows):
-            f.write(f"{d},{cat},{name},{close}\n")
+    new_rows.sort(key=lambda r: (r[0], r[1]))
+    write_header = not file_exists
+    with open(HISTORY_CSV, "a", newline="", encoding="utf-8") as f:
+        writer = _csv.writer(f)
+        if write_header:
+            writer.writerow(HISTORY_CSV_COLUMNS)
+        for r in new_rows:
+            writer.writerow([_norm(v) for v in r])
 
 
-def main(target_date=None):
-    """target_date: 'YYYY-MM-DD' 형식. None이면 전 영업일."""
+def main(target_date=None, start_date=None):
+    """일간 리포트 생성.
+
+    Args:
+        target_date: 'YYYY-MM-DD'. None 이면 전 영업일.
+        start_date:  수집 시작일. None 이면 fetch_data 기본값 (target-200일).
+                     재수집 용도로 사용: main(target_date='2026-04-09', start_date='2025-01-01').
+    """
     if not target_date:
         target_date = str(prev_business_day())
 
     print("=== Daily Market Summary Generator ===")
-    print(f"Target date: {target_date}")
+    if start_date:
+        print(f"Collecting {start_date} ~ {target_date}")
+    else:
+        print(f"Target date: {target_date}")
 
-    # Step 1: API에서 원시 데이터 수집 → CSV에 축적
-    _, history_rows = fetch_data(end_date=target_date)
+    # Step 1: API 에서 원시 데이터 수집 → CSV 에 축적
+    _, history_rows = fetch_data(start_date=start_date, end_date=target_date)
     append_to_history(history_rows)
     print(f"History updated: {HISTORY_CSV}")
 
@@ -1400,7 +1584,12 @@ def _save_story_file(html_path, html_content):
 
 
 if __name__ == "__main__":
-    import sys
-    target = sys.argv[1] if len(sys.argv) > 1 else None
-    path = main(target)
+    import argparse
+    parser = argparse.ArgumentParser(description="Market Summary daily generator")
+    parser.add_argument("target_date", nargs="?", default=None,
+                        help="보고서 기준일 YYYY-MM-DD (기본: 전 영업일)")
+    parser.add_argument("--start", dest="start_date", default=None,
+                        help="수집 시작일 YYYY-MM-DD (전체 재수집 용)")
+    args = parser.parse_args()
+    path = main(target_date=args.target_date, start_date=args.start_date)
     print(f"\nDone! Open: file://{path}")

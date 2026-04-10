@@ -24,20 +24,25 @@ HISTORY_CSV = os.path.join(os.path.dirname(__file__), "history", "market_data.cs
 
 
 def load_market_data():
-    """
-    market_data.csv → 중첩 dict 로드.
-    반환: {date_str: {category: {ticker: close}}}
-    + 전체 거래일 목록 (sorted)
+    """market_data.csv → 중첩 dict 로드.
+
+    신규 스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
+    구 스키마(date,category,ticker,close)도 하위호환으로 읽어들임.
+
+    반환: ({date_str: {category: {ticker: close}}}, 전체 거래일 목록 sorted)
     """
     data = {}
     with open(HISTORY_CSV, encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            d = row["date"]
-            cat = row["category"]
-            ticker = row["ticker"]
+            d = row.get("DATE") or row.get("date")
+            cat = row.get("CATEGORY") or row.get("category")
+            ticker = row.get("TICKER") or row.get("ticker")
+            close_raw = row.get("CLOSE") or row.get("close")
+            if not (d and cat and ticker):
+                continue
             try:
-                close = float(row["close"])
+                close = float(close_raw)
             except (ValueError, TypeError):
                 continue
             data.setdefault(d, {}).setdefault(cat, {})[ticker] = close
