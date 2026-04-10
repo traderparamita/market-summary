@@ -265,13 +265,31 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
     elif vix_val >= 15: vix_label, vix_color = "Normal", "#7c8298"
     else: vix_label, vix_color = "Complacent", "#0d9b6a"
 
+    period_dir = "weekly" if period_label.lower() == "weekly" else "monthly"
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title}</title>
+<meta name="description" content="{subtitle} — {period_label} 시장 요약 (Equity · Bonds · FX · Commodities · Risk)">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{subtitle} — {period_label} 시장 요약 보고서">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://traderparamita.github.io/market-summary/{period_dir}/{filename}">
+<meta property="og:site_name" content="Market Summary">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{subtitle} — {period_label} 시장 요약 보고서">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');

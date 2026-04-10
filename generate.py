@@ -449,6 +449,7 @@ def generate_html(data):
     dates = [item["date"] for cat in data.values() for item in cat.values()]
     report_date = max(dates) if dates else str(dt.date.today())
     report_dt = dt.datetime.strptime(report_date, "%Y-%m-%d")
+    ym = report_date[:7]
     day_name = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][report_dt.weekday()]
 
     eq = data.get("equity", {})
@@ -517,6 +518,24 @@ def generate_html(data):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Market Summary | {report_date}</title>
+<meta name="description" content="글로벌 시장 요약 보고서 — {report_date} (Equity · Bonds · FX · Commodities · Risk)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Market Summary | {report_date}">
+<meta property="og:description" content="글로벌 시장 요약 보고서 — {report_date} (Equity · Bonds · FX · Commodities · Risk)">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://traderparamita.github.io/market-summary/{ym}/{report_date}.html">
+<meta property="og:site_name" content="Market Summary">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Market Summary | {report_date}">
+<meta name="twitter:description" content="글로벌 시장 요약 보고서 — {report_date}">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
@@ -1065,10 +1084,24 @@ def generate_index():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Market Summary</title>
+<meta name="description" content="매일 자동 생성되는 글로벌 시장 요약 보고서 — Equity, Bonds, FX, Commodities, Risk">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta property="og:title" content="Daily Market Summary">
-<meta property="og:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서">
-<meta property="og:image" content="https://traderparamita.github.io/market-summary/favicon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Market Summary | Daily Global Markets">
+<meta property="og:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서 — Equity, Bonds, FX, Commodities, Risk">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://traderparamita.github.io/market-summary/">
+<meta property="og:site_name" content="Market Summary">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Market Summary | Daily Global Markets">
+<meta name="twitter:description" content="매일 자동 생성되는 글로벌 시장 요약 보고서">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png">
 <style>
   @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
   body {{ font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 고딕',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
