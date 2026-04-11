@@ -67,7 +67,7 @@ def _csv_to_df(csv_path: str) -> pd.DataFrame:
     df = df.rename(columns=COL_MAP)
     df["일자"] = pd.to_datetime(df["일자"]).dt.date
     for col in ("종가", "시가", "고가", "저가"):
-        df[col] = pd.to_numeric(df[col], errors="coerce")
+        df[col] = pd.to_numeric(df[col], errors="coerce").round(3)
     df["거래량"] = pd.to_numeric(df["거래량"], errors="coerce")
 
     # Nullable int for 거래량: write_pandas 는 NaN→NULL 처리. 그대로 둬도 OK.
@@ -129,6 +129,11 @@ def upsert_rows(df: pd.DataFrame, *, target_date: Optional[str] = None) -> int:
         df = df.rename(columns=COL_MAP)
     df["일자"] = pd.to_datetime(df["일자"]).dt.date
     df = df[df["지표코드"].notna() & (df["지표코드"] != "")]
+
+    # Enforce NUMBER(18,3) scale on OHLC columns (defensive; DDL already limits)
+    for _col in ("종가", "시가", "고가", "저가"):
+        if _col in df.columns:
+            df[_col] = pd.to_numeric(df[_col], errors="coerce").round(3)
 
     cols = ["일자", "지표코드", "카테고리", "티커",
             "종가", "시가", "고가", "저가", "거래량", "소스"]

@@ -1424,14 +1424,28 @@ def append_to_history(history_rows):
                 if d and code:
                     existing.add((d, code))
 
-    def _norm(v):
-        """None → "", float → str(no trailing .0 for integers)."""
+    def _price(v):
+        """가격 컬럼(CLOSE/OPEN/HIGH/LOW)은 항상 3자리로 포맷."""
+        if v is None or v == "":
+            return ""
+        try:
+            return f"{round(float(v), 3):.3f}"
+        except (TypeError, ValueError):
+            return ""
+
+    def _vol(v):
+        """VOLUME 은 정수. 없으면 공백."""
+        if v is None or v == "":
+            return ""
+        try:
+            return str(int(round(float(v))))
+        except (TypeError, ValueError):
+            return ""
+
+    def _text(v):
+        """문자열 컬럼."""
         if v is None:
             return ""
-        if isinstance(v, float):
-            if v.is_integer():
-                return str(int(v))
-            return repr(v)
         return str(v)
 
     new_rows = []
@@ -1455,7 +1469,12 @@ def append_to_history(history_rows):
         if write_header:
             writer.writerow(HISTORY_CSV_COLUMNS)
         for r in new_rows:
-            writer.writerow([_norm(v) for v in r])
+            d, code, cat, tk, close, o, h, l, vol, src = r
+            writer.writerow([
+                _text(d), _text(code), _text(cat), _text(tk),
+                _price(close), _price(o), _price(h), _price(l),
+                _vol(vol), _text(src),
+            ])
 
 
 def main(target_date=None, start_date=None):
