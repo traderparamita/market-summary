@@ -952,6 +952,7 @@ body{{
         "Nikkei225",                                           # 일본
         "NIFTY50",                                             # 인도
     ]
+    MSCI_ORDER = ["MSCI World", "MSCI ACWI", "MSCI LATAM", "MSCI EMEA"]
     BOND_RATE_ORDER = [
         "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y",  # 한국
         "US 2Y", "US 10Y", "US 30Y",                          # 미국
@@ -973,9 +974,14 @@ body{{
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
 
+    msci_names = set(MSCI_ORDER)
+    eq_regional = {k: v for k, v in eq.items() if k not in msci_names}
+    eq_msci = {k: v for k, v in eq.items() if k in msci_names}
+
     # ── Heatmap Tables ──
     DATA_SOURCES = {
         "Equity":        "yfinance · FinanceDataReader · investiny",
+        "MSCI Equity":   "yfinance (ETF proxy)",
         "Bonds & Rates": "yfinance · ECOS(한국은행)",
         "Bond ETF":      "yfinance",
         "FX":            "investiny(investing.com) · FinanceDataReader",
@@ -983,12 +989,13 @@ body{{
         "Major Stocks":  "yfinance",
     }
     sections = [
-        ("Equity",        eq,       False, False, EQUITY_ORDER),
-        ("Bonds & Rates", bd_rates, False, True,  BOND_RATE_ORDER),
-        ("Bond ETF",      bd_etf,   True,  False, BOND_ETF_ORDER),
-        ("FX",            fx,       False, False, FX_ORDER),
-        ("Commodities",   cm,       True,  False, CM_ORDER),
-        ("Major Stocks",  st,       True,  False, ST_ORDER),
+        ("Equity",        eq_regional, False, False, EQUITY_ORDER),
+        ("MSCI Equity",   eq_msci,     False, False, MSCI_ORDER),
+        ("Bonds & Rates", bd_rates,    False, True,  BOND_RATE_ORDER),
+        ("Bond ETF",      bd_etf,      True,  False, BOND_ETF_ORDER),
+        ("FX",            fx,          False, False, FX_ORDER),
+        ("Commodities",   cm,          True,  False, CM_ORDER),
+        ("Major Stocks",  st,          True,  False, ST_ORDER),
     ]
     for title, cat, dollar, as_bp, order in sections:
         if not cat:
