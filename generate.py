@@ -631,12 +631,14 @@ def generate_html(data):
     st = data.get("stocks", {})
 
     # === 히트맵 행 생성 ===
-    def heatmap_row(name, d, show_dollar=False):
+    def heatmap_row(name, d, show_dollar=False, as_bp=False):
         close = d["close"]
         is_hol = d.get("holiday", False)
         hol_note = d.get("holiday_note", "")
 
-        if show_dollar:
+        if as_bp:
+            close_str = f"{close:.2f}%"
+        elif show_dollar:
             close_str = f"${fmt(close)}" if close < 10000 else f"${close:,.0f}"
         else:
             close_str = fmt(close, 0) if close > 100 else fmt(close, 2)
@@ -651,12 +653,20 @@ def generate_html(data):
         for period in ["daily", "weekly", "monthly", "ytd"]:
             v = d[period]
             if is_hol and period == "daily":
-                # 휴일: 전일 종가 유지, 0.00%, 회색 배경
-                cells += f'<td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td>'
+                # 휴일: 전일 종가 유지, 0 변화, 회색 배경
+                zero_txt = "0 bp" if as_bp else "0.00%"
+                cells += f'<td class="heat-cell" style="background:#f7f8fa;color:#7c8298">{zero_txt}</td>'
             else:
                 bg = heat_color(v)
                 tc = heat_text(v)
-                cells += f'<td class="heat-cell" style="background:{bg};color:{tc}">{chg_sign(v)}</td>'
+                if as_bp:
+                    # v 는 yield 의 상대 % 변화 → 절대 bp 변화로 환산
+                    prev = close / (1 + v / 100) if (1 + v / 100) else close
+                    bp = (close - prev) * 100
+                    sign = "+" if bp > 0 else ""
+                    cells += f'<td class="heat-cell" style="background:{bg};color:{tc}">{sign}{bp:.0f} bp</td>'
+                else:
+                    cells += f'<td class="heat-cell" style="background:{bg};color:{tc}">{chg_sign(v)}</td>'
         return f"""<tr>
           <td class="name-cell">{name_display}</td>
           <td class="close-cell">{close_str}</td>
@@ -881,12 +891,12 @@ body{{
 
 <!-- ══ TABS ══ -->
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('data')">Data Dashboard</button>
-  <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
+  <button class="tab-btn active" onclick="switchTab('story')">Market Story</button>
+  <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
 </div>
 
 <!-- ══════ TAB 1: DATA ══════ -->
-<div id="tab-data" class="tab-panel active">
+<div id="tab-data" class="tab-panel">
 
 <div class="kpi-strip">
 """
@@ -973,14 +983,14 @@ body{{
         "Major Stocks":  "yfinance",
     }
     sections = [
-        ("Equity",        eq,       False, EQUITY_ORDER),
-        ("Bonds & Rates", bd_rates, False, BOND_RATE_ORDER),
-        ("Bond ETF",      bd_etf,   True,  BOND_ETF_ORDER),
-        ("FX",            fx,       False, FX_ORDER),
-        ("Commodities",   cm,       True,  CM_ORDER),
-        ("Major Stocks",  st,       True,  ST_ORDER),
+        ("Equity",        eq,       False, False, EQUITY_ORDER),
+        ("Bonds & Rates", bd_rates, False, True,  BOND_RATE_ORDER),
+        ("Bond ETF",      bd_etf,   True,  False, BOND_ETF_ORDER),
+        ("FX",            fx,       False, False, FX_ORDER),
+        ("Commodities",   cm,       True,  False, CM_ORDER),
+        ("Major Stocks",  st,       True,  False, ST_ORDER),
     ]
-    for title, cat, dollar, order in sections:
+    for title, cat, dollar, as_bp, order in sections:
         if not cat:
             continue
         items = ordered(cat, order)
@@ -992,7 +1002,7 @@ body{{
 <thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
 <tbody>\n"""
         for name, d in items:
-            html += heatmap_row(name, d, dollar)
+            html += heatmap_row(name, d, dollar, as_bp)
         html += "</tbody></table></div>\n"
 
     # ── Risk Dashboard ──
@@ -1066,7 +1076,7 @@ body{{
 </div><!-- /tab-data -->
 
 <!-- ══════ TAB 2: STORY ══════ -->
-<div id="tab-story" class="tab-panel">
+<div id="tab-story" class="tab-panel active">
 
 <!-- STORY_CONTENT_PLACEHOLDER -->
 
