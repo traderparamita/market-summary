@@ -122,7 +122,24 @@ output/{YYYY-MM}/{YYYY-MM-DD}.html       # 주입 대상 HTML (이미 존재)
 **검색 시 주의**:
 - 쿼리에 **정확한 날짜**를 넣어 미래 데이터 차단 (`"April 7 2026"` 같은 식)
 - 당일 09시 이후 장중 데이터 검색 금지
-- 훅(`PreToolUse WebSearch|WebFetch`)이 자동 검증하므로 block되면 쿼리 수정
+- 훅(`PreToolUse WebSearch|WebFetch|mcp__tavily.*`)이 자동 검증하므로 block되면 쿼리 수정
+
+#### Tavily MCP 사용 (experiment/tavily-story 브랜치 전용)
+
+이 브랜치는 내장 `WebSearch`/`WebFetch` 대신 **Tavily MCP**를 1차 검색 도구로 사용한다. 목적은 검색 결과의 시간 범위를 API 파라미터로 강제해서 result pollution(보고서 날짜 이후 기사 혼입)을 구조적으로 차단하는 것.
+
+**기본 호출 규칙**:
+- 일간 Story: `topic: "news"`, `days: 2`, `max_results: 5~8`
+- 주간 Story: `topic: "news"`, `days: 8`, `max_results: 8~12`
+- 월간 Story: `topic: "news"`, `days: 35`, `max_results: 10~15`
+- 한국어 원문이 필요한 경우 `include_domains: ["yna.co.kr", "hankyung.com", "mk.co.kr"]` 등으로 도메인 제한
+- 1차 소스(정부 발표, 중앙은행 공식 페이지, 기업 IR)는 Tavily 결과의 링크를 내장 `WebFetch`로 추가 열람
+
+**주의**:
+- Tavily 결과에도 `published_date`가 포함된다. 반드시 확인해서 보고서 날짜 이후 기사는 인용 금지
+- 훅이 `mcp__tavily.*` 호출을 자동 검증하지만, 훅을 신뢰하지 말고 쿼리 날짜 명시 규칙은 그대로 적용
+- API 무료 한도 1000/월. 일간 5~10콜, 주간 15~20콜 기준으로 운영. 한도 근접 시 `experiments/tavily_log.md`에 기록
+- Tavily가 관련 결과를 못 찾으면 내장 `WebSearch`로 폴백
 
 ### Step 3: Story 작성
 

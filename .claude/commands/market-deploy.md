@@ -15,6 +15,16 @@ description: "market_summary 보고서 git commit + push → GitHub Pages 자동
 
 `market_summary` 보고서 변경분을 git commit + push하여 GitHub Pages에 자동 배포한다.
 
+### 사전 안전 가드 (experiment/tavily-story 브랜치 필독)
+
+**이 커맨드는 `main` 브랜치에서만 실행한다.** 실험 브랜치(`experiment/tavily-story` 등)에서는 즉시 중단하고 사용자에게 "현재 브랜치는 실험용이므로 배포하지 않는다"라고 보고할 것.
+
+```bash
+git branch --show-current
+```
+
+위 결과가 `main`이 아니면 **이후 단계를 진행하지 않는다**. 실험 브랜치의 워크트리는 `/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary_tavily`이고, 실험 결과는 `experiments/tavily_log.md`에만 기록할 것.
+
 ### 절차
 
 1. 위 context의 변경분 확인. 변경이 없으면 "배포할 변경사항 없음"만 보고하고 종료.
