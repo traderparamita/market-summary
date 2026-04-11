@@ -174,7 +174,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 
 #### (A) 신규 일간 생성 — `generate.py`가 자동 처리
 
-`python3.12 generate.py {date}` 실행 시 내부적으로 `_inject_existing_story()`가 호출되어 Story 탭 placeholder 처리와 `_story.html` 저장까지 모두 자동이다. **외부에서 이 함수를 직접 호출할 필요 없다.**
+`.venv/bin/python generate.py {date}` 실행 시 내부적으로 `_inject_existing_story()`가 호출되어 Story 탭 placeholder 처리와 `_story.html` 저장까지 모두 자동이다. **외부에서 이 함수를 직접 호출할 필요 없다.**
 
 #### (B) 이미 존재하는 Story를 수정할 때
 
@@ -184,7 +184,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 - 장점: 대시보드·CSS·탭 구조 손상 위험 없음
 
 **방법 2 — placeholder 복원 후 치환**:
-1. `python3.12 generate.py {date}` 실행 → 쉘 재생성 (기존 HTML이 건강하면 Story 보존됨)
+1. `.venv/bin/python generate.py {date}` 실행 → 쉘 재생성 (기존 HTML이 건강하면 Story 보존됨)
 2. `_story.html`을 수정한 뒤 짧은 Python 스니펫으로 daily HTML의 `<!-- STORY_CONTENT_PLACEHOLDER -->` 를 치환
 
 #### 함정: `_inject_existing_story()` 외부 직접 호출 금지
@@ -219,7 +219,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 ### Step 3: HTML 주입
 
 - 대상: `output/weekly/YYYY-WNN.html`
-- 주간 보고서가 아직 없으면 먼저 `python3.12 generate_periodic.py {year}`로 생성
+- 주간 보고서가 아직 없으면 먼저 `.venv/bin/python generate_periodic.py {year}`로 생성
 - 일간과 동일하게 `_inject_existing_story()` 사용, `_story.html` 저장 확인
 
 ---
@@ -243,7 +243,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 ### Step 3: HTML 주입
 
 - 대상: `output/monthly/YYYY-MM.html`
-- 월간 보고서가 없으면 `python3.12 generate_periodic.py {year}` 선행
+- 월간 보고서가 없으면 `.venv/bin/python generate_periodic.py {year}` 선행
 - 일간·주간과 동일한 주입 방식
 
 ---
