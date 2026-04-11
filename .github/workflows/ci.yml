@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.py'
+      - 'requirements.txt'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.py'
+      - 'requirements.txt'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Python quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Byte-compile all Python files
+        run: python -m compileall -q .
+
+      - name: Import top-level modules
+        run: |
+          python -c "
+          import generate
+          import generate_periodic
+          import snowflake_loader
+          import simulate
+          import inject_stories
+          print('all modules imported')
+          "
+          # gen_assets.py depends on Pillow and is a one-off asset
+          # generator (favicon/OG image). compileall above already
+          # covers its syntax; skip importing to keep runtime deps lean.
+
+      - name: Smoke-test generate.py constants
+        run: |
+          python -c "
+          from generate import INDICATOR_CODES, TICKERS, HISTORY_CSV_COLUMNS
+
+          # INDICATOR_CODES must cover every (category, ticker) pair that
+          # TICKERS iterates, except the ones we intentionally skip
+          # (VKOSPI today).
+          expected_skip = {('risk', 'VKOSPI')}
+          ticker_pairs = {(cat, name) for cat, items in TICKERS.items() for name in items}
+          ticker_pairs -= expected_skip
+
+          missing = ticker_pairs - set(INDICATOR_CODES.keys())
+          assert not missing, f'INDICATOR_CODES missing: {sorted(missing)}'
+
+          extra = set(INDICATOR_CODES.keys()) - ticker_pairs
+          # INDICATOR_CODES may hold entries that aren't in TICKERS (future
+          # additions), but every TICKERS entry (minus skip) must be mapped.
+
+          assert len(HISTORY_CSV_COLUMNS) == 10, f'HISTORY_CSV_COLUMNS length: {len(HISTORY_CSV_COLUMNS)}'
+          assert HISTORY_CSV_COLUMNS[0] == 'DATE'
+          assert HISTORY_CSV_COLUMNS[1] == 'INDICATOR_CODE'
+          assert HISTORY_CSV_COLUMNS[-1] == 'SOURCE'
+
+          print(f'INDICATOR_CODES: {len(INDICATOR_CODES)}')
+          print(f'TICKERS pairs:   {len(ticker_pairs) + len(expected_skip)} (effective: {len(ticker_pairs)})')
+          print(f'HISTORY_CSV_COLUMNS: {HISTORY_CSV_COLUMNS}')
+          "
+
+      - name: Smoke-test snowflake_loader constants
+        run: |
+          python -c "
+          from snowflake_loader import COL_MAP, TABLE
+          assert TABLE == 'MKT100_MARKET_DAILY'
+          assert COL_MAP['DATE'] == '일자'
+          assert COL_MAP['INDICATOR_CODE'] == '지표코드'
+          assert COL_MAP['CLOSE'] == '종가'
+          assert len(COL_MAP) == 10
+          print('snowflake_loader constants OK')
+          "
