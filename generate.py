@@ -1625,15 +1625,24 @@ def _inject_existing_story(path, new_html):
     if os.path.exists(path):
         with open(path) as f:
             old_content = f.read()
-        # tab-story 내용 추출
+        # tab-story 내용 추출 (class="tab-panel" 또는 "tab-panel active" 모두 허용)
         m = re.search(
-            r'<div id="tab-story" class="tab-panel">\s*\n(.*?)\n</div><!-- /tab-story -->',
+            r'<div id="tab-story" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
             old_content, re.DOTALL
         )
         if m:
             story_content = m.group(1).strip()
             if story_content and "STORY_CONTENT_PLACEHOLDER" not in story_content:
                 old_story = story_content
+    # path 본문에 스토리가 없으면 sibling `_story.html` 에서 복원 시도
+    if not old_story:
+        base, ext = os.path.splitext(path)
+        sibling = f"{base}_story{ext}"
+        if os.path.exists(sibling):
+            with open(sibling) as f:
+                sib_story = f.read().strip()
+            if sib_story and "STORY_CONTENT_PLACEHOLDER" not in sib_story:
+                old_story = sib_story
 
     if old_story:
         new_html = new_html.replace("<!-- STORY_CONTENT_PLACEHOLDER -->", old_story)
@@ -1649,7 +1658,7 @@ def _save_story_file(html_path, html_content):
     """HTML에서 Story 콘텐츠를 추출하여 _story.html 파일로 저장"""
     import re
     m = re.search(
-        r'<div id="tab-story" class="tab-panel">\s*\n(.*?)\n</div><!-- /tab-story -->',
+        r'<div id="tab-story" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
         html_content, re.DOTALL
     )
     if not m:
