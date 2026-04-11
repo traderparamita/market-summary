@@ -257,7 +257,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
         idx = {n: i for i, n in enumerate(order)}
         return sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
 
-    bond_etfs = {"TLT", "HYG", "LQD", "EMB"}
+    bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB"}
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
 
@@ -510,7 +510,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
     sections = [
         ("Equity", eq, False, False, EQUITY_ORDER),
         ("Bonds & Rates", bd_rates, False, True, BOND_ORDER),
-        ("Bond ETF", bd_etf, True, False, ["TLT","LQD","HYG","EMB"]),
+        ("Bond ETF", bd_etf, True, False, ["AGG","TLT","LQD","HYG","EMB"]),
         ("FX", fx, False, False, FX_ORDER),
         ("Commodities", cm, True, False, CM_ORDER),
         ("Major Stocks", st, True, False, ST_ORDER),

@@ -956,7 +956,7 @@ body{{
         "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y",  # 한국
         "US 2Y", "US 10Y", "US 30Y",                          # 미국
     ]
-    BOND_ETF_ORDER = ["TLT", "LQD", "HYG", "EMB"]
+    BOND_ETF_ORDER = ["AGG", "TLT", "LQD", "HYG", "EMB"]
     FX_ORDER = ["DXY", "USD/KRW", "EUR/USD", "GBP/USD", "AUD/USD", "USD/JPY", "USD/CNY"]
     CM_ORDER = ["WTI", "Brent", "Gold", "Silver", "Copper", "Nat Gas"]
     ST_ORDER = [
@@ -969,7 +969,7 @@ body{{
         idx = {name: i for i, name in enumerate(order)}
         return sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
 
-    bond_etfs = {"TLT", "HYG", "LQD", "EMB"}
+    bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB"}
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
 
