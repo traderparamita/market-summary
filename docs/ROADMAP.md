@@ -2,6 +2,26 @@
 
 > 2026-04-11 합의. 사용자: 운영자 / 1차 독자: PM·리서치 + PB·영업
 
+## 현재 상태 (2026-04-13 업데이트)
+
+**완료**:
+- ✅ **프로젝트 구조 재편**: `output/` → `output/summary/`, `output/portfolio/`, `output/view/` 3-tier 분리
+- ✅ **Portfolio Agent (aimvp)**: market-strategy 통합 완료
+  - AIMVP RiskOn 전략 (Faber TAA 3-Signal)
+  - 전체 백테스트 + 월간 히트맵
+  - `portfolio/aimvp/generate.py` → `output/portfolio/aimvp/{date}.html`
+- ✅ **View Agent 토대**: Phase 0/Phase 1 partial
+  - `portfolio/universe.yaml` - 자산 유니버스
+  - `portfolio/view/scoring.py` - 자산 점수 계산
+  - `portfolio/view/macro_view.py` - 매크로 뷰 (TAA 레짐 + 자산군별 OW/N/UW)
+  - `portfolio/backtest.py` - 공통 백테스트 엔진
+  - `output/view/macro/{date}.html` - 현재 상태 뷰 (백테스트 없음)
+- ✅ **Commands/Skills 정합성**: 모든 경로 업데이트 완료
+
+**진행 중**: Phase 1 완성을 위한 백테스트 통합
+
+**다음 단계**: Phase 2 (모델 포트폴리오 + 리밸런싱)
+
 ## Context
 
 현재 market_summary는 56개 글로벌 지표를 매일 수집하고 Data 대시보드 + Claude가 쓴 Market Story를 산출하는 "모닝미팅 시황 보고서" 수준이다. 사용자는 이 위에 **증권사 애널리스트 업무(매크로 전략 + 섹터/테마 로테이션)를 자동화**하고, 이어서 **실제 자산배분 운용**까지 발전시키고자 한다.

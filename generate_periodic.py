@@ -19,7 +19,7 @@ except ImportError:
     OG_IMAGE_VERSION = "1"
 
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output", "summary")
 HISTORY_CSV = os.path.join(os.path.dirname(__file__), "history", "market_data.csv")
 
 

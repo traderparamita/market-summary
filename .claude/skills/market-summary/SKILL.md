@@ -23,13 +23,13 @@ metadata:
 
 ```
 /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/
-├── output/YYYY-MM/YYYY-MM-DD.html          # 일간 보고서 (Story 주입 대상)
-├── output/YYYY-MM/YYYY-MM-DD_data.json     # 일간 원시 데이터 (Story 입력)
-├── output/YYYY-MM/YYYY-MM-DD_story.html    # 일간 Story 별도 저장
-├── output/weekly/YYYY-WNN.html             # 주간 보고서
-├── output/weekly/YYYY-WNN_story.html       # 주간 Story
-├── output/monthly/YYYY-MM.html             # 월간 보고서
-└── output/monthly/YYYY-MM_story.html       # 월간 Story
+├── output/summary/YYYY-MM/YYYY-MM-DD.html          # 일간 보고서 (Story 주입 대상)
+├── output/summary/YYYY-MM/YYYY-MM-DD_data.json     # 일간 원시 데이터 (Story 입력)
+├── output/summary/YYYY-MM/YYYY-MM-DD_story.html    # 일간 Story 별도 저장
+├── output/summary/weekly/YYYY-WNN.html             # 주간 보고서
+├── output/summary/weekly/YYYY-WNN_story.html       # 주간 Story
+├── output/summary/monthly/YYYY-MM.html             # 월간 보고서
+└── output/summary/monthly/YYYY-MM_story.html       # 월간 Story
 ```
 
 ---
@@ -104,8 +104,8 @@ metadata:
 ### Step 1: 입력 확인
 
 ```
-output/{YYYY-MM}/{YYYY-MM-DD}_data.json  # 해당일 가격·변동률 데이터
-output/{YYYY-MM}/{YYYY-MM-DD}.html       # 주입 대상 HTML (이미 존재)
+output/summary/{YYYY-MM}/{YYYY-MM-DD}_data.json  # 해당일 가격·변동률 데이터
+output/summary/{YYYY-MM}/{YYYY-MM-DD}.html       # 주입 대상 HTML (이미 존재)
 ```
 
 - `_data.json`의 `holiday` 필드, 각 자산의 종가/변동률 확인
@@ -179,8 +179,8 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 #### (B) 이미 존재하는 Story를 수정할 때
 
 **방법 1 (권장) — `tab-story` 블록 직접 Edit**:
-1. `output/YYYY-MM/YYYY-MM-DD.html`에서 `<div id="tab-story" class="tab-panel">` ~ `</div><!-- /tab-story -->` 사이 블록을 Edit 도구로 교체
-2. 같은 내용으로 `output/YYYY-MM/YYYY-MM-DD_story.html`도 Edit (두 파일 동기화)
+1. `output/summary/YYYY-MM/YYYY-MM-DD.html`에서 `<div id="tab-story" class="tab-panel">` ~ `</div><!-- /tab-story -->` 사이 블록을 Edit 도구로 교체
+2. 같은 내용으로 `output/summary/YYYY-MM/YYYY-MM-DD_story.html`도 Edit (두 파일 동기화)
 - 장점: 대시보드·CSS·탭 구조 손상 위험 없음
 
 **방법 2 — placeholder 복원 후 치환**:
@@ -206,7 +206,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 ### Step 1: 해당 주 일간 Story 수집
 
 - ISO 주차 → 해당 주의 영업일 나열 (월~금, 공휴일 제외)
-- 각 날짜의 `output/YYYY-MM/YYYY-MM-DD_story.html`을 **모두 Read**
+- 각 날짜의 `output/summary/YYYY-MM/YYYY-MM-DD_story.html`을 **모두 Read**
 - 각 날짜의 `_data.json`도 필요 시 참조 (수치 확인)
 
 ### Step 2: 주간 관점 종합
@@ -218,7 +218,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 
 ### Step 3: HTML 주입
 
-- 대상: `output/weekly/YYYY-WNN.html`
+- 대상: `output/summary/weekly/YYYY-WNN.html`
 - 주간 보고서가 아직 없으면 먼저 `.venv/bin/python generate_periodic.py {year}`로 생성
 - 일간과 동일하게 `_inject_existing_story()` 사용, `_story.html` 저장 확인
 
@@ -242,7 +242,7 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 
 ### Step 3: HTML 주입
 
-- 대상: `output/monthly/YYYY-MM.html`
+- 대상: `output/summary/monthly/YYYY-MM.html`
 - 월간 보고서가 없으면 `.venv/bin/python generate_periodic.py {year}` 선행
 - 일간·주간과 동일한 주입 방식
 

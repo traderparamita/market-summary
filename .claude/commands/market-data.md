@@ -7,7 +7,7 @@ description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (ge
 ## Context
 
 - 현재 날짜: !`date +%Y-%m-%d`
-- 최근 생성된 보고서: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/2026-*/2026-*-*.html 2>/dev/null | head -5`
+- 최근 생성된 보고서: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*.html 2>/dev/null | head -5`
 - history CSV 마지막 날짜: !`tail -5 /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
 
 ## Your task

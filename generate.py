@@ -26,7 +26,7 @@ except ImportError:
     HAS_INVESTINY = False
 
 # ── Config ──────────────────────────────────────────────────────
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output", "summary")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 HISTORY_DIR = os.path.join(os.path.dirname(__file__), "history")
 HISTORY_CSV = os.path.join(HISTORY_DIR, "market_data.csv")

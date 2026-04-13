@@ -1,0 +1,135 @@
+# Portfolio Universe Definition
+# Maps investable ETFs/stocks -> indicator_codes in history/market_data.csv
+#
+# Phase 0 MVP: 13 ETFs + 14 stocks (per ROADMAP.md)
+# indicator_code must exist in generate.py INDICATOR_CODES
+
+macro_signals:
+  yield_curve:
+    long: BD_US_10Y     # 10Y Treasury yield
+    short: BD_US_2Y     # 2Y Treasury yield
+  vix: RK_VIX
+  dxy: FX_DXY
+
+assets:
+  # ── Equity ─────────────────────────────────────────
+  SPY:
+    asset_class: equity_us
+    indicator_code: EQ_SP500
+    name: "S&P 500"
+  IWM:
+    asset_class: equity_us
+    indicator_code: EQ_RUSSELL2000
+    name: "Russell 2000"
+  EFA:
+    asset_class: equity_dm
+    indicator_code: EQ_MSCI_WORLD
+    name: "MSCI EAFE (proxy: MSCI World ETF)"
+  EEM:
+    asset_class: equity_em
+    indicator_code: EQ_HSI
+    name: "MSCI EM (proxy: Hang Seng)"
+  ACWI:
+    asset_class: equity_global
+    indicator_code: EQ_MSCI_ACWI
+    name: "MSCI ACWI"
+
+  # ── Fixed Income ───────────────────────────────────
+  TLT:
+    asset_class: ust_long
+    indicator_code: BD_TLT
+    name: "20+ Year Treasury Bond"
+  IEF:
+    asset_class: ust_mid
+    indicator_code: BD_US_10Y
+    name: "7-10 Year Treasury (proxy: 10Y yield)"
+    is_yield: true
+    duration: 7.5
+  AGG:
+    asset_class: agg_bond
+    indicator_code: BD_AGG
+    name: "US Aggregate Bond"
+  HYG:
+    asset_class: credit_hy
+    indicator_code: BD_HYG
+    name: "High Yield Corporate Bond"
+  LQD:
+    asset_class: credit_ig
+    indicator_code: BD_LQD
+    name: "Investment Grade Corporate Bond"
+  EMB:
+    asset_class: em_debt
+    indicator_code: BD_EMB
+    name: "EM USD Bond"
+
+  # ── Alternatives ───────────────────────────────────
+  GLD:
+    asset_class: gold
+    indicator_code: CM_GOLD
+    name: "Gold"
+  DBC:
+    asset_class: commodity
+    indicator_code: CM_WTI
+    name: "Broad Commodity (proxy: WTI)"
+  UUP:
+    asset_class: usd
+    indicator_code: FX_DXY
+    name: "US Dollar Index"
+
+  # ── Stocks ─────────────────────────────────────────
+  NVDA:
+    asset_class: stocks
+    indicator_code: ST_NVDA
+    name: "NVIDIA"
+  AVGO:
+    asset_class: stocks
+    indicator_code: ST_AVGO
+    name: "Broadcom"
+  GOOGL:
+    asset_class: stocks
+    indicator_code: ST_GOOGL
+    name: "Alphabet"
+  AMZN:
+    asset_class: stocks
+    indicator_code: ST_AMZN
+    name: "Amazon"
+  META:
+    asset_class: stocks
+    indicator_code: ST_META
+    name: "Meta Platforms"
+  AAPL:
+    asset_class: stocks
+    indicator_code: ST_AAPL
+    name: "Apple"
+  MSFT:
+    asset_class: stocks
+    indicator_code: ST_MSFT
+    name: "Microsoft"
+  TSLA:
+    asset_class: stocks
+    indicator_code: ST_TSLA
+    name: "Tesla"
+  TSM:
+    asset_class: stocks
+    indicator_code: ST_TSMC
+    name: "TSMC"
+  "005930.KS":
+    asset_class: stocks
+    indicator_code: ST_SAMSUNG
+    name: "Samsung"
+  PLTR:
+    asset_class: stocks
+    indicator_code: ST_PLTR
+    name: "Palantir"
+  "9988.HK":
+    asset_class: stocks
+    indicator_code: ST_BABA
+    name: "Alibaba"
+  "3690.HK":
+    asset_class: stocks
+    indicator_code: ST_MEITUAN
+    name: "Meituan"
+  "0700.HK":
+    asset_class: stocks
+    indicator_code: ST_TENCENT
+    name: "Tencent"
