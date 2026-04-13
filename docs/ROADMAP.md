@@ -42,10 +42,28 @@
 - ❌ `US_ISM_MFG/SVC` — FRED series_id NAPM/NAPMNOI 오류 (대체 코드 필요)
 - ❌ Snowflake `MKT200_PORTFOLIO_DAILY` DDL 미작성
 
+**View Agent — Phase 2 완료 (2026-04-13)**
+
+> 5개 의사결정 뷰 완성 (미래에셋생명 변액보험 운용 관점).
+
+- ✅ `portfolio/macro_indicators.yaml` — 37개 지표 (JP/CN/EU/UK/IN 매크로 추가)
+- ✅ `generate.py` TICKERS/INDICATOR_CODES 확장 — US섹터 ETF 11개, 스타일 ETF 5개, 채권 3개, FX, VIX3M
+- ✅ `portfolio/view/country_view.py` — 8개국 OW/N/UW (모멘텀+FX+매크로 Regime, KRW 환헤지 배너)
+  - `output/view/country/{date}.html`
+- ✅ `portfolio/view/sector_view.py` — US SPDR 11섹터 + KR 4섹터 (Regime 친화도 매트릭스)
+  - `output/view/sector/{date}.html`
+- ✅ `portfolio/view/bond_view.py` — US(SHY/IEI/IEF/TLT/TIP/LQD/HYG/EMB) + KR(CD91D/3Y/10Y), 듀레이션 권고, ALM
+  - `output/view/bond/{date}.html`
+- ✅ `portfolio/view/style_view.py` — US팩터 5개(Growth/Value/Quality/Momentum/LowVol) + KR 비교
+  - `output/view/style/{date}.html`
+- ✅ `portfolio/view/allocation_view.py` — 변액보험 펀드 유형별 배분안 (KR+US), K-ICS 체크
+  - `output/view/allocation/{date}.html`
+- ✅ 역사적 데이터 백필 (2020-01-01~): 신규 ETF 모두 1,576행 이상 확보
+
 ### 다음 단계
 
-- Phase 1-E: View 탭 통합 → Market Summary HTML에 4개 뷰 링크 + 요약 카드 포함
-- Phase 2: 모델 포트폴리오 + 리밸런싱 시그널 (국가/섹터/자산군 드릴다운)
+- Phase 1-E: View 탭 통합 → Market Summary HTML에 Phase 2 뷰 링크 + 요약 카드 포함
+- Phase 3: 백테스트 + 성과 검증 레이어
 
 ## Context
 
@@ -153,26 +171,35 @@ View → 실제 비중.
 
 ---
 
-## Phase 2 — 국가/섹터/자산군별 뷰 (Phase 1 안정화 후)
+## Phase 2 — 국가/섹터/채권/스타일/배분 뷰 ✅ 완료 (2026-04-13)
 
-Phase 1이 "현재 시장 전반을 진단"하는 레이어라면,
-Phase 2는 "어디에(국가/섹터/자산군) 비중을 둘 것인가"를 드릴다운하는 레이어.
+운용 컨텍스트: **미래에셋생명** 변액보험 운용사 (AUM 4조+). 한국+글로벌 동시 배분.
 
-### country_view.py — 국가별 비교
-- 대상: US / Korea / Japan / China / Europe / UK / India / EM
-- 신호: 주가지수 모멘텀 + FX 추세 + 매크로 점수(GDP/CPI) + ACWI 대비 상대 수익률
-- 한국과 미국을 동등한 1등 시민으로 — KR 먼저, US 다음, 글로벌 순
-- 데이터 추가: 일본/유럽 GDP/CPI FRED 코드 (macro_indicators.yaml 확장)
-- 출력: output/view/country/{date}.html
+### country_view.py — 국가별 비교 ✅
+- 대상: 🇺🇸US / 🇰🇷KR / 🇯🇵JP / 🇨🇳CN / 🇪🇺EU / 🇬🇧UK / 🇮🇳IN / 🌍EM (8개)
+- 신호: 주가지수 모멘텀(3/6/12M) + FX 추세 + 매크로 Regime(GDP/CPI) + ACWI 상대수익률
+- KRW 기준 환산 수익률 + 환헤지 권고 배너 (USDKRW MA60 기반)
+- 변액보험 펀드 유형 매핑: JP OW → 일본주식형 등
 
-### sector_view.py — 섹터 로테이션
-- 대상: SPDR 11개 섹터 ETF (XLK/XLF/XLE 등) + 한국 섹터 ETF
-- scoring.py 파이프라인 그대로 적용 (추가 수집 필요: generate.py TICKERS 확장)
-- 출력: output/view/sector/{date}.html
+### sector_view.py — 섹터 로테이션 ✅
+- 대상: SPDR 11개 섹터 + KR 4개 섹터 (KODEX 반도체/2차전지/바이오/금융)
+- Regime 친화도 매트릭스 + 모멘텀 복합 점수, KR-US 섹터 연계 비교
 
-### asset_view.py — 자산군 세분화
-- 채권 듀레이션별 / 주식 스타일별(성장/가치/퀄리티) / 대안자산
-- 출력: output/view/asset/{date}.html
+### bond_view.py — 채권 구조·ALM ✅
+- US: SHY/IEI/IEF/TLT/TIP/LQD/HYG/EMB (8개 세그먼트)
+- KR: CD91D/3Y/10Y (ECOS)
+- HY 스프레드 크레딧 레짐, KR-US 금리차, 듀레이션 권고, 변액보험 ALM 권고
+
+### style_view.py — 팩터 로테이션 ✅
+- US: IVW(Growth)/IVE(Value)/QUAL(Quality)/MTUM(Momentum)/USMV(LowVol)
+- KR 비교: KOSPI/KOSDAQ + US SmallCap/LargeCap
+- 금리방향 × VIX레짐 × Regime 친화도 매트릭스
+
+### allocation_view.py — 변액보험 배분안 ✅ (Phase 2 종착점)
+- 변액보험 10개 펀드 카테고리별 비중 (국내주식형~현금성)
+- K-ICS 주식 30% 한도 자동 체크 + 초과 시 자동 조정
+- KR 투자자(KRW 기준) + US 참고 배분 2-패널
+- Phase 1+2 모든 뷰 신호 통합 → 배분 근거 bullet 자동 생성
 
 ---
 

@@ -41,12 +41,17 @@ portfolio/
 │   ├── model.py         # 가중치 모델
 │   ├── config.py        # 전략 파라미터
 │   └── data_adapter.py  # CSV → 월간 데이터
-├── view/            # View Agent (확장 가능한 분석 뷰)
-│   ├── price_view.py       # 가격 기반 시장 신호 뷰 (모멘텀, 추세, VIX, 폭, Sentiment)
-│   ├── macro_view.py       # 거시지표 뷰 (GDP, 인플레이션, 고용 등, Regime 헤더)
-│   ├── correlation_view.py # 자산 상관관계 히트맵 뷰 (30/60/90일 롤링)
-│   ├── regime_view.py      # 종합 국면 뷰 (규칙 기반 한국어 투자 해설)
-│   └── scoring.py          # 자산 점수 계산 (sentiment_score, regime_duration 포함)
+├── view/            # View Agent (Phase 1 진단 + Phase 2 의사결정)
+│   ├── scoring.py          # 자산 점수 계산 (sentiment_score, regime_duration 포함)
+│   ├── price_view.py       # [P1] 가격 기반 시장 신호 뷰 (모멘텀, 추세, VIX, 폭, Sentiment)
+│   ├── macro_view.py       # [P1] 거시지표 뷰 (GDP, 인플레이션, 고용 등, Regime 헤더)
+│   ├── correlation_view.py # [P1] 자산 상관관계 히트맵 뷰 (30/60/90일 롤링)
+│   ├── regime_view.py      # [P1] 종합 국면 뷰 (규칙 기반 한국어 투자 해설)
+│   ├── country_view.py     # [P2] 8개국 OW/N/UW (모멘텀+FX+매크로+KRW 환헤지)
+│   ├── sector_view.py      # [P2] US 11섹터 + KR 4섹터 로테이션
+│   ├── bond_view.py        # [P2] 채권 커브·크레딧·ALM 포지셔닝
+│   ├── style_view.py       # [P2] 팩터 로테이션 (Growth/Value/Quality/Momentum/LowVol)
+│   └── allocation_view.py  # [P2] 변액보험 펀드 배분안 (K-ICS 체크, KR+US 2-패널)
 ├── collect_macro.py     # 거시지표 수집 (FRED/ECOS)
 ├── macro_indicators.yaml # 거시지표 정의
 ├── backtest.py      # 공통 백테스트 엔진
@@ -119,14 +124,15 @@ output/
 │   └── aimvp/
 │       └── YYYY-MM-DD.html     # 백테스트 리포트
 └── view/                        # View Agent
-    ├── price/
-    │   └── YYYY-MM-DD.html     # 가격 기반 시장 신호 뷰
-    ├── macro/
-    │   └── YYYY-MM-DD.html     # 거시지표 뷰
-    ├── correlation/
-    │   └── YYYY-MM-DD.html     # 자산 상관관계 히트맵
-    └── regime/
-        └── YYYY-MM-DD.html     # 종합 국면 + 투자 해설
+    ├── price/          → YYYY-MM-DD.html  # [P1] 가격 기반 시장 신호 뷰
+    ├── macro/          → YYYY-MM-DD.html  # [P1] 거시지표 뷰
+    ├── correlation/    → YYYY-MM-DD.html  # [P1] 자산 상관관계 히트맵
+    ├── regime/         → YYYY-MM-DD.html  # [P1] 종합 국면 + 투자 해설
+    ├── country/        → YYYY-MM-DD.html  # [P2] 8개국 OW/N/UW
+    ├── sector/         → YYYY-MM-DD.html  # [P2] 섹터 로테이션
+    ├── bond/           → YYYY-MM-DD.html  # [P2] 채권 구조·ALM
+    ├── style/          → YYYY-MM-DD.html  # [P2] 팩터 로테이션
+    └── allocation/     → YYYY-MM-DD.html  # [P2] 변액보험 배분안
 ```
 
 GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
@@ -263,9 +269,23 @@ python -m portfolio.view.regime_view --date 2026-04-09 --html
 
 출력: `output/view/regime/{date}.html`
 
-**구조적 확장 가능**:
-- `view/country_view.py` - 국가별 비교 (Phase 2)
-- `view/sector_view.py` - 섹터 로테이션 (Phase 3)
+**Phase 2 뷰 완료 (의사결정 레이어)**:
+- `view/country_view.py` - 8개국 OW/N/UW, KRW 환헤지 배너 ✅
+- `view/sector_view.py` - US 11섹터 + KR 4섹터 로테이션 ✅
+- `view/bond_view.py` - 채권 커브·크레딧·ALM 포지셔닝 ✅
+- `view/style_view.py` - Growth/Value/Quality/Momentum 팩터 ✅
+- `view/allocation_view.py` - 변액보험 펀드 배분안 (K-ICS 체크) ✅
+
+실행:
+```
+python -m portfolio.view.country_view --date YYYY-MM-DD --html
+python -m portfolio.view.sector_view --date YYYY-MM-DD --html
+python -m portfolio.view.bond_view --date YYYY-MM-DD --html
+python -m portfolio.view.style_view --date YYYY-MM-DD --html
+python -m portfolio.view.allocation_view --date YYYY-MM-DD --html
+```
+
+출력: `output/view/{country,sector,bond,style,allocation}/{date}.html`
 
 ### 공통
 

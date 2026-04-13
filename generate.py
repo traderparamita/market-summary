@@ -106,6 +106,9 @@ TICKERS = {
         "HYG":      "HYG",    # High Yield
         "LQD":      "LQD",    # Investment Grade
         "EMB":      "EMB",    # EM Bond
+        "SHY":      "SHY",    # 1-3Y Treasury
+        "IEI":      "IEI",    # 3-7Y Treasury
+        "TIP":      "TIP",    # TIPS (inflation-linked)
     },
     # FX
     "fx": {
@@ -116,6 +119,7 @@ TICKERS = {
         "USD/CNY":  "CNY=X",
         "AUD/USD":  "AUDUSD=X",
         "GBP/USD":  "GBPUSD=X",
+        "USD/INR":  "USDINR=X",
     },
     # Commodities
     "commodity": {
@@ -130,6 +134,36 @@ TICKERS = {
     "risk": {
         "VIX":      "^VIX",
         "VKOSPI":   "^KS11V",  # fallback 처리 필요
+        "VIX3M":    "^VIX3M",  # 3-month VIX (term structure)
+    },
+    # US Sector ETFs (SPDR 11개)
+    "sector_us": {
+        "SPDR Tech":      "XLK",
+        "SPDR Fin":       "XLF",
+        "SPDR Energy":    "XLE",
+        "SPDR Health":    "XLV",
+        "SPDR Indu":      "XLI",
+        "SPDR ConsDiscr": "XLY",
+        "SPDR ConsStap":  "XLP",
+        "SPDR Util":      "XLU",
+        "SPDR Matl":      "XLB",
+        "SPDR REIT":      "XLRE",
+        "SPDR Comm":      "XLC",
+    },
+    # US Factor / Style ETFs
+    "style_us": {
+        "iShares Growth":   "IVW",
+        "iShares Value":    "IVE",
+        "iShares Quality":  "QUAL",
+        "iShares Momentum": "MTUM",
+        "iShares LowVol":   "USMV",
+    },
+    # KR Sector ETFs (KODEX)
+    "sector_kr": {
+        "KODEX Semi":    "091160.KS",
+        "KODEX Battery": "305720.KS",
+        "KODEX Bio":     "244580.KS",
+        "KODEX Fin":     "139270.KS",
     },
     # Major stocks
     "stocks": {
@@ -180,6 +214,9 @@ INDICATOR_CODES = {
     ("bond", "HYG"):    "BD_HYG",
     ("bond", "LQD"):    "BD_LQD",
     ("bond", "EMB"):    "BD_EMB",
+    ("bond", "SHY"):    "BD_US_1_3Y",
+    ("bond", "IEI"):    "BD_US_3_7Y",
+    ("bond", "TIP"):    "BD_US_TIPS",
     ("bond", "KR CD 91D"): "BD_KR_CD91D",
     ("bond", "KR 3Y"):     "BD_KR_3Y",
     ("bond", "KR 10Y"):    "BD_KR_10Y",
@@ -190,13 +227,38 @@ INDICATOR_CODES = {
     ("fx", "USD/CNY"): "FX_USDCNY",
     ("fx", "AUD/USD"): "FX_AUDUSD",
     ("fx", "GBP/USD"): "FX_GBPUSD",
+    ("fx", "USD/INR"): "FX_USDINR",
     ("commodity", "WTI"):     "CM_WTI",
     ("commodity", "Brent"):   "CM_BRENT",
     ("commodity", "Gold"):    "CM_GOLD",
     ("commodity", "Silver"):  "CM_SILVER",
     ("commodity", "Copper"):  "CM_COPPER",
     ("commodity", "Nat Gas"): "CM_NATGAS",
-    ("risk", "VIX"): "RK_VIX",
+    ("risk", "VIX"):   "RK_VIX",
+    ("risk", "VIX3M"): "RK_VIX3M",
+    # US Sector ETFs
+    ("sector_us", "SPDR Tech"):      "SC_US_TECH",
+    ("sector_us", "SPDR Fin"):       "SC_US_FIN",
+    ("sector_us", "SPDR Energy"):    "SC_US_ENERGY",
+    ("sector_us", "SPDR Health"):    "SC_US_HEALTH",
+    ("sector_us", "SPDR Indu"):      "SC_US_INDU",
+    ("sector_us", "SPDR ConsDiscr"): "SC_US_DISCR",
+    ("sector_us", "SPDR ConsStap"):  "SC_US_STAPLES",
+    ("sector_us", "SPDR Util"):      "SC_US_UTIL",
+    ("sector_us", "SPDR Matl"):      "SC_US_MATL",
+    ("sector_us", "SPDR REIT"):      "SC_US_REIT",
+    ("sector_us", "SPDR Comm"):      "SC_US_COMM",
+    # US Style / Factor ETFs
+    ("style_us", "iShares Growth"):   "FA_US_GROWTH",
+    ("style_us", "iShares Value"):    "FA_US_VALUE",
+    ("style_us", "iShares Quality"):  "FA_US_QUALITY",
+    ("style_us", "iShares Momentum"): "FA_US_MOMENTUM",
+    ("style_us", "iShares LowVol"):   "FA_US_LOWVOL",
+    # KR Sector ETFs
+    ("sector_kr", "KODEX Semi"):    "SC_KR_SEMI",
+    ("sector_kr", "KODEX Battery"): "SC_KR_BATTERY",
+    ("sector_kr", "KODEX Bio"):     "SC_KR_BIO",
+    ("sector_kr", "KODEX Fin"):     "SC_KR_FIN",
     ("stocks", "NVIDIA"):    "ST_NVDA",
     ("stocks", "Broadcom"):  "ST_AVGO",
     ("stocks", "Alphabet"):  "ST_GOOGL",
