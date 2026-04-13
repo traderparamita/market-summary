@@ -24,7 +24,7 @@
 **View Agent — Macro View (Phase 4 선행 구현)**
 
 > ROADMAP의 Phase 4(FRED 데이터 통합)를 Phase 1보다 먼저 진행.
-> 기존 price_view(구 allocation_view)가 "Macro View"로 잘못 명명된 것을 발견하고 분리 결정.
+> `price_view`(가격 신호)와 `macro_view`(거시지표)를 별도 뷰로 분리 구성.
 
 - ✅ `portfolio/macro_indicators.yaml` — 21개 거시지표 정의
 - ✅ `portfolio/collect_macro.py` — FRED + ECOS API 수집기
