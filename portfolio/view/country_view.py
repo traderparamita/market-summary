@@ -387,10 +387,12 @@ def _chg_span(v) -> str:
 
 
 def render_html(data: dict) -> str:
+    from ._shared import nav_html
     date = data["date"]
     countries = data["countries"]
     krw_fx = data["krw_fx"]
     gen = data["generated_at"]
+    _nav_html = nav_html(date, "country")
 
     # KRW 배너
     krw_trend = krw_fx.get("trend", "N/A")
@@ -468,7 +470,8 @@ tr:hover td {{ background:#fafbff; }}
 </style>
 </head>
 <body>
-
+{_nav_html}
+<div style="max-width:1300px;margin:0 auto;padding:28px 24px 48px">
 <div class="header">
   <h1>🌍 Country Allocation View</h1>
   <div class="sub">국가별 투자 배분 의견 &nbsp;|&nbsp; 기준일: {date} &nbsp;|&nbsp; 생성: {gen}</div>
@@ -531,7 +534,7 @@ tr:hover td {{ background:#fafbff; }}
 </div>
 
 <div class="footer">Country View &nbsp;·&nbsp; 미래에셋생명 변액보험 운용 참고 &nbsp;·&nbsp; 본 자료는 투자 권유가 아닙니다</div>
-
+</div>
 </body>
 </html>"""
     return html

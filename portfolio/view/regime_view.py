@@ -723,6 +723,8 @@ def _view_colors(v: str) -> tuple[str, str]:
 def generate_regime_html(view: dict) -> str:  # noqa: C901
     report_date  = view["date"]
     generated_at = view["generated_at"]
+    from ._shared import nav_html
+    _nav = nav_html(report_date, "regime")
     s   = view["signals"]
     com = view["commentary"]
 
@@ -888,17 +890,18 @@ def generate_regime_html(view: dict) -> str:  # noqa: C901
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Regime View | {report_date}</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 :root {{
   --bg:#f4f5f9; --card:#fff; --border:#e0e3ed;
-  --text:#2d3148; --muted:#7c8298; --primary:#3b6ee6;
+  --text:#2d3148; --muted:#7c8298; --primary:#F58220; --navy:#043B72;
 }}
 * {{ margin:0; padding:0; box-sizing:border-box }}
 body {{
-  font-family:'Noto Sans KR',-apple-system,sans-serif;
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
   background:var(--bg); color:var(--text);
-  line-height:1.75; padding:28px 24px;
-  max-width:1200px; margin:0 auto;
+  line-height:1.75; padding:0;
+  max-width:none; margin:0;
 }}
 strong {{ font-weight:600 }}
 .back-link {{
@@ -940,9 +943,8 @@ strong {{ font-weight:600 }}
 </style>
 </head>
 <body>
-
-<a class="back-link" href="../../index.html">← Back to Index</a>
-
+{_nav}
+<div style="max-width:1200px;margin:0 auto;padding:28px 24px 48px">
 <div class="page-header">
   <div>
     <h1>Regime View</h1>
@@ -1016,7 +1018,7 @@ strong {{ font-weight:600 }}
 <div class="footer">
   Regime View | macro_view + price_view + correlation_view 종합 | View Agent
 </div>
-
+</div>
 </body>
 </html>'''
 

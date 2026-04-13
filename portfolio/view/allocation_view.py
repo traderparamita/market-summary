@@ -403,16 +403,15 @@ def render_html(data: dict) -> str:
     breach   = data["kics_breach"]
     rationale= data["rationale"]
 
-    regime_colors = {
-        "Goldilocks": "#27ae60", "Reflation": "#f39c12",
-        "Stagflation": "#e74c3c", "Deflation": "#3498db", "N/A": "#888",
-    }
-    regime_color = regime_colors.get(regime, "#888")
+    regime_cls = {
+        "Goldilocks": "regime-goldilocks", "Reflation": "regime-reflation",
+        "Stagflation": "regime-stagflation", "Deflation": "regime-deflation",
+    }.get(regime, "badge")
 
     # Fund category colors by group
     group_colors = {
-        "equity": "#4a90d9", "bond": "#27ae60",
-        "mixed": "#9b59b6", "alts": "#f39c12", "cash": "#95a5a6",
+        "equity": "#1d4ed8", "bond": "#059669",
+        "mixed": "#7c3aed", "alts": "#d97706", "cash": "#6b7280",
     }
 
     def alloc_row(cat: dict, alloc: dict) -> str:
@@ -421,46 +420,48 @@ def render_html(data: dict) -> str:
         base  = data["base_kr"].get(cid, 0)
         diff  = pct - base
         color = group_colors.get(cat["group"], "#888")
-        diff_str = (f'<span style="color:#27ae60">+{diff}%p</span>' if diff > 0
-                    else (f'<span style="color:#e74c3c">{diff}%p</span>' if diff < 0
-                          else '<span style="color:#888">—</span>'))
-        return f"""<tr style="border-bottom:1px solid #2a3a4e">
-          <td style="padding:8px 12px;color:#e8eaf6;font-size:13px">{cat["name"]}</td>
-          <td style="padding:8px 12px;text-align:right;color:{color};font-size:15px;font-weight:700">{pct}%</td>
-          <td style="padding:8px 12px">{_alloc_bar(pct, color)}</td>
-          <td style="padding:8px 12px;text-align:right;color:#aaa;font-size:13px">{base}%</td>
-          <td style="padding:8px 12px;text-align:right">{diff_str}</td>
+        if diff > 0:   diff_str = f'<span class="up">+{diff}%p</span>'
+        elif diff < 0: diff_str = f'<span class="down">{diff}%p</span>'
+        else:          diff_str = '<span class="muted">—</span>'
+        return f"""<tr>
+          <td style="font-size:13px">{cat["name"]}</td>
+          <td style="text-align:right;color:{color};font-size:15px;font-weight:700">{pct}%</td>
+          <td>{_alloc_bar(pct, color)}</td>
+          <td style="text-align:right" class="muted">{base}%</td>
+          <td style="text-align:right">{diff_str}</td>
         </tr>"""
 
-    def us_alloc_row(label, pct, color="#4a90d9") -> str:
-        return f"""<tr style="border-bottom:1px solid #2a3a4e">
-          <td style="padding:8px 12px;color:#e8eaf6;font-size:13px">{label}</td>
-          <td style="padding:8px 12px;text-align:right;color:{color};font-size:15px;font-weight:700">{pct}%</td>
-          <td style="padding:8px 12px">{_alloc_bar(pct, color)}</td>
+    def us_alloc_row(label, pct, color="#1d4ed8") -> str:
+        return f"""<tr>
+          <td style="font-size:13px">{label}</td>
+          <td style="text-align:right;color:{color};font-size:15px;font-weight:700">{pct}%</td>
+          <td>{_alloc_bar(pct, color)}</td>
         </tr>"""
 
     kr_rows = "".join(alloc_row(cat, adj_kr) for cat in FUND_CATEGORIES)
 
     us_labels = {
-        "us_eq": ("미국 주식", "#4a90d9"),
-        "intl_eq": ("선진국 주식(비미국)", "#5ba0e9"),
-        "em_eq": ("신흥국 주식", "#3498db"),
-        "us_bond": ("미국/선진 채권", "#27ae60"),
-        "em_bond": ("신흥국 채권", "#2ecc71"),
-        "alts": ("대안(금·원자재)", "#f39c12"),
-        "cash": ("현금", "#95a5a6"),
+        "us_eq":    ("미국 주식",       "#1d4ed8"),
+        "intl_eq":  ("선진국 주식(비미국)", "#2563eb"),
+        "em_eq":    ("신흥국 주식",      "#3b82f6"),
+        "us_bond":  ("미국/선진 채권",   "#059669"),
+        "em_bond":  ("신흥국 채권",      "#10b981"),
+        "alts":     ("대안(금·원자재)", "#d97706"),
+        "cash":     ("현금",            "#6b7280"),
     }
     us_rows = "".join(
         us_alloc_row(us_labels[k][0], v, us_labels[k][1])
         for k, v in us_alloc.items() if k in us_labels
     )
 
-    kics_color = "#e74c3c" if breach else "#27ae60"
+    kics_cls   = "down" if breach else "up"
+    kics_bg    = "var(--down-bg)" if breach else "var(--up-bg)"
+    kics_bdr   = "var(--down)" if breach else "var(--up)"
     kics_label = f"⚠️ K-ICS 주식한도({K_ICS_EQUITY_LIMIT}%) 초과 — 자동 조정됨" if breach \
                  else f"✅ K-ICS 주식한도({K_ICS_EQUITY_LIMIT}%) 이내"
 
     rationale_html = "".join(
-        f'<li style="margin-bottom:8px;color:#ccc;font-size:13px">{line}</li>'
+        f'<li style="margin-bottom:8px;font-size:13px">{line}</li>'
         for line in rationale
     )
 
@@ -471,127 +472,112 @@ def render_html(data: dict) -> str:
     alt_total  = adj_kr.get("alternative", 0)
     cash_total = adj_kr.get("cash", 0)
 
-    html = f"""<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Allocation View — {date_str}</title>
-<style>
-* {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ background:#0d1b2a; color:#e8eaf6; font-family:'Segoe UI',sans-serif; padding:24px; }}
-h2 {{ color:#7ec8e3; margin-bottom:4px; }}
-h3 {{ color:#90caf9; margin:20px 0 10px; font-size:15px; }}
-table {{ width:100%; border-collapse:collapse; }}
-th {{ background:#162032; color:#90caf9; padding:8px 12px; text-align:left; font-size:11px; letter-spacing:.5px; }}
-.section {{ background:#132030; border-radius:10px; padding:20px; margin-bottom:20px; }}
-.grid2 {{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }}
-@media(max-width:800px) {{ .grid2 {{ grid-template-columns:1fr; }} }}
-</style>
-</head>
-<body>
-<div style="max-width:1100px;margin:0 auto">
-  <h2>Allocation View</h2>
-  <div style="color:#aaa;font-size:13px;margin-bottom:20px">{date_str} 기준 | 미래에셋생명 변액보험 펀드 배분 의견</div>
+    summary_cards = "".join(
+        f'<div class="stat-card" style="text-align:center">'
+        f'<div class="label">{l}</div>'
+        f'<div class="value" style="color:{c}">{v}%</div>'
+        f'</div>'
+        for l, v, c in [
+            ("주식합계", eq_total,   "#1d4ed8"),
+            ("채권합계", bond_total, "#059669"),
+            ("혼합형",   mix_total,  "#7c3aed"),
+            ("대안",     alt_total,  "#d97706"),
+            ("현금",     cash_total, "#6b7280"),
+        ]
+    )
 
-  <!-- ── 현재 국면 + 환율 배너 ── -->
-  <div class="section">
-    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
-      <div style="flex:1;min-width:180px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">현재 매크로 국면</div>
-        <div style="color:{regime_color};font-size:24px;font-weight:700">{regime}</div>
-      </div>
-      <div style="flex:1;min-width:200px;background:#1e2a3a;border-radius:8px;padding:12px 16px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">USDKRW 추세 / 환헤지 권고</div>
-        <div style="color:{krw_sig["color"]};font-size:14px;font-weight:600">{krw_sig.get("trend","N/A")}</div>
-        <div style="color:#ccc;font-size:12px;margin-top:3px">{krw_sig.get("hedge_rec","")}</div>
-      </div>
-      <div style="flex:1;min-width:200px;background:{kics_color}22;border:1px solid {kics_color};border-radius:8px;padding:12px 16px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">K-ICS 주식한도</div>
-        <div style="color:{kics_color};font-size:14px;font-weight:600">{kics_label}</div>
-        <div style="color:#aaa;font-size:11px;margin-top:3px">현재 주식 합계: {eq_total}% / 한도 {K_ICS_EQUITY_LIMIT}%</div>
-      </div>
-    </div>
+    from ._shared import html_page
+    extra_css = ".grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}"
+    body = f"""<div class="ma-header">
+  <div>
+    <h1>배분안 View</h1>
+    <div class="meta">미래에셋생명 변액보험 펀드 배분 의견</div>
   </div>
+  <div class="date-badge">{date_str}</div>
+</div>
 
-  <!-- ── 배분 요약 도넛 대용 바 ── -->
-  <div class="section">
-    <h3>자산군 요약</h3>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">
-      {"".join(f'<div style="background:{c}22;border:1px solid {c};border-radius:8px;padding:10px 16px;flex:1;min-width:100px;text-align:center"><div style="color:#aaa;font-size:11px">{l}</div><div style="color:{c};font-size:20px;font-weight:700">{v}%</div></div>'
-               for l, v, c in [
-                   ("주식합계", eq_total, "#4a90d9"),
-                   ("채권합계", bond_total, "#27ae60"),
-                   ("혼합형", mix_total, "#9b59b6"),
-                   ("대안", alt_total, "#f39c12"),
-                   ("현금", cash_total, "#95a5a6"),
-               ])}
+<!-- ── 현재 국면 + 환율 배너 ── -->
+<div class="card">
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">현재 매크로 국면</div>
+      <div style="margin-top:6px"><span class="{regime_cls}">{regime}</span></div>
     </div>
-  </div>
-
-  <div class="grid2">
-    <!-- ── KR 변액보험 배분 ── -->
-    <div class="section">
-      <h3>🇰🇷 KR 변액보험 펀드 배분 (KRW 기준)</h3>
-      <table>
-        <thead><tr>
-          <th>펀드 유형</th>
-          <th style="text-align:right">추천</th>
-          <th>비중</th>
-          <th style="text-align:right">기준</th>
-          <th style="text-align:right">조정</th>
-        </tr></thead>
-        <tbody>{kr_rows}</tbody>
-      </table>
-      <div style="color:#aaa;font-size:11px;margin-top:8px">
-        기준 = 국면별 베이스라인 | 조정 = 국가·채권·스타일 신호 반영
-      </div>
+    <div class="stat-card" style="flex:2;min-width:200px">
+      <div class="label">USDKRW 추세 / 환헤지 권고</div>
+      <div style="font-size:14px;font-weight:600;margin-top:4px;color:{krw_sig["color"]}">{krw_sig.get("trend","N/A")}</div>
+      <div class="sub">{krw_sig.get("hedge_rec","")}</div>
     </div>
-
-    <!-- ── US 참고 배분 ── -->
-    <div class="section">
-      <h3>🇺🇸 US 투자자 참고 배분 (USD 기준)</h3>
-      <table>
-        <thead><tr>
-          <th>자산군</th>
-          <th style="text-align:right">비중</th>
-          <th>바</th>
-        </tr></thead>
-        <tbody>{us_rows}</tbody>
-      </table>
-      <div style="color:#aaa;font-size:11px;margin-top:8px">
-        * USD 기준 글로벌 배분 참고 (K-ICS 제약 없음)
-      </div>
+    <div class="stat-card" style="flex:2;min-width:200px;background:{kics_bg};border-color:{kics_bdr}">
+      <div class="label">K-ICS 주식한도</div>
+      <div class="{kics_cls}" style="font-size:14px;font-weight:600;margin-top:4px">{kics_label}</div>
+      <div class="sub">현재 주식 합계: {eq_total}% / 한도 {K_ICS_EQUITY_LIMIT}%</div>
     </div>
-  </div>
-
-  <!-- ── 배분 근거 ── -->
-  <div class="section">
-    <h3>배분 근거 및 주요 신호</h3>
-    <div style="background:#1e2a3a;border-radius:8px;padding:16px 20px">
-      <ul style="list-style:none;padding:0">
-        {rationale_html}
-      </ul>
-    </div>
-  </div>
-
-  <!-- ── 주의사항 ── -->
-  <div style="background:#1a1200;border:1px solid #5a3a00;border-radius:8px;padding:14px 18px;margin-bottom:20px">
-    <div style="color:#f39c12;font-size:12px;font-weight:700;margin-bottom:6px">⚠️ 주의사항</div>
-    <div style="color:#ccc;font-size:12px;line-height:1.6">
-      본 배분 의견은 규칙 기반 알고리즘으로 자동 생성되며 투자 권유가 아닙니다.
-      실제 운용 시 K-ICS 규제, ALM 듀레이션 매칭, 유동성 요건, 계약자 리스크 성향 등을 종합 고려하십시오.
-      주식 비중은 K-ICS 규제상 30% 한도를 참고 기준으로 적용하였습니다.
-    </div>
-  </div>
-
-  <div style="color:#555;font-size:11px;text-align:center">
-    데이터: FRED · yfinance · ECOS · country/sector/bond/style view 통합 | Allocation View v1.0
   </div>
 </div>
-</body>
-</html>"""
-    return html
+
+<!-- ── 자산군 요약 ── -->
+<div class="card">
+  <h2>📊 자산군 요약</h2>
+  <div class="stat-grid">{summary_cards}</div>
+</div>
+
+<div class="grid2">
+  <!-- ── KR 변액보험 배분 ── -->
+  <div class="card">
+    <h2>🇰🇷 KR 변액보험 펀드 배분 (KRW 기준)</h2>
+    <table>
+      <thead><tr>
+        <th>펀드 유형</th>
+        <th style="text-align:right">추천</th>
+        <th>비중</th>
+        <th style="text-align:right">기준</th>
+        <th style="text-align:right">조정</th>
+      </tr></thead>
+      <tbody>{kr_rows}</tbody>
+    </table>
+    <div class="muted" style="font-size:11px;margin-top:8px">
+      기준 = 국면별 베이스라인 | 조정 = 국가·채권·스타일 신호 반영
+    </div>
+  </div>
+
+  <!-- ── US 참고 배분 ── -->
+  <div class="card">
+    <h2>🇺🇸 US 투자자 참고 배분 (USD 기준)</h2>
+    <table>
+      <thead><tr>
+        <th>자산군</th>
+        <th style="text-align:right">비중</th>
+        <th>바</th>
+      </tr></thead>
+      <tbody>{us_rows}</tbody>
+    </table>
+    <div class="muted" style="font-size:11px;margin-top:8px">
+      * USD 기준 글로벌 배분 참고 (K-ICS 제약 없음)
+    </div>
+  </div>
+</div>
+
+<!-- ── 배분 근거 ── -->
+<div class="card">
+  <h2>📋 배분 근거 및 주요 신호</h2>
+  <ul style="list-style:none;padding:0">
+    {rationale_html}
+  </ul>
+</div>
+
+<!-- ── 주의사항 ── -->
+<div style="background:var(--primary-light);border:1px solid var(--primary);border-radius:8px;padding:14px 18px;margin-bottom:20px">
+  <div style="color:var(--primary);font-size:12px;font-weight:700;margin-bottom:6px">⚠️ 주의사항</div>
+  <div style="font-size:12px;line-height:1.6;color:var(--text)">
+    본 배분 의견은 규칙 기반 알고리즘으로 자동 생성되며 투자 권유가 아닙니다.
+    실제 운용 시 K-ICS 규제, ALM 듀레이션 매칭, 유동성 요건, 계약자 리스크 성향 등을 종합 고려하십시오.
+    주식 비중은 K-ICS 규제상 30% 한도를 참고 기준으로 적용하였습니다.
+  </div>
+</div>"""
+    return html_page("배분안 View", date_str, body, "allocation",
+                     extra_css=extra_css,
+                     source="FRED · yfinance · ECOS · country/sector/bond/style 통합")
 
 
 # ── Entry point ───────────────────────────────────────────────────────────

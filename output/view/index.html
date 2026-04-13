@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View Agent — 투자 분석 뷰</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg: #f4f5f9;
+  --card: #ffffff;
+  --border: #e0e3ed;
+  --text: #2d3148;
+  --muted: #7c8298;
+  --primary: #F58220;
+  --primary-light: #fff3e6;
+  --navy: #043B72;
+  --up: #059669;
+  --down: #dc2626;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Spoqa Han Sans Neo', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+
+::selection { background: #F58220; color: #fff; }
+
+/* ── Nav ── */
+.ma-nav {
+  background: var(--navy);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(4,59,114,.25);
+}
+.ma-nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ma-nav-inner::-webkit-scrollbar { display: none; }
+.ma-logo {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,.2);
+  margin-right: 16px;
+  letter-spacing: -.2px;
+}
+.ma-logo span {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ma-nav-group {
+  font-size: 10px; font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding: 0 8px 0 4px;
+  white-space: nowrap;
+}
+.ma-nav-link {
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.ma-nav-link:hover { color: #fff; background: rgba(255,255,255,.1); }
+.ma-nav-sep { width: 1px; height: 16px; background: rgba(255,255,255,.15); margin: 0 8px; flex-shrink: 0; }
+
+/* ── Page ── */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+/* ── Header ── */
+.hub-header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid var(--primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hub-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.hub-header .sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.hub-header .date-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Phase section ── */
+.phase-section { margin-bottom: 40px; }
+.phase-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.phase-label h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.phase-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.phase-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── View grid ── */
+.view-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ── View card ── */
+.view-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  position: relative;
+  overflow: hidden;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.view-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #FAAF72);
+  border-radius: 14px 14px 0 0;
+}
+.view-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.1);
+  border-color: var(--primary);
+}
+.view-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.view-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.view-info { flex: 1; }
+.view-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.view-en {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.view-desc {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.view-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.sig-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #f0f1f6;
+  color: var(--muted);
+  font-weight: 500;
+}
+.view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--primary-light);
+  color: var(--primary);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .15s;
+  align-self: flex-start;
+  margin-top: auto;
+}
+.view-link:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ── Flow diagram ── */
+.flow-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 36px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+.flow-box h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.flow-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.flow-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+}
+.flow-item.p1 { border-color: #c7d2fe; background: #eef2ff; color: #4338ca; }
+.flow-item.p2 { border-color: #fed7aa; background: #fff7ed; color: #ea580c; }
+.flow-item.final { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; }
+.flow-arrow {
+  color: var(--muted);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Footer ── */
+.hub-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 20px 0 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .page { padding: 20px 16px 40px; }
+  .view-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="price/2026-04-13.html" class="ma-nav-link">가격신호</a>
+    <a href="macro/2026-04-13.html" class="ma-nav-link">거시지표</a>
+    <a href="correlation/2026-04-13.html" class="ma-nav-link">상관관계</a>
+    <a href="regime/2026-04-13.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="country/2026-04-13.html" class="ma-nav-link">국가</a>
+    <a href="sector/2026-04-13.html" class="ma-nav-link">섹터</a>
+    <a href="bond/2026-04-13.html" class="ma-nav-link">채권</a>
+    <a href="style/2026-04-13.html" class="ma-nav-link">스타일</a>
+    <a href="allocation/2026-04-13.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hub-header">
+    <div>
+      <h1>투자 분석 View Agent</h1>
+      <div class="sub">Phase 1 진단 → Phase 2 의사결정 | 미래에셋생명 변액보험 운용 참고</div>
+    </div>
+    <div class="date-badge">2026-04-13</div>
+  </div>
+
+  <!-- ── 분석 흐름 다이어그램 ── -->
+  <div class="flow-box">
+    <h3>🔄 분석 흐름</h3>
+    <div class="flow-row">
+      <div class="flow-item p1">📈 가격신호</div>
+      <div class="flow-item p1">📉 거시지표</div>
+      <div class="flow-item p1">🔗 상관관계</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-item p1">🧭 국면해설</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-item p2">🌍 국가</div>
+      <div class="flow-item p2">🏭 섹터</div>
+      <div class="flow-item p2">💰 채권</div>
+      <div class="flow-item p2">🎨 스타일</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-item final">📋 배분안</div>
+    </div>
+  </div>
+
+  <!-- ── Phase 1 ── -->
+  <div class="phase-section">
+    <div class="phase-label">
+      <h2>Phase 1 — 시장 진단</h2>
+      <span class="phase-tag">P1</span>
+    </div>
+
+    <div class="view-grid">
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">📈</div>
+          <div class="view-info">
+            <div class="view-name">가격신호</div>
+            <div class="view-en">price_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          모멘텀 · 추세 · VIX · 시장 폭(Breadth) · Sentiment 지표를 종합해
+          자산군별 OW/N/UW 의견과 개별 자산 점수를 제공합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">3M/6M/12M 모멘텀</span>
+          <span class="sig-chip">MA200/MA50 추세</span>
+          <span class="sig-chip">VIX 레짐</span>
+          <span class="sig-chip">Yield Curve</span>
+          <span class="sig-chip">Breadth</span>
+        </div>
+        <a href="price/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">📉</div>
+          <div class="view-info">
+            <div class="view-name">거시지표</div>
+            <div class="view-en">macro_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          GDP · 인플레이션 · 고용 · 정책금리 · 크레딧 · 유동성을 미국/한국으로
+          구분해 표시하고 Goldilocks/Reflation/Stagflation/Deflation 국면을 진단합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">GDP QoQ/YoY</span>
+          <span class="sig-chip">CPI/PCE</span>
+          <span class="sig-chip">NFP · 실업률</span>
+          <span class="sig-chip">Fed 금리</span>
+          <span class="sig-chip">M2 · Fed BS</span>
+        </div>
+        <a href="macro/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">🔗</div>
+          <div class="view-info">
+            <div class="view-name">상관관계</div>
+            <div class="view-en">correlation_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          Core 8자산(S&P500/NASDAQ/TLT/HYG/Gold/WTI/DXY/KOSPI)의 30 · 60 · 90일
+          롤링 상관관계를 히트맵으로 시각화합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">30/60/90일 롤링</span>
+          <span class="sig-chip">주식-채권 상관</span>
+          <span class="sig-chip">분산효과 모니터</span>
+        </div>
+        <a href="correlation/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">🧭</div>
+          <div class="view-info">
+            <div class="view-name">국면해설</div>
+            <div class="view-en">regime_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          Phase 1 신호 3개를 통합해 현재 시장 국면을 종합 진단하고,
+          주요 리스크 · 자산군별 투자의견 · 핵심 모니터링 지표를 한국어로 자동 생성합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">종합 국면 진단</span>
+          <span class="sig-chip">OW/N/UW 의견</span>
+          <span class="sig-chip">리스크 순위</span>
+          <span class="sig-chip">모니터링 지표</span>
+        </div>
+        <a href="regime/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Phase 2 ── -->
+  <div class="phase-section">
+    <div class="phase-label">
+      <h2>Phase 2 — 투자 의사결정</h2>
+      <span class="phase-tag">P2</span>
+    </div>
+
+    <div class="view-grid">
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">🌍</div>
+          <div class="view-info">
+            <div class="view-name">국가 배분</div>
+            <div class="view-en">country_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          8개국(US/KR/JP/CN/EU/UK/IN/EM) 주식시장에 대한 OW/N/UW 의견.
+          모멘텀 · FX · 매크로 국면 · ACWI 초과수익을 종합합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">8개국 OW/N/UW</span>
+          <span class="sig-chip">FX 추세</span>
+          <span class="sig-chip">KRW 환헤지 배너</span>
+        </div>
+        <a href="country/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">🏭</div>
+          <div class="view-info">
+            <div class="view-name">섹터 로테이션</div>
+            <div class="view-en">sector_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          미국 SPDR 11섹터 + 한국 KODEX 4섹터의 모멘텀 순위와
+          매크로 Regime 친화도 매트릭스로 섹터 로테이션 신호를 제공합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">US 11섹터</span>
+          <span class="sig-chip">KR 4섹터</span>
+          <span class="sig-chip">Regime 친화도</span>
+        </div>
+        <a href="sector/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">💰</div>
+          <div class="view-info">
+            <div class="view-name">채권 포지셔닝</div>
+            <div class="view-en">bond_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          미국 국채 커브(SHY→TLT) · TIPS · IG/HY 스프레드 · EM채권 및
+          한국 CD/3Y/10Y 금리를 분석해 듀레이션 · ALM 포지셔닝 권고를 제시합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">US 커브 분석</span>
+          <span class="sig-chip">크레딧 스프레드</span>
+          <span class="sig-chip">KR 금리</span>
+          <span class="sig-chip">ALM 권고</span>
+        </div>
+        <a href="bond/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card">
+        <div class="view-card-top">
+          <div class="view-icon">🎨</div>
+          <div class="view-info">
+            <div class="view-name">스타일 / 팩터</div>
+            <div class="view-en">style_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          US 5대 팩터 ETF(Growth/Value/Quality/Momentum/LowVol)와
+          KR 대형·소형·성장 지수의 로테이션 신호를 금리 × VIX 레짐과 연계합니다.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">5대 팩터 ETF</span>
+          <span class="sig-chip">금리×스타일</span>
+          <span class="sig-chip">VIX×스타일</span>
+        </div>
+        <a href="style/2026-04-13.html" class="view-link">리포트 열기 →</a>
+      </div>
+
+      <div class="view-card" style="border-color: var(--primary); box-shadow: 0 2px 12px rgba(245,130,32,.15);">
+        <div class="view-card-top">
+          <div class="view-icon">📋</div>
+          <div class="view-info">
+            <div class="view-name">변액보험 배분안</div>
+            <div class="view-en">allocation_view</div>
+          </div>
+        </div>
+        <div class="view-desc">
+          Phase 1 + Phase 2-A~D 신호를 통합해 변액보험 펀드 유형별 최종 배분 비중을 제안합니다.
+          K-ICS 주식 30% 한도 자동 체크 포함.
+        </div>
+        <div class="view-signals">
+          <span class="sig-chip">10개 펀드 유형</span>
+          <span class="sig-chip">KRW / USD 2패널</span>
+          <span class="sig-chip">K-ICS 체크</span>
+          <span class="sig-chip">환헤지 권고</span>
+        </div>
+        <a href="allocation/2026-04-13.html" class="view-link" style="background:var(--primary);color:#fff;">배분안 열기 →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="hub-footer">
+    데이터: FRED · yfinance · ECOS | Mirae Asset Life Insurance — Investment View System<br>
+    본 자료는 규칙 기반 알고리즘으로 자동 생성되며 투자 권유가 아닙니다.
+  </div>
+
+</div>
+</body>
+</html>

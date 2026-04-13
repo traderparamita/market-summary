@@ -322,186 +322,165 @@ def render_html(data: dict) -> str:
     rate_dir  = data["rate_direction"]
     favored   = set(data["favored_codes"] + data["vix_favored"])
 
-    regime_colors = {
-        "Goldilocks":  "#27ae60", "Reflation": "#f39c12",
-        "Stagflation": "#e74c3c", "Deflation": "#3498db", "N/A": "#888",
-    }
-    regime_color = regime_colors.get(regime, "#888")
-    vix_colors   = {"low": "#27ae60", "medium": "#f39c12", "high": "#e74c3c"}
-    vix_color    = vix_colors.get(vix_reg, "#888")
-    vix_labels   = {"low": "낮음 (Risk-ON)", "medium": "보통", "high": "높음 (Risk-OFF)"}
-    vix_label    = vix_labels.get(vix_reg, vix_reg)
-    rate_labels  = {"rising": "상승중 ↑", "falling": "하락중 ↓", "stable": "안정 →"}
-    rate_label   = rate_labels.get(rate_dir, rate_dir)
-    rate_colors  = {"rising": "#e74c3c", "falling": "#27ae60", "stable": "#f39c12"}
-    rate_color   = rate_colors.get(rate_dir, "#888")
+    regime_cls = {
+        "Goldilocks": "regime-goldilocks", "Reflation": "regime-reflation",
+        "Stagflation": "regime-stagflation", "Deflation": "regime-deflation",
+    }.get(regime, "badge")
+
+    vix_labels = {"low": "낮음 (Risk-ON)", "medium": "보통", "high": "높음 (Risk-OFF)"}
+    vix_label  = vix_labels.get(vix_reg, vix_reg)
+    vix_cls    = {"low": "up", "medium": "muted", "high": "down"}.get(vix_reg, "muted")
+
+    rate_labels = {"rising": "상승중 ↑", "falling": "하락중 ↓", "stable": "안정 →"}
+    rate_label  = rate_labels.get(rate_dir, rate_dir)
+    rate_cls    = {"rising": "down", "falling": "up", "stable": "muted"}.get(rate_dir, "muted")
+
+    def _vbadge(v):
+        if v == "OW":  return '<span class="ow">OW</span>'
+        if v == "UW":  return '<span class="uw">UW</span>'
+        return '<span class="neutral-b">N</span>'
+
+    def _tbadge(t):
+        if t >= 1:   return '<span class="ow">▲강세</span>'
+        if t <= -1:  return '<span class="uw2">▼약세</span>'
+        return '<span class="neutral-b">→중립</span>'
+
+    def _mc2(v):
+        if v is None or (isinstance(v, float) and np.isnan(v)): return "var(--muted)"
+        return "var(--up)" if v > 0 else ("var(--down)" if v < 0 else "var(--muted)")
 
     def style_row(row) -> str:
         fav = row["code"] in favored
         star = ' ⭐' if fav else ''
-        bg   = "background:#1a2e1a" if fav else ""
-        fund_cell = f'<td style="color:#aaa;font-size:11px">{row.get("fund_type","")}</td>'
-        return f"""<tr style="border-bottom:1px solid #2a3a4e;{bg}">
+        bg   = "background:#fff8f0;" if fav else ""
+        return f"""<tr style="border-bottom:1px solid var(--border);{bg}">
           <td style="padding:8px 12px">
-            <span style="color:#e8eaf6;font-size:13px;font-weight:600">{row["name"]}{star}</span>
-            <span style="color:#aaa;font-size:11px;margin-left:6px">{row.get("etf","")}</span>
+            <span style="font-size:13px;font-weight:600">{row["name"]}{star}</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">{row.get("etf","")}</span>
           </td>
-          <td>{_view_badge(row.get("view","N"))}</td>
-          <td style="color:#e8eaf6;font-size:13px">{_fmt(row.get("composite"),2)}</td>
-          <td style="color:{_mc(row.get('mom_1m'))};font-size:13px">{_fmt(row.get('mom_1m'),2,'%')}</td>
-          <td style="color:{_mc(row.get('mom_3m'))};font-size:13px">{_fmt(row.get('mom_3m'),2,'%')}</td>
-          <td style="color:{_mc(row.get('mom_6m'))};font-size:13px">{_fmt(row.get('mom_6m'),2,'%')}</td>
-          <td>{_trend_badge(row.get("trend",0))}</td>
-          <td style="color:{_mc(row.get('rel_3m'))};font-size:13px">{_fmt(row.get('rel_3m'),2,'%')}</td>
-          {fund_cell}
+          <td>{_vbadge(row.get("view","N"))}</td>
+          <td class="mono">{_fmt(row.get("composite"),2)}</td>
+          <td class="mono" style="color:{_mc2(row.get('mom_1m'))}">{_fmt(row.get('mom_1m'),2,'%')}</td>
+          <td class="mono" style="color:{_mc2(row.get('mom_3m'))}">{_fmt(row.get('mom_3m'),2,'%')}</td>
+          <td class="mono" style="color:{_mc2(row.get('mom_6m'))}">{_fmt(row.get('mom_6m'),2,'%')}</td>
+          <td>{_tbadge(row.get("trend",0))}</td>
+          <td class="mono" style="color:{_mc2(row.get('rel_3m'))}">{_fmt(row.get('rel_3m'),2,'%')}</td>
+          <td class="muted" style="font-size:11px">{row.get("fund_type","")}</td>
         </tr>"""
 
     def compare_row(row) -> str:
-        return f"""<tr style="border-bottom:1px solid #2a3a4e">
+        return f"""<tr style="border-bottom:1px solid var(--border)">
           <td style="padding:8px 12px">
-            <span style="color:#e8eaf6;font-size:13px;font-weight:600">{row["name"]}</span>
-            <span style="color:#aaa;font-size:11px;margin-left:6px">{row.get("etf","")}</span>
+            <span style="font-size:13px;font-weight:600">{row["name"]}</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">{row.get("etf","")}</span>
           </td>
-          <td>{_view_badge(row.get("view","N"))}</td>
-          <td style="color:#e8eaf6">{_fmt(row.get("composite"),2)}</td>
-          <td style="color:{_mc(row.get('mom_1m'))};font-size:13px">{_fmt(row.get('mom_1m'),2,'%')}</td>
-          <td style="color:{_mc(row.get('mom_3m'))};font-size:13px">{_fmt(row.get('mom_3m'),2,'%')}</td>
-          <td style="color:{_mc(row.get('mom_6m'))};font-size:13px">{_fmt(row.get('mom_6m'),2,'%')}</td>
-          <td>{_trend_badge(row.get("trend",0))}</td>
-          <td style="color:{_mc(row.get('rel_3m'))};font-size:13px">{_fmt(row.get('rel_3m'),2,'%')}</td>
+          <td>{_vbadge(row.get("view","N"))}</td>
+          <td class="mono">{_fmt(row.get("composite"),2)}</td>
+          <td class="mono" style="color:{_mc2(row.get('mom_1m'))}">{_fmt(row.get('mom_1m'),2,'%')}</td>
+          <td class="mono" style="color:{_mc2(row.get('mom_3m'))}">{_fmt(row.get('mom_3m'),2,'%')}</td>
+          <td class="mono" style="color:{_mc2(row.get('mom_6m'))}">{_fmt(row.get('mom_6m'),2,'%')}</td>
+          <td>{_tbadge(row.get("trend",0))}</td>
+          <td class="mono" style="color:{_mc2(row.get('rel_3m'))}">{_fmt(row.get('rel_3m'),2,'%')}</td>
         </tr>"""
 
     us_rows = "".join(style_row(r) for r in data["us_styles"])
     kr_rows = "".join(compare_row(r) for r in data["kr_styles"])
 
-    # Top picks (OW favored)
     top_picks = [r for r in data["us_styles"] if r.get("view") == "OW" and r["code"] in favored]
     top_html  = ""
     if top_picks:
-        cards = ""
-        for r in top_picks[:3]:
-            cards += f"""<div style="background:#1e2a3a;border-radius:8px;padding:14px 18px;flex:1;min-width:160px">
-              <div style="color:#7ec8e3;font-size:13px;font-weight:700">{r["name"]}</div>
-              <div style="color:#e8eaf6;font-size:20px;font-weight:700;margin:4px 0">{_fmt(r.get("composite"),2)}</div>
-              <div style="color:#aaa;font-size:11px">{r.get("fund_type","")}</div>
-            </div>"""
-        top_html = f"""<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">{cards}</div>"""
+        cards = "".join(f"""<div class="stat-card">
+          <div class="label">{r["name"]} <span class="muted" style="font-size:10px">{r.get("etf","")}</span></div>
+          <div class="value">{_fmt(r.get("composite"),2)}</div>
+          <div class="sub">{r.get("fund_type","")}</div>
+        </div>""" for r in top_picks[:3])
+        top_html = f'<div class="stat-grid">{cards}</div>'
 
-    html = f"""<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Style View — {date_str}</title>
-<style>
-* {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ background:#0d1b2a; color:#e8eaf6; font-family:'Segoe UI',sans-serif; padding:24px; }}
-h2 {{ color:#7ec8e3; margin-bottom:4px; }}
-h3 {{ color:#90caf9; margin:20px 0 10px; font-size:15px; }}
-table {{ width:100%; border-collapse:collapse; }}
-th {{ background:#162032; color:#90caf9; padding:8px 12px; text-align:left; font-size:11px; letter-spacing:.5px; }}
-.section {{ background:#132030; border-radius:10px; padding:20px; margin-bottom:20px; }}
-</style>
-</head>
-<body>
-<div style="max-width:1100px;margin:0 auto">
-  <h2>Style / Factor View</h2>
-  <div style="color:#aaa;font-size:13px;margin-bottom:20px">{date_str} 기준 | 변액보험 스타일 팩터 로테이션</div>
-
-  <!-- ── 환경 요약 ── -->
-  <div class="section">
-    <h3>투자 환경 요약</h3>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px">
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:150px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">매크로 국면</div>
-        <div style="color:{regime_color};font-size:18px;font-weight:700">{regime}</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:150px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">VIX 레짐</div>
-        <div style="color:{vix_color};font-size:18px;font-weight:700">{vix_label}</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:150px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">금리 방향</div>
-        <div style="color:{rate_color};font-size:18px;font-weight:700">{rate_label}</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:2;min-width:260px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">금리 × 스타일 시사점</div>
-        <div style="color:#e8eaf6;font-size:13px">{data["rate_style_note"]}</div>
-      </div>
-    </div>
-    {top_html}
+    from ._shared import html_page
+    body = f"""<div class="ma-header">
+  <div>
+    <h1>스타일 / 팩터 View</h1>
+    <div class="meta">변액보험 스타일 팩터 로테이션</div>
   </div>
-
-  <!-- ── US 팩터 ETF ── -->
-  <div class="section">
-    <h3>미국 팩터 ETF (⭐ = 현 국면 선호)</h3>
-    <table>
-      <thead><tr>
-        <th>스타일</th><th>의견</th><th>종합점수</th>
-        <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
-        <th>추세</th><th>vs SP500 3M</th><th>변액보험 펀드 유형</th>
-      </tr></thead>
-      <tbody>{us_rows}</tbody>
-    </table>
-  </div>
-
-  <!-- ── KR·글로벌 비교 ── -->
-  <div class="section">
-    <h3>대형·소형·성장 비교 (KR vs US)</h3>
-    <table>
-      <thead><tr>
-        <th>지수</th><th>의견</th><th>종합점수</th>
-        <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
-        <th>추세</th><th>vs KOSPI 3M</th>
-      </tr></thead>
-      <tbody>{kr_rows}</tbody>
-    </table>
-    <div style="color:#aaa;font-size:11px;margin-top:8px">* KOSPI/KOSDAQ: 원화 기준 / SP500/Russell2000: USD 기준. vs KOSPI 초과수익 표시.</div>
-  </div>
-
-  <!-- ── 팩터 선택 가이드 ── -->
-  <div class="section">
-    <h3>매크로 국면 × 팩터 선택 가이드</h3>
-    <table>
-      <thead><tr>
-        <th>국면</th><th>선호 팩터</th><th>기피 팩터</th><th>변액보험 전략</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #2a3a4e">
-          <td style="padding:8px 12px;color:#27ae60;font-weight:700">Goldilocks</td>
-          <td style="padding:8px 12px;color:#ccc">Growth · Momentum · SmallCap</td>
-          <td style="padding:8px 12px;color:#ccc">LowVol · Defensive</td>
-          <td style="padding:8px 12px;color:#ccc">해외주식형(성장·모멘텀) 비중 확대</td>
-        </tr>
-        <tr style="border-bottom:1px solid #2a3a4e">
-          <td style="padding:8px 12px;color:#f39c12;font-weight:700">Reflation</td>
-          <td style="padding:8px 12px;color:#ccc">Value · Momentum · Cyclical</td>
-          <td style="padding:8px 12px;color:#ccc">Growth · Long Duration</td>
-          <td style="padding:8px 12px;color:#ccc">해외주식형(가치·경기순환) 전환</td>
-        </tr>
-        <tr style="border-bottom:1px solid #2a3a4e">
-          <td style="padding:8px 12px;color:#e74c3c;font-weight:700">Stagflation</td>
-          <td style="padding:8px 12px;color:#ccc">Value · Quality · LowVol</td>
-          <td style="padding:8px 12px;color:#ccc">Growth · SmallCap · High Beta</td>
-          <td style="padding:8px 12px;color:#ccc">방어적 혼합형·채권 비중 확대</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 12px;color:#3498db;font-weight:700">Deflation</td>
-          <td style="padding:8px 12px;color:#ccc">Quality · LowVol · LargeCap</td>
-          <td style="padding:8px 12px;color:#ccc">Value · Cyclical · HY Credit</td>
-          <td style="padding:8px 12px;color:#ccc">국내채권·해외채권형 비중 최대화</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div style="color:#555;font-size:11px;text-align:center;margin-top:16px">
-    데이터: yfinance (팩터 ETF) · FRED (매크로) | Style View v1.0
-  </div>
+  <div class="date-badge">{date_str}</div>
 </div>
-</body>
-</html>"""
-    return html
+
+<div class="card">
+  <h2>📊 투자 환경 요약</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">매크로 국면</div>
+      <div style="margin-top:6px"><span class="{regime_cls}">{regime}</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">VIX 레짐</div>
+      <div class="value {vix_cls}" style="font-size:16px">{vix_label}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">금리 방향</div>
+      <div class="value {rate_cls}" style="font-size:16px">{rate_label}</div>
+    </div>
+    <div class="stat-card" style="flex:2;min-width:240px">
+      <div class="label">금리 × 스타일 시사점</div>
+      <div style="font-size:13px;color:var(--text);margin-top:6px">{data["rate_style_note"]}</div>
+    </div>
+  </div>
+  {top_html}
+</div>
+
+<div class="card">
+  <h2>🇺🇸 미국 팩터 ETF <span class="badge">⭐ = 현 국면 선호</span></h2>
+  <table>
+    <thead><tr>
+      <th style="text-align:left">스타일</th><th>의견</th><th>종합점수</th>
+      <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
+      <th>추세</th><th>vs SP500 3M</th><th>변액보험 펀드 유형</th>
+    </tr></thead>
+    <tbody>{us_rows}</tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>🇰🇷 대형·소형·성장 비교 (KR vs US)</h2>
+  <table>
+    <thead><tr>
+      <th style="text-align:left">지수</th><th>의견</th><th>종합점수</th>
+      <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
+      <th>추세</th><th>vs KOSPI 3M</th>
+    </tr></thead>
+    <tbody>{kr_rows}</tbody>
+  </table>
+  <div class="muted" style="font-size:11px;margin-top:8px">* KOSPI/KOSDAQ: 원화 기준 / SP500/Russell2000: USD 기준. vs KOSPI 초과수익 표시.</div>
+</div>
+
+<div class="card">
+  <h2>📋 매크로 국면 × 팩터 선택 가이드</h2>
+  <table>
+    <thead><tr>
+      <th style="text-align:left">국면</th><th>선호 팩터</th><th>기피 팩터</th><th>변액보험 전략</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:8px 12px"><span class="regime-goldilocks">Goldilocks</span></td>
+        <td>Growth · Momentum · SmallCap</td>
+        <td class="muted">LowVol · Defensive</td>
+        <td>해외주식형(성장·모멘텀) 비중 확대</td></tr>
+      <tr><td style="padding:8px 12px"><span class="regime-reflation">Reflation</span></td>
+        <td>Value · Momentum · Cyclical</td>
+        <td class="muted">Growth · Long Duration</td>
+        <td>해외주식형(가치·경기순환) 전환</td></tr>
+      <tr><td style="padding:8px 12px"><span class="regime-stagflation">Stagflation</span></td>
+        <td>Value · Quality · LowVol</td>
+        <td class="muted">Growth · SmallCap · High Beta</td>
+        <td>방어적 혼합형·채권 비중 확대</td></tr>
+      <tr><td style="padding:8px 12px"><span class="regime-deflation">Deflation</span></td>
+        <td>Quality · LowVol · LargeCap</td>
+        <td class="muted">Value · Cyclical · HY Credit</td>
+        <td>국내채권·해외채권형 비중 최대화</td></tr>
+    </tbody>
+  </table>
+</div>"""
+    return html_page("스타일 / 팩터 View", date_str, body, "style",
+                     source="yfinance (팩터 ETF) · FRED (매크로)")
 
 
 # ── Entry point ───────────────────────────────────────────────────────────

@@ -190,6 +190,8 @@ def generate_price_html(view: dict) -> str:
     top_assets  = view.get("top_assets", [])
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    from ._shared import nav_html
+    _nav = nav_html(report_date, "price")
 
     # ── Market Pulse cards ────────────────────────────────────────
     vix       = pulse.get("vix")
@@ -353,13 +355,14 @@ def generate_price_html(view: dict) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Price View | {report_date}</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 :root {{
   --bg:#f4f5f9; --card:#fff; --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
-  --up:#0d9b6a; --down:#d9304f; --primary:#3b6ee6;
+  --up:#059669; --down:#dc2626; --primary:#F58220; --navy:#043B72;
 }}
 *{{margin:0;padding:0;box-sizing:border-box}}
-body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:28px 24px;max-width:1300px;margin:0 auto}}
+body{{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0;max-width:none;margin:0}}
 .mono{{font-family:'JetBrains Mono',monospace}}
 .muted{{color:var(--muted)}}
 .up{{color:var(--up)}}.down{{color:var(--down)}}.neutral{{color:var(--muted)}}
@@ -425,9 +428,8 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 </style>
 </head>
 <body>
-
-<a class="back-link" href="../../index.html">← Back to Index</a>
-
+{_nav}
+<div style="max-width:1300px;margin:0 auto;padding:28px 24px 48px">
 <div class="header">
   <div>
     <h1>Price View</h1>
@@ -473,7 +475,7 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 </div>
 
 <div class="footer">Price View | Price-based regime-conditional signals | View Agent</div>
-
+</div>
 </body>
 </html>'''
 

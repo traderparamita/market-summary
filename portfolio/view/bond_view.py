@@ -321,177 +321,149 @@ def _pct_bar(v) -> str:
 
 
 def render_html(data: dict) -> str:
+    from ._shared import html_page
+
     date_str = data["date"]
-    rates = data["rates"]
-    dur = data["duration_rec"]
-    kr_us = data["kr_us_diff"]
-    alm = data["alm_rec"]
-    implied = data["implied_move"]
+    rates    = data["rates"]
+    dur      = data["duration_rec"]
+    kr_us    = data["kr_us_diff"]
+    alm      = data["alm_rec"]
+    implied  = data["implied_move"]
 
-    # ── Duration bias color
-    bias_color = {"long": "#27ae60", "short": "#e74c3c", "neutral": "#f39c12"}.get(dur["bias"], "#888")
-
-    # ── Curve signal badge
+    # ── signal colors (light-theme friendly)
+    bias_colors = {"long": "#059669", "short": "#dc2626", "neutral": "#d97706"}
+    bias_color  = bias_colors.get(dur["bias"], "#6b7280")
     curve_labels = {
-        "steepening": ("정상 (스팁)", "#27ae60"),
-        "inverted":   ("역전", "#e74c3c"),
-        "flat":       ("플랫", "#f39c12"),
+        "steepening": ("정상 (스팁)", "#059669"),
+        "inverted":   ("역전", "#dc2626"),
+        "flat":       ("플랫", "#d97706"),
     }
-    curve_label, curve_color = curve_labels.get(dur.get("curve_sig", ""), ("N/A", "#888"))
+    curve_label, curve_color = curve_labels.get(dur.get("curve_sig", ""), ("N/A", "#6b7280"))
 
-    def rate_card(label, value, unit="%", extra=""):
-        val_str = _fmt(value, 2)
-        return f"""
-        <div style="background:#1e2a3a;border-radius:8px;padding:14px 18px;min-width:130px">
-          <div style="color:#aaa;font-size:11px;margin-bottom:4px">{label}</div>
-          <div style="color:#e8eaf6;font-size:20px;font-weight:700">{val_str}<span style="font-size:13px;color:#aaa"> {unit}</span></div>
-          {f'<div style="color:#aaa;font-size:11px;margin-top:2px">{extra}</div>' if extra else ''}
+    def stat_card(label, value, unit="", sub=""):
+        return f"""<div class="stat-card">
+          <div class="label">{label}</div>
+          <div class="value">{_fmt(value, 2)}<span style="font-size:13px;font-weight:400;color:var(--muted)"> {unit}</span></div>
+          {f'<div class="sub">{sub}</div>' if sub else ''}
         </div>"""
 
+    def sig_card(label, value_html, sub=""):
+        return f"""<div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">{label}</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0">{value_html}</div>
+          {f'<div class="sub">{sub}</div>' if sub else ''}
+        </div>"""
+
+    type_badge_map = {
+        "govvt":     '<span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span>',
+        "inflation": '<span style="background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">물가연동</span>',
+        "credit":    '<span style="background:#fce7f3;color:#be185d;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">크레딧</span>',
+        "em":        '<span style="background:#dcfce7;color:#15803d;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">EM</span>',
+        "money":     '<span style="background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">단기</span>',
+    }
+
     def bond_row(seg: dict, is_kr=False) -> str:
-        type_badge = {
-            "govvt":     ('<span style="background:#1a4a6e;color:#7ec8e3;padding:2px 7px;border-radius:10px;font-size:10px">국채</span>', ),
-            "inflation": ('<span style="background:#3d2b00;color:#f9ca74;padding:2px 7px;border-radius:10px;font-size:10px">물가연동</span>', ),
-            "credit":    ('<span style="background:#3d1a2e;color:#f48fb1;padding:2px 7px;border-radius:10px;font-size:10px">크레딧</span>', ),
-            "em":        ('<span style="background:#1a3d2e;color:#a5d6a7;padding:2px 7px;border-radius:10px;font-size:10px">EM</span>', ),
-            "money":     ('<span style="background:#2e2a1a;color:#ffe082;padding:2px 7px;border-radius:10px;font-size:10px">단기</span>', ),
-        }
-        badge = type_badge.get(seg["type"], ("",))[0]
-        etf_col = f'<td style="color:#aaa;font-size:12px">{seg.get("etf","—")}</td>' if not is_kr else ""
-        dur_col = f'<td style="color:#ccc;font-size:13px">{_fmt(seg["dur"],1)}Y</td>'
-        return f"""<tr style="border-bottom:1px solid #2a3a4e">
-          <td style="padding:8px 12px">{badge} <span style="color:#e8eaf6;font-size:13px">{seg["name"]}</span></td>
+        badge   = type_badge_map.get(seg["type"], "")
+        etf_col = f'<td class="muted" style="font-size:12px">{seg.get("etf","—")}</td>' if not is_kr else ""
+        mc = lambda v: "up" if (v and not np.isnan(v) and v > 0) else ("down" if (v and not np.isnan(v) and v < 0) else "muted")
+        return f"""<tr>
+          <td>{badge} <strong>{seg["name"]}</strong></td>
           {etf_col}
-          {dur_col}
-          <td style="color:#e8eaf6;font-size:13px">{_fmt(seg["last"])}</td>
-          <td style="color:{_mom_color(seg['mom_1m'])};font-size:13px">{_fmt(seg['mom_1m'],2,'%')}</td>
-          <td style="color:{_mom_color(seg['mom_3m'])};font-size:13px">{_fmt(seg['mom_3m'],2,'%')}</td>
-          <td style="color:{_mom_color(seg['mom_6m'])};font-size:13px">{_fmt(seg['mom_6m'],2,'%')}</td>
+          <td class="muted">{_fmt(seg["dur"],1)}Y</td>
+          <td><span class="mono">{_fmt(seg["last"])}</span></td>
+          <td class="{mc(seg['mom_1m'])}">{_fmt(seg['mom_1m'],2,'%')}</td>
+          <td class="{mc(seg['mom_3m'])}">{_fmt(seg['mom_3m'],2,'%')}</td>
+          <td class="{mc(seg['mom_6m'])}">{_fmt(seg['mom_6m'],2,'%')}</td>
           <td>{_trend_badge(seg['trend'])}</td>
           <td>{_pct_bar(seg['pct_1y'])}</td>
         </tr>"""
 
-    us_rows = "".join(bond_row(s) for s in data["us_bonds"])
-    kr_rows = "".join(bond_row(s, is_kr=True) for s in data["kr_bonds"])
+    us_rows  = "".join(bond_row(s) for s in data["us_bonds"])
+    kr_rows  = "".join(bond_row(s, is_kr=True) for s in data["kr_bonds"])
+    alm_html = "".join(f'<li style="margin-bottom:8px">{l}</li>' for l in alm["lines"])
 
-    alm_lines = "".join(f'<li style="margin-bottom:6px;color:#ccc">{l}</li>' for l in alm["lines"])
+    credit_color_map = {"#27ae60": "var(--up)", "#f39c12": "#d97706", "#e74c3c": "var(--down)"}
+    credit_fg = credit_color_map.get(data["credit_color"], data["credit_color"])
+    krus_color_map = {"#e74c3c": "var(--down)", "#27ae60": "var(--up)", "#f39c12": "#d97706"}
+    krus_fg = krus_color_map.get(kr_us["color"], kr_us["color"])
 
-    html = f"""<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bond View — {date_str}</title>
-<style>
-* {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ background:#0d1b2a; color:#e8eaf6; font-family:'Segoe UI',sans-serif; padding:24px; }}
-h2 {{ color:#7ec8e3; margin-bottom:4px; }}
-h3 {{ color:#90caf9; margin:20px 0 10px; font-size:15px; }}
-table {{ width:100%; border-collapse:collapse; font-size:13px; }}
-th {{ background:#162032; color:#90caf9; padding:8px 12px; text-align:left; font-size:11px; letter-spacing:.5px; }}
-.card-grid {{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; }}
-.section {{ background:#132030; border-radius:10px; padding:20px; margin-bottom:20px; }}
-.tag {{ display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; }}
-</style>
-</head>
-<body>
-
-<div style="max-width:1100px;margin:0 auto">
-  <h2>Bond View</h2>
-  <div style="color:#aaa;font-size:13px;margin-bottom:20px">{date_str} 기준 | 미래에셋생명 변액보험 운용 관점</div>
-
-  <!-- ── 금리 환경 요약 ── -->
-  <div class="section">
-    <h3>금리 환경 요약</h3>
-    <div class="card-grid">
-      {rate_card("연준 기준금리", rates["fed_rate"])}
-      {rate_card("미국 2Y 국채", rates["us_2y"])}
-      {rate_card("미국 10Y 국채", rates["us_10y"])}
-      {rate_card("10Y-2Y 스프레드", rates["yield_curve"], "bp")}
-      {rate_card("HY 스프레드", rates["hy_spread"], "bp")}
-      {rate_card("IG 스프레드", rates["ig_spread"], "bp")}
-      {rate_card("KR 국고 10Y", rates["kr_10y"])}
-    </div>
-
-    <!-- Key signals row -->
-    <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px">
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:180px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">수익률 곡선 형태</div>
-        <div style="color:{curve_color};font-size:16px;font-weight:700">{curve_label}</div>
-        <div style="color:#aaa;font-size:11px;margin-top:2px">10Y-2Y = {_fmt(rates["yield_curve"], 1)}bp</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:180px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">연준 금리 방향 기대</div>
-        <div style="color:#e8eaf6;font-size:16px;font-weight:700">{implied["signal"]}</div>
-        <div style="color:#aaa;font-size:11px;margin-top:2px">2Y-Fed = {_fmt(implied["value"], 2)}%p</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:180px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">크레딧 국면</div>
-        <div style="color:{data["credit_color"]};font-size:16px;font-weight:700">{data["credit_regime"]}</div>
-        <div style="color:#aaa;font-size:11px;margin-top:2px">HY = {_fmt(rates["hy_spread"],1)}bp</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:180px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">KR-US 10Y 금리차</div>
-        <div style="color:{kr_us["color"]};font-size:16px;font-weight:700">{_fmt(kr_us["diff"],2)}%p</div>
-        <div style="color:#aaa;font-size:11px;margin-top:2px">{kr_us["signal"]}</div>
-      </div>
-      <div style="background:#1e2a3a;border-radius:8px;padding:12px 18px;flex:1;min-width:220px">
-        <div style="color:#aaa;font-size:11px;margin-bottom:4px">듀레이션 포지셔닝</div>
-        <div style="color:{bias_color};font-size:15px;font-weight:700">{dur["label"]}</div>
-        <div style="color:#aaa;font-size:11px;margin-top:2px">{dur["rationale"]}</div>
-      </div>
-    </div>
+    body = f"""
+<div class="card">
+  <h2>💰 금리 환경 요약</h2>
+  <div class="stat-grid">
+    {stat_card("연준 기준금리", rates["fed_rate"], "%")}
+    {stat_card("미국 2Y 국채", rates["us_2y"], "%")}
+    {stat_card("미국 10Y 국채", rates["us_10y"], "%")}
+    {stat_card("10Y-2Y 스프레드", rates["yield_curve"], "bp")}
+    {stat_card("HY 스프레드", rates["hy_spread"], "bp")}
+    {stat_card("IG 스프레드", rates["ig_spread"], "bp")}
+    {stat_card("KR 국고 10Y", rates["kr_10y"], "%")}
   </div>
-
-  <!-- ── US 채권 ETF ── -->
-  <div class="section">
-    <h3>미국 채권 ETF</h3>
-    <table>
-      <thead><tr>
-        <th>세그먼트</th><th>ETF</th><th>듀레이션</th><th>현재가</th>
-        <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
-        <th>추세</th><th>1Y 백분위</th>
-      </tr></thead>
-      <tbody>{us_rows}</tbody>
-    </table>
-  </div>
-
-  <!-- ── KR 채권 금리 ── -->
-  <div class="section">
-    <h3>한국 채권 금리 (ECOS)</h3>
-    <table>
-      <thead><tr>
-        <th>세그먼트</th><th>듀레이션</th><th>금리(%)</th>
-        <th>1M 변화</th><th>3M 변화</th><th>6M 변화</th>
-        <th>추세</th><th>1Y 백분위</th>
-      </tr></thead>
-      <tbody>{kr_rows}</tbody>
-    </table>
-    <div style="color:#aaa;font-size:11px;margin-top:8px">* KR 채권은 금리 레벨 기준. 수익률(%) 변화 = 금리 변화(%p × 방향 주의)</div>
-  </div>
-
-  <!-- ── 변액보험 ALM 포지셔닝 ── -->
-  <div class="section">
-    <h3>변액보험 ALM 포지셔닝 권고</h3>
-    <div style="background:#1e2a3a;border-radius:8px;padding:16px 20px">
-      <ul style="list-style:none;padding:0">
-        {alm_lines}
-      </ul>
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #2a3a4e;color:#7ec8e3;font-size:12px">
-        📋 변액보험 ALM 원칙: 보험 부채 장기 듀레이션(8-12Y) → 자산 듀레이션 매칭 기본 유지.
-        금리 상승기엔 단기채 집중 후 장기 재진입 기회 포착.
-      </div>
-    </div>
-  </div>
-
-  <div style="color:#555;font-size:11px;text-align:center;margin-top:16px">
-    데이터: FRED (금리/스프레드) · yfinance (채권 ETF) · ECOS (한국 금리) | Bond View v1.0
+  <div class="stat-grid" style="margin-top:0">
+    {sig_card("수익률 곡선 형태",
+      f'<span style="color:{curve_color}">{curve_label}</span>',
+      f"10Y-2Y = {_fmt(rates['yield_curve'],1)}bp")}
+    {sig_card("연준 금리 방향 기대",
+      implied["signal"],
+      f"2Y-Fed = {_fmt(implied['value'],2)}%p")}
+    {sig_card("크레딧 국면",
+      f'<span style="color:{credit_fg}">{data["credit_regime"]}</span>',
+      f"HY = {_fmt(rates['hy_spread'],1)}bp")}
+    {sig_card("KR-US 10Y 금리차",
+      f'<span style="color:{krus_fg}">{_fmt(kr_us["diff"],2)}%p</span>',
+      kr_us["signal"])}
+    {sig_card("듀레이션 포지셔닝",
+      f'<span style="color:{bias_color}">{dur["label"]}</span>',
+      dur["rationale"])}
   </div>
 </div>
 
-</body>
-</html>"""
-    return html
+<div class="card">
+  <h2>🇺🇸 미국 채권 ETF</h2>
+  <table>
+    <thead><tr>
+      <th>세그먼트</th><th>ETF</th><th>듀레이션</th><th>현재가</th>
+      <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
+      <th>추세</th><th>1Y 백분위</th>
+    </tr></thead>
+    <tbody>{us_rows}</tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>🇰🇷 한국 채권 금리 (ECOS)</h2>
+  <table>
+    <thead><tr>
+      <th>세그먼트</th><th>듀레이션</th><th>금리(%)</th>
+      <th>1M 변화</th><th>3M 변화</th><th>6M 변화</th>
+      <th>추세</th><th>1Y 백분위</th>
+    </tr></thead>
+    <tbody>{kr_rows}</tbody>
+  </table>
+  <p class="muted" style="font-size:11px;margin-top:8px">* KR 채권은 금리 레벨 기준</p>
+</div>
+
+<div class="card">
+  <h2>📋 변액보험 ALM 포지셔닝 권고</h2>
+  <div style="background:var(--primary-light);border-left:4px solid var(--primary);border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:12px">
+    <ul style="list-style:none;padding:0">
+      {alm_html}
+    </ul>
+  </div>
+  <p class="muted" style="font-size:12px">
+    📌 ALM 원칙: 보험 부채 장기 듀레이션(8-12Y) → 자산 듀레이션 매칭 유지.
+    금리 상승기엔 단기채 집중 후 장기 재진입 기회 포착.
+  </p>
+</div>
+"""
+
+    return html_page(
+        title="채권 View",
+        date_str=date_str,
+        body=body,
+        current_view="bond",
+        source="FRED (금리/스프레드) · yfinance (채권 ETF) · ECOS (한국 금리)",
+    )
 
 
 # ── Entry point ───────────────────────────────────────────────────────────

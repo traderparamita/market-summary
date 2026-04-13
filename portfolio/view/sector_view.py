@@ -285,11 +285,13 @@ def _sector_rows(sectors: list) -> str:
 
 
 def render_html(data: dict) -> str:
+    from ._shared import nav_html
     date = data["date"]
     regime = data["us_regime"]
     us = data["us_sectors"]
     kr = data["kr_sectors"]
     gen = data["generated_at"]
+    _nav_html = nav_html(date, "sector")
 
     # Regime 색
     regime_colors = {
@@ -343,7 +345,8 @@ tr:hover td {{ background:#fafbff; }}
 </style>
 </head>
 <body>
-
+{_nav_html}
+<div style="max-width:1200px;margin:0 auto;padding:28px 24px 48px">
 <div class="header">
   <h1>🏭 Sector Rotation View</h1>
   <div class="sub">섹터 로테이션 신호 &nbsp;|&nbsp; 기준일: {date} &nbsp;|&nbsp; 생성: {gen}</div>
@@ -427,7 +430,7 @@ tr:hover td {{ background:#fafbff; }}
 </div>
 
 <div class="footer">Sector View &nbsp;·&nbsp; 미래에셋생명 변액보험 운용 참고 &nbsp;·&nbsp; 본 자료는 투자 권유가 아닙니다</div>
-
+</div>
 </body>
 </html>"""
     return html
