@@ -117,8 +117,8 @@ output/
 │   └── aimvp/
 │       └── YYYY-MM-DD.html     # 백테스트 리포트
 └── view/                        # View Agent
-    ├── allocation/
-    │   └── YYYY-MM-DD.html     # 전술적 자산배분 뷰
+    ├── price/
+    │   └── YYYY-MM-DD.html     # 가격 기반 시장 신호 뷰
     └── macro/
         └── YYYY-MM-DD.html     # 거시지표 뷰
 ```
