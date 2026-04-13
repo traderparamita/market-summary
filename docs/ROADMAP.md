@@ -71,11 +71,20 @@
 
 ### Phase 1 — 매크로 자산배분 View (MVP 핵심 ①) — 진행 중
 
-자산군별 OW/N/UW view를 매일 자동 생성.
+자산군별 OW/N/UW view + 거시지표 현황을 매일 자동 생성.
 
+**1-A. Allocation View** (가격 기반 TAA)
 - ✅ **`portfolio/view/allocation_view.py`**: 자산군별 OW/N/UW 뷰 (모멘텀 z-score, 추세 필터, 매크로 overlay)
   - `output/view/allocation/{date}.html` 독립 HTML 생성 완료
-- ❌ **Claude 해설 생성**: 시그널 dict → 한국어 해설 1-2문단. `_data.json` + scoring 결과를 컨텍스트로 주입
+
+**1-B. Macro View** (거시지표 현황)
+- ✅ **`portfolio/macro_indicators.yaml`** + **`portfolio/collect_macro.py`**: FRED + ECOS 수집 (21개 지표, `history/macro_indicators.csv`)
+- ✅ **`portfolio/view/macro_view.py`**: 거시지표 HTML 뷰 (US/KR/Global 3-섹션)
+  - `output/view/macro/{date}.html` 독립 HTML 생성 완료
+- ❌ **미해결**: KR_CORE_CPI_YOY, KR_MFG_BSI, US_ISM_MFG/SVC series_id 수정 필요
+
+**1-C. 통합 (미완)**
+- ❌ **Claude 해설 생성**: Allocation + Macro 시그널 dict → 한국어 해설 1-2문단. `_data.json` + scoring 결과 컨텍스트로 주입
 - ❌ **HTML 'Allocation' 탭**: `generate.py` 탭 추가 + `<!-- ALLOCATION_CONTENT_PLACEHOLDER -->` 섹션. `inject_stories.py`의 치환 함수를 `inject_block(html, placeholder, content)`으로 일반화하여 재사용
 
 ### Phase 2 — 모델 포트폴리오 + 리밸런싱 시그널 (Week 3-4, MVP 핵심 ②)
