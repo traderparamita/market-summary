@@ -3,7 +3,7 @@
 Analyzes macro indicators (GDP, inflation, employment, policy, credit)
 from history/macro_indicators.csv.
 
-NO asset allocation. For allocation view, see portfolio.view.allocation_view.
+NO asset allocation. For price-based signals, see portfolio.view.price_view.
 
 Generates standalone HTML report to output/view/macro/.
 

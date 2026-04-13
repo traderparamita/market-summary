@@ -16,15 +16,15 @@
 - ✅ `portfolio/aimvp/` — AIMVP RiskOn (Faber TAA 3-Signal), 전체 백테스트 + 히트맵
   - `output/portfolio/aimvp/{date}.html`
 
-**View Agent — Allocation View (Phase 1 partial)**
+**View Agent — Price View (Phase 1 partial)**
 - ✅ `portfolio/view/scoring.py` — 자산별 모멘텀/트렌드/변동성/복합 점수
-- ✅ `portfolio/view/allocation_view.py` — TAA 레짐 + 자산군별 OW/N/UW + 개별 자산 점수
-  - `output/view/allocation/{date}.html`
+- ✅ `portfolio/view/price_view.py` — 가격 기반 시장 신호 (모멘텀, 추세, VIX, Breadth) + 자산군별 OW/N/UW
+  - `output/view/price/{date}.html`
 
 **View Agent — Macro View (Phase 4 선행 구현)**
 
 > ROADMAP의 Phase 4(FRED 데이터 통합)를 Phase 1보다 먼저 진행.
-> 기존 allocation_view가 "Macro View"로 잘못 명명된 것을 발견하고 분리 결정.
+> 기존 price_view(구 allocation_view)가 "Macro View"로 잘못 명명된 것을 발견하고 분리 결정.
 
 - ✅ `portfolio/macro_indicators.yaml` — 21개 거시지표 정의
 - ✅ `portfolio/collect_macro.py` — FRED + ECOS API 수집기
@@ -73,9 +73,9 @@
 
 자산군별 OW/N/UW view + 거시지표 현황을 매일 자동 생성.
 
-**1-A. Allocation View** (가격 기반 TAA)
-- ✅ **`portfolio/view/allocation_view.py`**: 자산군별 OW/N/UW 뷰 (모멘텀 z-score, 추세 필터, 매크로 overlay)
-  - `output/view/allocation/{date}.html` 독립 HTML 생성 완료
+**1-A. Price View** (가격 기반 시장 신호)
+- ✅ **`portfolio/view/price_view.py`**: 가격 기반 시장 신호 (모멘텀×3, 추세 MA200/MA50, VIX 레짐, Breadth)
+  - `output/view/price/{date}.html` 독립 HTML 생성 완료
 
 **1-B. Macro View** (거시지표 현황)
 - ✅ **`portfolio/macro_indicators.yaml`** + **`portfolio/collect_macro.py`**: FRED + ECOS 수집 (21개 지표, `history/macro_indicators.csv`)
@@ -124,7 +124,7 @@ View → 실제 비중.
 
 - **`portfolio/backtest.py` 강화**: Phase 0 미니 엔진 → 전략 yaml들에 대한 walk-forward. 결과: equity curve, drawdown, exposure, turnover, hit rate(view 적중률 — OW 자산이 N/UW 자산을 outperform 했는가).
 - **백테스트 결과를 Allocation 탭 하단에 시각화**: 누적수익 라인, 월별 hit rate 표.
-- **주간/월간 보고서 통합**: [generate_periodic.py:67](../generate_periodic.py#L67) `aggregate_period` 가 반환하는 dict 에 `allocation` 키 추가, [generate_periodic.py:173](../generate_periodic.py#L173) `generate_periodic_html` 에 섹션 렌더 추가. 주간/월간은 일간 view를 평균/말일 기준으로 요약하고 기간 백테스트 성과를 함께 표시.
+- **주간/월간 보고서 통합**: [generate_periodic.py:67](../generate_periodic.py#L67) `aggregate_period` 가 반환하는 dict 에 `price` 키 추가, [generate_periodic.py:173](../generate_periodic.py#L173) `generate_periodic_html` 에 섹션 렌더 추가. 주간/월간은 일간 view를 평균/말일 기준으로 요약하고 기간 백테스트 성과를 함께 표시.
 
 ### Phase 6 — 이중 페르소나 narrative (Week 8)
 같은 시그널을 두 톤으로.
@@ -172,7 +172,7 @@ market_summary/
 │   │   ├── config.py
 │   │   └── data_adapter.py
 │   ├── view/
-│   │   ├── allocation_view.py    # ✅ TAA 기반 자산배분 뷰
+│   │   ├── price_view.py    # ✅ 가격 기반 시장 신호 뷰
 │   │   ├── macro_view.py         # ✅ 거시지표 뷰 (US/KR/Global)
 │   │   └── scoring.py            # ✅ 자산 점수 계산
 │   ├── builder.py                # ❌ Phase 2
@@ -188,7 +188,7 @@ market_summary/
 │   ├── summary/                  # ✅ Market Summary 일/주/월간
 │   ├── portfolio/aimvp/          # ✅ AIMVP 백테스트 리포트
 │   └── view/
-│       ├── allocation/           # ✅ Allocation View
+│       ├── price/              # ✅ Price View
 │       └── macro/                # ✅ Macro View
 └── .claude/
     ├── commands/                 # ✅ /market-full, /market-data, /market-deploy

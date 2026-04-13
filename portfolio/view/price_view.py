@@ -1,17 +1,16 @@
-"""Tactical asset-allocation view — View Agent deliverable.
+"""Price view — View Agent deliverable.
 
-Current-state allocation view combining:
-  1. TAA regime reference (from aimvp)
-  2. Market Pulse: VIX, Yield Curve, Breadth, DXY
-  3. Asset-class OW/N/UW views (regime-conditional composite)
-  4. Individual asset scores (momentum, trend, nearness, vol)
+Current-state market analysis using price-based signals only:
+  1. Market Pulse: VIX, Yield Curve, Breadth, DXY
+  2. Asset-class OW/N/UW views (regime-conditional composite)
+  3. Individual asset scores (momentum, trend, nearness, vol)
 
 NO backtest. For backtest, see portfolio.aimvp.generate.
 
-Generates standalone HTML report to output/view/allocation/.
+Generates standalone HTML report to output/view/price/.
 
 Usage:
-    python -m portfolio.view.allocation_view --date 2026-04-09 --html
+    python -m portfolio.view.price_view --date 2026-04-09 --html
 """
 
 import argparse
@@ -23,12 +22,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from ..aimvp import compute_all_signals, load_monthly_from_csv, score_to_regime
-from ..aimvp.model import build_weight_series
 from .scoring import load_universe, load_prices, compute_signals
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-OUTPUT_DIR = ROOT / "output" / "view" / "allocation"
+OUTPUT_DIR = ROOT / "output" / "view" / "price"
 
 VIEW_LABELS = {2: "OW+", 1: "OW", 0: "N", -1: "UW", -2: "UW-"}
 
@@ -71,34 +68,8 @@ def _fv(val, fmt=".2f", fallback="—"):
     return format(val, fmt)
 
 
-def compute_allocation_view(date: str, csv_path: str | Path | None = None) -> dict:
-    """Compute current-state allocation view: TAA regime + market pulse + asset-class views."""
-    monthly = load_monthly_from_csv(csv_path)
-    sig_df  = compute_all_signals(monthly["stock"], monthly["bond"], monthly["vix"])
-
-    target    = pd.Timestamp(date)
-    available = sig_df.index[sig_df.index <= target]
-    if available.empty:
-        return {"error": "Insufficient data for TAA signals"}
-    last_sig = sig_df.loc[available[-1]]
-
-    taa_score  = int(last_sig["score"])
-    taa_regime = score_to_regime(taa_score)
-
-    weight_df    = build_weight_series(sig_df)
-    last_weights = weight_df.loc[available[-1]]
-
-    taa_signals = {
-        "trend":    int(last_sig["trend"]),
-        "momentum": int(last_sig["momentum"]),
-        "vix":      int(last_sig["vix"]),
-    }
-    taa_weights = {
-        "stock": float(last_weights["w_stock"]),
-        "bond":  float(last_weights["w_bond"]),
-        "cash":  float(last_weights["w_cash"]),
-    }
-
+def compute_price_view(date: str, csv_path: str | Path | None = None) -> dict:
+    """Compute current-state price view: market pulse + asset-class views (price-based)."""
     universe     = load_universe()
     prices       = load_prices(csv_path) if csv_path else load_prices()
     asset_scores = compute_signals(prices, date, universe)
@@ -165,10 +136,6 @@ def compute_allocation_view(date: str, csv_path: str | Path | None = None) -> di
 
     return {
         "date":              date,
-        "taa_regime":        taa_regime,
-        "taa_score":         taa_score,
-        "taa_signals":       taa_signals,
-        "taa_weights":       taa_weights,
         "market_pulse":      market_pulse,
         "asset_class_views": asset_class_views,
         "top_assets":        top_assets,
@@ -207,27 +174,16 @@ def _pulse_card(title: str, rows: list[tuple[str, str, str]]) -> str:
     </div>"""
 
 
-def generate_allocation_html(view: dict) -> str:
+def generate_price_html(view: dict) -> str:
     if "error" in view:
         return f"<html><body><h1>Error</h1><p>{view['error']}</p></body></html>"
 
     report_date = view["date"]
-    regime      = view["taa_regime"]
-    score       = view["taa_score"]
-    signals     = view["taa_signals"]
-    weights     = view["taa_weights"]
     pulse       = view.get("market_pulse", {})
     ac_views    = view.get("asset_class_views", [])
     top_assets  = view.get("top_assets", [])
 
-    regime_css  = {"RiskON": "regime-on", "Neutral": "regime-neutral", "RiskOFF": "regime-off"}
-    now         = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    sig_html = " ".join([
-        _signal_badge("Trend",    signals["trend"]),
-        _signal_badge("Momentum", signals["momentum"]),
-        _signal_badge("VIX",      signals["vix"]),
-    ])
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     # ── Market Pulse cards ────────────────────────────────────────
     vix       = pulse.get("vix")
@@ -369,7 +325,7 @@ def generate_allocation_html(view: dict) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tactical Asset Allocation View | {report_date}</title>
+<title>Price View | {report_date}</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root {{
@@ -448,22 +404,10 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
 
 <div class="header">
   <div>
-    <h1>Tactical Asset Allocation View</h1>
+    <h1>Price View</h1>
     <div class="meta">Price-based signals | View Agent</div>
   </div>
-  <div style="text-align:right">
-    <div class="regime-tag {regime_css.get(regime, "regime-neutral")}">TAA: {regime} ({score:+d})</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:4px">Generated: {now}</div>
-  </div>
-</div>
-
-<div class="signal-row">
-  <div class="sig-badges">{sig_html}</div>
-  <div class="weight-pills">
-    <span class="pill pill-stock">Stock {weights["stock"]:.0%}</span>
-    <span class="pill pill-bond">Bond {weights["bond"]:.0%}</span>
-    <span class="pill pill-cash">Cash {weights["cash"]:.0%}</span>
-  </div>
+  <div style="text-align:right;font-size:11px;color:var(--muted)">Generated: {now}</div>
 </div>
 
 {pulse_html}
@@ -502,18 +446,18 @@ body{{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);c
   </div>
 </div>
 
-<div class="footer">Tactical Asset Allocation View | Price-based regime-conditional signals | View Agent</div>
+<div class="footer">Price View | Price-based regime-conditional signals | View Agent</div>
 
 </body>
 </html>'''
 
 
 def generate_report(date: str, csv_path: str | Path | None = None) -> str:
-    """Generate allocation view HTML report."""
+    """Generate price view HTML report."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    view = compute_allocation_view(date, csv_path)
-    html = generate_allocation_html(view)
+    view = compute_price_view(date, csv_path)
+    html = generate_price_html(view)
 
     out_path = OUTPUT_DIR / f"{date}.html"
     with open(out_path, "w", encoding="utf-8") as f:
@@ -523,7 +467,7 @@ def generate_report(date: str, csv_path: str | Path | None = None) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Tactical asset-allocation view")
+    parser = argparse.ArgumentParser(description="Price view — price-based market signals")
     parser.add_argument("--date",  required=True)
     parser.add_argument("--html",  action="store_true", help="Generate HTML report")
     parser.add_argument("--csv",   default=None, help="Override CSV path")
@@ -534,7 +478,7 @@ def main():
         print(f"HTML report: {path}")
         return
 
-    view = compute_allocation_view(args.date, args.csv)
+    view = compute_price_view(args.date, args.csv)
 
     if "error" in view:
         print(f"Error: {view['error']}")
@@ -542,14 +486,9 @@ def main():
 
     pulse = view["market_pulse"]
     print(f"\n{'='*60}")
-    print(f"  Allocation View as of {view['date']}")
+    print(f"  Price View as of {view['date']}")
     print(f"{'='*60}")
-    print(f"  TAA Regime     : {view['taa_regime']}  (score: {view['taa_score']:+d}/3)")
     print(f"  Price Regime   : {pulse.get('market_regime', '—')}")
-    print(f"  Signals        : Trend={view['taa_signals']['trend']:+d}  "
-          f"Momentum={view['taa_signals']['momentum']:+d}  VIX={view['taa_signals']['vix']:+d}")
-    print(f"  Weights        : Stock={view['taa_weights']['stock']:.0%}  "
-          f"Bond={view['taa_weights']['bond']:.0%}  Cash={view['taa_weights']['cash']:.0%}")
 
     vix = pulse.get("vix")
     yc  = pulse.get("yield_curve")

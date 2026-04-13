@@ -42,7 +42,7 @@ portfolio/
 │   ├── config.py        # 전략 파라미터
 │   └── data_adapter.py  # CSV → 월간 데이터
 ├── view/            # View Agent (확장 가능한 분석 뷰)
-│   ├── allocation_view.py  # 전술적 자산배분 뷰 (TAA 기반)
+│   ├── price_view.py       # 가격 기반 시장 신호 뷰 (모멘텀, 추세, VIX, 폭)
 │   ├── macro_view.py       # 거시지표 뷰 (GDP, 인플레이션, 고용 등)
 │   └── scoring.py          # 자산 점수 계산
 ├── collect_macro.py     # 거시지표 수집 (FRED/ECOS)
@@ -178,20 +178,20 @@ python -m portfolio.aimvp.backfill --snowflake
 
 **목적**: 현재 상태 분석 (백테스트 없음)
 
-#### 2.1 Allocation View (전술적 자산배분)
+#### 2.1 Price View (가격 기반 시장 신호)
 
 **핵심 기능**:
-- TAA 레짐 참고 (RiskON/Neutral/RiskOFF from aimvp)
-- 매크로 컨텍스트 (Yield Curve, VIX, DXY Trend)
-- 자산군별 OW/N/UW 뷰 (Z-Score 기반)
-- 개별 자산 점수 테이블 (모멘텀, 트렌드, 변동성, 복합 점수)
+- Market Pulse: VIX 레짐/방향, Yield Curve, Breadth, DXY
+- 자산군별 OW/N/UW 뷰 (레짐 조건부 복합 점수)
+- 개별 자산 점수 테이블 (모멘텀 3개, 추세 MA200/MA50, 52주 고점, vol ratio)
+- 가격 기반 레짐 자동 감지 (VIX + Breadth)
 
 실행:
 ```
-python -m portfolio.view.allocation_view --date 2026-04-09 --html
+python -m portfolio.view.price_view --date 2026-04-09 --html
 ```
 
-출력: `output/view/allocation/{date}.html`
+출력: `output/view/price/{date}.html`
 
 데이터 소스: `history/market_data.csv`
 
@@ -231,7 +231,7 @@ python -m portfolio.view.macro_view --date 2026-04-09 --html
 - `portfolio/universe.yaml`: 자산 유니버스 정의
 - `portfolio/strategies/`: 전략 YAML 설정
 
-- Portfolio Agent / Allocation View: `history/market_data.csv` 단일 소스
+- Portfolio Agent / Price View: `history/market_data.csv` 단일 소스
 - Macro View: `history/macro_indicators.csv` (FRED + ECOS 수집)
 
 ## 관련 설정
