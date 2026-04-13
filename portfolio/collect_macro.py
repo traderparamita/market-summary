@@ -65,28 +65,91 @@ def fetch_fred_series(series_id: str, start_date: str) -> pd.DataFrame:
         obs = data["observations"]
         df = pd.DataFrame(obs)
         df = df[df["value"] != "."]  # Filter missing values
-        df["date"] = pd.to_datetime(df["date"])
+        df["DATE"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m-%d")
         df["value"] = df["value"].astype(float)
-        return df[["date", "value"]].rename(columns={"date": "DATE", "value": "raw_value"})
+        return df[["DATE", "value"]].rename(columns={"value": "raw_value"})
 
     except Exception as e:
         print(f"  ERROR fetching {series_id}: {e}")
         return pd.DataFrame()
 
 
-def fetch_ecos_series(series_id: str, start_date: str) -> pd.DataFrame:
-    """Fetch data from ECOS API (placeholder - needs ECOS-specific implementation)."""
+def fetch_ecos_series(series_id: str, start_date: str, item_code: str = None, cycle: str = "M") -> pd.DataFrame:
+    """Fetch data from ECOS API.
+
+    Args:
+        series_id: ECOS 통계표 코드 (e.g., "901Y009")
+        start_date: 시작일 (YYYY-MM-DD)
+        item_code: 항목 코드 (통계표별로 다름)
+        cycle: 주기 (Q=분기, M=월, D=일)
+    """
     if not ECOS_API_KEY:
         print(f"  WARNING: ECOS_API_KEY not set, skipping {series_id}")
         return pd.DataFrame()
 
-    # TODO: Implement ECOS API call
-    # ECOS API는 통계표별로 엔드포인트가 다르므로 series_id를 파싱해서 적절한 호출 필요
-    print(f"  WARNING: ECOS fetch not yet implemented for {series_id}")
-    return pd.DataFrame()
+    # Parse start date to ECOS format (YYYYQ1, YYYYMM, or YYYYMMDD)
+    start_dt = pd.to_datetime(start_date)
+    end_dt = datetime.now()
+
+    if cycle == "Q":
+        # Quarterly: YYYYQ1 format
+        start_str = f"{start_dt.year}Q{(start_dt.month - 1) // 3 + 1}"
+        end_str = f"{end_dt.year}Q{(end_dt.month - 1) // 3 + 1}"
+    elif cycle == "M":
+        # Monthly: YYYYMM format
+        start_str = start_dt.strftime("%Y%m")
+        end_str = end_dt.strftime("%Y%m")
+    else:
+        # Daily: YYYYMMDD format
+        start_str = start_dt.strftime("%Y%m%d")
+        end_str = end_dt.strftime("%Y%m%d")
+
+    # ECOS API endpoint
+    url = f"http://ecos.bok.or.kr/api/StatisticSearch/{ECOS_API_KEY}/json/kr/1/10000/{series_id}/{cycle}/{start_str}/{end_str}"
+
+    if item_code:
+        url += f"/{item_code}"
+
+    try:
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+
+        if "StatisticSearch" not in data or "row" not in data["StatisticSearch"]:
+            print(f"  WARNING: No data for {series_id}")
+            return pd.DataFrame()
+
+        rows = data["StatisticSearch"]["row"]
+        df = pd.DataFrame(rows)
+
+        # Parse TIME column to DATE (always store as YYYY-MM-DD string)
+        if cycle == "Q":
+            # YYYYQ1 -> quarter-end date as YYYY-MM-DD
+            def q_to_date(t):
+                year, q = int(t[:4]), int(t[5])
+                month = q * 3
+                import calendar
+                day = calendar.monthrange(year, month)[1]
+                return f"{year}-{month:02d}-{day:02d}"
+            df["DATE"] = df["TIME"].apply(q_to_date)
+        elif cycle == "M":
+            # YYYYMM -> first day of month YYYY-MM-DD
+            df["DATE"] = pd.to_datetime(df["TIME"], format="%Y%m").dt.strftime("%Y-%m-%d")
+        else:
+            # YYYYMMDD format
+            df["DATE"] = pd.to_datetime(df["TIME"], format="%Y%m%d").dt.strftime("%Y-%m-%d")
+
+        df["raw_value"] = pd.to_numeric(df["DATA_VALUE"], errors="coerce")
+        df = df.dropna(subset=["raw_value"])
+
+        return df[["DATE", "raw_value"]].sort_values("DATE").reset_index(drop=True)
+
+    except Exception as e:
+        print(f"  ERROR fetching {series_id}: {e}")
+        return pd.DataFrame()
 
 
-def transform_series(df: pd.DataFrame, transform: str) -> pd.DataFrame:
+def transform_series(df: pd.DataFrame, transform: str, cycle: str = "M") -> pd.DataFrame:
     """Apply transformation to raw values."""
     if df.empty:
         return df
@@ -100,7 +163,9 @@ def transform_series(df: pd.DataFrame, transform: str) -> pd.DataFrame:
         df["VALUE"] = df["raw_value"].pct_change() * 100
 
     elif transform == "pct_change_yoy":
-        df["VALUE"] = df["raw_value"].pct_change(periods=4) * 100  # Quarterly data -> YoY
+        # YoY: 12 periods for monthly, 4 periods for quarterly
+        periods = 12 if cycle == "M" else 4
+        df["VALUE"] = df["raw_value"].pct_change(periods=periods) * 100
 
     elif transform == "diff":
         df["VALUE"] = df["raw_value"].diff()
@@ -120,13 +185,15 @@ def collect_indicator(code: str, info: dict, start_date: str) -> pd.DataFrame:
     region = info["region"]
     unit = info["unit"]
     transform = info.get("transform", "none")
+    cycle = info.get("cycle", "M")
 
     print(f"  Fetching {code} ({source}/{series_id}) ...")
 
     if source == "FRED":
         df = fetch_fred_series(series_id, start_date)
     elif source == "ECOS":
-        df = fetch_ecos_series(series_id, start_date)
+        item_code = info.get("item_code")
+        df = fetch_ecos_series(series_id, start_date, item_code, cycle)
     else:
         print(f"  WARNING: Unknown source '{source}'")
         return pd.DataFrame()
@@ -134,7 +201,7 @@ def collect_indicator(code: str, info: dict, start_date: str) -> pd.DataFrame:
     if df.empty:
         return df
 
-    df = transform_series(df, transform)
+    df = transform_series(df, transform, cycle)
 
     df["INDICATOR_CODE"] = code
     df["CATEGORY"] = category

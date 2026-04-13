@@ -158,58 +158,71 @@ indicators:
     category: growth
     region: KR
     source: ECOS
-    series_id: "901Y009"
+    series_id: "200Y104"
+    cycle: "Q"
+    item_code: "1400"
     unit: "%"
-    description: "Korea GDP Growth (QoQ)"
-    transform: value
+    description: "Korea Real GDP Growth (QoQ, seasonally adjusted)"
+    transform: pct_change
 
   KR_GDP_YOY:
     category: growth
     region: KR
     source: ECOS
-    series_id: "901Y009"
+    series_id: "200Y104"
+    cycle: "Q"
+    item_code: "1400"
     unit: "%"
-    description: "Korea GDP Growth (YoY)"
-    transform: value
+    description: "Korea Real GDP Growth (YoY, seasonally adjusted)"
+    transform: pct_change_yoy
 
   # ─── Korea Inflation ────────────────────────────────────────
   KR_CPI_YOY:
     category: inflation
     region: KR
     source: ECOS
-    series_id: "901Y066"
+    series_id: "901Y009"
+    cycle: "M"
+    item_code: "0"
     unit: "%"
     description: "Korea CPI (YoY)"
-    transform: value
+    transform: pct_change_yoy
 
   KR_CORE_CPI_YOY:
     category: inflation
     region: KR
     source: ECOS
-    series_id: "901Y066"
+    series_id: "901Y009"
+    cycle: "M"
+    item_code: "X0"
     unit: "%"
     description: "Korea Core CPI (YoY)"
-    transform: value
+    transform: pct_change_yoy
 
   # ─── Korea Employment ───────────────────────────────────────
   KR_UNEMP_RATE:
     category: employment
     region: KR
     source: ECOS
-    series_id: "901Y015"
+    series_id: "901Y027"
+    cycle: "M"
+    item_code: "I61BC"
     unit: "%"
     description: "Korea Unemployment Rate"
     transform: value
 
-  # ─── Korea PMI ──────────────────────────────────────────────
-  KR_MFG_PMI:
-    category: sentiment
-    region: KR
-    source: ECOS
-    series_id: "512Y001"
-    unit: "index"
-    description: "Korea Manufacturing PMI"
-    transform: value
+  # ─── Korea Sentiment (BSI) ──────────────────────────────────
+  # TODO: BSI requires multi-level item_code (C0000/AA) - implement later
+  # KR_MFG_BSI:
+  #   category: sentiment
+  #   region: KR
+  #   source: ECOS
+  #   series_id: "512Y013"
+  #   cycle: "M"
+  #   item_code: "C0000/AA"
+  #   unit: "index"
+  #   description: "Korea Manufacturing Business Survey Index (BSI)"
+  #   transform: value
 
   # ─── Korea Policy ───────────────────────────────────────────
   KR_BASE_RATE:
@@ -217,6 +230,8 @@ indicators:
     region: KR
     source: ECOS
     series_id: "722Y001"
+    cycle: "D"
+    item_code: "0101000"
     unit: "%"
     description: "Korea Base Rate"
     transform: value
