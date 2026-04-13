@@ -104,6 +104,12 @@ def compute_price_view(date: str, csv_path: str | Path | None = None) -> dict:
             "dxy_3m_chg":  _f("macro_dxy_3m_chg"),
             # Price-based regime
             "market_regime": r["market_regime"],
+            # B1: Sentiment
+            "sentiment_score": int(r["sentiment_score"]) if "sentiment_score" in r.index else 0,
+            "sentiment_label": str(r["sentiment_label"]) if "sentiment_label" in r.index else "Neutral",
+            # B2: Regime duration
+            "regime_duration": int(r["regime_duration"]) if "regime_duration" in r.index else 0,
+            "regime_since":    str(r["regime_since"])    if "regime_since"    in r.index else "—",
         }
 
         # ── Asset class views ─────────────────────────────────────
@@ -250,9 +256,28 @@ def generate_price_html(view: dict) -> str:
         ("Trend",   f'<b>{dxy_trend_html}</b>',  dxy_3m_str),
     ])
 
-    market_regime = pulse.get("market_regime", "—")
-    regime_col    = {"RiskON": "up", "RiskOFF": "down", "Neutral": "neutral"}.get(market_regime, "neutral")
-    price_regime_html = f'<span class="{regime_col}">Price Regime: <b>{market_regime}</b></span>'
+    market_regime    = pulse.get("market_regime", "—")
+    regime_duration  = pulse.get("regime_duration", 0)
+    regime_since     = pulse.get("regime_since", "—")
+    regime_col       = {"RiskON": "up", "RiskOFF": "down", "Neutral": "neutral"}.get(market_regime, "neutral")
+    regime_dur_str   = f" &nbsp;<span class='muted' style='font-size:11px'>({regime_duration}d · since {regime_since})</span>" if regime_duration > 0 else ""
+    price_regime_html = f'<span class="{regime_col}">Price Regime: <b>{market_regime}</b>{regime_dur_str}</span>'
+
+    # ── Sentiment card (B1) ───────────────────────────────────────
+    sent_score = pulse.get("sentiment_score", 0)
+    sent_label = pulse.get("sentiment_label", "Neutral")
+    _sent_colors = {
+        "Extreme Fear": "#d9304f",
+        "Fear":         "#f59e0b",
+        "Neutral":      "#7c8298",
+        "Greed":        "#0d9b6a",
+        "Extreme Greed":"#059669",
+    }
+    sent_color = _sent_colors.get(sent_label, "#7c8298")
+    sent_card = _pulse_card("Sentiment", [
+        ("Score", f'<b style="color:{sent_color}">{sent_score:+.0f}</b>', "/ ±100"),
+        ("Label", f'<span style="color:{sent_color};font-weight:600">{sent_label}</span>', ""),
+    ])
 
     pulse_html = f"""
     <div class="section">
@@ -264,6 +289,7 @@ def generate_price_html(view: dict) -> str:
         {yc_card}
         {breadth_card}
         {dxy_card}
+        {sent_card}
       </div>
     </div>"""
 

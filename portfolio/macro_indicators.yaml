@@ -236,6 +236,27 @@ indicators:
     description: "Korea Base Rate"
     transform: value
 
+  # ─── US Liquidity ───────────────────────────────────────────
+  US_M2_YOY:
+    category: liquidity
+    region: US
+    source: FRED
+    series_id: M2SL
+    unit: "%"
+    description: "US M2 Money Supply (YoY)"
+    transform: pct_change_yoy
+    cycle: "M"
+
+  US_FED_BALANCE:
+    category: liquidity
+    region: US
+    source: FRED
+    series_id: WALCL
+    unit: "%"
+    description: "Fed Balance Sheet (YoY)"
+    transform: pct_change_yoy
+    cycle: "M"
+
   # ─── Global ─────────────────────────────────────────────────
   VIX:
     category: risk

@@ -16,24 +16,25 @@
 - ✅ `portfolio/aimvp/` — AIMVP RiskOn (Faber TAA 3-Signal), 전체 백테스트 + 히트맵
   - `output/portfolio/aimvp/{date}.html`
 
-**View Agent — Price View (Phase 1 partial)**
-- ✅ `portfolio/view/scoring.py` — 자산별 모멘텀/트렌드/변동성/복합 점수
-- ✅ `portfolio/view/price_view.py` — 가격 기반 시장 신호 (모멘텀, 추세, VIX, Breadth) + 자산군별 OW/N/UW
+**View Agent — Phase 1 완료 (2026-04-13)**
+
+> 4개 독립 뷰 + 종합 해설 레이어 완성.
+
+- ✅ `portfolio/view/scoring.py` — 자산별 복합 점수 + **sentiment_score/label** + **regime_duration/since**
+- ✅ `portfolio/view/price_view.py` — 가격 신호 (Sentiment 카드, Regime 지속 일수 표시)
   - `output/view/price/{date}.html`
-
-**View Agent — Macro View (Phase 4 선행 구현)**
-
-> ROADMAP의 Phase 4(FRED 데이터 통합)를 Phase 1보다 먼저 진행.
-> `price_view`(가격 신호)와 `macro_view`(거시지표)를 별도 뷰로 분리 구성.
-
-- ✅ `portfolio/macro_indicators.yaml` — 21개 거시지표 정의
+- ✅ `portfolio/view/macro_view.py` — 거시지표 (Regime 헤더, Z-score/방향, FED Implied, Liquidity 섹션)
+  - `output/view/macro/{date}.html`
+- ✅ `portfolio/view/correlation_view.py` — 자산 상관관계 히트맵 (30/60/90일, 주식-채권 신호)
+  - `output/view/correlation/{date}.html`
+- ✅ `portfolio/view/regime_view.py` — 종합 국면 해설 (규칙 기반, 외부 API 불필요)
+  - `output/view/regime/{date}.html`
+- ✅ `portfolio/macro_indicators.yaml` — 23개 거시지표 (M2SL, WALCL 추가)
 - ✅ `portfolio/collect_macro.py` — FRED + ECOS API 수집기
-- ✅ `history/macro_indicators.csv` — 14,206행 (2020~2026.04)
-  - 🇺🇸 US (14): GDP, CPI/Core CPI/PCE/Core PCE, 실업률, NFP, 연준금리, 10Y/2Y, Yield Curve, IG/HY Spread
+- ✅ `history/macro_indicators.csv` — 2020~2026.04
+  - 🇺🇸 US (16): GDP, CPI/Core CPI/PCE/Core PCE, 실업률, NFP, 연준금리, 10Y/2Y, Yield Curve, IG/HY Spread, **M2 YoY**, **Fed Balance Sheet YoY**
   - 🇰🇷 KR (5): GDP QoQ/YoY, CPI YoY, 실업률, 기준금리
   - 🌍 Global (2): VIX, DXY
-- ✅ `portfolio/view/macro_view.py` — 거시지표 HTML 뷰 (US/KR/Global 3-섹션)
-  - `output/view/macro/{date}.html`
 
 **미해결 이슈**:
 - ❌ `KR_CORE_CPI_YOY` — ECOS item_code X0 확인 필요
@@ -43,8 +44,8 @@
 
 ### 다음 단계
 
-- Phase 1 완성: Price View + Macro View 해설 → Market Summary HTML에 View 탭 통합
-- Phase 2: 모델 포트폴리오 + 리밸런싱 시그널
+- Phase 1-E: View 탭 통합 → Market Summary HTML에 4개 뷰 링크 + 요약 카드 포함
+- Phase 2: 모델 포트폴리오 + 리밸런싱 시그널 (국가/섹터/자산군 드릴다운)
 
 ## Context
 
@@ -69,23 +70,37 @@
 - ✅ **`portfolio/backtest.py`**: 미니 백테스트 엔진 (일일 비중 → NAV → CAGR/Sharpe/MDD)
 - ❌ **Snowflake DDL**: `MKT200_PORTFOLIO_DAILY` 미작성 — `snowflake_loader.py` 패턴 재사용 예정
 
-### Phase 1 — 매크로 자산배분 View (MVP 핵심 ①) — 진행 중
+### Phase 1 — 매크로 자산배분 View (MVP 핵심 ①) — ✅ 완료
 
-자산군별 OW/N/UW view + 거시지표 현황을 매일 자동 생성.
+자산군별 OW/N/UW view + 거시지표 현황 + 종합 해설 매일 자동 생성.
 
-**1-A. Price View** (가격 기반 시장 신호)
-- ✅ **`portfolio/view/price_view.py`**: 가격 기반 시장 신호 (모멘텀×3, 추세 MA200/MA50, VIX 레짐, Breadth)
-  - `output/view/price/{date}.html` 독립 HTML 생성 완료
+**1-A. Price View** (가격 기반 시장 신호) ✅
+- ✅ `portfolio/view/price_view.py`: 모멘텀×3, 추세 MA200/MA50, VIX 레짐, Breadth, 자산군 OW/N/UW
+- ✅ **Sentiment 카드**: VIX regime + breadth_ma200_norm + nearness_52w_avg_norm → −100~+100 (Extreme Fear ~ Extreme Greed)
+- ✅ **Regime 심화**: 레짐 지속 일수 + 직전 전환 날짜 (VIX rolling window 역산)
 
-**1-B. Macro View** (거시지표 현황)
-- ✅ **`portfolio/macro_indicators.yaml`** + **`portfolio/collect_macro.py`**: FRED + ECOS 수집 (21개 지표, `history/macro_indicators.csv`)
-- ✅ **`portfolio/view/macro_view.py`**: 거시지표 HTML 뷰 (US/KR/Global 3-섹션)
-  - `output/view/macro/{date}.html` 독립 HTML 생성 완료
-- ❌ **미해결**: KR_CORE_CPI_YOY, KR_MFG_BSI, US_ISM_MFG/SVC series_id 수정 필요
+**1-B. Macro View** (거시지표 현황) ✅
+- ✅ `portfolio/macro_indicators.yaml` 23개 지표 (M2SL, WALCL 추가)
+- ✅ `portfolio/view/macro_view.py`: US/KR/Global 3-섹션
+- ✅ **Z-score/방향**: 지표 행마다 vs 평균(High/Mid/Low 백분위) + 방향 화살표(↑→↓)
+- ✅ **Regime 헤더**: 🇺🇸 US + 🇰🇷 KR 2×2 Regime 카드 (Goldilocks/Reflation/Stagflation/Deflation), 불일치 시 경고
+- ✅ **FED Implied Rate**: US_2Y_YIELD − US_FED_RATE → 시장 금리 기대 자동 계산
+- ✅ **Liquidity 섹션**: 실질금리(US_10Y − CPI) + M2 YoY + Fed Balance Sheet YoY
+- ❌ 미해결: KR_CORE_CPI_YOY, KR_MFG_BSI, US_ISM_MFG/SVC series_id 오류
 
-**1-C. 통합 (미완)**
-- ❌ **Claude 해설 생성**: Price View + Macro View 시그널 dict → 한국어 해설 1-2문단. `_data.json` + scoring 결과 컨텍스트로 주입
-- ❌ **HTML 'View' 탭**: `generate.py` 탭 추가 + `<!-- VIEW_CONTENT_PLACEHOLDER -->` 섹션. `inject_stories.py`의 치환 함수를 `inject_block(html, placeholder, content)`으로 일반화하여 재사용
+**1-C. Regime View** (종합 해설) ✅
+- ✅ `portfolio/view/regime_view.py`: macro + price + correlation 신호 종합
+- ✅ 규칙 기반 한국어 투자 해설 자동 생성 (외부 API 불필요)
+  - 현재 국면 진단 / 주요 리스크 TOP3 / 자산군별 OW·N·UW + 근거 / 핵심 모니터링 지표
+- ❌ **HTML 'View' 탭**: `generate.py` Market Summary HTML에 View 링크 통합 (Phase 1-E)
+
+**1-D. Correlation View** ✅
+- ✅ `portfolio/view/correlation_view.py`: Core 8 자산 롤링 상관관계 히트맵
+  - 30일 / 90일 나란히, 주식-채권 부호 신호, 레짐 전환 감지
+  - 출력: `output/view/correlation/{date}.html`
+
+**1-E. View 탭 통합** (다음 단계)
+- ❌ Market Summary HTML에 View 요약 카드 + 4개 뷰 링크 삽입
 
 ### Phase 2 — 모델 포트폴리오 + 리밸런싱 시그널 (Week 3-4, MVP 핵심 ②)
 View → 실제 비중.
@@ -110,14 +125,16 @@ View → 실제 비중.
 
 매크로 view 정확도 + 이벤트 대응 능력.
 
-- ✅ **`portfolio/collect_macro.py`**: FRED + ECOS API 수집. `history/macro_indicators.csv` 저장 (14,206행, 2020~)
-- ✅ **`portfolio/macro_indicators.yaml`**: 21개 지표 정의 (US/KR/Global)
+- ✅ **`portfolio/collect_macro.py`**: FRED + ECOS API 수집. `history/macro_indicators.csv` 저장 (2020~)
+- ✅ **`portfolio/macro_indicators.yaml`**: 23개 지표 정의 (US/KR/Global)
 - ✅ **`portfolio/view/macro_view.py`**: 거시지표 HTML 뷰 (US/KR/Global 3-섹션)
+- ✅ **`M2SL`** — US M2 Money Supply YoY (수집 + Liquidity 섹션 표시 완료)
+- ✅ **`WALCL`** — Fed Balance Sheet YoY (수집 + Liquidity 섹션 표시 완료)
 - ❌ **미해결**: US_ISM series_id 오류, KR_CORE_CPI/KR_MFG_BSI 구현 필요
 - ❌ **`fetchers/calendar.py`**: 경제 캘린더 (향후 7일 이벤트)
 - ❌ **`fetchers/news.py`**: Reuters/Bloomberg/연합 RSS 헤드라인
 - ❌ **`fetchers/earnings.py`**: 14개 stock earnings calendar
-- ❌ **View 탭 연결**: `price_view.py` + `macro_view.py` 결과를 Market Summary HTML View 탭에 통합
+- ❌ **View 탭 연결**: 4개 뷰 결과를 Market Summary HTML View 탭에 통합 (Phase 1-E)
 
 ### Phase 5 — 백테스트 + 검증 + 주간/월간 통합 (Week 7)
 신뢰성 레이어. PM이 보려면 백테스트 결과가 필수.
@@ -133,6 +150,29 @@ View → 실제 비중.
 - **PB/영업 톤**: 시장 내러티브 중심, 한국 증권사 모닝코멘트 톤. Claude 가 동일 시그널 dict 를 받아 다른 톤으로 재작성. `market-summary` 스킬에 `--audience pm|pb` 옵션 추가.
 - **HTML 토글**: View 탭 안에 PM ⇄ PB 토글 버튼. 두 narrative 모두 임베드.
 - **8주 MVP 도달 지점**: 매일 매크로 view + 모델 PF + 섹터 view + 백테스트 카드 + 두 가지 톤의 해설.
+
+---
+
+## Phase 2 — 국가/섹터/자산군별 뷰 (Phase 1 안정화 후)
+
+Phase 1이 "현재 시장 전반을 진단"하는 레이어라면,
+Phase 2는 "어디에(국가/섹터/자산군) 비중을 둘 것인가"를 드릴다운하는 레이어.
+
+### country_view.py — 국가별 비교
+- 대상: US / Korea / Japan / China / Europe / UK / India / EM
+- 신호: 주가지수 모멘텀 + FX 추세 + 매크로 점수(GDP/CPI) + ACWI 대비 상대 수익률
+- 한국과 미국을 동등한 1등 시민으로 — KR 먼저, US 다음, 글로벌 순
+- 데이터 추가: 일본/유럽 GDP/CPI FRED 코드 (macro_indicators.yaml 확장)
+- 출력: output/view/country/{date}.html
+
+### sector_view.py — 섹터 로테이션
+- 대상: SPDR 11개 섹터 ETF (XLK/XLF/XLE 등) + 한국 섹터 ETF
+- scoring.py 파이프라인 그대로 적용 (추가 수집 필요: generate.py TICKERS 확장)
+- 출력: output/view/sector/{date}.html
+
+### asset_view.py — 자산군 세분화
+- 채권 듀레이션별 / 주식 스타일별(성장/가치/퀄리티) / 대안자산
+- 출력: output/view/asset/{date}.html
 
 ---
 
@@ -172,8 +212,10 @@ market_summary/
 │   │   ├── config.py
 │   │   └── data_adapter.py
 │   ├── view/
-│   │   ├── price_view.py    # ✅ 가격 기반 시장 신호 뷰
+│   │   ├── price_view.py         # ✅ 가격 기반 시장 신호 뷰
 │   │   ├── macro_view.py         # ✅ 거시지표 뷰 (US/KR/Global)
+│   │   ├── correlation_view.py   # ✅ 자산 상관관계 히트맵
+│   │   ├── regime_view.py        # ✅ 종합 국면 해설 (규칙 기반)
 │   │   └── scoring.py            # ✅ 자산 점수 계산
 │   ├── builder.py                # ❌ Phase 2
 │   ├── rebalance.py              # ❌ Phase 2
@@ -188,8 +230,10 @@ market_summary/
 │   ├── summary/                  # ✅ Market Summary 일/주/월간
 │   ├── portfolio/aimvp/          # ✅ AIMVP 백테스트 리포트
 │   └── view/
-│       ├── price/              # ✅ Price View
-│       └── macro/                # ✅ Macro View
+│       ├── price/                # ✅ Price View
+│       ├── macro/                # ✅ Macro View
+│       ├── correlation/          # ✅ Correlation View
+│       └── regime/               # ✅ Regime View (종합 해설)
 └── .claude/
     ├── commands/                 # ✅ /market-full, /market-data, /market-deploy
     └── skills/market-summary/    # ✅ Story 작성 규칙

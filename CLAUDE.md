@@ -42,9 +42,11 @@ portfolio/
 │   ├── config.py        # 전략 파라미터
 │   └── data_adapter.py  # CSV → 월간 데이터
 ├── view/            # View Agent (확장 가능한 분석 뷰)
-│   ├── price_view.py       # 가격 기반 시장 신호 뷰 (모멘텀, 추세, VIX, 폭)
-│   ├── macro_view.py       # 거시지표 뷰 (GDP, 인플레이션, 고용 등)
-│   └── scoring.py          # 자산 점수 계산
+│   ├── price_view.py       # 가격 기반 시장 신호 뷰 (모멘텀, 추세, VIX, 폭, Sentiment)
+│   ├── macro_view.py       # 거시지표 뷰 (GDP, 인플레이션, 고용 등, Regime 헤더)
+│   ├── correlation_view.py # 자산 상관관계 히트맵 뷰 (30/60/90일 롤링)
+│   ├── regime_view.py      # 종합 국면 뷰 (규칙 기반 한국어 투자 해설)
+│   └── scoring.py          # 자산 점수 계산 (sentiment_score, regime_duration 포함)
 ├── collect_macro.py     # 거시지표 수집 (FRED/ECOS)
 ├── macro_indicators.yaml # 거시지표 정의
 ├── backtest.py      # 공통 백테스트 엔진
@@ -119,8 +121,12 @@ output/
 └── view/                        # View Agent
     ├── price/
     │   └── YYYY-MM-DD.html     # 가격 기반 시장 신호 뷰
-    └── macro/
-        └── YYYY-MM-DD.html     # 거시지표 뷰
+    ├── macro/
+    │   └── YYYY-MM-DD.html     # 거시지표 뷰
+    ├── correlation/
+    │   └── YYYY-MM-DD.html     # 자산 상관관계 히트맵
+    └── regime/
+        └── YYYY-MM-DD.html     # 종합 국면 + 투자 해설
 ```
 
 GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
@@ -181,10 +187,10 @@ python -m portfolio.aimvp.backfill --snowflake
 #### 2.1 Price View (가격 기반 시장 신호)
 
 **핵심 기능**:
-- Market Pulse: VIX 레짐/방향, Yield Curve, Breadth, DXY
+- Market Pulse: VIX 레짐/방향, Yield Curve, Breadth, DXY, **Sentiment 카드**
 - 자산군별 OW/N/UW 뷰 (레짐 조건부 복합 점수)
 - 개별 자산 점수 테이블 (모멘텀 3개, 추세 MA200/MA50, 52주 고점, vol ratio)
-- 가격 기반 레짐 자동 감지 (VIX + Breadth)
+- 가격 기반 레짐 자동 감지 (VIX + Breadth) + **레짐 지속 일수/전환 날짜**
 
 실행:
 ```
@@ -197,15 +203,21 @@ python -m portfolio.view.price_view --date 2026-04-09 --html
 
 #### 2.2 Macro View (거시지표)
 
-**수집 완료 지표** (14,206행, 2020~):
-- 🇺🇸 미국 (14): GDP QoQ/YoY, CPI/Core CPI/PCE/Core PCE YoY, 실업률, NFP, 연준금리, 10Y/2Y 국채, Yield Curve, IG/HY Spread
+**수집 완료 지표** (2020~):
+- 🇺🇸 미국 (16): GDP QoQ/YoY, CPI/Core CPI/PCE/Core PCE YoY, 실업률, NFP, 연준금리, 10Y/2Y 국채, Yield Curve, IG/HY Spread, **M2 YoY**, **Fed Balance Sheet YoY**
 - 🇰🇷 한국 (5): GDP QoQ/YoY, CPI YoY, 실업률, 기준금리
 - 🌍 글로벌 (2): VIX, DXY
 
+**추가 기능 (Phase 1-B)**:
+- 지표 행마다 vs 평균 백분위 (High/Mid/Low) + 방향 화살표 (↑→↓)
+- US/KR 2×2 Regime 헤더 카드 (Goldilocks/Reflation/Stagflation/Deflation)
+- FED Implied Rate (2Y − Fed Funds) 정책 섹션 자동 계산
+- Liquidity 섹션: 실질금리 + M2 YoY + Fed Balance Sheet
+
 **미구현 이슈**:
-- `KR_CORE_CPI_YOY` — 901Y009의 Core CPI item_code (`X0`) 확인 필요
-- `KR_MFG_BSI` — ECOS 다층 item_code 구조 (C0000/AA) 미구현
-- `US_ISM_MFG/SVC` — FRED series_id (NAPM/NAPMNOI) 오류, 교체 필요
+- `KR_CORE_CPI_YOY` — ECOS item_code X0 확인 필요
+- `KR_MFG_BSI` — ECOS 다층 item_code 미구현
+- `US_ISM_MFG/SVC` — FRED series_id 오류, 교체 필요
 
 실행:
 ```
@@ -220,10 +232,40 @@ python -m portfolio.view.macro_view --date 2026-04-09 --html
 
 데이터 소스: `history/macro_indicators.csv` (7컬럼: DATE, INDICATOR_CODE, CATEGORY, REGION, VALUE, UNIT, SOURCE)
 
+#### 2.3 Correlation View (자산 상관관계)
+
+**핵심 기능**:
+- Core 8 자산 (S&P500/NASDAQ/TLT/HYG/Gold/WTI/DXY/KOSPI) 롤링 상관관계
+- 30일 / 90일 히트맵 나란히 표시
+- 핵심 신호: 주식-채권 상관관계 부호 (음수 = 분산 효과 작동, 양수 = 경고)
+
+실행:
+```
+python -m portfolio.view.correlation_view --date 2026-04-09 --html
+```
+
+출력: `output/view/correlation/{date}.html`
+
+#### 2.4 Regime View (종합 국면 해설)
+
+**핵심 기능**:
+- macro_view + price_view + correlation_view 신호 통합
+- 규칙 기반 한국어 투자 해설 자동 생성 (외부 API 불필요)
+  1. 현재 시장 국면 진단
+  2. 주요 리스크 요인 (심각도 정렬 상위 3개)
+  3. 자산군별 투자 의견 (OW/N/UW + 근거)
+  4. 핵심 모니터링 지표
+
+실행:
+```
+python -m portfolio.view.regime_view --date 2026-04-09 --html
+```
+
+출력: `output/view/regime/{date}.html`
+
 **구조적 확장 가능**:
-- `view/sector_view.py` - 섹터별 분석
-- `view/risk_view.py` - 리스크 분석
-- `view/factor_view.py` - 팩터 분석
+- `view/country_view.py` - 국가별 비교 (Phase 2)
+- `view/sector_view.py` - 섹터 로테이션 (Phase 3)
 
 ### 공통
 

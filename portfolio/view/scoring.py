@@ -265,6 +265,59 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
 
     df["composite_score"] = composite.round(3)
 
+    # ── B1. Sentiment score (-100 to +100) ───────────────────────
+    # Components: VIX regime + breadth + avg nearness
+    breadth_norm = float(np.clip((breadth_ma200 - 0.50) / 0.15, -1, 1))
+
+    avg_nearness = float(df["nearness_52w"].dropna().mean()) if not df["nearness_52w"].dropna().empty else 0.875
+    nearness_norm = float(np.clip((avg_nearness - 0.875) / 0.075, -1, 1))
+
+    vix_component = float(vix_regime) if not np.isnan(vix_regime) else 0.0
+
+    # Weighted composite → scale to -100..+100
+    sentiment_raw = vix_component * 0.40 + breadth_norm * 0.35 + nearness_norm * 0.25
+    sentiment_score = round(float(sentiment_raw) * 100)
+
+    if sentiment_score <= -60:
+        sentiment_label = "Extreme Fear"
+    elif sentiment_score <= -20:
+        sentiment_label = "Fear"
+    elif sentiment_score <= 20:
+        sentiment_label = "Neutral"
+    elif sentiment_score <= 60:
+        sentiment_label = "Greed"
+    else:
+        sentiment_label = "Extreme Greed"
+
+    df["sentiment_score"] = sentiment_score
+    df["sentiment_label"] = sentiment_label
+
+    # ── B2. Regime duration (VIX-based proxy) ────────────────────
+    regime_duration = 0
+    regime_since: str | None = None
+
+    if vix_code and vix_code in px.columns:
+        vix_s = px[vix_code].dropna()
+
+        def _regime_from_vix(v: float) -> str:
+            if v > 25:
+                return "RiskOFF"
+            if v < 15:
+                return "RiskON"
+            return "Neutral"
+
+        # Walk backwards from target date
+        dates_rev = vix_s.index[::-1]
+        for d in dates_rev:
+            if _regime_from_vix(float(vix_s[d])) == market_regime:
+                regime_duration += 1
+            else:
+                regime_since = d.strftime("%Y-%m-%d")
+                break
+
+    df["regime_duration"] = regime_duration
+    df["regime_since"] = regime_since if regime_since else "—"
+
     return df.sort_values("composite_score", ascending=False).reset_index(drop=True)
 
 
