@@ -1548,10 +1548,10 @@ def main(target_date=None, start_date=None):
     _inject_existing_story(html_path, html)
     print(f"Report saved: {html_path}")
 
-    generate_index()
-
-    # 당일이 포함된 주간/월간 보고서 자동 갱신
+    # 당일이 포함된 주간/월간 보고서 자동 갱신 (index보다 먼저 — index는 weekly HTML의 date range를 파싱함)
     update_current_periodic(target_date)
+
+    generate_index()
 
     return html_path
 
