@@ -374,7 +374,7 @@ def generate_correlation_html(view: dict) -> str:
 
     report_date = view["date"]
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    from ._shared import nav_html
+    from ._shared import nav_html, NAV_CSS
     _nav = nav_html(report_date, "correlation")
 
     eb = view.get("equity_bond_corr", {})
@@ -586,6 +586,7 @@ body{{
   .signal-header{{flex-direction:column}}
   .corr-pills{{gap:6px}}
 }}
+{NAV_CSS}
 </style>
 </head>
 <body>

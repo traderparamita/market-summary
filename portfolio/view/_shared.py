@@ -334,15 +334,12 @@ def nav_html(date_str: str, current: str = "") -> str:
         links.append(f'<a href="../{key}/{date_str}.html" class="{cls}">{label}</a>')
 
     links_html = "\n    ".join(links)
-    return (
-        f"<style>{NAV_CSS}</style>\n"
-        f'<nav class="ma-nav">\n'
-        f'  <div class="ma-nav-inner">\n'
-        f'    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>\n'
-        f"    {links_html}\n"
-        f"  </div>\n"
-        f"</nav>"
-    )
+    return f"""<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    {links_html}
+  </div>
+</nav>"""
 
 
 # ── Page header ───────────────────────────────────────────────────────────

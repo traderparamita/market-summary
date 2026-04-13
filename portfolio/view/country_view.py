@@ -387,7 +387,7 @@ def _chg_span(v) -> str:
 
 
 def render_html(data: dict) -> str:
-    from ._shared import nav_html
+    from ._shared import nav_html, NAV_CSS
     date = data["date"]
     countries = data["countries"]
     krw_fx = data["krw_fx"]
@@ -467,6 +467,7 @@ tr:hover td {{ background:#fafbff; }}
 .summary-item .label {{ font-size:12px; color:var(--muted); margin-bottom:4px; }}
 .chips {{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }}
 .footer {{ text-align:center; font-size:12px; color:var(--muted); margin-top:32px; padding-top:16px; border-top:1px solid var(--border); }}
+{NAV_CSS}
 </style>
 </head>
 <body>

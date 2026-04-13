@@ -723,7 +723,7 @@ def _view_colors(v: str) -> tuple[str, str]:
 def generate_regime_html(view: dict) -> str:  # noqa: C901
     report_date  = view["date"]
     generated_at = view["generated_at"]
-    from ._shared import nav_html
+    from ._shared import nav_html, NAV_CSS
     _nav = nav_html(report_date, "regime")
     s   = view["signals"]
     com = view["commentary"]
@@ -940,6 +940,7 @@ strong {{ font-weight:600 }}
   padding:16px 0 4px; margin-top:8px; border-top:1px solid var(--border);
 }}
 @media(max-width:900px) {{ .signals-grid {{ grid-template-columns:1fr }} }}
+{NAV_CSS}
 </style>
 </head>
 <body>

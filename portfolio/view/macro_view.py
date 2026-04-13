@@ -362,7 +362,7 @@ def generate_macro_html(view: dict) -> str:
 
     report_date = view["date"]
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    from ._shared import nav_html
+    from ._shared import nav_html, NAV_CSS
     _nav = nav_html(report_date, "macro")
 
     us = view["us"]
@@ -436,6 +436,7 @@ body{{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(-
   .grid{{grid-template-columns:1fr}}
   .regime-cards{{flex-direction:column}}
 }}
+{NAV_CSS}
 </style>
 </head>
 <body>

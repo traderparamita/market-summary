@@ -285,7 +285,7 @@ def _sector_rows(sectors: list) -> str:
 
 
 def render_html(data: dict) -> str:
-    from ._shared import nav_html
+    from ._shared import nav_html, NAV_CSS
     date = data["date"]
     regime = data["us_regime"]
     us = data["us_sectors"]
@@ -342,6 +342,7 @@ tr:hover td {{ background:#fafbff; }}
 .chips {{ display:flex; flex-wrap:wrap; gap:6px; }}
 .footer {{ text-align:center; font-size:12px; color:var(--muted); margin-top:32px; padding-top:16px; border-top:1px solid var(--border); }}
 @media(max-width:900px) {{ .two-col {{ grid-template-columns:1fr; }} }}
+{NAV_CSS}
 </style>
 </head>
 <body>

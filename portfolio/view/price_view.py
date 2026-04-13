@@ -190,7 +190,7 @@ def generate_price_html(view: dict) -> str:
     top_assets  = view.get("top_assets", [])
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    from ._shared import nav_html
+    from ._shared import nav_html, NAV_CSS
     _nav = nav_html(report_date, "price")
 
     # ── Market Pulse cards ────────────────────────────────────────
@@ -425,6 +425,7 @@ body{{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(-
 @media(max-width:480px){{
   .pulse-grid{{grid-template-columns:1fr}}
 }}
+{NAV_CSS}
 </style>
 </head>
 <body>
