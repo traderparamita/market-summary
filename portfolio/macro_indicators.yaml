@@ -1,0 +1,241 @@
+# Macro Economic Indicators
+# FRED API: https://fred.stlouisfed.org/
+# ECOS API: https://ecos.bok.or.kr/
+
+indicators:
+  # ─── US Growth ──────────────────────────────────────────────
+  US_GDP_QOQ:
+    category: growth
+    region: US
+    source: FRED
+    series_id: GDP
+    unit: "%"
+    description: "US GDP Growth (QoQ)"
+    transform: pct_change
+
+  US_GDP_YOY:
+    category: growth
+    region: US
+    source: FRED
+    series_id: GDP
+    unit: "%"
+    description: "US GDP Growth (YoY)"
+    transform: pct_change_yoy
+
+  # ─── US Inflation ───────────────────────────────────────────
+  US_CPI_YOY:
+    category: inflation
+    region: US
+    source: FRED
+    series_id: CPIAUCSL
+    unit: "%"
+    description: "US CPI (YoY)"
+    transform: pct_change_yoy
+
+  US_CORE_CPI_YOY:
+    category: inflation
+    region: US
+    source: FRED
+    series_id: CPILFESL
+    unit: "%"
+    description: "US Core CPI (YoY)"
+    transform: pct_change_yoy
+
+  US_PCE_YOY:
+    category: inflation
+    region: US
+    source: FRED
+    series_id: PCEPI
+    unit: "%"
+    description: "US PCE Price Index (YoY)"
+    transform: pct_change_yoy
+
+  US_CORE_PCE_YOY:
+    category: inflation
+    region: US
+    source: FRED
+    series_id: PCEPILFE
+    unit: "%"
+    description: "US Core PCE (YoY)"
+    transform: pct_change_yoy
+
+  # ─── US Employment ──────────────────────────────────────────
+  US_UNEMP_RATE:
+    category: employment
+    region: US
+    source: FRED
+    series_id: UNRATE
+    unit: "%"
+    description: "US Unemployment Rate"
+    transform: none
+
+  US_NFP_MOM:
+    category: employment
+    region: US
+    source: FRED
+    series_id: PAYEMS
+    unit: "k"
+    description: "US Nonfarm Payrolls (MoM change)"
+    transform: diff
+
+  # ─── US PMI ─────────────────────────────────────────────────
+  US_ISM_MFG:
+    category: sentiment
+    region: US
+    source: FRED
+    series_id: NAPM
+    unit: "index"
+    description: "ISM Manufacturing PMI"
+    transform: none
+
+  US_ISM_SVC:
+    category: sentiment
+    region: US
+    source: FRED
+    series_id: NAPMNOI
+    unit: "index"
+    description: "ISM Services PMI"
+    transform: none
+
+  # ─── US Policy ──────────────────────────────────────────────
+  US_FED_RATE:
+    category: policy
+    region: US
+    source: FRED
+    series_id: FEDFUNDS
+    unit: "%"
+    description: "Federal Funds Effective Rate"
+    transform: none
+
+  US_10Y_YIELD:
+    category: policy
+    region: US
+    source: FRED
+    series_id: DGS10
+    unit: "%"
+    description: "10-Year Treasury Yield"
+    transform: none
+
+  US_2Y_YIELD:
+    category: policy
+    region: US
+    source: FRED
+    series_id: DGS2
+    unit: "%"
+    description: "2-Year Treasury Yield"
+    transform: none
+
+  US_YIELD_CURVE:
+    category: policy
+    region: US
+    source: FRED
+    series_id: T10Y2Y
+    unit: "bp"
+    description: "10Y-2Y Yield Curve Spread"
+    transform: none
+
+  # ─── US Credit ──────────────────────────────────────────────
+  US_IG_SPREAD:
+    category: credit
+    region: US
+    source: FRED
+    series_id: BAMLC0A0CM
+    unit: "bp"
+    description: "IG Corporate Bond Spread"
+    transform: none
+
+  US_HY_SPREAD:
+    category: credit
+    region: US
+    source: FRED
+    series_id: BAMLH0A0HYM2
+    unit: "bp"
+    description: "High Yield Bond Spread"
+    transform: none
+
+  # ─── Korea Growth ───────────────────────────────────────────
+  KR_GDP_QOQ:
+    category: growth
+    region: KR
+    source: ECOS
+    series_id: "901Y009"
+    unit: "%"
+    description: "Korea GDP Growth (QoQ)"
+    transform: value
+
+  KR_GDP_YOY:
+    category: growth
+    region: KR
+    source: ECOS
+    series_id: "901Y009"
+    unit: "%"
+    description: "Korea GDP Growth (YoY)"
+    transform: value
+
+  # ─── Korea Inflation ────────────────────────────────────────
+  KR_CPI_YOY:
+    category: inflation
+    region: KR
+    source: ECOS
+    series_id: "901Y066"
+    unit: "%"
+    description: "Korea CPI (YoY)"
+    transform: value
+
+  KR_CORE_CPI_YOY:
+    category: inflation
+    region: KR
+    source: ECOS
+    series_id: "901Y066"
+    unit: "%"
+    description: "Korea Core CPI (YoY)"
+    transform: value
+
+  # ─── Korea Employment ───────────────────────────────────────
+  KR_UNEMP_RATE:
+    category: employment
+    region: KR
+    source: ECOS
+    series_id: "901Y015"
+    unit: "%"
+    description: "Korea Unemployment Rate"
+    transform: value
+
+  # ─── Korea PMI ──────────────────────────────────────────────
+  KR_MFG_PMI:
+    category: sentiment
+    region: KR
+    source: ECOS
+    series_id: "512Y001"
+    unit: "index"
+    description: "Korea Manufacturing PMI"
+    transform: value
+
+  # ─── Korea Policy ───────────────────────────────────────────
+  KR_BASE_RATE:
+    category: policy
+    region: KR
+    source: ECOS
+    series_id: "722Y001"
+    unit: "%"
+    description: "Korea Base Rate"
+    transform: value
+
+  # ─── Global ─────────────────────────────────────────────────
+  VIX:
+    category: risk
+    region: GLOBAL
+    source: FRED
+    series_id: VIXCLS
+    unit: "index"
+    description: "CBOE Volatility Index"
+    transform: none
+
+  DXY:
+    category: fx
+    region: GLOBAL
+    source: FRED
+    series_id: DTWEXBGS
+    unit: "index"
+    description: "US Dollar Index (Broad)"
+    transform: none

@@ -30,7 +30,8 @@ snowflake_loader.py  # CSV ↔ Snowflake MKT100_MARKET_DAILY 적재 유틸 (bulk
 simulate.py          # 과거 날짜 시뮬레이션
 inject_stories.py    # 시뮬레이션 보고서에 Story 주입
 gen_assets.py        # favicon 등 assets 생성
-history/market_data.csv  # 일별 시계열 (10컬럼 대문자, Snowflake MKT100_MARKET_DAILY 1:1)
+history/market_data.csv       # 일별 시계열 (10컬럼 대문자, Snowflake MKT100_MARKET_DAILY 1:1)
+history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
 
 portfolio/
 ├── aimvp/           # Portfolio Agent (AIMVP RiskOn 전략)
@@ -41,8 +42,11 @@ portfolio/
 │   ├── config.py        # 전략 파라미터
 │   └── data_adapter.py  # CSV → 월간 데이터
 ├── view/            # View Agent (확장 가능한 분석 뷰)
-│   ├── macro_view.py    # 매크로 자산배분 뷰
-│   └── scoring.py       # 자산 점수 계산
+│   ├── allocation_view.py  # 전술적 자산배분 뷰 (TAA 기반)
+│   ├── macro_view.py       # 거시지표 뷰 (GDP, 인플레이션, 고용 등)
+│   └── scoring.py          # 자산 점수 계산
+├── collect_macro.py     # 거시지표 수집 (FRED/ECOS)
+├── macro_indicators.yaml # 거시지표 정의
 ├── backtest.py      # 공통 백테스트 엔진
 ├── universe.yaml    # 자산 유니버스
 └── strategies/      # 전략 YAML
@@ -113,8 +117,10 @@ output/
 │   └── aimvp/
 │       └── YYYY-MM-DD.html     # 백테스트 리포트
 └── view/                        # View Agent
+    ├── allocation/
+    │   └── YYYY-MM-DD.html     # 전술적 자산배분 뷰
     └── macro/
-        └── YYYY-MM-DD.html     # 매크로 뷰
+        └── YYYY-MM-DD.html     # 거시지표 뷰
 ```
 
 GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
@@ -122,9 +128,10 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
 ## 환경
 
 - Python 3.12 (`.venv/` 로컬 venv 권장; gitignore 됨)
-- 의존성: yfinance, FinanceDataReader, requests, python-dotenv, investiny, snowflake-connector-python[pandas]
+- 의존성: yfinance, FinanceDataReader, requests, python-dotenv, investiny, snowflake-connector-python[pandas], PyYAML
 - 환경변수 (`.env` 에서 dotenv 로딩):
   - `ECOS_API_KEY` — 한국은행 ECOS API
+  - `FRED_API_KEY` — 미국 FRED API (거시지표)
   - `SNOWFLAKE_ACCOUNT` / `SNOWFLAKE_USER` / `SNOWFLAKE_PASSWORD` / `SNOWFLAKE_DATABASE` / `SNOWFLAKE_SCHEMA` / `SNOWFLAKE_WAREHOUSE` — Snowflake dual-write
 
 ## 주의사항
@@ -167,9 +174,11 @@ python -m portfolio.aimvp.backfill --snowflake
 
 ### 2. View Agent (view)
 
-현재 시점 매크로 자산배분 뷰. 향후 섹터/리스크/팩터 뷰 추가 가능 (확장 구조).
+현재 시점 분석 뷰. 향후 섹터/리스크/팩터 뷰 추가 가능 (확장 구조).
 
 **목적**: 현재 상태 분석 (백테스트 없음)
+
+#### 2.1 Allocation View (전술적 자산배분)
 
 **핵심 기능**:
 - TAA 레짐 참고 (RiskON/Neutral/RiskOFF from aimvp)
@@ -179,10 +188,32 @@ python -m portfolio.aimvp.backfill --snowflake
 
 실행:
 ```
+python -m portfolio.view.allocation_view --date 2026-04-09 --html
+```
+
+출력: `output/view/allocation/{date}.html`
+
+데이터 소스: `history/market_data.csv`
+
+#### 2.2 Macro View (거시지표)
+
+**핵심 기능**:
+- 미국 거시지표: GDP, CPI, Core CPI, PCE, 실업률, ISM PMI, 연준 금리, 국채 수익률, 크레딧 스프레드
+- 한국 거시지표: GDP, CPI, Core CPI, 실업률, PMI, 기준금리
+- 글로벌 지표: VIX, DXY
+
+실행:
+```
+# 데이터 수집 (FRED + ECOS API)
+python -m portfolio.collect_macro --start 2010-01-01
+
+# HTML 생성
 python -m portfolio.view.macro_view --date 2026-04-09 --html
 ```
 
 출력: `output/view/macro/{date}.html`
+
+데이터 소스: `history/macro_indicators.csv` (7컬럼: DATE, INDICATOR_CODE, CATEGORY, REGION, VALUE, UNIT, SOURCE)
 
 **구조적 확장 가능**:
 - `view/sector_view.py` - 섹터별 분석
