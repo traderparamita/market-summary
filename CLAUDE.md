@@ -42,6 +42,9 @@ portfolio/
 │   ├── config.py        # 전략 파라미터
 │   └── data_adapter.py  # CSV → 월간 데이터
 ├── view/            # View Agent (Phase 1 진단 + Phase 2 의사결정)
+│   ├── _shared.py          # 공유 디자인 시스템 (Mirae Asset 브랜드)
+│   │                       #   BASE_CSS / NAV_CSS / nav_html() / html_page()
+│   │                       #   Spoqa Han Sans Neo, #F58220 Orange, #043B72 Navy
 │   ├── scoring.py          # 자산 점수 계산 (sentiment_score, regime_duration 포함)
 │   ├── price_view.py       # [P1] 가격 기반 시장 신호 뷰 (모멘텀, 추세, VIX, 폭, Sentiment)
 │   ├── macro_view.py       # [P1] 거시지표 뷰 (GDP, 인플레이션, 고용 등, Regime 헤더)
@@ -124,6 +127,7 @@ output/
 │   └── aimvp/
 │       └── YYYY-MM-DD.html     # 백테스트 리포트
 └── view/                        # View Agent
+    ├── index.html              # View Agent 허브 (9개 뷰 한눈에 보기, 메인에 미연동)
     ├── price/          → YYYY-MM-DD.html  # [P1] 가격 기반 시장 신호 뷰
     ├── macro/          → YYYY-MM-DD.html  # [P1] 거시지표 뷰
     ├── correlation/    → YYYY-MM-DD.html  # [P1] 자산 상관관계 히트맵
@@ -286,6 +290,16 @@ python -m portfolio.view.allocation_view --date YYYY-MM-DD --html
 ```
 
 출력: `output/view/{country,sector,bond,style,allocation}/{date}.html`
+
+#### 디자인 시스템 (`_shared.py`)
+
+**Mirae Asset 브랜드** 공통 적용 (2026-04-13 완료):
+- `portfolio/view/_shared.py`: `BASE_CSS`, `NAV_CSS`, `nav_html()`, `html_page()` 제공
+  - Spoqa Han Sans Neo 서체, #F58220 (Orange), #043B72 (Navy) 변수
+  - `nav_html(date_str, current)`: 스티키 네이비 nav 생성, NAV_CSS를 직접 포함하지 않음
+  - `html_page(title, date_str, body, current_view, extra_css, source)`: P2 다크 테마 뷰를 라이트 테마로 래핑
+  - **NAV CSS 주입 규칙**: P1/country/sector 뷰는 자체 `<head><style>` 블록에 `{NAV_CSS}` 주입. P2 bond/style/allocation은 `html_page()` → `BASE_CSS`로 자동 포함.
+- `output/view/index.html`: 9개 뷰 허브 페이지 (분석 흐름 다이어그램 + 카드). **메인 index.html에 아직 미연동**.
 
 ### 공통
 

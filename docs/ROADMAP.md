@@ -2,13 +2,19 @@
 
 > 2026-04-11 합의. 사용자: 운영자 / 1차 독자: PM·리서치 + PB·영업
 
-## 현재 상태 (2026-04-13 업데이트)
+## 현재 상태 (2026-04-13 최종 업데이트)
 
 ### 완료
 
 **인프라 / 구조**
 - ✅ **3-tier 출력 구조**: `output/summary/`, `output/portfolio/aimvp/`, `output/view/` 분리
 - ✅ **Commands/Skills 경로 정합**: `/market-full`, `/market-data`, `/market-deploy`, `market-summary` 스킬 모두 업데이트
+- ✅ **View Agent 디자인 시스템 (2026-04-13)**: `portfolio/view/_shared.py` 신규
+  - Mirae Asset 공식 브랜드 — Spoqa Han Sans Neo, #F58220 Orange, #043B72 Navy
+  - `BASE_CSS` / `NAV_CSS` / `nav_html()` / `html_page()` — 9개 뷰 공통 적용
+  - P1·country·sector: `<head>` `<style>`에 NAV_CSS 주입 방식
+  - P2 bond·style·allocation: `html_page()` 래퍼로 전환 (다크→라이트 테마)
+  - `output/view/index.html`: 9개 뷰 허브 페이지 (P1→P2→배분안 흐름 다이어그램, 메인 미연동)
 
 **Portfolio Agent (Phase 0 일부 + AIMVP)**
 - ✅ `portfolio/universe.yaml` — 자산 유니버스 정의
@@ -62,6 +68,7 @@
 
 ### 다음 단계
 
+- **View 허브 연동**: `output/view/index.html` → 메인 `output/index.html`에 링크 (사용자 승인 시)
 - Phase 1-E: View 탭 통합 → Market Summary HTML에 Phase 2 뷰 링크 + 요약 카드 포함
 - Phase 3: 백테스트 + 성과 검증 레이어
 
@@ -239,11 +246,17 @@ market_summary/
 │   │   ├── config.py
 │   │   └── data_adapter.py
 │   ├── view/
-│   │   ├── price_view.py         # ✅ 가격 기반 시장 신호 뷰
-│   │   ├── macro_view.py         # ✅ 거시지표 뷰 (US/KR/Global)
-│   │   ├── correlation_view.py   # ✅ 자산 상관관계 히트맵
-│   │   ├── regime_view.py        # ✅ 종합 국면 해설 (규칙 기반)
-│   │   └── scoring.py            # ✅ 자산 점수 계산
+│   │   ├── _shared.py            # ✅ 공유 디자인 시스템 (Mirae Asset 브랜드)
+│   │   ├── scoring.py            # ✅ 자산 점수 계산
+│   │   ├── price_view.py         # ✅ [P1] 가격 기반 시장 신호 뷰
+│   │   ├── macro_view.py         # ✅ [P1] 거시지표 뷰 (US/KR/Global)
+│   │   ├── correlation_view.py   # ✅ [P1] 자산 상관관계 히트맵
+│   │   ├── regime_view.py        # ✅ [P1] 종합 국면 해설 (규칙 기반)
+│   │   ├── country_view.py       # ✅ [P2] 8개국 OW/N/UW
+│   │   ├── sector_view.py        # ✅ [P2] US 11섹터 + KR 4섹터
+│   │   ├── bond_view.py          # ✅ [P2] 채권 커브·크레딧·ALM
+│   │   ├── style_view.py         # ✅ [P2] 팩터 로테이션
+│   │   └── allocation_view.py    # ✅ [P2] 변액보험 배분안 (K-ICS)
 │   ├── builder.py                # ❌ Phase 2
 │   ├── rebalance.py              # ❌ Phase 2
 │   ├── sector_rotation.py        # ❌ Phase 3
@@ -257,10 +270,16 @@ market_summary/
 │   ├── summary/                  # ✅ Market Summary 일/주/월간
 │   ├── portfolio/aimvp/          # ✅ AIMVP 백테스트 리포트
 │   └── view/
-│       ├── price/                # ✅ Price View
-│       ├── macro/                # ✅ Macro View
-│       ├── correlation/          # ✅ Correlation View
-│       └── regime/               # ✅ Regime View (종합 해설)
+│       ├── index.html            # ✅ View 허브 (9개 뷰 한눈에 보기, 메인 미연동)
+│       ├── price/                # ✅ [P1] Price View
+│       ├── macro/                # ✅ [P1] Macro View
+│       ├── correlation/          # ✅ [P1] Correlation View
+│       ├── regime/               # ✅ [P1] Regime View (종합 해설)
+│       ├── country/              # ✅ [P2] Country View
+│       ├── sector/               # ✅ [P2] Sector View
+│       ├── bond/                 # ✅ [P2] Bond View
+│       ├── style/                # ✅ [P2] Style View
+│       └── allocation/           # ✅ [P2] Allocation View (배분안)
 └── .claude/
     ├── commands/                 # ✅ /market-full, /market-data, /market-deploy
     └── skills/market-summary/    # ✅ Story 작성 규칙
