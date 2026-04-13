@@ -4,23 +4,47 @@
 
 ## 현재 상태 (2026-04-13 업데이트)
 
-**완료**:
-- ✅ **프로젝트 구조 재편**: `output/` → `output/summary/`, `output/portfolio/`, `output/view/` 3-tier 분리
-- ✅ **Portfolio Agent (aimvp)**: market-strategy 통합 완료
-  - AIMVP RiskOn 전략 (Faber TAA 3-Signal)
-  - 전체 백테스트 + 월간 히트맵
-  - `portfolio/aimvp/generate.py` → `output/portfolio/aimvp/{date}.html`
-- ✅ **View Agent 토대**: Phase 0/Phase 1 partial
-  - `portfolio/universe.yaml` - 자산 유니버스
-  - `portfolio/view/scoring.py` - 자산 점수 계산
-  - `portfolio/view/macro_view.py` - 매크로 뷰 (TAA 레짐 + 자산군별 OW/N/UW)
-  - `portfolio/backtest.py` - 공통 백테스트 엔진
-  - `output/view/macro/{date}.html` - 현재 상태 뷰 (백테스트 없음)
-- ✅ **Commands/Skills 정합성**: 모든 경로 업데이트 완료
+### 완료
 
-**진행 중**: Phase 1 완성을 위한 백테스트 통합
+**인프라 / 구조**
+- ✅ **3-tier 출력 구조**: `output/summary/`, `output/portfolio/aimvp/`, `output/view/` 분리
+- ✅ **Commands/Skills 경로 정합**: `/market-full`, `/market-data`, `/market-deploy`, `market-summary` 스킬 모두 업데이트
 
-**다음 단계**: Phase 2 (모델 포트폴리오 + 리밸런싱)
+**Portfolio Agent (Phase 0 일부 + AIMVP)**
+- ✅ `portfolio/universe.yaml` — 자산 유니버스 정의
+- ✅ `portfolio/backtest.py` — 공통 백테스트 엔진
+- ✅ `portfolio/aimvp/` — AIMVP RiskOn (Faber TAA 3-Signal), 전체 백테스트 + 히트맵
+  - `output/portfolio/aimvp/{date}.html`
+
+**View Agent — Allocation View (Phase 1 partial)**
+- ✅ `portfolio/view/scoring.py` — 자산별 모멘텀/트렌드/변동성/복합 점수
+- ✅ `portfolio/view/allocation_view.py` — TAA 레짐 + 자산군별 OW/N/UW + 개별 자산 점수
+  - `output/view/allocation/{date}.html`
+
+**View Agent — Macro View (Phase 4 선행 구현)**
+
+> ROADMAP의 Phase 4(FRED 데이터 통합)를 Phase 1보다 먼저 진행.
+> 기존 allocation_view가 "Macro View"로 잘못 명명된 것을 발견하고 분리 결정.
+
+- ✅ `portfolio/macro_indicators.yaml` — 21개 거시지표 정의
+- ✅ `portfolio/collect_macro.py` — FRED + ECOS API 수집기
+- ✅ `history/macro_indicators.csv` — 14,206행 (2020~2026.04)
+  - 🇺🇸 US (14): GDP, CPI/Core CPI/PCE/Core PCE, 실업률, NFP, 연준금리, 10Y/2Y, Yield Curve, IG/HY Spread
+  - 🇰🇷 KR (5): GDP QoQ/YoY, CPI YoY, 실업률, 기준금리
+  - 🌍 Global (2): VIX, DXY
+- ✅ `portfolio/view/macro_view.py` — 거시지표 HTML 뷰 (US/KR/Global 3-섹션)
+  - `output/view/macro/{date}.html`
+
+**미해결 이슈**:
+- ❌ `KR_CORE_CPI_YOY` — ECOS item_code X0 확인 필요
+- ❌ `KR_MFG_BSI` — ECOS 다층 item_code (C0000/AA) 구현 필요
+- ❌ `US_ISM_MFG/SVC` — FRED series_id NAPM/NAPMNOI 오류 (대체 코드 필요)
+- ❌ Snowflake `MKT200_PORTFOLIO_DAILY` DDL 미작성
+
+### 다음 단계
+
+- Phase 1 완성: Macro View에 Claude 해설 + HTML Allocation 탭 통합
+- Phase 2: 모델 포트폴리오 + 리밸런싱 시그널
 
 ## Context
 
@@ -38,23 +62,21 @@
 
 ## Phased Roadmap
 
-### Phase 0 — 토대 (Week 1)
-검증 가능한 시그널 인프라부터. 어떤 레이어를 올리든 이 위에 올라간다.
+### Phase 0 — 토대 ✅ 완료 (일부)
 
-- **`portfolio/universe.yaml`** 신규: 투자 가능 ETF 명시 매핑 (asset_class → ticker → indicator_code). MVP 유니버스: `SPY/IWM/EFA/EEM/TLT/IEF/AGG/HYG/LQD/EMB/GLD/DBC/UUP` + 14개 기존 stock.
-- **`portfolio/scoring.py`** 신규: [history/market_data.csv](../history/market_data.csv) 로드 → 자산별 시그널 계산. 모멘텀(12-1, 6-1), 추세(close vs MA200), 변동성 regime, yield curve slope, breadth. 입력은 [generate.py:223](../generate.py#L223) `calc_metrics` 와 동일한 dataframe 형태.
-- **`portfolio/backtest.py`** 신규: 미니 백테스트 엔진. 일일 비중 → 일별 NAV → CAGR/Sharpe/MDD. 데이터는 CSV 15개월. 거래비용/슬리피지는 단순화(고정 bp).
-- **Snowflake DDL**: `MKT200_PORTFOLIO_DAILY` (일자, 전략코드, 자산코드, 목표비중, 실행비중, NAV, 시그널점수). [snowflake_loader.py:29-43](../snowflake_loader.py#L29-L43) 의 `COL_MAP`/`bulk_load_csv`/`upsert_rows` 패턴을 테이블명 매개변수화해서 재사용.
+- ✅ **`portfolio/universe.yaml`**: 투자 가능 ETF 매핑 (asset_class → ticker → indicator_code)
+- ✅ **`portfolio/view/scoring.py`**: 자산별 시그널 계산 (모멘텀 12-1/6-1, 추세 MA200, 변동성, 복합 점수)
+- ✅ **`portfolio/backtest.py`**: 미니 백테스트 엔진 (일일 비중 → NAV → CAGR/Sharpe/MDD)
+- ❌ **Snowflake DDL**: `MKT200_PORTFOLIO_DAILY` 미작성 — `snowflake_loader.py` 패턴 재사용 예정
 
-### Phase 1 — 매크로 자산배분 View (Week 2-3, MVP 핵심 ①)
+### Phase 1 — 매크로 자산배분 View (MVP 핵심 ①) — 진행 중
+
 자산군별 OW/N/UW view를 매일 자동 생성.
 
-- **`portfolio/macro_view.py`** 신규: 자산군(equity_dm, equity_em, equity_kr, ust_long, ust_short, credit_ig, credit_hy, em_debt, gold, commodity, dxy)별 점수 → OW(+2)/OW(+1)/N/UW(-1)/UW(-2). 룰셋:
-  - 모멘텀 z-score (cross-sectional)
-  - 추세 필터 (close > MA200)
-  - 매크로 overlay: yield curve, DXY trend, VIX regime
-- **Claude 해설 생성**: 시그널 dict → 한국어 해설 1-2문단(왜 이 view인지). 기존 `market-summary` 스킬과 동일 톤. 별도 hook은 추가하지 않고 `_data.json` + scoring 결과를 컨텍스트로 주입.
-- **HTML 'Allocation' 탭**: [generate.py:884](../generate.py#L884) 탭 버튼 추가, [generate.py:1069-1073](../generate.py#L1069-L1073) Story placeholder 직후에 `<!-- ALLOCATION_CONTENT_PLACEHOLDER -->` 섹션 추가. [inject_stories.py](../inject_stories.py) 의 치환 함수를 일반화해서 `inject_block(html, placeholder, content)` 형태로 재사용.
+- ✅ **`portfolio/view/allocation_view.py`**: 자산군별 OW/N/UW 뷰 (모멘텀 z-score, 추세 필터, 매크로 overlay)
+  - `output/view/allocation/{date}.html` 독립 HTML 생성 완료
+- ❌ **Claude 해설 생성**: 시그널 dict → 한국어 해설 1-2문단. `_data.json` + scoring 결과를 컨텍스트로 주입
+- ❌ **HTML 'Allocation' 탭**: `generate.py` 탭 추가 + `<!-- ALLOCATION_CONTENT_PLACEHOLDER -->` 섹션. `inject_stories.py`의 치환 함수를 `inject_block(html, placeholder, content)`으로 일반화하여 재사용
 
 ### Phase 2 — 모델 포트폴리오 + 리밸런싱 시그널 (Week 3-4, MVP 핵심 ②)
 View → 실제 비중.
@@ -75,14 +97,18 @@ View → 실제 비중.
 - **`portfolio/sector_rotation.py`**: 동일한 모멘텀/추세/breadth 파이프라인을 섹터·테마에 적용. Phase 1 view 안의 `equity_dm` OW일 때만 활성.
 - **Allocation 탭에 섹터 서브섹션 추가**: 동일 placeholder 패턴.
 
-### Phase 4 — 무료 데이터 소스 통합 (Week 6)
+### Phase 4 — 무료 데이터 소스 통합 — 일부 선행 완료
+
 매크로 view 정확도 + 이벤트 대응 능력.
 
-- **`fetchers/fred.py`**: FRED API (무료 키 발급). CPI(CPIAUCSL), Core PCE, NFP, ISM, Unemployment, 10Y-2Y, ICE BofA HY OAS. `.env` 에 `FRED_API_KEY` 추가.
-- **`fetchers/calendar.py`**: investpy 또는 FMP free 경제 캘린더. 향후 7일 이벤트 표 → Allocation 탭 상단 띠.
-- **`fetchers/news.py`**: Reuters/Bloomberg/연합 RSS. 키워드 필터(자산군) → 최근 24h 헤드라인 5-10개. `_data.json` 에 `news` 키 추가. (RAG는 Phase 7+)
-- **`fetchers/earnings.py`**: 14개 stock + 향후 확장. yfinance `.calendar` + earnings history. Phase 6 종목 리서치 떡밥용.
-- **연결**: `macro_view.py` 룰셋이 FRED 매크로(특히 yield curve, HY OAS)를 명시적으로 입력으로 받음.
+- ✅ **`portfolio/collect_macro.py`**: FRED + ECOS API 수집. `history/macro_indicators.csv` 저장 (14,206행, 2020~)
+- ✅ **`portfolio/macro_indicators.yaml`**: 21개 지표 정의 (US/KR/Global)
+- ✅ **`portfolio/view/macro_view.py`**: 거시지표 HTML 뷰 (US/KR/Global 3-섹션)
+- ❌ **미해결**: US_ISM series_id 오류, KR_CORE_CPI/KR_MFG_BSI 구현 필요
+- ❌ **`fetchers/calendar.py`**: 경제 캘린더 (향후 7일 이벤트)
+- ❌ **`fetchers/news.py`**: Reuters/Bloomberg/연합 RSS 헤드라인
+- ❌ **`fetchers/earnings.py`**: 14개 stock earnings calendar
+- ❌ **Allocation 탭 연결**: `macro_view.py` 룰셋이 FRED 거시지표를 명시적 입력으로 받도록
 
 ### Phase 5 — 백테스트 + 검증 + 주간/월간 통합 (Week 7)
 신뢰성 레이어. PM이 보려면 백테스트 결과가 필수.
@@ -113,40 +139,51 @@ View → 실제 비중.
 
 ---
 
-## 핵심 파일 구조 (확장 후)
+## 핵심 파일 구조
 
 ```
 market_summary/
-├── generate.py              # 기존, 일부 수정 (Allocation 탭 placeholder, dual-write 호출)
-├── generate_periodic.py     # 기존, allocation 섹션 추가
-├── inject_stories.py        # 기존, inject_block(...) 로 일반화
-├── snowflake_loader.py      # 기존, 테이블명 매개변수화
-├── portfolio/               # 신규 — 자산배분 엔진
-│   ├── universe.yaml
-│   ├── scoring.py
-│   ├── macro_view.py
-│   ├── builder.py
-│   ├── rebalance.py
-│   ├── sector_rotation.py
-│   ├── backtest.py
-│   └── strategies/
+├── generate.py              # 기존 — 일부 수정 예정 (Allocation 탭 placeholder)
+├── generate_periodic.py     # 기존 — allocation 섹션 추가 예정
+├── inject_stories.py        # 기존 — inject_block(...) 일반화 예정
+├── snowflake_loader.py      # 기존 — 테이블명 매개변수화 예정
+├── history/
+│   ├── market_data.csv           # ✅ 시장 가격 시계열 (56개 지표, 일별)
+│   └── macro_indicators.csv      # ✅ 거시지표 시계열 (21개 지표, 14,206행)
+├── portfolio/
+│   ├── universe.yaml             # ✅
+│   ├── backtest.py               # ✅
+│   ├── macro_indicators.yaml     # ✅ 21개 지표 정의
+│   ├── collect_macro.py          # ✅ FRED + ECOS 수집기
+│   ├── aimvp/                    # ✅ AIMVP RiskOn 전략
+│   │   ├── generate.py
+│   │   ├── backfill.py
+│   │   ├── signals.py
+│   │   ├── model.py
+│   │   ├── config.py
+│   │   └── data_adapter.py
+│   ├── view/
+│   │   ├── allocation_view.py    # ✅ TAA 기반 자산배분 뷰
+│   │   ├── macro_view.py         # ✅ 거시지표 뷰 (US/KR/Global)
+│   │   └── scoring.py            # ✅ 자산 점수 계산
+│   ├── builder.py                # ❌ Phase 2
+│   ├── rebalance.py              # ❌ Phase 2
+│   ├── sector_rotation.py        # ❌ Phase 3
+│   └── strategies/               # ❌ Phase 2
 │       ├── static_60_40.yaml
 │       ├── risk_parity.yaml
 │       └── taa_macro_tilt.yaml
-├── fetchers/                # 신규 — 무료 데이터 소스
-│   ├── fred.py
-│   ├── calendar.py
-│   ├── news.py
-│   └── earnings.py
+├── fetchers/                     # ❌ Phase 4 (calendar/news/earnings)
 ├── output/
-│   └── YYYY-MM/
-│       ├── YYYY-MM-DD.html              # Data + Story + Allocation 탭
-│       ├── YYYY-MM-DD_data.json
-│       ├── YYYY-MM-DD_story.html
-│       └── YYYY-MM-DD_portfolio.json    # 신규
+│   ├── index.html                # ✅ 메인 허브 (Summary 전용)
+│   ├── summary/                  # ✅ Market Summary 일/주/월간
+│   ├── portfolio/aimvp/          # ✅ AIMVP 백테스트 리포트
+│   └── view/
+│       ├── allocation/           # ✅ Allocation View
+│       └── macro/                # ✅ Macro View
 └── .claude/
-    └── skills/
-        └── market-summary/SKILL.md      # PM/PB 톤 옵션 추가
+    ├── commands/                 # ✅ /market-full, /market-data, /market-deploy
+    └── skills/market-summary/    # ✅ Story 작성 규칙
 ```
 
 ---

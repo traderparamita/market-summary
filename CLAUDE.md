@@ -197,10 +197,15 @@ python -m portfolio.view.allocation_view --date 2026-04-09 --html
 
 #### 2.2 Macro View (거시지표)
 
-**핵심 기능**:
-- 미국 거시지표: GDP, CPI, Core CPI, PCE, 실업률, ISM PMI, 연준 금리, 국채 수익률, 크레딧 스프레드
-- 한국 거시지표: GDP, CPI, Core CPI, 실업률, PMI, 기준금리
-- 글로벌 지표: VIX, DXY
+**수집 완료 지표** (14,206행, 2020~):
+- 🇺🇸 미국 (14): GDP QoQ/YoY, CPI/Core CPI/PCE/Core PCE YoY, 실업률, NFP, 연준금리, 10Y/2Y 국채, Yield Curve, IG/HY Spread
+- 🇰🇷 한국 (5): GDP QoQ/YoY, CPI YoY, 실업률, 기준금리
+- 🌍 글로벌 (2): VIX, DXY
+
+**미구현 이슈**:
+- `KR_CORE_CPI_YOY` — 901Y009의 Core CPI item_code (`X0`) 확인 필요
+- `KR_MFG_BSI` — ECOS 다층 item_code 구조 (C0000/AA) 미구현
+- `US_ISM_MFG/SVC` — FRED series_id (NAPM/NAPMNOI) 오류, 교체 필요
 
 실행:
 ```
@@ -226,7 +231,8 @@ python -m portfolio.view.macro_view --date 2026-04-09 --html
 - `portfolio/universe.yaml`: 자산 유니버스 정의
 - `portfolio/strategies/`: 전략 YAML 설정
 
-모든 에이전트는 `history/market_data.csv`를 단일 소스로 사용.
+- Portfolio Agent / Allocation View: `history/market_data.csv` 단일 소스
+- Macro View: `history/macro_indicators.csv` (FRED + ECOS 수집)
 
 ## 관련 설정
 
