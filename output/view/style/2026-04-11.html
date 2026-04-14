@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>스타일 / 팩터 View — 2026-04-11</title>
+<style>
+
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:            #f4f5f9;
+  --card:          #ffffff;
+  --border:        #e0e3ed;
+  --text:          #2d3148;
+  --muted:         #7c8298;
+  --primary:       #F58220;
+  --primary-light: #fff3e6;
+  --navy:          #043B72;
+  --up:            #059669;
+  --down:          #dc2626;
+  --up-bg:         #ecfdf5;
+  --down-bg:       #fef2f2;
+  --neutral-bg:    #f3f4f6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Spoqa Han Sans Neo', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.muted { color: var(--muted); }
+.up    { color: var(--up); }
+.down  { color: var(--down); }
+
+/* ── Navigation ── */
+.ma-nav {
+  background: var(--navy);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(4,59,114,.25);
+}
+.ma-nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 48px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ma-nav-inner::-webkit-scrollbar { display: none; }
+
+.ma-logo {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,.2);
+  margin-right: 16px;
+  letter-spacing: -.2px;
+}
+.ma-logo span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ma-nav-group {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding: 0 8px 0 4px;
+  white-space: nowrap;
+}
+.ma-nav-link {
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.ma-nav-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,.1);
+}
+.ma-nav-link.current {
+  color: #fff;
+  background: var(--primary);
+  font-weight: 600;
+}
+.ma-nav-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,.15);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+/* ── Page wrapper ── */
+.ma-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+}
+
+/* ── Page header ── */
+.ma-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--primary);
+}
+.ma-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.ma-header .meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.ma-header .date-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+/* ── Card / Section ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #FAAF72);
+  border-radius: 12px 12px 0 0;
+}
+.card h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+/* ── Summary row of cards ── */
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: #f8f9fc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  min-width: 130px;
+  flex: 1;
+}
+.stat-card .label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.stat-card .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-card .sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #f0f3fa; }
+th {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: .4px;
+}
+td {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tbody tr:hover td { background: #fafbff; }
+
+/* ── OW / N / UW badges ── */
+.ow  { background: #dcfce7; color: #15803d; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.ow2 { background: #bbf7d0; color: #15803d; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.neutral-b { background: var(--neutral-bg); color: #6b7280; padding: 2px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+.uw  { background: #fef3c7; color: #d97706; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.uw2 { background: var(--down-bg); color: var(--down); padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+
+/* ── Regime badges ── */
+.regime-goldilocks { background: #dcfce7; color: #15803d; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-reflation  { background: #fef3c7; color: #d97706; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-stagflation{ background: var(--down-bg); color: var(--down); padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-deflation  { background: #dbeafe; color: #1d4ed8; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+
+/* ── Utility ── */
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f0f1f6; color: var(--muted); font-weight: 500; }
+.section-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+
+/* ── Footer ── */
+.ma-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 24px 0 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+.ma-footer a { color: var(--primary); text-decoration: none; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ma-page { padding: 16px; }
+  .stat-grid { flex-direction: column; }
+}
+
+/* ── Drag selection ── */
+::selection { background: #F58220; color: #fff; }
+
+
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-11.html" class="ma-nav-link">가격신호</a>
+    <a href="../macro/2026-04-11.html" class="ma-nav-link">거시지표</a>
+    <a href="../correlation/2026-04-11.html" class="ma-nav-link">상관관계</a>
+    <a href="../regime/2026-04-11.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-11.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-11.html" class="ma-nav-link">섹터</a>
+    <a href="../bond/2026-04-11.html" class="ma-nav-link">채권</a>
+    <a href="../style/2026-04-11.html" class="ma-nav-link current">스타일</a>
+    <a href="../allocation/2026-04-11.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+<div class="ma-page">
+<div class="ma-header">
+  <div>
+    <h1>스타일 / 팩터 View</h1>
+    <div class="meta">변액보험 스타일 팩터 로테이션 (Regime-Conditional Weights)</div>
+  </div>
+  <div class="date-badge">2026-04-11</div>
+</div>
+
+<div class="card">
+  <h2>📊 투자 환경 요약</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">매크로 국면</div>
+      <div style="margin-top:6px"><span class="regime-reflation">Reflation</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">VIX 레짐</div>
+      <div class="value muted" style="font-size:16px">보통</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">금리 방향</div>
+      <div class="value down" style="font-size:16px">상승중 ↑</div>
+    </div>
+    <div class="stat-card" style="flex:2;min-width:240px">
+      <div class="label">금리 × 스타일 시사점</div>
+      <div style="font-size:13px;color:var(--text);margin-top:6px">금리 상승기 → Value/Low Duration(Growth 불리), 금융/에너지 섹터 선호</div>
+    </div>
+  </div>
+  <div class="stat-grid"><div class="stat-card">
+          <div class="label">US Momentum <span class="muted" style="font-size:10px">MTUM</span></div>
+          <div class="value">1.00</div>
+          <div class="sub">해외주식형(미국/모멘텀)</div>
+        </div><div class="stat-card">
+          <div class="label">US Quality <span class="muted" style="font-size:10px">QUAL</span></div>
+          <div class="value">0.50</div>
+          <div class="sub">해외주식형(미국/퀄리티혼합)</div>
+        </div><div class="stat-card">
+          <div class="label">US Value <span class="muted" style="font-size:10px">IVE</span></div>
+          <div class="value">0.40</div>
+          <div class="sub">해외주식형(미국/가치)</div>
+        </div></div>
+</div>
+
+<div class="card">
+  <h2>🇺🇸 미국 팩터 ETF <span class="badge">⭐ = 현 국면 선호</span></h2>
+  <table>
+    <thead><tr>
+      <th style="text-align:left">스타일</th><th>의견</th><th>종합점수</th>
+      <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
+      <th>추세</th><th>vs SP500 3M</th><th>변액보험 펀드 유형</th>
+    </tr></thead>
+    <tbody><tr style="border-bottom:1px solid var(--border);background:#fff8f0;">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US Momentum ⭐</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">MTUM</span>
+          </td>
+          <td><span class="ow">OW</span></td>
+          <td class="mono">1.00</td>
+          <td class="mono" style="color:var(--up)">8.11%</td>
+          <td class="mono" style="color:var(--up)">2.60%</td>
+          <td class="mono" style="color:var(--up)">3.26%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--up)">4.75%</td>
+          <td class="muted" style="font-size:11px">해외주식형(미국/모멘텀)</td>
+        </tr><tr style="border-bottom:1px solid var(--border);background:#fff8f0;">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US Quality ⭐</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">QUAL</span>
+          </td>
+          <td><span class="ow">OW</span></td>
+          <td class="mono">0.50</td>
+          <td class="mono" style="color:var(--up)">1.87%</td>
+          <td class="mono" style="color:var(--down)">-2.05%</td>
+          <td class="mono" style="color:var(--up)">2.42%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--up)">0.10%</td>
+          <td class="muted" style="font-size:11px">해외주식형(미국/퀄리티혼합)</td>
+        </tr><tr style="border-bottom:1px solid var(--border);background:#fff8f0;">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US Value ⭐</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">IVE</span>
+          </td>
+          <td><span class="ow">OW</span></td>
+          <td class="mono">0.40</td>
+          <td class="mono" style="color:var(--up)">2.03%</td>
+          <td class="mono" style="color:var(--down)">-0.55%</td>
+          <td class="mono" style="color:var(--up)">4.89%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--up)">1.60%</td>
+          <td class="muted" style="font-size:11px">해외주식형(미국/가치)</td>
+        </tr><tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US Growth</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">IVW</span>
+          </td>
+          <td><span class="neutral-b">N</span></td>
+          <td class="mono">-0.30</td>
+          <td class="mono" style="color:var(--up)">2.46%</td>
+          <td class="mono" style="color:var(--down)">-3.10%</td>
+          <td class="mono" style="color:var(--down)">-0.93%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--down)">-0.96%</td>
+          <td class="muted" style="font-size:11px">해외주식형(미국/성장)</td>
+        </tr><tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US Low Vol</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">USMV</span>
+          </td>
+          <td><span class="uw">UW</span></td>
+          <td class="mono">-0.70</td>
+          <td class="mono" style="color:var(--down)">-1.96%</td>
+          <td class="mono" style="color:var(--down)">-1.59%</td>
+          <td class="mono" style="color:var(--down)">-1.44%</td>
+          <td><span class="uw2">▼약세</span></td>
+          <td class="mono" style="color:var(--up)">0.55%</td>
+          <td class="muted" style="font-size:11px">해외주식형(미국/저변동성)</td>
+        </tr></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>🇰🇷 대형·소형·성장 비교 (KR vs US)</h2>
+  <table>
+    <thead><tr>
+      <th style="text-align:left">지수</th><th>의견</th><th>종합점수</th>
+      <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
+      <th>추세</th><th>vs KOSPI 3M</th>
+    </tr></thead>
+    <tbody><tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">KOSPI 대형</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">KOSPI</span>
+          </td>
+          <td><span class="ow">OW</span></td>
+          <td class="mono">1.00</td>
+          <td class="mono" style="color:var(--up)">6.77%</td>
+          <td class="mono" style="color:var(--up)">28.70%</td>
+          <td class="mono" style="color:var(--up)">69.54%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--up)">30.84%</td>
+        </tr><tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">KOSDAQ 성장</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">KOSDAQ</span>
+          </td>
+          <td><span class="ow">OW</span></td>
+          <td class="mono">0.60</td>
+          <td class="mono" style="color:var(--down)">-5.15%</td>
+          <td class="mono" style="color:var(--up)">15.84%</td>
+          <td class="mono" style="color:var(--up)">29.37%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--up)">17.99%</td>
+        </tr><tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US SmallCap</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">IWM</span>
+          </td>
+          <td><span class="ow">OW</span></td>
+          <td class="mono">1.00</td>
+          <td class="mono" style="color:var(--up)">5.69%</td>
+          <td class="mono" style="color:var(--up)">0.24%</td>
+          <td class="mono" style="color:var(--up)">6.55%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--up)">2.39%</td>
+        </tr><tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:8px 12px">
+            <span style="font-size:13px;font-weight:600">US LargeCap</span>
+            <span class="muted" style="font-size:11px;margin-left:6px">SPY</span>
+          </td>
+          <td><span class="neutral-b">N</span></td>
+          <td class="mono">0.35</td>
+          <td class="mono" style="color:var(--up)">2.16%</td>
+          <td class="mono" style="color:var(--down)">-2.14%</td>
+          <td class="mono" style="color:var(--up)">1.21%</td>
+          <td><span class="ow">▲강세</span></td>
+          <td class="mono" style="color:var(--muted)">0.00%</td>
+        </tr></tbody>
+  </table>
+  <div class="muted" style="font-size:11px;margin-top:8px">* KOSPI/KOSDAQ: 원화 기준 / SP500/Russell2000: USD 기준. vs KOSPI 초과수익 표시.</div>
+</div>
+
+<div class="card">
+  <h2>📐 팩터 밸류에이션 스프레드 & Value×Momentum 상호작용</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <!-- Growth/Value spread -->
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:12px">Growth/Value 상대 밸류에이션 (2Y 히스토리)</h3>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="flex:1;height:12px;background:linear-gradient(to right,#7c3aed,#f1f5f9,#059669);border-radius:6px;position:relative">
+          <div style="position:absolute;top:-4px;left:69%;transform:translateX(-50%);width:4px;height:20px;background:#1e293b;border-radius:2px"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-bottom:12px">
+        <span>Growth 저평가 (0%ile)</span><span>중립</span><span>Value 저평가 (100%ile)</span>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:12px 16px">
+        <span style="font-size:18px;font-weight:800;color:#64748b">69%ile</span>
+        <p style="font-size:12px;color:#64748b;margin-top:6px">Growth/Value 비율 69%ile — 중립 구간</p>
+      </div>
+    </div>
+    <!-- VM Interaction -->
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:12px">Value × Momentum 상호작용</h3>
+      <div style="background:#f8fafc;border-radius:10px;padding:16px;margin-bottom:12px;text-align:center">
+        <div style="font-size:32px;margin-bottom:6px">◎</div>
+        <div style="font-size:16px;font-weight:700;color:#059669">강한 OW (Value+Momentum 동조)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+        <div style="background:#dcfce7;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#059669">◎ 강한 OW</div>
+          <div style="color:#64748b">Value↑ + Mom↑</div>
+        </div>
+        <div style="background:#fef3c7;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#d97706">△ 신중한 OW</div>
+          <div style="color:#64748b">Value↑, Mom↓</div>
+        </div>
+        <div style="background:#dbeafe;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#0284c7">→ 모멘텀만</div>
+          <div style="color:#64748b">Value↓, Mom↑</div>
+        </div>
+        <div style="background:#fee2e2;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#dc2626">✕ 강한 UW</div>
+          <div style="color:#64748b">Value↓ + Mom↓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Regime-conditional weights -->
+  <div style="margin-top:16px;padding:12px 16px;background:#f8fafc;border-radius:8px">
+    <span style="font-size:12px;color:#94a3b8;margin-right:10px">현재 국면(Reflation) 적용 가중치:</span>
+    <div style="display:inline-flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span style="background:#f1f5f9;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">1M: <strong>15%</strong></span><span style="background:#f1f5f9;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">3M: <strong>25%</strong></span><span style="background:#f1f5f9;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">6M: <strong>25%</strong></span><span style="background:#f1f5f9;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">추세: <strong>20%</strong></span><span style="background:#f1f5f9;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">vs벤치: <strong>15%</strong></span></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📋 매크로 국면 × 팩터 선택 가이드</h2>
+  <table>
+    <thead><tr>
+      <th style="text-align:left">국면</th><th>선호 팩터</th><th>기피 팩터</th><th>변액보험 전략</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:8px 12px"><span class="regime-goldilocks">Goldilocks</span></td>
+        <td>Growth · Momentum · SmallCap</td>
+        <td class="muted">LowVol · Defensive</td>
+        <td>해외주식형(성장·모멘텀) 비중 확대</td></tr>
+      <tr><td style="padding:8px 12px"><span class="regime-reflation">Reflation</span></td>
+        <td>Value · Momentum · Cyclical</td>
+        <td class="muted">Growth · Long Duration</td>
+        <td>해외주식형(가치·경기순환) 전환</td></tr>
+      <tr><td style="padding:8px 12px"><span class="regime-stagflation">Stagflation</span></td>
+        <td>Value · Quality · LowVol</td>
+        <td class="muted">Growth · SmallCap · High Beta</td>
+        <td>방어적 혼합형·채권 비중 확대</td></tr>
+      <tr><td style="padding:8px 12px"><span class="regime-deflation">Deflation</span></td>
+        <td>Quality · LowVol · LargeCap</td>
+        <td class="muted">Value · Cyclical · HY Credit</td>
+        <td>국내채권·해외채권형 비중 최대화</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="ma-footer">
+  데이터: yfinance (팩터 ETF) · FRED (매크로) | Mirae Asset Life Insurance — Investment View System
+</div>
+</div>
+</body>
+</html>

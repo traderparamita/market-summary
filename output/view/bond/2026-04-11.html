@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>채권 View — 2026-04-11</title>
+<style>
+
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:            #f4f5f9;
+  --card:          #ffffff;
+  --border:        #e0e3ed;
+  --text:          #2d3148;
+  --muted:         #7c8298;
+  --primary:       #F58220;
+  --primary-light: #fff3e6;
+  --navy:          #043B72;
+  --up:            #059669;
+  --down:          #dc2626;
+  --up-bg:         #ecfdf5;
+  --down-bg:       #fef2f2;
+  --neutral-bg:    #f3f4f6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Spoqa Han Sans Neo', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.muted { color: var(--muted); }
+.up    { color: var(--up); }
+.down  { color: var(--down); }
+
+/* ── Navigation ── */
+.ma-nav {
+  background: var(--navy);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(4,59,114,.25);
+}
+.ma-nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 48px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ma-nav-inner::-webkit-scrollbar { display: none; }
+
+.ma-logo {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,.2);
+  margin-right: 16px;
+  letter-spacing: -.2px;
+}
+.ma-logo span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ma-nav-group {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding: 0 8px 0 4px;
+  white-space: nowrap;
+}
+.ma-nav-link {
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.ma-nav-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,.1);
+}
+.ma-nav-link.current {
+  color: #fff;
+  background: var(--primary);
+  font-weight: 600;
+}
+.ma-nav-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,.15);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+/* ── Page wrapper ── */
+.ma-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+}
+
+/* ── Page header ── */
+.ma-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--primary);
+}
+.ma-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.ma-header .meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.ma-header .date-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+/* ── Card / Section ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #FAAF72);
+  border-radius: 12px 12px 0 0;
+}
+.card h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+/* ── Summary row of cards ── */
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: #f8f9fc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  min-width: 130px;
+  flex: 1;
+}
+.stat-card .label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.stat-card .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-card .sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #f0f3fa; }
+th {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: .4px;
+}
+td {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tbody tr:hover td { background: #fafbff; }
+
+/* ── OW / N / UW badges ── */
+.ow  { background: #dcfce7; color: #15803d; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.ow2 { background: #bbf7d0; color: #15803d; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.neutral-b { background: var(--neutral-bg); color: #6b7280; padding: 2px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+.uw  { background: #fef3c7; color: #d97706; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.uw2 { background: var(--down-bg); color: var(--down); padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+
+/* ── Regime badges ── */
+.regime-goldilocks { background: #dcfce7; color: #15803d; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-reflation  { background: #fef3c7; color: #d97706; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-stagflation{ background: var(--down-bg); color: var(--down); padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-deflation  { background: #dbeafe; color: #1d4ed8; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+
+/* ── Utility ── */
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f0f1f6; color: var(--muted); font-weight: 500; }
+.section-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+
+/* ── Footer ── */
+.ma-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 24px 0 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+.ma-footer a { color: var(--primary); text-decoration: none; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ma-page { padding: 16px; }
+  .stat-grid { flex-direction: column; }
+}
+
+/* ── Drag selection ── */
+::selection { background: #F58220; color: #fff; }
+
+
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-11.html" class="ma-nav-link">가격신호</a>
+    <a href="../macro/2026-04-11.html" class="ma-nav-link">거시지표</a>
+    <a href="../correlation/2026-04-11.html" class="ma-nav-link">상관관계</a>
+    <a href="../regime/2026-04-11.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-11.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-11.html" class="ma-nav-link">섹터</a>
+    <a href="../bond/2026-04-11.html" class="ma-nav-link current">채권</a>
+    <a href="../style/2026-04-11.html" class="ma-nav-link">스타일</a>
+    <a href="../allocation/2026-04-11.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+<div class="ma-page">
+
+<div class="card">
+  <h2>💰 금리 환경 요약</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+          <div class="label">연준 기준금리</div>
+          <div class="value">3.64<span style="font-size:13px;font-weight:400;color:var(--muted)"> %</span></div>
+          
+        </div>
+    <div class="stat-card">
+          <div class="label">미국 2Y 국채</div>
+          <div class="value">3.78<span style="font-size:13px;font-weight:400;color:var(--muted)"> %</span></div>
+          
+        </div>
+    <div class="stat-card">
+          <div class="label">미국 10Y 국채</div>
+          <div class="value">4.29<span style="font-size:13px;font-weight:400;color:var(--muted)"> %</span></div>
+          
+        </div>
+    <div class="stat-card">
+          <div class="label">10Y-2Y 스프레드</div>
+          <div class="value">0.50<span style="font-size:13px;font-weight:400;color:var(--muted)"> bp</span></div>
+          
+        </div>
+    <div class="stat-card">
+          <div class="label">HY 스프레드</div>
+          <div class="value">2.90<span style="font-size:13px;font-weight:400;color:var(--muted)"> bp</span></div>
+          
+        </div>
+    <div class="stat-card">
+          <div class="label">IG 스프레드</div>
+          <div class="value">0.83<span style="font-size:13px;font-weight:400;color:var(--muted)"> bp</span></div>
+          
+        </div>
+    <div class="stat-card">
+          <div class="label">KR 국고 10Y</div>
+          <div class="value">3.51<span style="font-size:13px;font-weight:400;color:var(--muted)"> %</span></div>
+          
+        </div>
+  </div>
+  <div class="stat-grid" style="margin-top:0">
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">수익률 곡선 형태</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:#d97706">플랫</span></div>
+          <div class="sub">10Y-2Y = 0.5bp</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">연준 금리 방향 기대</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0">동결 기대</div>
+          <div class="sub">2Y-Fed = 0.14%p</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">크레딧 국면</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:var(--up)">Risk-On (스프레드 타이트)</span></div>
+          <div class="sub">HY = 2.9bp</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">KR-US 10Y 금리차</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:var(--down)">-0.78%p</span></div>
+          <div class="sub">원화 약세 압력 (KR<US 역전)</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">듀레이션 포지셔닝</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:#d97706">중립 (바벨 전략)</span></div>
+          <div class="sub">플랫 커브 → 단기+장기 바벨, 중기채 기회비용</div>
+        </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔬 채권 수익률 분해 (Yield Decomposition)</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <h3 style="font-size:14px;color:#64748b;margin-bottom:12px">명목금리 = 실질금리 + 기대인플레이션 + 기간프리미엄</h3>
+      <div style="margin:6px 0">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:160px;font-size:12px;color:#64748b">명목 10Y 금리</span>
+        <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+          <div style="width:72%;height:100%;background:#1d4ed8;border-radius:5px"></div>
+        </div>
+        <span style="width:60px;text-align:right;font-weight:700;color:#1d4ed8;font-size:13px">+4.29%</span>
+      </div>
+    </div><div style="margin:6px 0"><span style="color:#94a3b8;font-size:12px">실질금리 (TIPS): —</span></div><div style="margin:6px 0"><span style="color:#94a3b8;font-size:12px">기대인플레이션: —</span></div><div style="margin:6px 0"><span style="color:#94a3b8;font-size:12px">기간프리미엄: —</span></div>
+      <div style="margin-top:12px;padding:10px 14px;background:#f8fafc;border-radius:8px;font-size:12px;color:#475569;line-height:1.6">
+        💡 데이터 부족
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:14px;color:#64748b;margin-bottom:12px">Nelson-Siegel 커브 분해 (근사)</h3>
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="label">Level (β₀)</div><div style="font-size:18px;font-weight:700;color:#7c3aed">+4.29%</div><div class="sub">장기금리 수준</div></div><div class="stat-card"><div class="label">Slope (β₁)</div><div style="font-size:18px;font-weight:700;color:#64748b">+0.65%</div><div class="sub">장단기 기울기</div></div><div class="stat-card"><div class="label">Curvature (β₂)</div><div style="font-size:18px;font-weight:700;color:#64748b">-0.37%</div><div class="sub">중기채 곡률</div></div>
+      </div>
+      <div style="margin-top:10px;padding:10px 14px;background:#f8fafc;border-radius:8px;font-size:12px;color:#475569;line-height:1.6">
+        💡 커브 구조 중립
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📊 채권 변동성 & 신용 시장</h2>
+  <div class="stat-grid">
+    <div class="stat-card" style="border-top:3px solid #94a3b8">
+      <div class="label">MOVE 채권변동성지수</div>
+      <div style="font-size:22px;font-weight:800;color:#94a3b8">—</div>
+      <div class="sub" style="color:#94a3b8">N/A</div>
+    </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">TED 스프레드</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:#059669">— bp</span></div>
+          <div class="sub">단기 달러 유동성 긴장도 (>50bp 경계)</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">TIPS 실질금리</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:#d97706">—%</span></div>
+          <div class="sub">양수·상승 → 성장주 밸류에이션 압박</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">기간프리미엄 (ACM)</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:#64748b">—%</span></div>
+          <div class="sub">>0.5% → 장기채 공급 압력</div>
+        </div>
+    <div class="stat-card" style="flex:1;min-width:160px">
+          <div class="label">기대인플레이션 (BEI)</div>
+          <div style="font-size:16px;font-weight:700;margin:4px 0"><span style="color:#059669">—%</span></div>
+          <div class="sub">10Y 손익분기점</div>
+        </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🇺🇸 미국 채권 ETF</h2>
+  <table>
+    <thead><tr>
+      <th>세그먼트</th><th>ETF</th><th>듀레이션</th><th>현재가</th>
+      <th>1M 수익률</th><th>3M 수익률</th><th>6M 수익률</th>
+      <th>추세</th><th>1Y 백분위</th>
+    </tr></thead>
+    <tbody><tr>
+          <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span> <strong>US 1-3Y</strong></td>
+          <td class="muted" style="font-size:12px">SHY</td>
+          <td class="muted">1.9Y</td>
+          <td><span class="mono">82.41</span></td>
+          <td class="up">0.19%</td>
+          <td class="up">0.36%</td>
+          <td class="up">1.34%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">91%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span> <strong>US 3-7Y</strong></td>
+          <td class="muted" style="font-size:12px">IEI</td>
+          <td class="muted">4.5Y</td>
+          <td><span class="mono">118.42</span></td>
+          <td class="up">0.05%</td>
+          <td class="up">0.12%</td>
+          <td class="up">1.07%</td>
+          <td><span style="color:#8bc34a;font-weight:600">상승</span></td>
+          <td><span style="color:#27ae60">85%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span> <strong>US 7-10Y</strong></td>
+          <td class="muted" style="font-size:12px">IEF</td>
+          <td class="muted">7.5Y</td>
+          <td><span class="mono">4.32</span></td>
+          <td class="up">1.03%</td>
+          <td class="up">3.50%</td>
+          <td class="up">4.07%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">70%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span> <strong>US 20Y+</strong></td>
+          <td class="muted" style="font-size:12px">TLT</td>
+          <td class="muted">17.0Y</td>
+          <td><span class="mono">86.49</span></td>
+          <td class="down">-0.15%</td>
+          <td class="down">-0.54%</td>
+          <td class="down">-0.84%</td>
+          <td><span style="color:#e74c3c;font-weight:600">강한 하락</span></td>
+          <td><span style="color:#f39c12">50%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">물가연동</span> <strong>US TIPS</strong></td>
+          <td class="muted" style="font-size:12px">TIP</td>
+          <td class="muted">6.5Y</td>
+          <td><span class="mono">111.02</span></td>
+          <td class="up">0.08%</td>
+          <td class="up">0.76%</td>
+          <td class="up">0.84%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">90%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#fce7f3;color:#be185d;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">크레딧</span> <strong>IG Credit</strong></td>
+          <td class="muted" style="font-size:12px">LQD</td>
+          <td class="muted">8.5Y</td>
+          <td><span class="mono">109.20</span></td>
+          <td class="up">0.99%</td>
+          <td class="down">-0.19%</td>
+          <td class="up">0.58%</td>
+          <td><span style="color:#8bc34a;font-weight:600">상승</span></td>
+          <td><span style="color:#27ae60">71%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#fce7f3;color:#be185d;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">크레딧</span> <strong>HY Credit</strong></td>
+          <td class="muted" style="font-size:12px">HYG</td>
+          <td class="muted">4.0Y</td>
+          <td><span class="mono">79.96</span></td>
+          <td class="up">1.26%</td>
+          <td class="up">0.17%</td>
+          <td class="up">2.37%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">92%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#dcfce7;color:#15803d;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">EM</span> <strong>EM Bond</strong></td>
+          <td class="muted" style="font-size:12px">EMB</td>
+          <td class="muted">7.5Y</td>
+          <td><span class="mono">95.50</span></td>
+          <td class="up">1.19%</td>
+          <td class="up">0.43%</td>
+          <td class="up">3.06%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">91%ile</span></td>
+        </tr></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>🇰🇷 한국 채권 금리 (ECOS)</h2>
+  <table>
+    <thead><tr>
+      <th>세그먼트</th><th>듀레이션</th><th>금리(%)</th>
+      <th>1M 변화</th><th>3M 변화</th><th>6M 변화</th>
+      <th>추세</th><th>1Y 백분위</th>
+    </tr></thead>
+    <tbody><tr>
+          <td><span style="background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">단기</span> <strong>KR CD 91D</strong></td>
+          
+          <td class="muted">0.2Y</td>
+          <td><span class="mono">2.82</span></td>
+          <td class="down">-0.35%</td>
+          <td class="up">4.44%</td>
+          <td class="up">10.59%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">90%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span> <strong>KR 국고 3Y</strong></td>
+          
+          <td class="muted">3.0Y</td>
+          <td><span class="mono">3.36</span></td>
+          <td class="up">0.66%</td>
+          <td class="up">15.78%</td>
+          <td class="up">30.18%</td>
+          <td><span style="color:#27ae60;font-weight:600">강한 상승</span></td>
+          <td><span style="color:#27ae60">94%ile</span></td>
+        </tr><tr>
+          <td><span style="background:#dbeafe;color:#1d4ed8;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600">국채</span> <strong>KR 국고 10Y</strong></td>
+          
+          <td class="muted">10.0Y</td>
+          <td><span class="mono">3.51</span></td>
+          <td class="down">-1.27%</td>
+          <td class="up">11.00%</td>
+          <td class="up">28.66%</td>
+          <td><span style="color:#8bc34a;font-weight:600">상승</span></td>
+          <td><span style="color:#27ae60">92%ile</span></td>
+        </tr></tbody>
+  </table>
+  <p class="muted" style="font-size:11px;margin-top:8px">* KR 채권은 금리 레벨 기준</p>
+</div>
+
+<div class="card">
+  <h2>📋 변액보험 ALM 포지셔닝 권고</h2>
+  <div style="background:var(--primary-light);border-left:4px solid var(--primary);border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:12px">
+    <ul style="list-style:none;padding:0">
+      <li style="margin-bottom:8px">▶ 바벨 전략: KR CD91D + KR 10Y 조합으로 ALM 유지</li><li style="margin-bottom:8px">▶ IG 크레딧 일부 편입 가능 — 스프레드 타이트하나 캐리 확보</li><li style="margin-bottom:8px">▶ 해외 채권 환헤지 비용 상승 (KR<US) — 언헤지 EM/US 채권 비중 축소 고려</li>
+    </ul>
+  </div>
+  <p class="muted" style="font-size:12px">
+    📌 ALM 원칙: 보험 부채 장기 듀레이션(8-12Y) → 자산 듀레이션 매칭 유지.
+    금리 상승기엔 단기채 집중 후 장기 재진입 기회 포착.
+  </p>
+</div>
+
+<div class="ma-footer">
+  데이터: FRED (금리/스프레드) · yfinance (채권 ETF) · ECOS (한국 금리) | Mirae Asset Life Insurance — Investment View System
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price View | 2026-04-11</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --up:#059669; --down:#dc2626; --primary:#F58220; --navy:#043B72;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0;max-width:none;margin:0}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:var(--muted)}
+.up{color:var(--up)}.down{color:var(--down)}.neutral{color:var(--muted)}
+.center{text-align:center}.right{text-align:right}
+
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;padding-bottom:18px;border-bottom:2px solid var(--border)}
+.header h1{font-size:23px;font-weight:700;color:#1a1d2e}
+.header .meta{font-size:12px;color:var(--muted);margin-top:3px}
+.regime-tag{display:inline-block;padding:4px 14px;border-radius:8px;font-size:14px;font-weight:700;margin-bottom:6px}
+.regime-on{background:#ecfdf5;color:#059669;border:1px solid #05966933}
+.regime-neutral{background:#fffbeb;color:#d97706;border:1px solid #d9770633}
+.regime-off{background:#fef2f2;color:#dc2626;border:1px solid #dc262633}
+
+.signal-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.sig-badges{display:flex;gap:6px}
+.sig-badge{padding:4px 10px;border-radius:6px;font-weight:600;font-size:12px}
+.sig-up{background:#ecfdf5;color:#059669}
+.sig-down{background:#fef2f2;color:#dc2626}
+.sig-neutral{background:#f3f4f6;color:#6b7280}
+
+.weight-pills{display:flex;gap:6px}
+.pill{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600}
+.pill-stock{background:#dbeafe;color:#1d4ed8}
+.pill-bond{background:#fce7f3;color:#be185d}
+.pill-cash{background:#d1fae5;color:#065f46}
+
+.section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.section h2{font-size:15px;font-weight:600;color:#1a1d2e;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;background:#f0f1f6;color:var(--muted);font-weight:500}
+
+/* Market Pulse grid */
+.pulse-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.pulse-card{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.pulse-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.pulse-row{display:flex;align-items:baseline;gap:6px;margin-bottom:5px}
+.pulse-label{font-size:11px;color:var(--muted);min-width:72px;flex-shrink:0}
+.pulse-val{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#1a1d2e}
+.pulse-sub{font-size:11px;color:var(--muted)}
+
+.view-badge{padding:2px 10px;border-radius:4px;font-weight:600;font-size:12px}
+.v-ow2{background:#ecfdf5;color:#059669}
+.v-ow{background:#d1fae5;color:#047857}
+.v-n{background:#f3f4f6;color:#6b7280}
+.v-uw{background:#fef3c7;color:#d97706}
+.v-uw2{background:#fef2f2;color:#dc2626}
+
+.inner-table{width:100%;border-collapse:collapse;font-size:13px}
+.inner-table thead tr{background:#f8fafc;border-bottom:1px solid var(--border)}
+.inner-table th{padding:8px 10px;font-size:11px;color:var(--muted);font-weight:600}
+.inner-table td{padding:7px 10px;border-bottom:1px solid #f1f5f9}
+.inner-table tbody tr:hover{background:#f8fafc}
+
+.footer{text-align:center;font-size:11px;color:#94a3b8;padding:16px 0 4px}
+.back-link{display:inline-block;margin-bottom:16px;font-size:13px;color:var(--primary);text-decoration:none}
+.back-link:hover{text-decoration:underline}
+
+@media(max-width:768px){
+  .pulse-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .pulse-grid{grid-template-columns:1fr}
+}
+.ma-nav{background:var(--navy);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(4,59,114,.25)}
+.ma-nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:0;height:48px;overflow-x:auto;scrollbar-width:none}
+.ma-nav-inner::-webkit-scrollbar{display:none}
+.ma-logo{color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;padding-right:20px;border-right:1px solid rgba(255,255,255,.2);margin-right:16px;letter-spacing:-.2px}
+.ma-logo span{display:inline-block;width:8px;height:8px;background:var(--primary);border-radius:50%;margin-right:6px;vertical-align:middle}
+.ma-nav-group{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.8px;text-transform:uppercase;padding:0 8px 0 4px;white-space:nowrap}
+.ma-nav-link{color:rgba(255,255,255,.72);text-decoration:none;font-size:13px;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:all .15s}
+.ma-nav-link:hover{color:#fff;background:rgba(255,255,255,.1)}
+.ma-nav-link.current{color:#fff;background:var(--primary);font-weight:600}
+.ma-nav-sep{width:1px;height:16px;background:rgba(255,255,255,.15);margin:0 8px;flex-shrink:0}
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-11.html" class="ma-nav-link current">가격신호</a>
+    <a href="../macro/2026-04-11.html" class="ma-nav-link">거시지표</a>
+    <a href="../correlation/2026-04-11.html" class="ma-nav-link">상관관계</a>
+    <a href="../regime/2026-04-11.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-11.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-11.html" class="ma-nav-link">섹터</a>
+    <a href="../bond/2026-04-11.html" class="ma-nav-link">채권</a>
+    <a href="../style/2026-04-11.html" class="ma-nav-link">스타일</a>
+    <a href="../allocation/2026-04-11.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+<div style="max-width:1300px;margin:0 auto;padding:28px 24px 48px">
+<div class="header">
+  <div>
+    <h1>Price View</h1>
+    <div class="meta">Price-based signals | View Agent</div>
+  </div>
+  <div style="text-align:right;font-size:11px;color:var(--muted)">Generated: 2026-04-14 08:20</div>
+</div>
+
+
+    <div class="section">
+      <h2>Market Pulse <span class="badge">2026-04-11</span>
+        <span style="margin-left:12px;font-size:13px"><span class="neutral">Price Regime: <b>Neutral</b> &nbsp;<span class='muted' style='font-size:11px'>(3d · since 2026-04-07)</span></span></span>
+      </h2>
+      <div class="pulse-grid">
+        
+    <div class="pulse-card">
+      <div class="pulse-title">VIX</div>
+      
+        <div class="pulse-row">
+          <span class="pulse-label">Level</span>
+          <span class="pulse-val"><b>19.2</b></span>
+          <span class="pulse-sub">MA20 25.0</span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">1M Chg</span>
+          <span class="pulse-val">1M -20.6%</span>
+          <span class="pulse-sub"><span class="up">▼ Falling</span></span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">Regime</span>
+          <span class="pulse-val">Normal</span>
+          <span class="pulse-sub"></span>
+        </div>
+    </div>
+        
+    <div class="pulse-card">
+      <div class="pulse-title">Yield Curve (10Y-2Y)</div>
+      
+        <div class="pulse-row">
+          <span class="pulse-label">Spread</span>
+          <span class="pulse-val"><b>+0.72%</b></span>
+          <span class="pulse-sub"><span class="up">Normal</span></span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">Signal</span>
+          <span class="pulse-val">Neutral</span>
+          <span class="pulse-sub"></span>
+        </div>
+    </div>
+        
+    <div class="pulse-card">
+      <div class="pulse-title">Market Breadth</div>
+      
+        <div class="pulse-row">
+          <span class="pulse-label">Above MA200</span>
+          <span class="pulse-val"><b>71%</b></span>
+          <span class="pulse-sub">Strong</span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">Above MA50</span>
+          <span class="pulse-val">54%</span>
+          <span class="pulse-sub"></span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">3M Positive</span>
+          <span class="pulse-val">32%</span>
+          <span class="pulse-sub"></span>
+        </div>
+    </div>
+        
+    <div class="pulse-card">
+      <div class="pulse-title">DXY (US Dollar)</div>
+      
+        <div class="pulse-row">
+          <span class="pulse-label">Trend</span>
+          <span class="pulse-val"><b><span class="down">Bullish</span></b></span>
+          <span class="pulse-sub">3M -0.5%</span>
+        </div>
+    </div>
+        
+    <div class="pulse-card">
+      <div class="pulse-title">Sentiment</div>
+      
+        <div class="pulse-row">
+          <span class="pulse-label">Score</span>
+          <span class="pulse-val"><b style="color:#0d9b6a">+37</b></span>
+          <span class="pulse-sub">/ ±100</span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">Label</span>
+          <span class="pulse-val"><span style="color:#0d9b6a;font-weight:600">Greed</span></span>
+          <span class="pulse-sub"></span>
+        </div>
+    </div>
+        
+    <div class="pulse-card">
+      <div class="pulse-title">Technical Signals</div>
+      
+        <div class="pulse-row">
+          <span class="pulse-label">RSI(14)</span>
+          <span class="pulse-val"><span class="">0(0%) 과매도</span> / <span class="down">6(21%) 과매수</span></span>
+          <span class="pulse-sub"></span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">Bollinger</span>
+          <span class="pulse-val"><span class="up">3(11%) 과매도</span> / <span class="down">15(54%) 과매수</span></span>
+          <span class="pulse-sub"></span>
+        </div>
+        <div class="pulse-row">
+          <span class="pulse-label">MACD Cross</span>
+          <span class="pulse-val"><span class="up">▲ 0개</span> / <span class="down">▼ 0개</span></span>
+          <span class="pulse-sub">(총 28자산)</span>
+        </div>
+    </div>
+      </div>
+    </div>
+
+<div class="section">
+  <h2>Asset Class Views <span class="badge">2026-04-11</span></h2>
+  <table class="inner-table">
+    <thead><tr>
+      <th style="text-align:left">Asset Class</th>
+      <th>View</th>
+      <th style="text-align:right">Z-Score</th>
+      <th style="text-align:right">Assets</th>
+    </tr></thead>
+    <tbody><tr><td>US Equity</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">+0.22</td><td class="right muted">2</td></tr><tr><td>DM Equity</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">+0.20</td><td class="right muted">1</td></tr><tr><td>EM Equity</td><td class="center"><span class="view-badge v-uw">UW</span></td><td class="right mono">-0.51</td><td class="right muted">1</td></tr><tr><td>Global Equity</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">-0.13</td><td class="right muted">1</td></tr><tr><td>UST Long</td><td class="center"><span class="view-badge v-uw2">UW-</span></td><td class="right mono">-1.44</td><td class="right muted">1</td></tr><tr><td>UST Mid</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">-0.12</td><td class="right muted">1</td></tr><tr><td>Agg Bond</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">-0.29</td><td class="right muted">1</td></tr><tr><td>High Yield</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">-0.25</td><td class="right muted">1</td></tr><tr><td>IG Credit</td><td class="center"><span class="view-badge v-uw">UW</span></td><td class="right mono">-0.70</td><td class="right muted">1</td></tr><tr><td>EM Debt</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">-0.26</td><td class="right muted">1</td></tr><tr><td>Gold</td><td class="center"><span class="view-badge v-ow2">OW+</span></td><td class="right mono">+1.45</td><td class="right muted">1</td></tr><tr><td>Commodity</td><td class="center"><span class="view-badge v-ow2">OW+</span></td><td class="right mono">+2.71</td><td class="right muted">1</td></tr><tr><td>USD</td><td class="center"><span class="view-badge v-n">N</span></td><td class="right mono">-0.29</td><td class="right muted">1</td></tr><tr><td>Stocks</td><td class="center"><span class="view-badge v-uw">UW</span></td><td class="right mono">-0.57</td><td class="right muted">14</td></tr></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>Individual Asset Scores <span class="badge">2026-04-11</span></h2>
+  <div style="overflow-x:auto">
+  <table class="inner-table">
+    <thead><tr>
+      <th style="text-align:left">Ticker</th>
+      <th style="text-align:left">Class</th>
+      <th style="text-align:right">Close</th>
+      <th style="text-align:right">Mom 12M</th>
+      <th style="text-align:right">Mom 6M</th>
+      <th style="text-align:right">Mom 3M</th>
+      <th style="text-align:center">Trend</th>
+      <th style="text-align:right">52W Hi%</th>
+      <th style="text-align:right">Vol Ratio</th>
+      <th style="text-align:right">RSI</th>
+      <th style="text-align:right">BB%B</th>
+      <th style="text-align:right">MACD</th>
+      <th style="text-align:right">Score</th>
+    </tr></thead>
+    <tbody><tr><td class="mono">005930.KS</td><td class="muted">Stocks</td><td class="right mono">206000.00</td><td class="right mono">217.0%</td><td class="right mono">119.6%</td><td class="right mono">36.1%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">94%</td><td class="right mono ">1.04x</td><td class="right mono ">60</td><td class="right mono down">0.82</td><td class="right mono up">+1973.953</td><td class="right mono up">+5.026</td></tr><tr><td class="mono">DBC</td><td class="muted">Commodity</td><td class="right mono">96.57</td><td class="right mono">46.8%</td><td class="right mono">62.1%</td><td class="right mono">59.7%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">85%</td><td class="right mono ">1.27x</td><td class="right mono ">57</td><td class="right mono ">0.40</td><td class="right mono down">-1.508</td><td class="right mono up">+2.586</td></tr><tr><td class="mono">TSM</td><td class="muted">Stocks</td><td class="right mono">370.60</td><td class="right mono">125.5%</td><td class="right mono">18.6%</td><td class="right mono">8.3%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">96%</td><td class="right mono ">1.09x</td><td class="right mono ">69</td><td class="right mono down">1.04</td><td class="right mono up">+4.422</td><td class="right mono up">+1.991</td></tr><tr><td class="mono">GLD</td><td class="muted">Gold</td><td class="right mono">4787.40</td><td class="right mono">78.2%</td><td class="right mono">36.6%</td><td class="right mono">13.9%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono ">89%</td><td class="right mono ">0.95x</td><td class="right mono ">68</td><td class="right mono ">0.64</td><td class="right mono up">+30.616</td><td class="right mono up">+1.735</td></tr><tr><td class="mono">GOOGL</td><td class="muted">Stocks</td><td class="right mono">317.24</td><td class="right mono">95.2%</td><td class="right mono">28.0%</td><td class="right mono">-1.7%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">92%</td><td class="right mono down">1.31x</td><td class="right mono ">60</td><td class="right mono down">0.84</td><td class="right mono up">+4.018</td><td class="right mono up">+1.417</td></tr><tr><td class="mono">AVGO</td><td class="muted">Stocks</td><td class="right mono">371.55</td><td class="right mono">85.6%</td><td class="right mono">-0.8%</td><td class="right mono">-0.6%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">90%</td><td class="right mono ">1.14x</td><td class="right mono down">75</td><td class="right mono down">1.17</td><td class="right mono up">+6.740</td><td class="right mono up">+1.100</td></tr><tr><td class="mono">NVDA</td><td class="muted">Stocks</td><td class="right mono">188.63</td><td class="right mono">62.8%</td><td class="right mono">-3.4%</td><td class="right mono">-0.6%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">91%</td><td class="right mono ">0.94x</td><td class="right mono ">68</td><td class="right mono down">1.00</td><td class="right mono up">+1.791</td><td class="right mono up">+1.064</td></tr><tr><td class="mono">SPY</td><td class="muted">US Equity</td><td class="right mono">6816.89</td><td class="right mono">24.2%</td><td class="right mono">0.6%</td><td class="right mono">-2.4%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">98%</td><td class="right mono ">1.27x</td><td class="right mono ">68</td><td class="right mono down">0.92</td><td class="right mono up">+46.285</td><td class="right mono up">+0.900</td></tr><tr><td class="mono">IWM</td><td class="muted">US Equity</td><td class="right mono">2630.59</td><td class="right mono">32.9%</td><td class="right mono">3.0%</td><td class="right mono">-1.5%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">97%</td><td class="right mono ">1.12x</td><td class="right mono down">71</td><td class="right mono down">0.99</td><td class="right mono up">+22.150</td><td class="right mono up">+0.894</td></tr><tr><td class="mono">EFA</td><td class="muted">DM Equity</td><td class="right mono">188.38</td><td class="right mono">27.3%</td><td class="right mono">2.7%</td><td class="right mono">-1.6%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">98%</td><td class="right mono ">1.30x</td><td class="right mono down">71</td><td class="right mono down">0.95</td><td class="right mono up">+1.363</td><td class="right mono up">+0.888</td></tr><tr><td class="mono">IEF</td><td class="muted">UST Mid</td><td class="right mono">4.32</td><td class="right mono">-4.4%</td><td class="right mono">1.4%</td><td class="right mono">0.7%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">94%</td><td class="right mono ">1.18x</td><td class="right mono ">43</td><td class="right mono ">0.48</td><td class="right mono down">-0.011</td><td class="right mono up">+0.666</td></tr><tr><td class="mono">ACWI</td><td class="muted">Global Equity</td><td class="right mono">145.04</td><td class="right mono">28.9%</td><td class="right mono">3.5%</td><td class="right mono">-1.0%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">98%</td><td class="right mono down">1.31x</td><td class="right mono down">70</td><td class="right mono down">0.95</td><td class="right mono up">+1.105</td><td class="right mono up">+0.661</td></tr><tr><td class="mono">AAPL</td><td class="muted">Stocks</td><td class="right mono">260.48</td><td class="right mono">31.7%</td><td class="right mono">2.9%</td><td class="right mono">-0.5%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono ">91%</td><td class="right mono ">0.83x</td><td class="right mono ">67</td><td class="right mono down">0.94</td><td class="right mono up">+1.469</td><td class="right mono up">+0.607</td></tr><tr><td class="mono">HYG</td><td class="muted">High Yield</td><td class="right mono">79.96</td><td class="right mono">8.3%</td><td class="right mono">1.7%</td><td class="right mono">-0.3%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">100%</td><td class="right mono down">1.45x</td><td class="right mono ">68</td><td class="right mono down">0.83</td><td class="right mono up">+0.173</td><td class="right mono up">+0.579</td></tr><tr><td class="mono">EMB</td><td class="muted">EM Debt</td><td class="right mono">95.50</td><td class="right mono">12.9%</td><td class="right mono">2.7%</td><td class="right mono">0.1%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono up">99%</td><td class="right mono down">1.51x</td><td class="right mono down">71</td><td class="right mono down">0.97</td><td class="right mono up">+0.325</td><td class="right mono up">+0.572</td></tr><tr><td class="mono">UUP</td><td class="muted">USD</td><td class="right mono">98.65</td><td class="right mono">0.8%</td><td class="right mono">1.0%</td><td class="right mono">0.6%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono up">97%</td><td class="right mono ">1.02x</td><td class="right mono ">47</td><td class="right mono up">-0.01</td><td class="right mono down">-0.202</td><td class="right mono up">+0.557</td></tr><tr><td class="mono">AGG</td><td class="muted">Agg Bond</td><td class="right mono">99.32</td><td class="right mono">5.5%</td><td class="right mono">1.3%</td><td class="right mono">0.3%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono up">99%</td><td class="right mono ">1.29x</td><td class="right mono ">65</td><td class="right mono ">0.74</td><td class="right mono up">+0.112</td><td class="right mono up">+0.553</td></tr><tr><td class="mono">EEM</td><td class="muted">EM Equity</td><td class="right mono">25893.54</td><td class="right mono">9.9%</td><td class="right mono">-6.9%</td><td class="right mono">-0.9%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono ">93%</td><td class="right mono ">1.15x</td><td class="right mono ">49</td><td class="right mono ">0.77</td><td class="right mono up">+133.717</td><td class="right mono up">+0.407</td></tr><tr><td class="mono">LQD</td><td class="muted">IG Credit</td><td class="right mono">109.20</td><td class="right mono">6.2%</td><td class="right mono">0.1%</td><td class="right mono">-0.5%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono up">98%</td><td class="right mono down">1.33x</td><td class="right mono ">67</td><td class="right mono ">0.78</td><td class="right mono up">+0.212</td><td class="right mono ">+0.275</td></tr><tr><td class="mono">AMZN</td><td class="muted">Stocks</td><td class="right mono">238.38</td><td class="right mono">11.3%</td><td class="right mono">-6.6%</td><td class="right mono">-11.7%</td><td class="center"><span class="up">▲200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono ">94%</td><td class="right mono ">1.10x</td><td class="right mono down">75</td><td class="right mono down">1.19</td><td class="right mono up">+3.558</td><td class="right mono ">+0.255</td></tr><tr><td class="mono">TSLA</td><td class="muted">Stocks</td><td class="right mono">348.95</td><td class="right mono">49.8%</td><td class="right mono">-6.4%</td><td class="right mono">-5.8%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono down">71%</td><td class="right mono ">1.10x</td><td class="right mono ">42</td><td class="right mono up">0.20</td><td class="right mono down">-1.720</td><td class="right mono ">-0.128</td></tr><tr><td class="mono">TLT</td><td class="muted">UST Long</td><td class="right mono">86.49</td><td class="right mono">2.1%</td><td class="right mono">-0.5%</td><td class="right mono">0.6%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono up">96%</td><td class="right mono ">1.11x</td><td class="right mono ">59</td><td class="right mono ">0.55</td><td class="right mono up">+0.108</td><td class="right mono ">-0.227</td></tr><tr><td class="mono">PLTR</td><td class="muted">Stocks</td><td class="right mono">128.06</td><td class="right mono">64.8%</td><td class="right mono">-18.3%</td><td class="right mono">-15.6%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono down">62%</td><td class="right mono ">1.02x</td><td class="right mono ">34</td><td class="right mono up">-0.09</td><td class="right mono down">-2.240</td><td class="right mono down">-0.431</td></tr><tr><td class="mono">META</td><td class="muted">Stocks</td><td class="right mono">629.86</td><td class="right mono">12.0%</td><td class="right mono">-10.6%</td><td class="right mono">-0.9%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono down">80%</td><td class="right mono ">1.20x</td><td class="right mono ">59</td><td class="right mono down">0.82</td><td class="right mono up">+8.575</td><td class="right mono down">-0.532</td></tr><tr><td class="mono">MSFT</td><td class="muted">Stocks</td><td class="right mono">370.87</td><td class="right mono">4.5%</td><td class="right mono">-22.2%</td><td class="right mono">-15.2%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono down">69%</td><td class="right mono up">0.67x</td><td class="right mono ">39</td><td class="right mono ">0.37</td><td class="right mono up">+1.463</td><td class="right mono down">-1.011</td></tr><tr><td class="mono">0700.HK</td><td class="muted">Stocks</td><td class="right mono">504.50</td><td class="right mono">4.7%</td><td class="right mono">-23.7%</td><td class="right mono">-13.9%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono down">74%</td><td class="right mono ">1.08x</td><td class="right mono ">34</td><td class="right mono ">0.39</td><td class="right mono up">+1.519</td><td class="right mono down">-1.011</td></tr><tr><td class="mono">9988.HK</td><td class="muted">Stocks</td><td class="right mono">125.50</td><td class="right mono">0.8%</td><td class="right mono">-29.7%</td><td class="right mono">-9.9%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="down">▼50</span></td><td class="right mono down">68%</td><td class="right mono ">1.13x</td><td class="right mono ">40</td><td class="right mono ">0.45</td><td class="right mono up">+0.932</td><td class="right mono down">-1.150</td></tr><tr><td class="mono">3690.HK</td><td class="muted">Stocks</td><td class="right mono">87.60</td><td class="right mono">-49.5%</td><td class="right mono">-25.6%</td><td class="right mono">-23.4%</td><td class="center"><span class="down">▼200</span>&nbsp;<span class="up">▲50</span></td><td class="right mono down">55%</td><td class="right mono down">1.37x</td><td class="right mono ">60</td><td class="right mono down">0.81</td><td class="right mono up">+1.016</td><td class="right mono down">-2.143</td></tr></tbody>
+  </table>
+  </div>
+</div>
+
+<div class="footer">Price View | Price-based regime-conditional signals | View Agent</div>
+</div>
+</body>
+</html>
