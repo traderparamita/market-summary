@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.lifesailor.market-summary</string>
+
+  <!-- 실행 명령 -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/.venv/bin/python</string>
+    <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/scripts/auto_market.py</string>
+  </array>
+
+  <!-- 매일 08:05 KST 실행 -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>   <integer>8</integer>
+    <key>Minute</key> <integer>5</integer>
+  </dict>
+
+  <!-- 맥이 잠들어 있었다면 깨어난 직후 실행 -->
+  <key>RunAtLoad</key> <false/>
+
+  <!-- 로그 -->
+  <key>StandardOutPath</key>
+  <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/logs/auto_market.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/logs/auto_market.log</string>
+
+  <!-- 작업 디렉터리 -->
+  <key>WorkingDirectory</key>
+  <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary</string>
+
+  <!-- 환경변수 (cron은 PATH가 좁음) -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+    <key>HOME</key>
+    <string>/Users/lifesailor</string>
+    <key>LANG</key>
+    <string>ko_KR.UTF-8</string>
+  </dict>
+</dict>
+</plist>
