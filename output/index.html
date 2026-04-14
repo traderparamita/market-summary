@@ -17,6 +17,7 @@
   --muted: #7c8298;
   --primary: #F58220;
   --primary-light: #fff3e6;
+  --navy: #043B72;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -24,9 +25,60 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  padding: 48px 24px;
+}
+.ma-nav {
+  background: var(--navy);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(4,59,114,.25);
+}
+.ma-nav-inner {
   max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ma-nav-inner::-webkit-scrollbar { display: none; }
+.ma-logo {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,.2);
+  margin-right: 16px;
+}
+.ma-logo span {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ma-nav-link {
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.ma-nav-link:hover { color: #fff; background: rgba(255,255,255,.1); }
+.ma-nav-link.current { color: #fff; background: var(--primary); font-weight: 600; }
+.ma-nav-sep { width: 1px; height: 16px; background: rgba(255,255,255,.15); margin: 0 8px; flex-shrink: 0; }
+.ma-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
 }
 .header {
   text-align: center;
@@ -140,6 +192,22 @@ body {
 </head>
 <body>
 
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <a href="index.html" class="ma-nav-link current">홈</a>
+    <div class="ma-nav-sep"></div>
+    <a href="summary/index.html" class="ma-nav-link">Market Summary</a>
+    <div class="ma-nav-sep"></div>
+    <a href="analysis/index.html" class="ma-nav-link">Analysis</a>
+    <div class="ma-nav-sep"></div>
+    <a href="view/index.html" class="ma-nav-link">View</a>
+    <div class="ma-nav-sep"></div>
+    <a href="portfolio/index.html" class="ma-nav-link">Portfolio</a>
+  </div>
+</nav>
+
+<div class="ma-page">
 <div class="header">
   <h1>Anthilia</h1>
   <p class="tagline">미래에셋 AI Investment Agent</p>
@@ -167,6 +235,7 @@ body {
     Powered by <a href="https://github.com/traderparamita/market-summary" target="_blank">market_summary</a>
   </p>
 </div>
+</div><!-- /ma-page -->
 
 </body>
 </html>
