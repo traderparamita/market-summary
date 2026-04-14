@@ -20,7 +20,7 @@ import json
 import os
 import subprocess
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -65,12 +65,20 @@ KEY_METRICS = [
 # 1. 날짜 유틸
 # ─────────────────────────────────────────────────────────────
 
-def today_kst() -> str:
-    return datetime.now(KST).date().isoformat()
+def prev_business_day() -> str:
+    """08:05 KST 실행 시점 기준 전 영업일 = 보고서 대상 날짜.
+
+    실행일(스크립트 구동일)과 보고서 날짜는 다르다:
+      월요일 08:05 실행 → 금요일 보고서
+      화~금  08:05 실행 → 전날 보고서
+    """
+    today = datetime.now(KST).date()
+    days_back = 3 if today.weekday() == 0 else 1  # 월=금요일, 그 외=전날
+    return (today - timedelta(days=days_back)).isoformat()
 
 
-def is_weekend(date_str: str) -> bool:
-    return date.fromisoformat(date_str).weekday() >= 5
+def is_weekend() -> bool:
+    return datetime.now(KST).date().weekday() >= 5
 
 
 # ─────────────────────────────────────────────────────────────
@@ -259,15 +267,17 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
 # ─────────────────────────────────────────────────────────────
 
 def main() -> None:
-    date_str = sys.argv[1] if len(sys.argv) > 1 else today_kst()
+    if len(sys.argv) > 1:
+        date_str = sys.argv[1]          # 수동 지정 (테스트용)
+    else:
+        if is_weekend():
+            print("주말입니다. 실행을 건너뜁니다.")
+            return
+        date_str = prev_business_day()  # 전 영업일 자동 계산
 
     print("=" * 52)
     print(f"  Auto Market Report — {date_str}")
     print("=" * 52)
-
-    if is_weekend(date_str) and len(sys.argv) <= 1:
-        print("주말입니다. 실행을 건너뜁니다.")
-        return
 
     ok = run_market_full(date_str)
     metrics = load_metrics(date_str)
