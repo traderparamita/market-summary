@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correlation View | 2026-04-14</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --border:#e0e3ed;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --navy:#043B72; --up:#059669; --down:#dc2626;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:0;
+  max-width:none;margin:0
+}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:var(--muted)}
+
+/* ── Header ─────────────────────────────────── */
+.page-header{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid var(--border)
+}
+.page-header h1{font-size:24px;font-weight:700;color:#1a1d2e}
+.page-header .sub{font-size:12px;color:var(--muted);margin-top:3px}
+.gen-time{font-size:11px;color:var(--muted);text-align:right}
+
+/* ── Card base ──────────────────────────────── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:22px 24px;margin-bottom:20px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05)
+}
+.card-title{
+  font-size:15px;font-weight:600;color:#1a1d2e;
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap
+}
+.badge{
+  font-size:11px;padding:2px 8px;border-radius:10px;
+  background:#f0f1f6;color:var(--muted);font-weight:500
+}
+
+/* ── Key signal card ────────────────────────── */
+.signal-card{
+  border:1px solid #d9304f;
+  border-left:4px solid #d9304f;
+  background:#fff0f2;
+  border-radius:14px;padding:22px 24px;margin-bottom:20px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05)
+}
+.signal-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.signal-title{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.signal-label{font-size:18px;font-weight:700;color:var(--down);margin-top:4px}
+.signal-desc{font-size:12px;color:var(--muted);margin-top:2px}
+
+.corr-pills{display:flex;gap:10px;flex-wrap:wrap}
+.corr-pill{
+  display:flex;flex-direction:column;align-items:center;
+  padding:8px 16px;border-radius:10px;min-width:72px;
+  background:rgba(255,255,255,.7);border:1px solid var(--border)
+}
+.corr-pill-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.corr-pill-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-top:2px}
+.corr-pill-neg .corr-pill-val{color:var(--up)}
+.corr-pill-pos .corr-pill-val{color:var(--down)}
+.corr-pill-neutral .corr-pill-val{color:var(--muted)}
+
+.regime-change-badge{
+  display:inline-block;padding:4px 12px;border-radius:8px;
+  font-size:12px;font-weight:600;
+  background:#fff8e6;color:#92400e;border:1px solid #f59e0b
+}
+
+/* ── Heatmap layout ─────────────────────────── */
+.heatmaps-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-bottom:20px
+}
+.heatmap-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:20px 22px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);
+  overflow:hidden
+}
+.hm-title{
+  font-size:14px;font-weight:600;color:#1a1d2e;
+  margin-bottom:14px
+}
+.hm-scroll{overflow-x:auto}
+.hm-table{
+  border-collapse:separate;border-spacing:3px;
+  table-layout:fixed
+}
+.hm-corner{width:52px;min-width:52px}
+.hm-col-hdr{
+  font-size:10px;font-weight:700;color:var(--muted);
+  text-align:center;padding:0 0 4px;
+  min-width:60px;width:60px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.hm-row-hdr{
+  font-size:10px;font-weight:700;color:var(--muted);
+  text-align:right;padding-right:6px;
+  white-space:nowrap;
+  min-width:52px;width:52px
+}
+.hm-cell{
+  min-width:60px;width:60px;
+  height:50px;
+  text-align:center;vertical-align:middle;
+  font-size:11px;font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  border-radius:4px;
+  cursor:default;
+  transition:filter .15s
+}
+.hm-cell:hover{filter:brightness(.92)}
+.hm-diag{opacity:.75}
+
+/* ── Legend ─────────────────────────────────── */
+.legend-row{
+  display:flex;align-items:center;gap:10px;
+  font-size:11px;color:var(--muted);
+  margin-top:12px;flex-wrap:wrap
+}
+.legend-bar{
+  width:160px;height:10px;border-radius:4px;flex-shrink:0;
+  background:linear-gradient(to right,#3b6ee6,#ffffff,#d9304f)
+}
+.legend-labels{display:flex;justify-content:space-between;width:160px;font-size:10px}
+
+/* ── Meta footer ─────────────────────────────── */
+.meta-section{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px 22px;margin-bottom:20px;
+  font-size:12px;color:var(--muted)
+}
+.meta-section b{color:var(--text)}
+
+.page-footer{
+  text-align:center;font-size:11px;color:#94a3b8;
+  padding:16px 0 4px;margin-top:8px;
+  border-top:1px solid var(--border)
+}
+.back-link{
+  display:inline-block;margin-bottom:20px;
+  font-size:13px;color:var(--primary);text-decoration:none
+}
+.back-link:hover{text-decoration:underline}
+
+@media(max-width:900px){
+  .heatmaps-row{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .page-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .signal-header{flex-direction:column}
+  .corr-pills{gap:6px}
+}
+.ma-nav{background:var(--navy);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(4,59,114,.25)}
+.ma-nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:0;height:48px;overflow-x:auto;scrollbar-width:none}
+.ma-nav-inner::-webkit-scrollbar{display:none}
+.ma-logo{color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;padding-right:20px;border-right:1px solid rgba(255,255,255,.2);margin-right:16px;letter-spacing:-.2px}
+.ma-logo span{display:inline-block;width:8px;height:8px;background:var(--primary);border-radius:50%;margin-right:6px;vertical-align:middle}
+.ma-nav-group{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.8px;text-transform:uppercase;padding:0 8px 0 4px;white-space:nowrap}
+.ma-nav-link{color:rgba(255,255,255,.72);text-decoration:none;font-size:13px;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:all .15s}
+.ma-nav-link:hover{color:#fff;background:rgba(255,255,255,.1)}
+.ma-nav-link.current{color:#fff;background:var(--primary);font-weight:600}
+.ma-nav-sep{width:1px;height:16px;background:rgba(255,255,255,.15);margin:0 8px;flex-shrink:0}
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-14.html" class="ma-nav-link">가격신호</a>
+    <a href="../macro/2026-04-14.html" class="ma-nav-link">거시지표</a>
+    <a href="../correlation/2026-04-14.html" class="ma-nav-link current">상관관계</a>
+    <a href="../regime/2026-04-14.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-14.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-14.html" class="ma-nav-link">섹터</a>
+    <a href="../bond/2026-04-14.html" class="ma-nav-link">채권</a>
+    <a href="../style/2026-04-14.html" class="ma-nav-link">스타일</a>
+    <a href="../allocation/2026-04-14.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+<div style="max-width:1400px;margin:0 auto;padding:28px 24px 48px">
+<div class="page-header">
+  <div>
+    <h1>Correlation View</h1>
+    <div class="sub">Rolling asset correlations — 30 / 60 / 90-day windows | View Agent</div>
+  </div>
+  <div class="gen-time">
+    <div style="font-size:13px;font-weight:600;color:#1a1d2e;margin-bottom:3px">As of 2026-04-14</div>
+    <div>Generated: 2026-04-14 08:50</div>
+  </div>
+</div>
+
+<!-- Key signal card -->
+<div class="signal-card">
+  <div class="signal-header">
+    <div>
+      <div class="signal-title">Equity–Bond Correlation (S&amp;P 500 vs TLT)</div>
+      <div class="signal-label">Positive (주식-채권 분산 약화)</div>
+      <div class="signal-desc muted" style="margin-top:6px">
+        음수 상관관계 = 분산 효과 정상 작동 &nbsp;|&nbsp; 양수 상관관계 = 주식·채권 동반 하락 위험
+      </div>
+      
+    </div>
+    <div class="corr-pills">
+      <div class="corr-pill corr-pill-pos"><span class="corr-pill-label">30D</span><span class="corr-pill-val">+0.433</span></div>
+      <div class="corr-pill corr-pill-pos"><span class="corr-pill-label">60D</span><span class="corr-pill-val">+0.188</span></div>
+      <div class="corr-pill corr-pill-pos"><span class="corr-pill-label">90D</span><span class="corr-pill-val">+0.252</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Heatmaps -->
+<div class="heatmaps-row">
+  
+<div class="heatmap-card">
+  <div class="hm-title">30-Day Correlation</div>
+  <div class="hm-scroll">
+    <table class="hm-table">
+      <thead><tr><th class="hm-corner"></th><th class="hm-col-hdr">S&P500</th><th class="hm-col-hdr">NASDAQ</th><th class="hm-col-hdr">TLT</th><th class="hm-col-hdr">HYG</th><th class="hm-col-hdr">Gold</th><th class="hm-col-hdr">WTI</th><th class="hm-col-hdr">DXY</th><th class="hm-col-hdr">KOSPI</th></tr></thead>
+      <tbody><tr><td class="hm-row-hdr">S&P500</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="S&P500 / EQ_SP500: 1.00">1.00</td><td class="hm-cell" style="background:#d93250;color:#ffffff" title="S&P500 / EQ_NASDAQ: 0.99">0.99</td><td class="hm-cell" style="background:#ed9dac;color:#1a1d2e" title="S&P500 / BD_TLT: 0.47">0.47</td><td class="hm-cell" style="background:#dd4763;color:#ffffff" title="S&P500 / BD_HYG: 0.89">0.89</td><td class="hm-cell" style="background:#f4c3cc;color:#1a1d2e" title="S&P500 / CM_GOLD: 0.29">0.29</td><td class="hm-cell" style="background:#92aef1;color:#1a1d2e" title="S&P500 / CM_WTI: -0.55">-0.55</td><td class="hm-cell" style="background:#87a6ef;color:#1a1d2e" title="S&P500 / FX_DXY: -0.61">-0.61</td><td class="hm-cell" style="background:#e7edfb;color:#1a1d2e" title="S&P500 / EQ_KOSPI: -0.12">-0.12</td></tr>
+<tr><td class="hm-row-hdr">NASDAQ</td><td class="hm-cell" style="background:#d93250;color:#ffffff" title="NASDAQ / EQ_SP500: 0.99">0.99</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="NASDAQ / EQ_NASDAQ: 1.00">1.00</td><td class="hm-cell" style="background:#eda2b0;color:#1a1d2e" title="NASDAQ / BD_TLT: 0.45">0.45</td><td class="hm-cell" style="background:#dd4a65;color:#ffffff" title="NASDAQ / BD_HYG: 0.87">0.87</td><td class="hm-cell" style="background:#f3c3cc;color:#1a1d2e" title="NASDAQ / CM_GOLD: 0.29">0.29</td><td class="hm-cell" style="background:#96b1f1;color:#1a1d2e" title="NASDAQ / CM_WTI: -0.53">-0.53</td><td class="hm-cell" style="background:#88a7ef;color:#1a1d2e" title="NASDAQ / FX_DXY: -0.60">-0.60</td><td class="hm-cell" style="background:#e9effc;color:#1a1d2e" title="NASDAQ / EQ_KOSPI: -0.11">-0.11</td></tr>
+<tr><td class="hm-row-hdr">TLT</td><td class="hm-cell" style="background:#ed9dac;color:#1a1d2e" title="TLT / EQ_SP500: 0.47">0.47</td><td class="hm-cell" style="background:#eda2b0;color:#1a1d2e" title="TLT / EQ_NASDAQ: 0.45">0.45</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="TLT / BD_TLT: 1.00">1.00</td><td class="hm-cell" style="background:#e46f85;color:#1a1d2e" title="TLT / BD_HYG: 0.69">0.69</td><td class="hm-cell" style="background:#f8fafe;color:#1a1d2e" title="TLT / CM_GOLD: -0.03">-0.03</td><td class="hm-cell" style="background:#e1e9fb;color:#1a1d2e" title="TLT / CM_WTI: -0.15">-0.15</td><td class="hm-cell" style="background:#c3d2f7;color:#1a1d2e" title="TLT / FX_DXY: -0.30">-0.30</td><td class="hm-cell" style="background:#d0dcf9;color:#1a1d2e" title="TLT / EQ_KOSPI: -0.24">-0.24</td></tr>
+<tr><td class="hm-row-hdr">HYG</td><td class="hm-cell" style="background:#dd4763;color:#ffffff" title="HYG / EQ_SP500: 0.89">0.89</td><td class="hm-cell" style="background:#dd4a65;color:#ffffff" title="HYG / EQ_NASDAQ: 0.87">0.87</td><td class="hm-cell" style="background:#e46f85;color:#1a1d2e" title="HYG / BD_TLT: 0.69">0.69</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="HYG / BD_HYG: 1.00">1.00</td><td class="hm-cell" style="background:#f9e1e6;color:#1a1d2e" title="HYG / CM_GOLD: 0.14">0.14</td><td class="hm-cell" style="background:#a8bff3;color:#1a1d2e" title="HYG / CM_WTI: -0.44">-0.44</td><td class="hm-cell" style="background:#8ba9f0;color:#1a1d2e" title="HYG / FX_DXY: -0.59">-0.59</td><td class="hm-cell" style="background:#c1d1f7;color:#1a1d2e" title="HYG / EQ_KOSPI: -0.32">-0.32</td></tr>
+<tr><td class="hm-row-hdr">Gold</td><td class="hm-cell" style="background:#f4c3cc;color:#1a1d2e" title="Gold / EQ_SP500: 0.29">0.29</td><td class="hm-cell" style="background:#f3c3cc;color:#1a1d2e" title="Gold / EQ_NASDAQ: 0.29">0.29</td><td class="hm-cell" style="background:#f8fafe;color:#1a1d2e" title="Gold / BD_TLT: -0.03">-0.03</td><td class="hm-cell" style="background:#f9e1e6;color:#1a1d2e" title="Gold / BD_HYG: 0.14">0.14</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="Gold / CM_GOLD: 1.00">1.00</td><td class="hm-cell" style="background:#d8e2fa;color:#1a1d2e" title="Gold / CM_WTI: -0.20">-0.20</td><td class="hm-cell" style="background:#e3eafb;color:#1a1d2e" title="Gold / FX_DXY: -0.14">-0.14</td><td class="hm-cell" style="background:#f2bbc5;color:#1a1d2e" title="Gold / EQ_KOSPI: 0.33">0.33</td></tr>
+<tr><td class="hm-row-hdr">WTI</td><td class="hm-cell" style="background:#92aef1;color:#1a1d2e" title="WTI / EQ_SP500: -0.55">-0.55</td><td class="hm-cell" style="background:#96b1f1;color:#1a1d2e" title="WTI / EQ_NASDAQ: -0.53">-0.53</td><td class="hm-cell" style="background:#e1e9fb;color:#1a1d2e" title="WTI / BD_TLT: -0.15">-0.15</td><td class="hm-cell" style="background:#a8bff3;color:#1a1d2e" title="WTI / BD_HYG: -0.44">-0.44</td><td class="hm-cell" style="background:#d8e2fa;color:#1a1d2e" title="WTI / CM_GOLD: -0.20">-0.20</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="WTI / CM_WTI: 1.00">1.00</td><td class="hm-cell" style="background:#e78093;color:#1a1d2e" title="WTI / FX_DXY: 0.61">0.61</td><td class="hm-cell" style="background:#e2eafb;color:#1a1d2e" title="WTI / EQ_KOSPI: -0.14">-0.14</td></tr>
+<tr><td class="hm-row-hdr">DXY</td><td class="hm-cell" style="background:#87a6ef;color:#1a1d2e" title="DXY / EQ_SP500: -0.61">-0.61</td><td class="hm-cell" style="background:#88a7ef;color:#1a1d2e" title="DXY / EQ_NASDAQ: -0.60">-0.60</td><td class="hm-cell" style="background:#c3d2f7;color:#1a1d2e" title="DXY / BD_TLT: -0.30">-0.30</td><td class="hm-cell" style="background:#8ba9f0;color:#1a1d2e" title="DXY / BD_HYG: -0.59">-0.59</td><td class="hm-cell" style="background:#e3eafb;color:#1a1d2e" title="DXY / CM_GOLD: -0.14">-0.14</td><td class="hm-cell" style="background:#e78093;color:#1a1d2e" title="DXY / CM_WTI: 0.61">0.61</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="DXY / FX_DXY: 1.00">1.00</td><td class="hm-cell" style="background:#fae7ea;color:#1a1d2e" title="DXY / EQ_KOSPI: 0.12">0.12</td></tr>
+<tr><td class="hm-row-hdr">KOSPI</td><td class="hm-cell" style="background:#e7edfb;color:#1a1d2e" title="KOSPI / EQ_SP500: -0.12">-0.12</td><td class="hm-cell" style="background:#e9effc;color:#1a1d2e" title="KOSPI / EQ_NASDAQ: -0.11">-0.11</td><td class="hm-cell" style="background:#d0dcf9;color:#1a1d2e" title="KOSPI / BD_TLT: -0.24">-0.24</td><td class="hm-cell" style="background:#c1d1f7;color:#1a1d2e" title="KOSPI / BD_HYG: -0.32">-0.32</td><td class="hm-cell" style="background:#f2bbc5;color:#1a1d2e" title="KOSPI / CM_GOLD: 0.33">0.33</td><td class="hm-cell" style="background:#e2eafb;color:#1a1d2e" title="KOSPI / CM_WTI: -0.14">-0.14</td><td class="hm-cell" style="background:#fae7ea;color:#1a1d2e" title="KOSPI / FX_DXY: 0.12">0.12</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="KOSPI / EQ_KOSPI: 1.00">1.00</td></tr>
+</tbody>
+    </table>
+  </div>
+</div>
+  
+<div class="heatmap-card">
+  <div class="hm-title">90-Day Correlation</div>
+  <div class="hm-scroll">
+    <table class="hm-table">
+      <thead><tr><th class="hm-corner"></th><th class="hm-col-hdr">S&P500</th><th class="hm-col-hdr">NASDAQ</th><th class="hm-col-hdr">TLT</th><th class="hm-col-hdr">HYG</th><th class="hm-col-hdr">Gold</th><th class="hm-col-hdr">WTI</th><th class="hm-col-hdr">DXY</th><th class="hm-col-hdr">KOSPI</th></tr></thead>
+      <tbody><tr><td class="hm-row-hdr">S&P500</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="S&P500 / EQ_SP500: 1.00">1.00</td><td class="hm-cell" style="background:#da3654;color:#ffffff" title="S&P500 / EQ_NASDAQ: 0.97">0.97</td><td class="hm-cell" style="background:#f6d2d9;color:#1a1d2e" title="S&P500 / BD_TLT: 0.21">0.21</td><td class="hm-cell" style="background:#e05871;color:#ffffff" title="S&P500 / BD_HYG: 0.80">0.80</td><td class="hm-cell" style="background:#f6ced6;color:#1a1d2e" title="S&P500 / CM_GOLD: 0.23">0.23</td><td class="hm-cell" style="background:#b5c8f5;color:#1a1d2e" title="S&P500 / CM_WTI: -0.38">-0.38</td><td class="hm-cell" style="background:#acc2f4;color:#1a1d2e" title="S&P500 / FX_DXY: -0.42">-0.42</td><td class="hm-cell" style="background:#e8eefc;color:#1a1d2e" title="S&P500 / EQ_KOSPI: -0.12">-0.12</td></tr>
+<tr><td class="hm-row-hdr">NASDAQ</td><td class="hm-cell" style="background:#da3654;color:#ffffff" title="NASDAQ / EQ_SP500: 0.97">0.97</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="NASDAQ / EQ_NASDAQ: 1.00">1.00</td><td class="hm-cell" style="background:#f8d9de;color:#1a1d2e" title="NASDAQ / BD_TLT: 0.18">0.18</td><td class="hm-cell" style="background:#e26279;color:#ffffff" title="NASDAQ / BD_HYG: 0.76">0.76</td><td class="hm-cell" style="background:#f6cfd6;color:#1a1d2e" title="NASDAQ / CM_GOLD: 0.23">0.23</td><td class="hm-cell" style="background:#b9cbf6;color:#1a1d2e" title="NASDAQ / CM_WTI: -0.35">-0.35</td><td class="hm-cell" style="background:#afc3f4;color:#1a1d2e" title="NASDAQ / FX_DXY: -0.41">-0.41</td><td class="hm-cell" style="background:#e9eefc;color:#1a1d2e" title="NASDAQ / EQ_KOSPI: -0.11">-0.11</td></tr>
+<tr><td class="hm-row-hdr">TLT</td><td class="hm-cell" style="background:#f6d2d9;color:#1a1d2e" title="TLT / EQ_SP500: 0.21">0.21</td><td class="hm-cell" style="background:#f8d9de;color:#1a1d2e" title="TLT / EQ_NASDAQ: 0.18">0.18</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="TLT / BD_TLT: 1.00">1.00</td><td class="hm-cell" style="background:#ec99a8;color:#1a1d2e" title="TLT / BD_HYG: 0.49">0.49</td><td class="hm-cell" style="background:#fdf8f9;color:#1a1d2e" title="TLT / CM_GOLD: 0.03">0.03</td><td class="hm-cell" style="background:#dae4fa;color:#1a1d2e" title="TLT / CM_WTI: -0.19">-0.19</td><td class="hm-cell" style="background:#cbd9f8;color:#1a1d2e" title="TLT / FX_DXY: -0.26">-0.26</td><td class="hm-cell" style="background:#dee6fa;color:#1a1d2e" title="TLT / EQ_KOSPI: -0.17">-0.17</td></tr>
+<tr><td class="hm-row-hdr">HYG</td><td class="hm-cell" style="background:#e05871;color:#ffffff" title="HYG / EQ_SP500: 0.80">0.80</td><td class="hm-cell" style="background:#e26279;color:#ffffff" title="HYG / EQ_NASDAQ: 0.76">0.76</td><td class="hm-cell" style="background:#ec99a8;color:#1a1d2e" title="HYG / BD_TLT: 0.49">0.49</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="HYG / BD_HYG: 1.00">1.00</td><td class="hm-cell" style="background:#fceff2;color:#1a1d2e" title="HYG / CM_GOLD: 0.07">0.07</td><td class="hm-cell" style="background:#b7caf5;color:#1a1d2e" title="HYG / CM_WTI: -0.36">-0.36</td><td class="hm-cell" style="background:#abc1f4;color:#1a1d2e" title="HYG / FX_DXY: -0.42">-0.42</td><td class="hm-cell" style="background:#c8d6f7;color:#1a1d2e" title="HYG / EQ_KOSPI: -0.28">-0.28</td></tr>
+<tr><td class="hm-row-hdr">Gold</td><td class="hm-cell" style="background:#f6ced6;color:#1a1d2e" title="Gold / EQ_SP500: 0.23">0.23</td><td class="hm-cell" style="background:#f6cfd6;color:#1a1d2e" title="Gold / EQ_NASDAQ: 0.23">0.23</td><td class="hm-cell" style="background:#fdf8f9;color:#1a1d2e" title="Gold / BD_TLT: 0.03">0.03</td><td class="hm-cell" style="background:#fceff2;color:#1a1d2e" title="Gold / BD_HYG: 0.07">0.07</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="Gold / CM_GOLD: 1.00">1.00</td><td class="hm-cell" style="background:#f8fafe;color:#1a1d2e" title="Gold / CM_WTI: -0.03">-0.03</td><td class="hm-cell" style="background:#c3d3f7;color:#1a1d2e" title="Gold / FX_DXY: -0.30">-0.30</td><td class="hm-cell" style="background:#f4c3cc;color:#1a1d2e" title="Gold / EQ_KOSPI: 0.29">0.29</td></tr>
+<tr><td class="hm-row-hdr">WTI</td><td class="hm-cell" style="background:#b5c8f5;color:#1a1d2e" title="WTI / EQ_SP500: -0.38">-0.38</td><td class="hm-cell" style="background:#b9cbf6;color:#1a1d2e" title="WTI / EQ_NASDAQ: -0.35">-0.35</td><td class="hm-cell" style="background:#dae4fa;color:#1a1d2e" title="WTI / BD_TLT: -0.19">-0.19</td><td class="hm-cell" style="background:#b7caf5;color:#1a1d2e" title="WTI / BD_HYG: -0.36">-0.36</td><td class="hm-cell" style="background:#f8fafe;color:#1a1d2e" title="WTI / CM_GOLD: -0.03">-0.03</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="WTI / CM_WTI: 1.00">1.00</td><td class="hm-cell" style="background:#f1b3bf;color:#1a1d2e" title="WTI / FX_DXY: 0.36">0.36</td><td class="hm-cell" style="background:#f2f5fd;color:#1a1d2e" title="WTI / EQ_KOSPI: -0.06">-0.06</td></tr>
+<tr><td class="hm-row-hdr">DXY</td><td class="hm-cell" style="background:#acc2f4;color:#1a1d2e" title="DXY / EQ_SP500: -0.42">-0.42</td><td class="hm-cell" style="background:#afc3f4;color:#1a1d2e" title="DXY / EQ_NASDAQ: -0.41">-0.41</td><td class="hm-cell" style="background:#cbd9f8;color:#1a1d2e" title="DXY / BD_TLT: -0.26">-0.26</td><td class="hm-cell" style="background:#abc1f4;color:#1a1d2e" title="DXY / BD_HYG: -0.42">-0.42</td><td class="hm-cell" style="background:#c3d3f7;color:#1a1d2e" title="DXY / CM_GOLD: -0.30">-0.30</td><td class="hm-cell" style="background:#f1b3bf;color:#1a1d2e" title="DXY / CM_WTI: 0.36">0.36</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="DXY / FX_DXY: 1.00">1.00</td><td class="hm-cell" style="background:#fcfdfe;color:#1a1d2e" title="DXY / EQ_KOSPI: -0.01">-0.01</td></tr>
+<tr><td class="hm-row-hdr">KOSPI</td><td class="hm-cell" style="background:#e8eefc;color:#1a1d2e" title="KOSPI / EQ_SP500: -0.12">-0.12</td><td class="hm-cell" style="background:#e9eefc;color:#1a1d2e" title="KOSPI / EQ_NASDAQ: -0.11">-0.11</td><td class="hm-cell" style="background:#dee6fa;color:#1a1d2e" title="KOSPI / BD_TLT: -0.17">-0.17</td><td class="hm-cell" style="background:#c8d6f7;color:#1a1d2e" title="KOSPI / BD_HYG: -0.28">-0.28</td><td class="hm-cell" style="background:#f4c3cc;color:#1a1d2e" title="KOSPI / CM_GOLD: 0.29">0.29</td><td class="hm-cell" style="background:#f2f5fd;color:#1a1d2e" title="KOSPI / CM_WTI: -0.06">-0.06</td><td class="hm-cell" style="background:#fcfdfe;color:#1a1d2e" title="KOSPI / FX_DXY: -0.01">-0.01</td><td class="hm-cell hm-diag" style="background:#e8eaf0;color:#7c8298" title="KOSPI / EQ_KOSPI: 1.00">1.00</td></tr>
+</tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- DCC / EWMA + Tail Dependence -->
+<div class="card">
+  <div class="card-title">📡 동적 상관관계 & 꼬리 의존성</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <!-- DCC / EWMA -->
+    <div>
+      <h3 style="font-size:13px;color:#64748b;margin-bottom:12px">동적 상관관계 — S&amp;P500 × TLT</h3>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="corr-pill corr-pill-pos" style="min-width:100px">
+          <span class="corr-pill-label">EWMA</span>
+          <span class="corr-pill-val" style="color:#dc2626">+0.354</span>
+        </div>
+        <div class="corr-pill corr-pill-pos" style="min-width:100px">
+          <span class="corr-pill-label">EWMA-30</span>
+          <span class="corr-pill-val" style="color:#dc2626">+0.354</span>
+        </div>
+        <div class="corr-pill corr-pill-pos" style="min-width:100px">
+          <span class="corr-pill-label">Pearson-30D</span>
+          <span class="corr-pill-val" style="color:#dc2626">+0.433</span>
+        </div>
+      </div>
+      <p style="font-size:11px;color:#94a3b8">
+        EWMA (fallback) | EWMA λ≈1−2/31≈0.94 | 음수 = 분산 효과 작동
+      </p>
+    </div>
+    <!-- Tail Dependence -->
+    <div>
+      <h3 style="font-size:13px;color:#64748b;margin-bottom:12px">꼬리 의존성 (하위/상위 10분위)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="border-bottom:1px solid #e2e8f0">
+          <th style="text-align:left;padding:4px 8px;font-weight:600;color:#475569">페어</th>
+          <th style="padding:4px 8px;color:#475569">λ-하방</th>
+          <th style="padding:4px 8px;color:#475569">λ-상방</th>
+          <th style="text-align:left;padding:4px 8px;color:#475569">해석</th>
+        </tr></thead>
+        <tbody style="border-collapse:collapse">
+          <tr>
+          <td style="font-weight:600">S&P500 × TLT</td>
+          <td style="color:#d97706;font-weight:700;font-family:'JetBrains Mono',monospace">30.8%</td>
+          <td style="color:#64748b;font-weight:700;font-family:'JetBrains Mono',monospace">7.7%</td>
+          <td style="font-size:12px;color:#64748b">하방 꼬리 중간 동조 (30.8%) — 급락 시 부분적 공동 하락</td>
+        </tr><tr>
+          <td style="font-weight:600">S&P500 × Gold</td>
+          <td style="color:#059669;font-weight:700;font-family:'JetBrains Mono',monospace">23.1%</td>
+          <td style="color:#64748b;font-weight:700;font-family:'JetBrains Mono',monospace">15.4%</td>
+          <td style="font-size:12px;color:#64748b">하방 꼬리 낮은 동조 (23.1%) — 급락 분산 효과 양호</td>
+        </tr><tr>
+          <td style="font-weight:600">S&P500 × WTI</td>
+          <td style="color:#d97706;font-weight:700;font-family:'JetBrains Mono',monospace">26.9%</td>
+          <td style="color:#64748b;font-weight:700;font-family:'JetBrains Mono',monospace">7.7%</td>
+          <td style="font-size:12px;color:#64748b">하방 꼬리 낮은 동조 (26.9%) — 급락 분산 효과 양호</td>
+        </tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">
+        λ = 한 자산이 극단에 있을 때 다른 자산도 극단에 있을 조건부 확률
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Network centrality -->
+<div class="card">
+  <div class="card-title">🕸 상관관계 네트워크 중심성 (|ρ| ≥ 0.5)</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px">
+    <div>
+      <h3 style="font-size:13px;color:#64748b;margin-bottom:10px">자산별 연결 중심성 (Degree Centrality)</h3>
+      <div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">S&P500</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:57%;height:100%;background:#d97706;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#d97706">57%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">NASDAQ</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:57%;height:100%;background:#d97706;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#d97706">57%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">TLT</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:14%;height:100%;background:#059669;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#059669">14%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">HYG</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:57%;height:100%;background:#d97706;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#d97706">57%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">Gold</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:0%;height:100%;background:#059669;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#059669">0%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">WTI</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:43%;height:100%;background:#d97706;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#d97706">43%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">DXY</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:57%;height:100%;background:#d97706;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#d97706">57%</span>
+        </div><div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">KOSPI</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:0%;height:100%;background:#059669;border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:#059669">0%</span>
+        </div>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">
+        높을수록 다른 자산과 강한 상관관계 → 시스템 리스크 중심 노드
+      </p>
+    </div>
+    <div>
+      <div class="corr-pill" style="flex-direction:row;justify-content:space-between;align-items:center;padding:12px 16px;margin-bottom:10px;background:#f8fafc;border-radius:12px">
+        <div>
+          <div style="font-size:11px;color:#94a3b8">시스템 평균 중심성</div>
+          <div style="font-size:20px;font-weight:800;color:#059669">35.7%</div>
+        </div>
+        <div style="font-size:11px;color:#64748b;text-align:right">
+          분산 효과 양호
+        </div>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:12px;font-size:12px">
+        <div style="margin-bottom:6px"><b>중심 노드 (Most Central)</b><br>
+          <span style="color:#dc2626;font-weight:700">S&P500</span>
+          <span style="color:#94a3b8"> (57%)</span>
+        </div>
+        <div><b>분산 노드 (Most Isolated)</b><br>
+          <span style="color:#059669;font-weight:700">KOSPI</span>
+          <span style="color:#94a3b8"> (0%)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Color legend -->
+<div class="card" style="padding:16px 22px">
+  <div class="card-title" style="margin-bottom:10px">Color Legend</div>
+  <div class="legend-row">
+    <span>Deep Blue (−1.0)</span>
+    <div>
+      <div class="legend-bar"></div>
+      <div class="legend-labels"><span>−1.0</span><span>0.0</span><span>+1.0</span></div>
+    </div>
+    <span>Deep Red (+1.0)</span>
+    <span style="margin-left:16px">Diagonal = 자기 자신 (1.00, 회색)</span>
+  </div>
+</div>
+
+<!-- Metadata -->
+<div class="meta-section">
+  <b>Assets used (8):</b> S&P500, NASDAQ, TLT, HYG, Gold, WTI, DXY, KOSPI
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <b>Returns:</b> Log-return (ln(P_t / P_t-1))
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <b>Method:</b> Pearson correlation on trailing window
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <b>Source:</b> history/market_data.csv
+</div>
+
+<div class="page-footer">
+  Correlation View | Rolling 30/60/90-day correlations | View Agent
+</div>
+</div>
+</body>
+</html>

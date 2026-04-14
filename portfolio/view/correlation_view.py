@@ -152,6 +152,186 @@ def _corr_matrix(
     return result
 
 
+def _ewma_corr_pair(
+    returns: pd.DataFrame,
+    code_a: str,
+    code_b: str,
+    span: int = 30,
+    lookback: int = 252,
+) -> dict:
+    """EWMA 동적 상관관계. arch가 없을 때 DCC-GARCH 대체.
+
+    Returns:
+        dict with keys: current, series (pd.Series), method
+    """
+    if code_a not in returns.columns or code_b not in returns.columns:
+        return {"current": None, "series": pd.Series(dtype=float), "method": "EWMA"}
+
+    ra = returns[[code_a, code_b]].dropna().iloc[-lookback:]
+    if len(ra) < span * 2:
+        return {"current": None, "series": pd.Series(dtype=float), "method": "EWMA"}
+
+    # EWMA variance & covariance
+    ewm_cov = ra.ewm(span=span, min_periods=span).cov()
+    # Extract the (code_a, code_b) off-diagonal series
+    try:
+        cov_ab = ewm_cov.xs(code_b, level=1)[code_a]
+        var_a  = ewm_cov.xs(code_a, level=1)[code_a]
+        var_b  = ewm_cov.xs(code_b, level=1)[code_b]
+        denom  = np.sqrt(var_a * var_b).replace(0, np.nan)
+        rho_series = (cov_ab / denom).dropna()
+    except Exception:
+        return {"current": None, "series": pd.Series(dtype=float), "method": "EWMA"}
+
+    current = float(rho_series.iloc[-1]) if len(rho_series) > 0 else None
+    return {"current": current, "series": rho_series, "method": "EWMA"}
+
+
+def _dcc_garch_corr_pair(
+    returns: pd.DataFrame,
+    code_a: str,
+    code_b: str,
+    lookback: int = 500,
+) -> dict:
+    """DCC-GARCH 동적 상관관계 (arch 라이브러리 사용).
+
+    Falls back to EWMA if arch unavailable or fit fails.
+    Returns:
+        dict with keys: current, method, status
+    """
+    try:
+        from arch.multivariate import DCC
+        from arch import arch_model
+
+        if code_a not in returns.columns or code_b not in returns.columns:
+            raise ValueError("Missing columns")
+
+        ra = returns[[code_a, code_b]].dropna().iloc[-lookback:] * 100  # in % for stability
+        if len(ra) < 100:
+            raise ValueError("Insufficient data")
+
+        # Fit GARCH(1,1) on each series to get standardized residuals
+        resids = {}
+        for col in [code_a, code_b]:
+            am = arch_model(ra[col], vol="Garch", p=1, q=1, dist="normal", rescale=False)
+            res = am.fit(disp="off", show_warning=False)
+            resids[col] = res.std_resid
+
+        resid_df = pd.DataFrame(resids).dropna()
+        if len(resid_df) < 50:
+            raise ValueError("Too few residuals")
+
+        # DCC step: rolling correlation of standardized residuals (simplified)
+        # Full DCC MLE is expensive; use 30-day rolling on std-residuals instead
+        dcc_rho = resid_df[code_a].rolling(30).corr(resid_df[code_b])
+        current = float(dcc_rho.dropna().iloc[-1]) if len(dcc_rho.dropna()) > 0 else None
+        return {"current": current, "method": "DCC-GARCH (std-resid 30d)", "status": "ok"}
+
+    except Exception as e:
+        # Graceful fallback to EWMA
+        ewma = _ewma_corr_pair(returns, code_a, code_b, span=30)
+        return {"current": ewma["current"], "method": "EWMA (fallback)", "status": str(e)[:80]}
+
+
+def _tail_dependence(
+    returns: pd.DataFrame,
+    code_a: str,
+    code_b: str,
+    q: float = 0.10,
+    lookback: int = 252,
+) -> dict:
+    """Lower/Upper tail dependence coefficient.
+
+    λ_lower = P(X < Q_q | Y < Q_q)  — 동반 급락 확률
+    λ_upper = P(X > Q_1-q | Y > Q_1-q)  — 동반 급등 확률
+
+    Args:
+        q: Quantile threshold (default 10th percentile).
+    Returns:
+        dict with lower, upper, interpretation
+    """
+    result = {"lower": np.nan, "upper": np.nan, "interpretation": "데이터 부족"}
+
+    if code_a not in returns.columns or code_b not in returns.columns:
+        return result
+
+    df = returns[[code_a, code_b]].dropna().iloc[-lookback:]
+    if len(df) < 60:
+        return result
+
+    n = len(df)
+    ra, rb = df[code_a], df[code_b]
+
+    # Lower tail
+    qa, qb = ra.quantile(q), rb.quantile(q)
+    n_lower_b = (rb < qb).sum()
+    n_joint_lower = ((ra < qa) & (rb < qb)).sum()
+    lower = float(n_joint_lower / n_lower_b) if n_lower_b > 0 else np.nan
+
+    # Upper tail
+    qa_up, qb_up = ra.quantile(1 - q), rb.quantile(1 - q)
+    n_upper_b = (rb > qb_up).sum()
+    n_joint_upper = ((ra > qa_up) & (rb > qb_up)).sum()
+    upper = float(n_joint_upper / n_upper_b) if n_upper_b > 0 else np.nan
+
+    result["lower"] = round(lower, 3)
+    result["upper"] = round(upper, 3)
+
+    # Interpretation
+    if not np.isnan(lower):
+        if lower > 0.5:
+            result["interpretation"] = f"하방 꼬리 강한 동조 ({lower:.1%}) — 위기 시 분산 효과 약화"
+        elif lower > 0.3:
+            result["interpretation"] = f"하방 꼬리 중간 동조 ({lower:.1%}) — 급락 시 부분적 공동 하락"
+        else:
+            result["interpretation"] = f"하방 꼬리 낮은 동조 ({lower:.1%}) — 급락 분산 효과 양호"
+    return result
+
+
+def _network_centrality(
+    matrix: dict[str, dict[str, float]],
+    assets: list[str],
+    threshold: float = 0.5,
+) -> dict:
+    """상관관계 네트워크 중심성 분석.
+
+    Degree centrality = |{j : |ρ_ij| > threshold}| / (N-1)
+
+    Returns:
+        dict with:
+          centrality: {asset: degree}
+          most_central: (asset_code, degree)
+          most_isolated: (asset_code, degree)
+          systemic_risk: float (avg centrality, 0–1)
+    """
+    if not matrix or not assets:
+        return {}
+
+    n = len(assets)
+    centrality = {}
+    for a in assets:
+        row = matrix.get(a, {})
+        count = sum(1 for b in assets
+                    if b != a and not np.isnan(row.get(b, np.nan)) and abs(row.get(b, 0)) >= threshold)
+        centrality[a] = round(count / max(n - 1, 1), 3)
+
+    if not centrality:
+        return {}
+
+    sorted_c = sorted(centrality.items(), key=lambda x: x[1], reverse=True)
+    most_central  = sorted_c[0]
+    most_isolated = sorted_c[-1]
+    systemic_risk = round(float(np.mean(list(centrality.values()))), 3)
+
+    return {
+        "centrality": centrality,
+        "most_central": most_central,
+        "most_isolated": most_isolated,
+        "systemic_risk": systemic_risk,
+        "threshold": threshold,
+    }
+
+
 def _equity_bond_signal(corr_30d: Optional[float]) -> str:
     """Return Korean-annotated signal string for the equity-bond correlation.
 
@@ -211,6 +391,18 @@ def compute_correlation_view(date: str, csv_path: Path = HISTORY_CSV) -> dict:
     matrix_30d = _corr_matrix(returns, CORE_ASSETS, 30)
     matrix_90d = _corr_matrix(returns, CORE_ASSETS, 90)
 
+    # ── DCC-GARCH / EWMA dynamic correlation ────────────────────────────
+    dcc_result = _dcc_garch_corr_pair(returns, _EQUITY_CODE, _BOND_CODE)
+    ewma_result = _ewma_corr_pair(returns, _EQUITY_CODE, _BOND_CODE, span=30)
+
+    # ── Tail dependence: equity-bond, equity-gold ────────────────────────
+    td_eq_bond = _tail_dependence(returns, _EQUITY_CODE, _BOND_CODE)
+    td_eq_gold = _tail_dependence(returns, _EQUITY_CODE, "CM_GOLD")
+    td_eq_wti  = _tail_dependence(returns, _EQUITY_CODE, "CM_WTI")
+
+    # ── Network centrality (30d matrix) ──────────────────────────────────
+    network = _network_centrality(matrix_30d, available_assets, threshold=0.5)
+
     return {
         "date": date,
         "equity_bond_corr": {
@@ -223,6 +415,15 @@ def compute_correlation_view(date: str, csv_path: Path = HISTORY_CSV) -> dict:
         "core_matrix_90d": matrix_90d,
         "regime_change": regime_change,
         "assets": available_assets,
+        # New
+        "dcc": dcc_result,
+        "ewma": ewma_result,
+        "tail_dependence": {
+            "eq_bond": td_eq_bond,
+            "eq_gold": td_eq_gold,
+            "eq_wti":  td_eq_wti,
+        },
+        "network": network,
     }
 
 
@@ -415,6 +616,78 @@ def generate_correlation_html(view: dict) -> str:
     # Assets used note
     labels_used = [ASSET_LABELS.get(a, a) for a in assets_used]
     assets_note = ", ".join(labels_used) if labels_used else "—"
+
+    # ── DCC / EWMA card data ─────────────────────────────────────────────
+    dcc     = view.get("dcc", {})
+    ewma    = view.get("ewma", {})
+    dcc_val = dcc.get("current")
+    dcc_method = dcc.get("method", "—")
+    ewma_val = ewma.get("current")
+
+    def _rho_color(v):
+        if v is None or (isinstance(v, float) and np.isnan(v)):
+            return "#94a3b8"
+        return "#059669" if v < 0 else "#dc2626"
+
+    dcc_disp = f"{dcc_val:+.3f}" if dcc_val is not None else "—"
+    ewma_disp = f"{ewma_val:+.3f}" if ewma_val is not None else "—"
+
+    # ── Tail dependence data ─────────────────────────────────────────────
+    td = view.get("tail_dependence", {})
+
+    def _td_row(pair_label: str, td_dict: dict) -> str:
+        lower = td_dict.get("lower", np.nan)
+        upper = td_dict.get("upper", np.nan)
+        interp = td_dict.get("interpretation", "—")
+        lower_color = "#dc2626" if (not np.isnan(lower) and lower > 0.4) else \
+                      "#d97706" if (not np.isnan(lower) and lower > 0.25) else "#059669"
+        upper_color = "#059669" if (not np.isnan(upper) and upper > 0.4) else "#64748b"
+        lower_str = f"{lower:.1%}" if not np.isnan(lower) else "—"
+        upper_str = f"{upper:.1%}" if not np.isnan(upper) else "—"
+        return f"""<tr>
+          <td style="font-weight:600">{pair_label}</td>
+          <td style="color:{lower_color};font-weight:700;font-family:'JetBrains Mono',monospace">{lower_str}</td>
+          <td style="color:{upper_color};font-weight:700;font-family:'JetBrains Mono',monospace">{upper_str}</td>
+          <td style="font-size:12px;color:#64748b">{interp}</td>
+        </tr>"""
+
+    td_eq_bond = td.get("eq_bond", {})
+    td_eq_gold = td.get("eq_gold", {})
+    td_eq_wti  = td.get("eq_wti", {})
+    td_rows = (
+        _td_row("S&P500 × TLT", td_eq_bond) +
+        _td_row("S&P500 × Gold", td_eq_gold) +
+        _td_row("S&P500 × WTI", td_eq_wti)
+    )
+
+    # ── Network centrality data ──────────────────────────────────────────
+    network = view.get("network", {})
+    net_centrality = network.get("centrality", {})
+    most_central   = network.get("most_central", ("—", 0))
+    most_isolated  = network.get("most_isolated", ("—", 0))
+    systemic_risk  = network.get("systemic_risk", np.nan)
+    net_threshold  = network.get("threshold", 0.5)
+
+    sys_risk_color = "#dc2626" if (not np.isnan(systemic_risk) and systemic_risk > 0.6) else \
+                     "#d97706" if (not np.isnan(systemic_risk) and systemic_risk > 0.4) else "#059669"
+    sys_risk_str = f"{systemic_risk:.1%}" if not np.isnan(systemic_risk) else "—"
+
+    def _net_bar(code: str) -> str:
+        val = net_centrality.get(code, 0)
+        pct = val * 100
+        lbl = ASSET_LABELS.get(code, code)
+        color = "#dc2626" if val > 0.6 else "#d97706" if val > 0.4 else "#059669"
+        return f"""<div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+          <span style="width:60px;font-size:12px;color:#64748b">{lbl}</span>
+          <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+            <div style="width:{pct:.0f}%;height:100%;background:{color};border-radius:5px"></div>
+          </div>
+          <span style="width:36px;text-align:right;font-size:12px;font-weight:700;color:{color}">{val:.0%}</span>
+        </div>"""
+
+    net_bars = "".join(_net_bar(c) for c in assets_used) if assets_used else "<p class='muted'>데이터 없음</p>"
+    most_central_lbl = ASSET_LABELS.get(most_central[0], most_central[0])
+    most_isolated_lbl = ASSET_LABELS.get(most_isolated[0], most_isolated[0])
 
     # Build heatmaps
     heatmap_30 = _build_heatmap_html(matrix_30, assets_used, "30-Day Correlation")
@@ -626,6 +899,87 @@ body{{
 <div class="heatmaps-row">
   {heatmap_30}
   {heatmap_90}
+</div>
+
+<!-- DCC / EWMA + Tail Dependence -->
+<div class="card">
+  <div class="card-title">📡 동적 상관관계 & 꼬리 의존성</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <!-- DCC / EWMA -->
+    <div>
+      <h3 style="font-size:13px;color:#64748b;margin-bottom:12px">동적 상관관계 — S&amp;P500 × TLT</h3>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="corr-pill corr-pill-{'neg' if dcc_val is not None and dcc_val < 0 else 'pos' if dcc_val is not None and dcc_val > 0 else 'neutral'}" style="min-width:100px">
+          <span class="corr-pill-label">{dcc_method.split('(')[0].strip()}</span>
+          <span class="corr-pill-val" style="color:{_rho_color(dcc_val)}">{dcc_disp}</span>
+        </div>
+        <div class="corr-pill corr-pill-{'neg' if ewma_val is not None and ewma_val < 0 else 'pos' if ewma_val is not None and ewma_val > 0 else 'neutral'}" style="min-width:100px">
+          <span class="corr-pill-label">EWMA-30</span>
+          <span class="corr-pill-val" style="color:{_rho_color(ewma_val)}">{ewma_disp}</span>
+        </div>
+        <div class="corr-pill corr-pill-{'neg' if corr_30 is not None and corr_30 < 0 else 'pos' if corr_30 is not None and corr_30 > 0 else 'neutral'}" style="min-width:100px">
+          <span class="corr-pill-label">Pearson-30D</span>
+          <span class="corr-pill-val" style="color:{_rho_color(corr_30)}">{_corr_value_display(corr_30)}</span>
+        </div>
+      </div>
+      <p style="font-size:11px;color:#94a3b8">
+        {dcc_method} | EWMA λ≈1−2/31≈0.94 | 음수 = 분산 효과 작동
+      </p>
+    </div>
+    <!-- Tail Dependence -->
+    <div>
+      <h3 style="font-size:13px;color:#64748b;margin-bottom:12px">꼬리 의존성 (하위/상위 10분위)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="border-bottom:1px solid #e2e8f0">
+          <th style="text-align:left;padding:4px 8px;font-weight:600;color:#475569">페어</th>
+          <th style="padding:4px 8px;color:#475569">λ-하방</th>
+          <th style="padding:4px 8px;color:#475569">λ-상방</th>
+          <th style="text-align:left;padding:4px 8px;color:#475569">해석</th>
+        </tr></thead>
+        <tbody style="border-collapse:collapse">
+          {td_rows}
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">
+        λ = 한 자산이 극단에 있을 때 다른 자산도 극단에 있을 조건부 확률
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Network centrality -->
+<div class="card">
+  <div class="card-title">🕸 상관관계 네트워크 중심성 (|ρ| ≥ {net_threshold})</div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px">
+    <div>
+      <h3 style="font-size:13px;color:#64748b;margin-bottom:10px">자산별 연결 중심성 (Degree Centrality)</h3>
+      {net_bars}
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">
+        높을수록 다른 자산과 강한 상관관계 → 시스템 리스크 중심 노드
+      </p>
+    </div>
+    <div>
+      <div class="corr-pill" style="flex-direction:row;justify-content:space-between;align-items:center;padding:12px 16px;margin-bottom:10px;background:#f8fafc;border-radius:12px">
+        <div>
+          <div style="font-size:11px;color:#94a3b8">시스템 평균 중심성</div>
+          <div style="font-size:20px;font-weight:800;color:{sys_risk_color}">{sys_risk_str}</div>
+        </div>
+        <div style="font-size:11px;color:#64748b;text-align:right">
+          {'⚠ 시스템 리스크 높음' if not np.isnan(systemic_risk) and systemic_risk > 0.6 else '주의 구간' if not np.isnan(systemic_risk) and systemic_risk > 0.4 else '분산 효과 양호'}
+        </div>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:12px;font-size:12px">
+        <div style="margin-bottom:6px"><b>중심 노드 (Most Central)</b><br>
+          <span style="color:#dc2626;font-weight:700">{most_central_lbl}</span>
+          <span style="color:#94a3b8"> ({most_central[1]:.0%})</span>
+        </div>
+        <div><b>분산 노드 (Most Isolated)</b><br>
+          <span style="color:#059669;font-weight:700">{most_isolated_lbl}</span>
+          <span style="color:#94a3b8"> ({most_isolated[1]:.0%})</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Color legend -->

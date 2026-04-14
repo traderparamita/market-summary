@@ -68,30 +68,131 @@ def _direction_arrow(latest: float, prev: float) -> str:
 
 
 def _macro_regime(gdp_qoq: float | None, cpi_yoy_latest: float | None,
-                  cpi_yoy_prev: float | None) -> dict:
-    """Determine 2×2 macro regime from GDP QoQ and CPI YoY direction."""
-    growth_pos = (
-        gdp_qoq is not None
-        and not np.isnan(gdp_qoq)
-        and gdp_qoq > 0
-    )
+                  cpi_yoy_prev: float | None,
+                  indpro_mom: float | None = None,
+                  consumer_sent: float | None = None) -> dict:
+    """Determine 2×2 macro regime with probability estimates.
 
+    Args:
+        gdp_qoq: GDP 분기 성장률 (%)
+        cpi_yoy_latest: 최근 CPI YoY (%)
+        cpi_yoy_prev: 3개월 전 CPI YoY (%) — 인플레이션 방향 판단
+        indpro_mom: 산업생산 MoM 변화율 — Nowcasting 보조
+        consumer_sent: U Michigan 소비자 심리 — 선행 지표
+
+    Returns:
+        dict with label, color, desc, probabilities (4-cell)
+    """
+    # ── 성장 신호 ──────────────────────────────────────────
+    growth_signals = []
+
+    if gdp_qoq is not None and not np.isnan(gdp_qoq):
+        growth_signals.append(1 if gdp_qoq > 0 else -1)
+
+    if indpro_mom is not None and not np.isnan(indpro_mom):
+        # 산업생산 MoM: 0 이상이면 성장, 음수면 수축
+        growth_signals.append(1 if indpro_mom > 0 else -1)
+
+    if consumer_sent is not None and not np.isnan(consumer_sent):
+        # 소비자 심리 75 이상 = 긍정, 이하 = 부정
+        growth_signals.append(1 if consumer_sent >= 75 else -1)
+
+    if growth_signals:
+        growth_score = sum(growth_signals) / len(growth_signals)
+        growth_pos = growth_score > 0
+        growth_conf = abs(growth_score)  # 0~1: 신호 일치도
+    else:
+        growth_pos = False
+        growth_conf = 0.5
+
+    # ── 인플레이션 방향 ─────────────────────────────────────
     if (cpi_yoy_latest is not None and cpi_yoy_prev is not None
             and not np.isnan(cpi_yoy_latest) and not np.isnan(cpi_yoy_prev)):
         inflation_rising = cpi_yoy_latest > cpi_yoy_prev
+        infl_conf = min(abs(cpi_yoy_latest - cpi_yoy_prev) / 0.5, 1.0)
     else:
         inflation_rising = None
+        infl_conf = 0.5
 
+    # ── 레짐 결정 ───────────────────────────────────────────
     if growth_pos and inflation_rising is False:
-        return {"label": "Goldilocks", "color": "#0d9b6a", "desc": "성장 ↑  물가 ↓"}
+        label = "Goldilocks"
+        color = "#0d9b6a"
+        desc  = "성장 ↑  물가 ↓"
     elif growth_pos and inflation_rising:
-        return {"label": "Reflation", "color": "#f59e0b", "desc": "성장 ↑  물가 ↑"}
+        label = "Reflation"
+        color = "#f59e0b"
+        desc  = "성장 ↑  물가 ↑"
     elif not growth_pos and inflation_rising:
-        return {"label": "Stagflation", "color": "#d9304f", "desc": "성장 ↓  물가 ↑"}
+        label = "Stagflation"
+        color = "#d9304f"
+        desc  = "성장 ↓  물가 ↑"
     elif not growth_pos and inflation_rising is False:
-        return {"label": "Deflation", "color": "#64748b", "desc": "성장 ↓  물가 ↓"}
+        label = "Deflation"
+        color = "#64748b"
+        desc  = "성장 ↓  물가 ↓"
     else:
-        return {"label": "Unknown", "color": "#94a3b8", "desc": "데이터 부족"}
+        label = "Unknown"
+        color = "#94a3b8"
+        desc  = "데이터 부족"
+
+    # ── 4-Cell 확률 추정 (퍼지 로직) ────────────────────────
+    # growth_conf, infl_conf ∈ [0,1]
+    # dominant에 (0.4 + conf*0.4) 배분, 나머지 3셀에 균등 배분
+    dominant_prob = round(0.40 + growth_conf * 0.20 + infl_conf * 0.20, 2)
+    dominant_prob = min(dominant_prob, 0.85)
+    others = round((1.0 - dominant_prob) / 3, 2)
+
+    probs = {"Goldilocks": others, "Reflation": others,
+             "Stagflation": others, "Deflation": others}
+    if label in probs:
+        probs[label] = dominant_prob
+
+    return {
+        "label": label,
+        "color": color,
+        "desc": desc,
+        "probabilities": probs,
+    }
+
+
+def _nowcast_gdp(df_hist: pd.DataFrame, target: pd.Timestamp) -> dict | None:
+    """간이 Nowcasting: 월간 지표로 GDP 성장률 예측.
+
+    산업생산(INDPRO) MoM + 소비자심리(UMCSENT) 변화를 이용한
+    Bridge Equation 근사치.
+    """
+    result = {"available": False}
+
+    indpro_hist = df_hist[df_hist["INDICATOR_CODE"] == "MACRO_US_INDPRO"]["VALUE"].dropna()
+    csent_hist  = df_hist[df_hist["INDICATOR_CODE"] == "MACRO_US_CONSUMER_SENT"]["VALUE"].dropna()
+    gdp_hist    = df_hist[df_hist["INDICATOR_CODE"] == "US_GDP_YOY"]["VALUE"].dropna()
+
+    if len(indpro_hist) < 3:
+        return result
+
+    # 산업생산 최근 3개월 평균 MoM
+    indpro_mom3 = float(indpro_hist.pct_change().tail(3).mean()) * 100
+
+    # 소비자심리 방향
+    csent_dir = None
+    if len(csent_hist) >= 2:
+        csent_dir = "상승" if float(csent_hist.iloc[-1]) > float(csent_hist.iloc[-2]) else "하락"
+
+    # 간이 GDP Nowcast: indpro MoM 3개월 평균 * 4 (연환산 근사)
+    nowcast_gdp = round(indpro_mom3 * 4, 2)
+
+    result = {
+        "available": True,
+        "nowcast_gdp": nowcast_gdp,
+        "indpro_mom3": round(indpro_mom3, 3),
+        "csent_dir": csent_dir,
+        "interpretation": (
+            f"산업생산 3M MoM 평균 {indpro_mom3:+.2f}% → 연환산 GDP 근사: {nowcast_gdp:+.1f}%"
+            + (f", 소비자심리 {csent_dir}" if csent_dir else "")
+        ),
+    }
+    return result
 
 
 # ── Core computation ──────────────────────────────────────────────────
@@ -155,9 +256,9 @@ def compute_macro_view(date: str, csv_path: Path = HISTORY_CSV) -> dict:
     us_growth     = latest[(latest["CATEGORY"] == "growth")     & (latest["REGION"] == "US")]
     us_inflation  = latest[(latest["CATEGORY"] == "inflation")  & (latest["REGION"] == "US")]
     us_employment = latest[(latest["CATEGORY"] == "employment") & (latest["REGION"] == "US")]
-    us_sentiment  = latest[(latest["CATEGORY"] == "sentiment")  & (latest["REGION"] == "US")]
+    us_sentiment  = latest[(latest["CATEGORY"].isin(["sentiment", "activity"])) & (latest["REGION"] == "US")]
     us_policy     = latest[(latest["CATEGORY"] == "policy")     & (latest["REGION"] == "US")]
-    us_credit     = latest[(latest["CATEGORY"] == "credit")     & (latest["REGION"] == "US")]
+    us_credit     = latest[(latest["CATEGORY"].isin(["credit"])) & (latest["REGION"] == "US")]
     us_liquidity  = latest[(latest["CATEGORY"] == "liquidity")  & (latest["REGION"] == "US")]
 
     kr_growth     = latest[(latest["CATEGORY"] == "growth")     & (latest["REGION"] == "KR")]
@@ -169,12 +270,17 @@ def compute_macro_view(date: str, csv_path: Path = HISTORY_CSV) -> dict:
     global_indicators = latest[latest["REGION"] == "GLOBAL"]
 
     # ── A2. Regime computation ────────────────────────────────────
-    # US regime: GDP QoQ > 0? + CPI YoY direction
+    # US regime: GDP QoQ > 0? + CPI YoY direction + Nowcasting 보조
     us_gdp_qoq = _get_latest("US_GDP_QOQ")
     us_cpi_latest = _get_latest("US_CPI_YOY")
     us_cpi_hist = df_hist[df_hist["INDICATOR_CODE"] == "US_CPI_YOY"]["VALUE"].dropna()
     us_cpi_prev = float(us_cpi_hist.iloc[-4]) if len(us_cpi_hist) >= 4 else None
-    us_regime = _macro_regime(us_gdp_qoq, us_cpi_latest, us_cpi_prev)
+
+    # 확장 지표로 Nowcasting 보조
+    us_indpro = _get_latest("MACRO_US_INDPRO")
+    us_csent  = _get_latest("MACRO_US_CONSUMER_SENT")
+
+    us_regime = _macro_regime(us_gdp_qoq, us_cpi_latest, us_cpi_prev, us_indpro, us_csent)
 
     # KR regime: GDP QoQ > 0? + CPI YoY direction
     kr_gdp_qoq = _get_latest("KR_GDP_QOQ")
@@ -185,6 +291,9 @@ def compute_macro_view(date: str, csv_path: Path = HISTORY_CSV) -> dict:
 
     # Divergence flag
     regime_divergence = us_regime["label"] != kr_regime["label"]
+
+    # ── Nowcasting ────────────────────────────────────────────────
+    nowcast = _nowcast_gdp(df_hist, target)
 
     # ── A3. FED implied rate ──────────────────────────────────────
     fed_policy_list = format_group(us_policy)
@@ -231,6 +340,7 @@ def compute_macro_view(date: str, csv_path: Path = HISTORY_CSV) -> dict:
         "us_regime": us_regime,
         "kr_regime": kr_regime,
         "regime_divergence": regime_divergence,
+        "nowcast": nowcast,
         "us": {
             "growth":     format_group(us_growth),
             "inflation":  format_group(us_inflation),
@@ -325,8 +435,35 @@ def _section_html(title: str, indicators: list) -> str:
     """
 
 
-def _regime_cards_html(us_regime: dict, kr_regime: dict, divergence: bool) -> str:
-    """Render US + KR regime cards side by side."""
+def _regime_prob_bar(probs: dict, current_label: str) -> str:
+    """4-Cell 확률 막대 렌더링."""
+    colors = {
+        "Goldilocks":  "#0d9b6a",
+        "Reflation":   "#f59e0b",
+        "Stagflation": "#d9304f",
+        "Deflation":   "#64748b",
+    }
+    bars = ""
+    for label, prob in probs.items():
+        color = colors.get(label, "#94a3b8")
+        is_current = label == current_label
+        border = f"border:2px solid {color}" if is_current else "border:1px solid #e0e3ed"
+        fw = "font-weight:700" if is_current else ""
+        bars += f"""
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;{fw};min-width:88px;color:#4b5563">{label}</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:{prob*100:.0f}%;background:{color};height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;{fw};color:{color};min-width:34px;text-align:right">{prob*100:.0f}%</span>
+          {'<span style="font-size:10px;color:#6b7280">◀ 현재</span>' if is_current else ''}
+        </div>"""
+    return bars
+
+
+def _regime_cards_html(us_regime: dict, kr_regime: dict, divergence: bool,
+                       nowcast: dict | None = None) -> str:
+    """Render US + KR regime cards with probability bars and Nowcasting."""
     divergence_banner = ""
     if divergence:
         divergence_banner = """
@@ -336,11 +473,35 @@ def _regime_cards_html(us_regime: dict, kr_regime: dict, divergence: bool) -> st
         """
 
     def _card(flag: str, country: str, regime: dict) -> str:
+        probs = regime.get("probabilities", {})
+        prob_html = ""
+        if probs:
+            prob_html = f"""
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e3ed">
+              <div style="font-size:10px;font-weight:700;color:#94a3b8;
+                          text-transform:uppercase;margin-bottom:6px">레짐 확률 추정</div>
+              {_regime_prob_bar(probs, regime['label'])}
+            </div>"""
         return f"""
         <div class="regime-card" style="border-left:4px solid {regime['color']}">
           <div class="regime-flag">{flag} {country}</div>
           <div class="regime-label" style="color:{regime['color']}">{regime['label']}</div>
           <div class="regime-desc">{regime['desc']}</div>
+          {prob_html}
+        </div>
+        """
+
+    # Nowcasting 카드
+    nowcast_html = ""
+    if nowcast and nowcast.get("available"):
+        nc_gdp = nowcast.get("nowcast_gdp", 0)
+        nc_interp = nowcast.get("interpretation", "")
+        nc_color = "#0d9b6a" if nc_gdp > 0 else "#d9304f"
+        nowcast_html = f"""
+        <div class="regime-card" style="border-left:4px solid {nc_color}">
+          <div class="regime-flag">📡 Nowcasting</div>
+          <div class="regime-label" style="color:{nc_color}">GDP {nc_gdp:+.1f}%</div>
+          <div class="regime-desc" style="font-size:12px;line-height:1.6">{nc_interp}</div>
         </div>
         """
 
@@ -349,6 +510,7 @@ def _regime_cards_html(us_regime: dict, kr_regime: dict, divergence: bool) -> st
       <div class="regime-cards">
         {_card("🇺🇸", "United States", us_regime)}
         {_card("🇰🇷", "Korea", kr_regime)}
+        {nowcast_html}
       </div>
       {divergence_banner}
     </div>
@@ -371,6 +533,8 @@ def generate_macro_html(view: dict) -> str:
     us_regime = view.get("us_regime", {"label": "—", "color": "#94a3b8", "desc": ""})
     kr_regime = view.get("kr_regime", {"label": "—", "color": "#94a3b8", "desc": ""})
     divergence = view.get("regime_divergence", False)
+
+    nowcast = view.get("nowcast")
 
     return f'''<!DOCTYPE html>
 <html lang="ko">
@@ -453,7 +617,7 @@ body{{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(-
   </div>
 </div>
 
-{_regime_cards_html(us_regime, kr_regime, divergence)}
+{_regime_cards_html(us_regime, kr_regime, divergence, nowcast)}
 
 <div class="region-title">🇺🇸 United States</div>
 <div class="grid">

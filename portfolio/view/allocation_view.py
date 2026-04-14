@@ -207,6 +207,252 @@ def _parse_date(date):
     return datetime.strptime(str(date), "%Y-%m-%d").date()
 
 
+# ── Fund category → price proxy mapping ──────────────────────────────────
+
+CATEGORY_PROXIES = {
+    "kr_eq":       "EQ_KOSPI",
+    "us_eq":       "EQ_SP500",
+    "global_eq":   "EQ_MSCI_ACWI",
+    "em_eq":       "EQ_MSCI_LATAM",
+    "sector_eq":   "EQ_NASDAQ",
+    "us_bond":     "BD_TLT",
+    "kr_bond":     "BD_TLT",    # TLT as proxy (ECOS rate data can't be used for returns)
+    "mixed":       "EQ_SP500",  # simplified: SP500 proxy
+    "alternative": "CM_GOLD",
+    "cash":        None,        # near-zero: handled separately
+}
+
+# Approximate global market-cap weights for BL equilibrium
+MARKET_CAP_WEIGHTS = {
+    "kr_eq": 0.02, "us_eq": 0.28, "global_eq": 0.18, "em_eq": 0.06,
+    "sector_eq": 0.05, "kr_bond": 0.04, "us_bond": 0.18,
+    "mixed": 0.08, "alternative": 0.05, "cash": 0.06,
+}
+
+CATEGORY_IDS = [c["id"] for c in FUND_CATEGORIES]
+
+
+def _get_proxy_returns(prices: pd.DataFrame, lookback: int = 756) -> pd.DataFrame:
+    """펀드 카테고리별 로그 수익률 행렬 (lookback 거래일).
+
+    cash는 0으로 채움. 데이터 없는 카테고리는 NaN → 후처리.
+    """
+    series = {}
+    for cid in CATEGORY_IDS:
+        proxy = CATEGORY_PROXIES.get(cid)
+        if proxy is None or proxy not in prices.columns:
+            series[cid] = pd.Series(0.0, index=prices.index[-lookback:])
+            continue
+        px = prices[proxy].dropna()
+        if len(px) < 30:
+            series[cid] = pd.Series(0.0, index=prices.index[-lookback:])
+            continue
+        log_ret = np.log(px / px.shift(1)).dropna()
+        series[cid] = log_ret.iloc[-lookback:]
+
+    df = pd.DataFrame(series).dropna()
+    return df
+
+
+def _black_litterman(
+    sigma: np.ndarray,
+    implied_mu: np.ndarray,
+    views: list,          # list of {"p": np.ndarray (n,), "q": float, "conf": float}
+    tau: float = 0.05,
+) -> np.ndarray:
+    """Black-Litterman 포스테리어 기대수익률.
+
+    P (k×n), Q (k,), Omega = diag(conf^-1 * p @ tau*Σ @ p')
+    μ_BL = [(τΣ)^-1 + P'Ω^-1P]^-1 × [(τΣ)^-1μ_eq + P'Ω^-1Q]
+    """
+    n = len(implied_mu)
+    if not views:
+        return implied_mu.copy()
+
+    P = np.array([v["p"] for v in views])           # (k, n)
+    Q = np.array([v["q"] for v in views])            # (k,)
+    confs = np.array([v.get("conf", 0.5) for v in views])
+
+    # Omega: confidence-scaled uncertainty
+    tau_sigma = tau * sigma
+    omega_diag = np.array([
+        (1 - c) / c * float(P[i] @ tau_sigma @ P[i])
+        for i, c in enumerate(confs)
+    ])
+    omega_diag = np.maximum(omega_diag, 1e-8)
+    Omega = np.diag(omega_diag)
+
+    try:
+        import scipy.linalg as la
+        tS_inv = la.inv(tau_sigma + 1e-6 * np.eye(n))
+        O_inv  = la.inv(Omega)
+        M      = la.inv(tS_inv + P.T @ O_inv @ P)
+        mu_bl  = M @ (tS_inv @ implied_mu + P.T @ O_inv @ Q)
+    except Exception:
+        mu_bl = implied_mu.copy()
+
+    return mu_bl
+
+
+def _risk_parity_weights(
+    sigma: np.ndarray,
+    n: int,
+    eq_indices: list[int],
+    eq_limit: float = 0.30,
+    min_w: float = 0.01,
+) -> np.ndarray:
+    """리스크 패리티 (동일 위험기여) 최적화.
+
+    목적함수: Σ_i(w_i*(Σw)_i - 1/n)^2  (equal risk contribution)
+    제약: Σw = 1, w >= min_w, Σ equity weights <= eq_limit
+    """
+    try:
+        from scipy.optimize import minimize
+
+        budget = 1.0 / n
+
+        def objective(w):
+            Sw = sigma @ w
+            rc = w * Sw
+            total_rc = rc.sum()
+            if total_rc <= 0:
+                return 1e6
+            rc_norm = rc / total_rc
+            return float(np.sum((rc_norm - budget) ** 2))
+
+        def jac(w):
+            eps = 1e-6
+            grad = np.zeros(n)
+            f0 = objective(w)
+            for i in range(n):
+                w2 = w.copy(); w2[i] += eps
+                grad[i] = (objective(w2) - f0) / eps
+            return grad
+
+        w0 = np.ones(n) / n
+        bounds = [(min_w, 1.0)] * n
+        constraints = [
+            {"type": "eq",  "fun": lambda w: w.sum() - 1.0},
+            {"type": "ineq","fun": lambda w: eq_limit - sum(w[i] for i in eq_indices)},
+        ]
+        result = minimize(objective, w0, jac=jac, method="SLSQP",
+                          bounds=bounds, constraints=constraints,
+                          options={"maxiter": 300, "ftol": 1e-9})
+        if result.success:
+            w = result.x
+            w = np.maximum(w, min_w)
+            w = w / w.sum()
+            return w
+    except Exception:
+        pass
+    # Fallback: equal weight
+    return np.ones(n) / n
+
+
+def _expected_return_ensemble(
+    proxy_returns: pd.DataFrame,
+    implied_mu: np.ndarray,
+    regime: str,
+) -> dict:
+    """기대수익률 앙상블: BL 균형 + 역사적(1Y/3Y) + 매크로 조정.
+
+    Returns:
+        dict: {category: {"bl": float, "hist_1y": float, "hist_3y": float,
+                           "macro_adj": float, "ensemble": float}}
+    """
+    result = {}
+    n = len(CATEGORY_IDS)
+
+    # Macro adjustment factors by regime (annualized premium vs equilibrium)
+    macro_adj_map = {
+        "Goldilocks":  {"equity": +0.02, "bond": +0.005, "alts": 0, "cash": 0},
+        "Reflation":   {"equity": +0.01, "bond": -0.01,  "alts": +0.03, "cash": 0},
+        "Stagflation": {"equity": -0.02, "bond": -0.005, "alts": +0.02, "cash": +0.01},
+        "Deflation":   {"equity": -0.03, "bond": +0.02,  "alts": -0.01, "cash": +0.01},
+        "N/A":         {"equity": 0,     "bond": 0,      "alts": 0,     "cash": 0},
+    }
+    adj = macro_adj_map.get(regime, macro_adj_map["N/A"])
+
+    group_map = {c["id"]: c["group"] for c in FUND_CATEGORIES}
+
+    for i, cid in enumerate(CATEGORY_IDS):
+        bl_val   = float(implied_mu[i]) * 252 if i < len(implied_mu) else 0.0
+
+        # Historical returns
+        if cid in proxy_returns.columns and len(proxy_returns[cid]) >= 21:
+            hist_1y = float(proxy_returns[cid].iloc[-252:].sum())  if len(proxy_returns[cid]) >= 252 else np.nan
+            hist_3y = float(proxy_returns[cid].iloc[-756:].sum() / 3) if len(proxy_returns[cid]) >= 756 else np.nan
+        else:
+            hist_1y = hist_3y = np.nan
+
+        # Macro adjustment
+        grp = group_map.get(cid, "cash")
+        macro_grp = "equity" if grp == "equity" else ("bond" if grp == "bond" else ("alts" if grp == "alts" else "cash"))
+        m_adj = adj.get(macro_grp, 0)
+
+        # Ensemble: 40% BL + 30% hist_3y + 30% macro_adj
+        hist_for_ens = hist_3y if not np.isnan(hist_3y) else bl_val
+        ensemble = round(0.40 * bl_val + 0.30 * hist_for_ens + 0.30 * (bl_val + m_adj), 4)
+
+        result[cid] = {
+            "bl":        round(bl_val, 4),
+            "hist_1y":   round(hist_1y, 4) if not np.isnan(hist_1y) else np.nan,
+            "hist_3y":   round(hist_3y, 4) if not np.isnan(hist_3y) else np.nan,
+            "macro_adj": round(m_adj, 4),
+            "ensemble":  ensemble,
+        }
+
+    return result
+
+
+def _build_bl_views(country_sig: dict, bond_sig: dict, style_sig: dict,
+                    n: int) -> list:
+    """신호 → BL views 변환.
+
+    각 view: {"p": np.ndarray (n,), "q": float, "conf": float}
+    """
+    idx = {cid: i for i, cid in enumerate(CATEGORY_IDS)}
+    views = []
+
+    def _p(long_cat, short_cat=None):
+        p = np.zeros(n)
+        if long_cat in idx:  p[idx[long_cat]] = +1.0
+        if short_cat and short_cat in idx: p[idx[short_cat]] = -1.0
+        return p
+
+    # US OW → US equity > global equity by ~2%
+    if country_sig.get("US") == "OW":
+        views.append({"p": _p("us_eq", "global_eq"), "q": 0.02, "conf": 0.6})
+    elif country_sig.get("US") == "UW":
+        views.append({"p": _p("global_eq", "us_eq"), "q": 0.015, "conf": 0.5})
+
+    # KR OW/UW
+    if country_sig.get("KR") == "OW":
+        views.append({"p": _p("kr_eq", "global_eq"), "q": 0.015, "conf": 0.5})
+    elif country_sig.get("KR") == "UW":
+        views.append({"p": _p("kr_bond", "kr_eq"), "q": 0.01, "conf": 0.5})
+
+    # EM OW
+    em_ow = any(country_sig.get(c) == "OW" for c in ["IN", "CN", "EM"])
+    if em_ow:
+        views.append({"p": _p("em_eq", "us_bond"), "q": 0.025, "conf": 0.45})
+
+    # Duration bias
+    dur = bond_sig.get("dur_bias", "neutral")
+    if dur == "long":
+        views.append({"p": _p("us_bond", "cash"), "q": 0.015, "conf": 0.6})
+    elif dur == "short":
+        views.append({"p": _p("cash", "us_bond"), "q": 0.01, "conf": 0.55})
+
+    # VIX regime
+    if style_sig.get("vix_regime") == "high":
+        views.append({"p": _p("alternative", "sector_eq"), "q": 0.02, "conf": 0.5})
+    elif style_sig.get("vix_regime") == "low":
+        views.append({"p": _p("us_eq", "alternative"), "q": 0.02, "conf": 0.5})
+
+    return views
+
+
 # ── Allocation logic ──────────────────────────────────────────────────────
 
 def _adjust_alloc(base: dict, country_sig: dict, bond_sig: dict,
@@ -315,6 +561,53 @@ def compute_allocation_view(date) -> dict:
     # 6) 변액보험 포트폴리오 주요 코멘트
     rationale = _build_rationale(regime, country_sig, bond_sig, style_sig, krw_sig, sector_tops)
 
+    # ── 7) Black-Litterman + Risk Parity ──────────────────────────────────
+    prices = _load_prices(date_str)
+    proxy_ret = _get_proxy_returns(prices)
+
+    n = len(CATEGORY_IDS)
+    bl_result = {"implied_mu": {}, "bl_mu": {}, "rp_weights": {}, "expected_returns": {}}
+
+    if len(proxy_ret) >= 60:
+        try:
+            # Annualized covariance from daily log returns
+            sigma_daily = proxy_ret.cov().values
+            sigma_ann   = sigma_daily * 252
+
+            # Market-cap equilibrium weights
+            mkt_w = np.array([MARKET_CAP_WEIGHTS.get(cid, 0.05) for cid in CATEGORY_IDS])
+            mkt_w = mkt_w / mkt_w.sum()
+
+            # Implied equilibrium returns: μ = δ * Σ * w_mkt
+            delta = 2.5   # risk aversion
+            implied_mu_arr = delta * sigma_ann @ mkt_w
+
+            # BL views from signals
+            views = _build_bl_views(country_sig, bond_sig, style_sig, n)
+            bl_mu_arr = _black_litterman(sigma_ann, implied_mu_arr, views)
+
+            # Risk parity
+            eq_indices = [CATEGORY_IDS.index(c) for c in
+                          ["kr_eq","us_eq","global_eq","em_eq","sector_eq"]
+                          if c in CATEGORY_IDS]
+            rp_w = _risk_parity_weights(sigma_ann, n, eq_indices,
+                                        eq_limit=K_ICS_EQUITY_LIMIT / 100)
+
+            # Expected return ensemble
+            exp_ret = _expected_return_ensemble(proxy_ret, bl_mu_arr, regime)
+
+            bl_result = {
+                "implied_mu": {cid: round(float(implied_mu_arr[i]) * 100, 2)
+                               for i, cid in enumerate(CATEGORY_IDS)},
+                "bl_mu":      {cid: round(float(bl_mu_arr[i]) * 100, 2)
+                               for i, cid in enumerate(CATEGORY_IDS)},
+                "rp_weights": {cid: round(float(rp_w[i]) * 100, 1)
+                               for i, cid in enumerate(CATEGORY_IDS)},
+                "expected_returns": exp_ret,
+            }
+        except Exception as e:
+            bl_result["error"] = str(e)[:100]
+
     return {
         "date":        date_str,
         "regime":      regime,
@@ -330,6 +623,7 @@ def compute_allocation_view(date) -> dict:
         "bond_sig":    bond_sig,
         "style_sig":   style_sig,
         "rationale":   rationale,
+        "bl_result":   bl_result,
     }
 
 
@@ -391,6 +685,99 @@ def _fmt(v, dec=1, suffix="%"):
 def _alloc_bar(pct: int, color: str = "#4a90d9") -> str:
     w = max(pct, 1)
     return f'<div style="background:{color};height:10px;border-radius:3px;width:{w*3}px;display:inline-block"></div>'
+
+
+def _bl_html(data: dict) -> str:
+    """Black-Litterman 기대수익률 + 리스크 패리티 배분 카드."""
+    bl = data.get("bl_result", {})
+    if not bl or "error" in bl:
+        err = bl.get("error", "데이터 부족") if bl else "계산 미수행"
+        return f'<div class="card"><h2>🧮 BL / 리스크 패리티</h2><p style="color:#94a3b8;font-size:13px">분석 불가: {err}</p></div>'
+
+    exp_ret   = bl.get("expected_returns", {})
+    rp_w      = bl.get("rp_weights", {})
+    bl_mu     = bl.get("bl_mu", {})
+    imp_mu    = bl.get("implied_mu", {})
+    adj_kr    = data.get("kr_alloc", {})
+
+    name_map = {c["id"]: c["name"] for c in FUND_CATEGORIES}
+    group_colors = {"equity":"#1d4ed8","bond":"#059669","mixed":"#7c3aed","alts":"#d97706","cash":"#6b7280"}
+    group_map = {c["id"]: c["group"] for c in FUND_CATEGORIES}
+
+    def _ret_str(v):
+        if isinstance(v, float) and np.isnan(v): return "—"
+        return f"{v*100:+.1f}%" if abs(v) < 10 else f"{v:+.1f}%"
+
+    # Expected returns table
+    ret_rows = ""
+    for cid in CATEGORY_IDS:
+        er = exp_ret.get(cid, {})
+        ens = er.get("ensemble", np.nan)
+        bl_v = bl_mu.get(cid, np.nan)
+        h3y  = er.get("hist_3y", np.nan)
+        madj = er.get("macro_adj", 0)
+        color = group_colors.get(group_map.get(cid, "cash"), "#64748b")
+        ens_color = "#059669" if (not isinstance(ens, float) or ens > 0) else "#dc2626"
+        h3_str  = f"{h3y*100:+.1f}%" if isinstance(h3y, float) and not np.isnan(h3y) else "—"
+        bl_str  = f"{bl_v:+.1f}%" if isinstance(bl_v, float) and not np.isnan(bl_v) else "—"
+        adj_str = f"{madj*100:+.1f}%p" if isinstance(madj, float) else "—"
+        ens_str = f"{ens*100:+.1f}%" if isinstance(ens, float) and not np.isnan(ens) else "—"
+        ret_rows += f"""<tr>
+          <td style="font-size:12px;color:{color};font-weight:600">{name_map.get(cid, cid)}</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">{bl_str}</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">{h3_str}</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">{adj_str}</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:{ens_color}">{ens_str}</td>
+        </tr>"""
+
+    # RP vs Signal comparison table
+    cmp_rows = ""
+    for cid in CATEGORY_IDS:
+        rp_pct   = rp_w.get(cid, 0)
+        sig_pct  = adj_kr.get(cid, 0)
+        diff     = round(rp_pct - sig_pct, 1)
+        color    = group_colors.get(group_map.get(cid, "cash"), "#64748b")
+        diff_str = f'<span style="color:{"#059669" if diff > 0 else "#dc2626" if diff < 0 else "#94a3b8"}">{diff:+.1f}%p</span>' if diff != 0 else '<span style="color:#94a3b8">—</span>'
+        cmp_rows += f"""<tr>
+          <td style="font-size:12px;color:{color};font-weight:600">{name_map.get(cid, cid)}</td>
+          <td style="text-align:right;font-weight:700;color:{color}">{rp_pct:.1f}%</td>
+          <td style="text-align:right;color:#64748b">{sig_pct}%</td>
+          <td style="text-align:right">{diff_str}</td>
+        </tr>"""
+
+    return f"""
+<div class="card">
+  <h2>🧮 BL 기대수익률 & 리스크 패리티 배분</h2>
+  <div class="grid2">
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:10px">앙상블 기대수익률 (연율, BL 40% + 역사 30% + 매크로 30%)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid #e2e8f0">
+          <th style="text-align:left;padding:6px 8px;color:#64748b">펀드 유형</th>
+          <th style="padding:6px 4px;color:#64748b">BL균형</th>
+          <th style="padding:6px 4px;color:#64748b">역사(3Y)</th>
+          <th style="padding:6px 4px;color:#d97706">매크로조정</th>
+          <th style="padding:6px 4px;color:#1e293b;font-weight:700">앙상블</th>
+        </tr></thead>
+        <tbody>{ret_rows}</tbody>
+      </table>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">BL균형: δ=2.5 시장위험프리미엄 | 역사: 3Y 로그수익률 합산</p>
+    </div>
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:10px">리스크 패리티 vs 신호 기반 배분 (K-ICS ≤30% 제약)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid #e2e8f0">
+          <th style="text-align:left;padding:6px 8px;color:#64748b">펀드 유형</th>
+          <th style="padding:6px 4px;color:#2563eb;font-weight:700">RP</th>
+          <th style="padding:6px 4px;color:#64748b">신호기반</th>
+          <th style="padding:6px 4px;color:#64748b">차이</th>
+        </tr></thead>
+        <tbody>{cmp_rows}</tbody>
+      </table>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">RP = 동일 위험기여 (Equal Risk Contribution). 양수 = RP가 더 많이 배분.</p>
+    </div>
+  </div>
+</div>"""
 
 
 def render_html(data: dict) -> str:
@@ -557,6 +944,9 @@ def render_html(data: dict) -> str:
     </div>
   </div>
 </div>
+
+<!-- ── BL 기대수익률 & 리스크 패리티 ── -->
+{_bl_html(data)}
 
 <!-- ── 배분 근거 ── -->
 <div class="card">

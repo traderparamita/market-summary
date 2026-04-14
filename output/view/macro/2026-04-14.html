@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macro Economic View | 2026-04-14</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --navy:#043B72; --up:#059669; --down:#dc2626;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:0;max-width:none;margin:0}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:var(--muted)}
+.right{text-align:right}
+
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header h1{font-size:26px;font-weight:700;color:#1a1d2e}
+.header .meta{font-size:13px;color:var(--muted);margin-top:4px}
+.header .gen{font-size:12px;color:var(--muted);text-align:right}
+
+/* Regime header */
+.regime-header{margin-bottom:28px}
+.regime-cards{display:flex;gap:16px;flex-wrap:wrap}
+.regime-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;flex:1;min-width:220px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.regime-flag{font-size:13px;color:var(--muted);margin-bottom:4px}
+.regime-label{font-size:22px;font-weight:700;margin-bottom:4px}
+.regime-desc{font-size:13px;color:var(--muted)}
+.regime-divergence{margin-top:12px;padding:10px 16px;background:#fff8e6;border:1px solid #f59e0b;border-radius:8px;font-size:13px;color:#92400e}
+
+.region-title{font-size:20px;font-weight:700;color:#1a1d2e;margin:28px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--primary)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:20px;margin-bottom:28px}
+
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.section h3{font-size:15px;font-weight:600;color:#1a1d2e;margin-bottom:14px}
+
+.indicator-table{width:100%;border-collapse:collapse;font-size:13px}
+.indicator-table thead tr{background:#f8fafc;border-bottom:1px solid var(--border)}
+.indicator-table th{padding:8px 10px;font-size:12px;color:var(--muted);font-weight:600}
+.indicator-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9}
+.indicator-table tbody tr:hover{background:#f8fafc}
+.value-cell{font-weight:600;color:#1a1d2e}
+
+/* Percentile badges */
+.pct-badge{font-size:11px;padding:2px 6px;border-radius:4px;background:#f1f5f9;color:var(--muted)}
+.pct-high{background:#dcfce7;color:#166534}
+.pct-low{background:#fee2e2;color:#991b1b}
+
+/* Direction arrows */
+.dir-up{color:var(--up);font-weight:700}
+.dir-down{color:var(--down);font-weight:700}
+
+.footer{text-align:center;font-size:11px;color:#94a3b8;padding:20px 0 4px;margin-top:32px;border-top:1px solid var(--border)}
+.back-link{display:inline-block;margin-bottom:20px;font-size:13px;color:var(--primary);text-decoration:none}
+.back-link:hover{text-decoration:underline}
+
+@media(max-width:768px){
+  .grid{grid-template-columns:1fr}
+  .regime-cards{flex-direction:column}
+}
+.ma-nav{background:var(--navy);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(4,59,114,.25)}
+.ma-nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:0;height:48px;overflow-x:auto;scrollbar-width:none}
+.ma-nav-inner::-webkit-scrollbar{display:none}
+.ma-logo{color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;padding-right:20px;border-right:1px solid rgba(255,255,255,.2);margin-right:16px;letter-spacing:-.2px}
+.ma-logo span{display:inline-block;width:8px;height:8px;background:var(--primary);border-radius:50%;margin-right:6px;vertical-align:middle}
+.ma-nav-group{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.8px;text-transform:uppercase;padding:0 8px 0 4px;white-space:nowrap}
+.ma-nav-link{color:rgba(255,255,255,.72);text-decoration:none;font-size:13px;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:all .15s}
+.ma-nav-link:hover{color:#fff;background:rgba(255,255,255,.1)}
+.ma-nav-link.current{color:#fff;background:var(--primary);font-weight:600}
+.ma-nav-sep{width:1px;height:16px;background:rgba(255,255,255,.15);margin:0 8px;flex-shrink:0}
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-14.html" class="ma-nav-link">가격신호</a>
+    <a href="../macro/2026-04-14.html" class="ma-nav-link current">거시지표</a>
+    <a href="../correlation/2026-04-14.html" class="ma-nav-link">상관관계</a>
+    <a href="../regime/2026-04-14.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-14.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-14.html" class="ma-nav-link">섹터</a>
+    <a href="../bond/2026-04-14.html" class="ma-nav-link">채권</a>
+    <a href="../style/2026-04-14.html" class="ma-nav-link">스타일</a>
+    <a href="../allocation/2026-04-14.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+<div style="max-width:1400px;margin:0 auto;padding:28px 24px 48px">
+<div class="header">
+  <div>
+    <h1>Macro Economic View</h1>
+    <div class="meta">Real macro indicators | GDP · Inflation · Employment · Policy · Credit · Liquidity</div>
+  </div>
+  <div class="gen">
+    <div style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px">As of 2026-04-14</div>
+    <div>Generated: 2026-04-14 08:50</div>
+  </div>
+</div>
+
+
+    <div class="regime-header">
+      <div class="regime-cards">
+        
+        <div class="regime-card" style="border-left:4px solid #f59e0b">
+          <div class="regime-flag">🇺🇸 United States</div>
+          <div class="regime-label" style="color:#f59e0b">Reflation</div>
+          <div class="regime-desc">성장 ↑  물가 ↑</div>
+          
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e3ed">
+              <div style="font-size:10px;font-weight:700;color:#94a3b8;
+                          text-transform:uppercase;margin-bottom:6px">레짐 확률 추정</div>
+              
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;;min-width:88px;color:#4b5563">Goldilocks</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:14%;background:#0d9b6a;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;;color:#0d9b6a;min-width:34px;text-align:right">14%</span>
+          
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;font-weight:700;min-width:88px;color:#4b5563">Reflation</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:59%;background:#f59e0b;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:#f59e0b;min-width:34px;text-align:right">59%</span>
+          <span style="font-size:10px;color:#6b7280">◀ 현재</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;;min-width:88px;color:#4b5563">Stagflation</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:14%;background:#d9304f;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;;color:#d9304f;min-width:34px;text-align:right">14%</span>
+          
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;;min-width:88px;color:#4b5563">Deflation</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:14%;background:#64748b;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;;color:#64748b;min-width:34px;text-align:right">14%</span>
+          
+        </div>
+            </div>
+        </div>
+        
+        
+        <div class="regime-card" style="border-left:4px solid #64748b">
+          <div class="regime-flag">🇰🇷 Korea</div>
+          <div class="regime-label" style="color:#64748b">Deflation</div>
+          <div class="regime-desc">성장 ↓  물가 ↓</div>
+          
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e3ed">
+              <div style="font-size:10px;font-weight:700;color:#94a3b8;
+                          text-transform:uppercase;margin-bottom:6px">레짐 확률 추정</div>
+              
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;;min-width:88px;color:#4b5563">Goldilocks</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:11%;background:#0d9b6a;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;;color:#0d9b6a;min-width:34px;text-align:right">11%</span>
+          
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;;min-width:88px;color:#4b5563">Reflation</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:11%;background:#f59e0b;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;;color:#f59e0b;min-width:34px;text-align:right">11%</span>
+          
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;;min-width:88px;color:#4b5563">Stagflation</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:11%;background:#d9304f;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;;color:#d9304f;min-width:34px;text-align:right">11%</span>
+          
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;font-weight:700;min-width:88px;color:#4b5563">Deflation</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:66%;background:#64748b;height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:#64748b;min-width:34px;text-align:right">66%</span>
+          <span style="font-size:10px;color:#6b7280">◀ 현재</span>
+        </div>
+            </div>
+        </div>
+        
+        
+        <div class="regime-card" style="border-left:4px solid #0d9b6a">
+          <div class="regime-flag">📡 Nowcasting</div>
+          <div class="regime-label" style="color:#0d9b6a">GDP +1.6%</div>
+          <div class="regime-desc" style="font-size:12px;line-height:1.6">산업생산 3M MoM 평균 +0.39% → 연환산 GDP 근사: +1.6%, 소비자심리 상승</div>
+        </div>
+        
+      </div>
+      
+        <div class="regime-divergence">
+          ⚠️ US/KR 국면 불일치 — 분산 투자 기회 검토
+        </div>
+        
+    </div>
+    
+
+<div class="region-title">🇺🇸 United States</div>
+<div class="grid">
+  
+    <div class="section">
+      <h3>Growth</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">US_GDP_QOQ</td>
+      <td class="right mono value-cell">1.04%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2025-10-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_GDP_YOY</td>
+      <td class="right mono value-cell">17.38%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-down">↓</td>
+      <td class="right muted">2025-10-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Inflation</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">US_CORE_CPI_YOY</td>
+      <td class="right mono value-cell">2.67%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-down">↓</td>
+      <td class="right muted">2026-03-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_CORE_PCE_YOY</td>
+      <td class="right mono value-cell">2.97%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_CPI_YOY</td>
+      <td class="right mono value-cell">3.32%</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2026-03-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_PCE_YOY</td>
+      <td class="right mono value-cell">2.80%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Employment</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">MACRO_US_JOLTS</td>
+      <td class="right mono value-cell">6882.00</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_NFP_MOM</td>
+      <td class="right mono value-cell">178k</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2026-03-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_UNEMP_RATE</td>
+      <td class="right mono value-cell">4.30%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-03-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Sentiment</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">MACRO_US_CONSUMER_SENT</td>
+      <td class="right mono value-cell">56.60</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">MACRO_US_INDPRO</td>
+      <td class="right mono value-cell">102.55</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">MACRO_US_RETAIL_SALES</td>
+      <td class="right mono value-cell">638224.00</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Policy & Rates</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">US_10Y_YIELD</td>
+      <td class="right mono value-cell">4.29%</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-09</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_2Y_YIELD</td>
+      <td class="right mono value-cell">3.78%</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-09</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_FED_RATE</td>
+      <td class="right mono value-cell">3.64%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-03-01</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_YIELD_CURVE</td>
+      <td class="right mono value-cell">0bp</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-10</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">FED_IMPLIED_DELTA</td>
+      <td class="right mono value-cell">0.14%</td>
+      <td class="right"><span class="pct-badge ">—</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-14</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Credit Spreads</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">CREDIT_HY_SPREAD</td>
+      <td class="right mono value-cell">2.94%</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right dir-down">↓</td>
+      <td class="right muted">2026-04-10</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">CREDIT_IG_SPREAD</td>
+      <td class="right mono value-cell">0.82%</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-10</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">CREDIT_TED_SPREAD</td>
+      <td class="right mono value-cell">0.09%</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2022-01-21</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_HY_SPREAD</td>
+      <td class="right mono value-cell">3bp</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-09</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_IG_SPREAD</td>
+      <td class="right mono value-cell">1bp</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-09</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Liquidity</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">US_REAL_RATE</td>
+      <td class="right mono value-cell">0.97%</td>
+      <td class="right"><span class="pct-badge ">—</span></td>
+      <td class="right dir-down">↓</td>
+      <td class="right muted">2026-04-14</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">MACRO_FED_BALANCE_SHEET</td>
+      <td class="right mono value-cell">6693871.00</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-08</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_FED_BALANCE</td>
+      <td class="right mono value-cell">1.70%</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2026-04-08</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">US_M2_YOY</td>
+      <td class="right mono value-cell">4.88%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+</div>
+
+<div class="region-title">🇰🇷 Korea</div>
+<div class="grid">
+  
+    <div class="section">
+      <h3>Growth</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">KR_GDP_QOQ</td>
+      <td class="right mono value-cell">-0.16%</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2025-12-31</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">KR_GDP_YOY</td>
+      <td class="right mono value-cell">1.63%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-up">↑</td>
+      <td class="right muted">2025-12-31</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Inflation</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">KR_CPI_YOY</td>
+      <td class="right mono value-cell">2.16%</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-down">↓</td>
+      <td class="right muted">2026-03-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+    <div class="section">
+      <h3>Employment</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">KR_UNEMP_RATE</td>
+      <td class="right mono value-cell">2.90%</td>
+      <td class="right"><span class="pct-badge pct-low">Low</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-02-01</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+  
+        <div class="section">
+          <h3>Sentiment</h3>
+          <p class="muted">No data available</p>
+        </div>
+        
+  
+    <div class="section">
+      <h3>Policy</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">KR_BASE_RATE</td>
+      <td class="right mono value-cell">2.50%</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-11</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+</div>
+
+<div class="region-title">🌍 Global</div>
+<div class="grid">
+  
+    <div class="section">
+      <h3>Risk & FX</h3>
+      <table class="indicator-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Indicator</th>
+            <th style="text-align:right">Value</th>
+            <th style="text-align:right">vs Avg</th>
+            <th style="text-align:right">Dir</th>
+            <th style="text-align:right">As of</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td class="mono">DXY</td>
+      <td class="right mono value-cell">120.66</td>
+      <td class="right"><span class="pct-badge pct-high">High</span></td>
+      <td class="right ">→</td>
+      <td class="right muted">2026-04-03</td>
+    </tr>
+    
+    <tr>
+      <td class="mono">VIX</td>
+      <td class="right mono value-cell">19.49</td>
+      <td class="right"><span class="pct-badge ">Mid</span></td>
+      <td class="right dir-down">↓</td>
+      <td class="right muted">2026-04-09</td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </div>
+    
+</div>
+
+<div class="footer">Macro Economic View | GDP · Inflation · Employment · Policy · Credit · Liquidity | View Agent</div>
+</div>
+</body>
+</html>

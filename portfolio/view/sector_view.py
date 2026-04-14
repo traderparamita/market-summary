@@ -54,6 +54,24 @@ REGIME_SECTOR_MAP = {
 SP500_CODE = "EQ_SP500"
 KOSPI_CODE = "EQ_KOSPI"
 
+# ── Business cycle × sector matrix ────────────────────────────────────────
+# 4-phase NBER-style cycle: Early / Mid / Late / Recession
+# Based on Fidelity sector rotation research
+
+CYCLE_SECTOR_MAP = {
+    "Early":     ["SC_US_DISCR", "SC_US_FIN",  "SC_US_INDU", "SC_KR_FIN"],
+    "Mid":       ["SC_US_TECH",  "SC_US_INDU", "SC_US_COMM", "SC_KR_SEMI"],
+    "Late":      ["SC_US_ENERGY","SC_US_MATL",  "SC_US_HEALTH","SC_US_STAPLES"],
+    "Recession": ["SC_US_HEALTH","SC_US_STAPLES","SC_US_UTIL", "SC_US_REIT","SC_KR_BIO"],
+}
+
+CYCLE_DESCRIPTIONS = {
+    "Early":     "경기 회복 초기 — 성장 반등, 금리 하락, 신용 개선",
+    "Mid":       "경기 확장 중반 — 이익 성장, 금리 상승 시작, 유동성 양호",
+    "Late":      "경기 확장 후기 — 인플레이션 상승, 원자재 강세, 수익률 피크",
+    "Recession": "경기 침체 — 성장 위축, 방어주·채권 선호, 크레딧 스프레드 확대",
+}
+
 
 # ── Data loaders ──────────────────────────────────────────────────────────
 
@@ -66,7 +84,7 @@ def _load_prices(date: str) -> pd.DataFrame:
 
 
 def _latest_macro(date: str) -> str:
-    """현재 US 매크로 국면 (regime_view 또는 macro_view 계산 결과 재활용)."""
+    """현재 US 매크로 국면 (2×2 Goldilocks/Reflation/Stagflation/Deflation)."""
     if not MACRO_CSV.exists():
         return "N/A"
     df = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
@@ -90,6 +108,120 @@ def _latest_macro(date: str) -> str:
     elif not growing and inflating:
         return "Stagflation"
     return "Deflation"
+
+
+def _estimate_cycle_phase(date: str, prices: pd.DataFrame) -> str:
+    """경기 사이클 4단계 추정 (Early/Mid/Late/Recession).
+
+    Heuristic mapping using:
+      1. Macro regime (Goldilocks/Reflation/Stagflation/Deflation)
+      2. Yield curve direction (from market_data.csv 10Y vs 2Y)
+      3. VIX momentum (rising = risk-off, late/recession)
+      4. SP500 momentum trend
+
+    Rule table:
+      Goldilocks + curve steepening + SP500 ↑ → Mid
+      Goldilocks + curve flattening  → Late
+      Reflation  + curve flat/inverted → Late
+      Stagflation                    → Late/Recession
+      Deflation + VIX elevated       → Recession
+      Deflation + SP500 recovering   → Early
+    """
+    macro_regime = _latest_macro(date)
+
+    # SP500 trend
+    sp_col = SP500_CODE
+    sp_trend = 0
+    if sp_col in prices.columns:
+        sp_px = prices[sp_col].dropna()
+        if len(sp_px) >= 205:
+            ma200 = float(sp_px.tail(200).mean())
+            sp_trend = 1 if float(sp_px.iloc[-1]) > ma200 else -1
+
+    # VIX level
+    vix_val = np.nan
+    for col in ["RK_VIX"]:
+        if col in prices.columns:
+            px = prices[col].dropna()
+            if not px.empty:
+                vix_val = float(px.iloc[-1])
+                break
+
+    # Yield curve from market_data: BD_US_10Y - BD_US_2Y (both are rates)
+    curve_slope = 0  # positive = steep, negative = inverted
+    if not MACRO_CSV.exists():
+        macro_df_here = pd.DataFrame()
+    else:
+        macro_df_here = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
+        target = pd.Timestamp(date)
+        macro_df_here = macro_df_here[macro_df_here["DATE"] <= target]
+
+    def _mv(code):
+        sub = macro_df_here[macro_df_here["INDICATOR_CODE"] == code] if not macro_df_here.empty else pd.DataFrame()
+        return float(sub.sort_values("DATE").iloc[-1]["VALUE"]) if not sub.empty else np.nan
+
+    us_10y = _mv("US_10Y_YIELD")
+    us_2y  = _mv("US_2Y_YIELD")
+    if not np.isnan(us_10y) and not np.isnan(us_2y):
+        curve_slope = us_10y - us_2y  # positive = normal, negative = inverted
+
+    # Decision tree
+    high_vix = (not np.isnan(vix_val) and vix_val > 28)
+
+    if macro_regime in ("Stagflation",):
+        phase = "Late" if sp_trend >= 0 else "Recession"
+    elif macro_regime == "Deflation":
+        if high_vix or sp_trend < 0:
+            phase = "Recession"
+        else:
+            phase = "Early"
+    elif macro_regime == "Goldilocks":
+        if curve_slope > 0.3 and sp_trend > 0:
+            phase = "Mid"
+        elif curve_slope < 0:
+            phase = "Late"
+        else:
+            phase = "Mid"
+    elif macro_regime == "Reflation":
+        phase = "Late" if curve_slope < 0.2 else "Mid"
+    else:
+        phase = "Mid"  # default
+
+    return phase
+
+
+def _momentum_dispersion(sectors: list) -> dict:
+    """섹터 간 모멘텀 분산도 측정.
+
+    분산도 높음 → 강한 로테이션 신호 (리더/래거 명확)
+    분산도 낮음 → 시장 전반 약세/강세 (섹터 선택 효과 낮음)
+    """
+    composites = [s["composite"] for s in sectors
+                  if s.get("composite") is not None and not np.isnan(s.get("composite", np.nan))]
+    if len(composites) < 3:
+        return {"std": np.nan, "range": np.nan, "signal": "데이터 부족", "color": "#94a3b8"}
+
+    std_val   = float(np.std(composites))
+    range_val = float(max(composites) - min(composites))
+
+    if range_val > 0.6:
+        signal = "강한 로테이션 — 섹터 선택 효과 극대화"
+        color  = "#059669"
+    elif range_val > 0.3:
+        signal = "보통 로테이션 — 상위 섹터 집중 전략"
+        color  = "#d97706"
+    else:
+        signal = "낮은 분산 — 인덱스 중립 전략 유리"
+        color  = "#64748b"
+
+    return {
+        "std":    round(std_val,   3),
+        "range":  round(range_val, 3),
+        "signal": signal,
+        "color":  color,
+        "top_score":    round(max(composites), 3),
+        "bottom_score": round(min(composites), 3),
+    }
 
 
 # ── Signal calculators ───────────────────────────────────────────────────
@@ -179,6 +311,11 @@ def compute_sector_view(date: str) -> dict:
     regime = _latest_macro(date)
     preferred = set(REGIME_SECTOR_MAP.get(regime, []))
 
+    # Cycle phase and its preferred sectors
+    cycle_phase = _estimate_cycle_phase(date, prices)
+    cycle_preferred = set(CYCLE_SECTOR_MAP.get(cycle_phase, []))
+    cycle_desc = CYCLE_DESCRIPTIONS.get(cycle_phase, "")
+
     sp500 = prices[SP500_CODE].dropna() if SP500_CODE in prices.columns else pd.Series(dtype=float)
     kospi = prices[KOSPI_CODE].dropna() if KOSPI_CODE in prices.columns else pd.Series(dtype=float)
 
@@ -195,6 +332,7 @@ def compute_sector_view(date: str) -> dict:
             "name": info["name"],
             "etf": info["etf"],
             "regime_favored": code in preferred,
+            "cycle_favored":  code in cycle_preferred,
             "kr_peer": info.get("kr_peer"),
             **sig,
         })
@@ -212,6 +350,7 @@ def compute_sector_view(date: str) -> dict:
             "name": info["name"],
             "etf": info["etf"],
             "regime_favored": code in preferred,
+            "cycle_favored":  code in cycle_preferred,
             "us_peer": info.get("us_peer"),
             **sig,
         })
@@ -220,11 +359,18 @@ def compute_sector_view(date: str) -> dict:
     us_results.sort(key=lambda x: x["composite"], reverse=True)
     kr_results.sort(key=lambda x: x["composite"], reverse=True)
 
+    # Momentum dispersion
+    dispersion = _momentum_dispersion(us_results)
+
     return {
         "date": date,
         "us_regime": regime,
+        "cycle_phase": cycle_phase,
+        "cycle_desc": cycle_desc,
+        "cycle_preferred": list(cycle_preferred),
         "us_sectors": us_results,
         "kr_sectors": kr_results,
+        "dispersion": dispersion,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
 
@@ -260,11 +406,18 @@ def _regime_preferred_badge(favored: bool) -> str:
     return ""
 
 
+def _cycle_badge(favored: bool) -> str:
+    if favored:
+        return '<span style="background:#dbeafe;color:#2563eb;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:600">●사이클</span>'
+    return ""
+
+
 def _sector_rows(sectors: list) -> str:
     rows = ""
     for i, s in enumerate(sectors):
-        fav = _regime_preferred_badge(s["regime_favored"])
-        comp = s["composite"]
+        fav   = _regime_preferred_badge(s.get("regime_favored", False))
+        cyc   = _cycle_badge(s.get("cycle_favored", False))
+        comp  = s["composite"]
         comp_color = "#16a34a" if comp > 0.2 else ("#dc2626" if comp < -0.2 else "#64748b")
         rows += f"""
         <tr>
@@ -272,7 +425,7 @@ def _sector_rows(sectors: list) -> str:
           <td>
             <strong>{s["name"]}</strong>
             <span style="color:#94a3b8;font-size:12px;margin-left:6px">{s["etf"]}</span>
-            {fav}
+            {fav}{cyc}
           </td>
           <td style="text-align:right">{_chg(s["mom_1m"])}</td>
           <td style="text-align:right">{_chg(s["mom_3m"])}</td>
@@ -286,11 +439,15 @@ def _sector_rows(sectors: list) -> str:
 
 def render_html(data: dict) -> str:
     from ._shared import nav_html, NAV_CSS
-    date = data["date"]
+    date  = data["date"]
     regime = data["us_regime"]
-    us = data["us_sectors"]
-    kr = data["kr_sectors"]
-    gen = data["generated_at"]
+    us    = data["us_sectors"]
+    kr    = data["kr_sectors"]
+    gen   = data["generated_at"]
+    cycle = data.get("cycle_phase", "Mid")
+    cycle_desc = data.get("cycle_desc", "")
+    cycle_preferred = data.get("cycle_preferred", [])
+    disp  = data.get("dispersion", {})
     _nav_html = nav_html(date, "sector")
 
     # Regime 색
@@ -302,6 +459,45 @@ def render_html(data: dict) -> str:
         "N/A":         ("#64748b", "#f1f5f9"),
     }
     rfg, rbg = regime_colors.get(regime, ("#64748b", "#f1f5f9"))
+
+    # Cycle phase 색
+    cycle_colors = {
+        "Early":     ("#059669", "#dcfce7"),
+        "Mid":       ("#0284c7", "#dbeafe"),
+        "Late":      ("#d97706", "#fef3c7"),
+        "Recession": ("#dc2626", "#fee2e2"),
+    }
+    cfg, cbg = cycle_colors.get(cycle, ("#64748b", "#f1f5f9"))
+
+    # Dispersion
+    disp_color  = disp.get("color", "#64748b")
+    disp_signal = disp.get("signal", "—")
+    disp_range  = disp.get("range", np.nan)
+    disp_range_str = f"{disp_range:.3f}" if not np.isnan(disp_range) else "—"
+    _top_s    = disp.get("top_score", np.nan)
+    _bot_s    = disp.get("bottom_score", np.nan)
+    disp_top_str = f"{_top_s:+.3f}" if isinstance(_top_s, float) and not np.isnan(_top_s) else "—"
+    disp_bot_str = f"{_bot_s:+.3f}" if isinstance(_bot_s, float) and not np.isnan(_bot_s) else "—"
+
+    # Cycle preferred sector names
+    cycle_pref_us   = [s for s in US_SECTORS if s in cycle_preferred]
+    cycle_pref_kr   = [s for s in KR_SECTORS if s in cycle_preferred]
+    cycle_chips_us  = " ".join(
+        f'<span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:12px">{US_SECTORS[s]["etf"]}</span>'
+        for s in cycle_pref_us
+    ) or '<span style="color:#94a3b8">해당없음</span>'
+    cycle_chips_kr  = " ".join(
+        f'<span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:12px">{KR_SECTORS[s]["name"]}</span>'
+        for s in cycle_pref_kr
+    ) or '<span style="color:#94a3b8">해당없음</span>'
+
+    # 4-phase cycle mini-diagram
+    cycle_phases = ["Early", "Mid", "Late", "Recession"]
+    phase_html = ""
+    for ph in cycle_phases:
+        fc, bc = cycle_colors.get(ph, ("#64748b", "#f1f5f9"))
+        active = ph == cycle
+        phase_html += f'<div style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:{bc if active else "#f1f5f9"};border:{"2px solid " + fc if active else "1px solid #e2e8f0"};font-size:12px;font-weight:{"700" if active else "400"};color:{fc if active else "#94a3b8"}">{ph}{"✓" if active else ""}</div>'
 
     # US 리더/래거 top3/bottom3
     us_leaders = [s["etf"] for s in us[:3]]
@@ -324,9 +520,9 @@ def render_html(data: dict) -> str:
 <title>Sector View — {date}</title>
 <style>
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
-:root {{ --bg:#f4f5f9; --card:#fff; --border:#e0e3ed; --text:#2d3148; --muted:#7c8298; }}
+:root {{ --bg:#f4f5f9; --card:#fff; --border:#e0e3ed; --text:#2d3148; --muted:#7c8298; --primary:#F58220; --navy:#043B72; }}
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-body {{ font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); padding:32px 24px; max-width:1200px; margin:0 auto; }}
+body {{ font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); }}
 .header {{ margin-bottom:24px; padding-bottom:20px; border-bottom:2px solid var(--border); }}
 .header h1 {{ font-size:26px; font-weight:700; }}
 .header .sub {{ font-size:14px; color:var(--muted); margin-top:6px; }}
@@ -354,9 +550,50 @@ tr:hover td {{ background:#fafbff; }}
 </div>
 
 <div class="regime-banner" style="background:{rbg};border:1px solid #e0e3ed">
-  <strong>현재 US 매크로 국면:</strong>
+  <strong>매크로 국면:</strong>
   <span style="background:{rfg};color:white;padding:4px 12px;border-radius:6px;font-weight:700">{regime}</span>
-  <span style="color:#64748b;font-size:13px">★ 선호 섹터 = 현재 국면에서 역사적으로 아웃퍼폼 경향</span>
+  &nbsp;&nbsp;
+  <strong>경기 사이클:</strong>
+  <span style="background:{cfg};color:white;padding:4px 12px;border-radius:6px;font-weight:700">{cycle}</span>
+  <span style="color:#64748b;font-size:13px"> — {cycle_desc}</span>
+</div>
+
+<!-- 경기 사이클 × 섹터 카드 -->
+<div class="card">
+  <h2>🔄 경기 사이클 단계 분석</h2>
+  <div style="display:flex;gap:8px;margin-bottom:16px">{phase_html}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+    <div style="background:#f8fafc;border-radius:10px;padding:14px;border-top:3px solid {cfg}">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">현재 사이클 단계</div>
+      <div style="font-size:20px;font-weight:800;color:{cfg}">{cycle}</div>
+      <div style="font-size:12px;color:#64748b;margin-top:4px">{cycle_desc}</div>
+    </div>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">US 사이클 선호 섹터 (●사이클)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">{cycle_chips_us}</div>
+    </div>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">KR 사이클 선호 섹터 (●사이클)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">{cycle_chips_kr}</div>
+    </div>
+  </div>
+  <!-- 섹터 모멘텀 분산도 -->
+  <div style="margin-top:16px;background:#f8fafc;border-radius:10px;padding:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:11px;color:#94a3b8">모멘텀 분산도 (Range)</div>
+      <div style="font-size:22px;font-weight:800;color:{disp_color}">{disp_range_str}</div>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:{disp_color}">{disp_signal}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:2px">Top − Bottom 복합점수 차이. 0.6↑ = 강한 로테이션, 0.3↓ = 인덱스 중립</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:#94a3b8">Top 점수</div>
+      <div style="font-size:15px;font-weight:700;color:#059669">{disp_top_str}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">Bottom 점수</div>
+      <div style="font-size:15px;font-weight:700;color:#dc2626">{disp_bot_str}</div>
+    </div>
+  </div>
 </div>
 
 <div class="card">

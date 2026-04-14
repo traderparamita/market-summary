@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector View — 2026-04-14</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root { --bg:#f4f5f9; --card:#fff; --border:#e0e3ed; --text:#2d3148; --muted:#7c8298; --primary:#F58220; --navy:#043B72; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); }
+.header { margin-bottom:24px; padding-bottom:20px; border-bottom:2px solid var(--border); }
+.header h1 { font-size:26px; font-weight:700; }
+.header .sub { font-size:14px; color:var(--muted); margin-top:6px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,.04); }
+.card h2 { font-size:16px; font-weight:700; margin-bottom:14px; }
+.regime-banner { border-radius:10px; padding:14px 20px; margin-bottom:20px; font-size:14px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+thead tr { background:#f8f9fc; }
+th { padding:9px 12px; font-weight:600; font-size:12px; color:var(--muted); text-align:center; border-bottom:2px solid var(--border); white-space:nowrap; }
+td { padding:9px 12px; border-bottom:1px solid #f0f1f7; vertical-align:middle; }
+tr:hover td { background:#fafbff; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.chips { display:flex; flex-wrap:wrap; gap:6px; }
+.footer { text-align:center; font-size:12px; color:var(--muted); margin-top:32px; padding-top:16px; border-top:1px solid var(--border); }
+@media(max-width:900px) { .two-col { grid-template-columns:1fr; } }
+.ma-nav{background:var(--navy);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(4,59,114,.25)}
+.ma-nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:0;height:48px;overflow-x:auto;scrollbar-width:none}
+.ma-nav-inner::-webkit-scrollbar{display:none}
+.ma-logo{color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;padding-right:20px;border-right:1px solid rgba(255,255,255,.2);margin-right:16px;letter-spacing:-.2px}
+.ma-logo span{display:inline-block;width:8px;height:8px;background:var(--primary);border-radius:50%;margin-right:6px;vertical-align:middle}
+.ma-nav-group{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.8px;text-transform:uppercase;padding:0 8px 0 4px;white-space:nowrap}
+.ma-nav-link{color:rgba(255,255,255,.72);text-decoration:none;font-size:13px;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:all .15s}
+.ma-nav-link:hover{color:#fff;background:rgba(255,255,255,.1)}
+.ma-nav-link.current{color:#fff;background:var(--primary);font-weight:600}
+.ma-nav-sep{width:1px;height:16px;background:rgba(255,255,255,.15);margin:0 8px;flex-shrink:0}
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-14.html" class="ma-nav-link">가격신호</a>
+    <a href="../macro/2026-04-14.html" class="ma-nav-link">거시지표</a>
+    <a href="../correlation/2026-04-14.html" class="ma-nav-link">상관관계</a>
+    <a href="../regime/2026-04-14.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-14.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-14.html" class="ma-nav-link current">섹터</a>
+    <a href="../bond/2026-04-14.html" class="ma-nav-link">채권</a>
+    <a href="../style/2026-04-14.html" class="ma-nav-link">스타일</a>
+    <a href="../allocation/2026-04-14.html" class="ma-nav-link">배분안</a>
+  </div>
+</nav>
+<div style="max-width:1200px;margin:0 auto;padding:28px 24px 48px">
+<div class="header">
+  <h1>🏭 Sector Rotation View</h1>
+  <div class="sub">섹터 로테이션 신호 &nbsp;|&nbsp; 기준일: 2026-04-14 &nbsp;|&nbsp; 생성: 2026-04-14 09:57</div>
+</div>
+
+<div class="regime-banner" style="background:#fef3c7;border:1px solid #e0e3ed">
+  <strong>매크로 국면:</strong>
+  <span style="background:#d97706;color:white;padding:4px 12px;border-radius:6px;font-weight:700">Reflation</span>
+  &nbsp;&nbsp;
+  <strong>경기 사이클:</strong>
+  <span style="background:#0284c7;color:white;padding:4px 12px;border-radius:6px;font-weight:700">Mid</span>
+  <span style="color:#64748b;font-size:13px"> — 경기 확장 중반 — 이익 성장, 금리 상승 시작, 유동성 양호</span>
+</div>
+
+<!-- 경기 사이클 × 섹터 카드 -->
+<div class="card">
+  <h2>🔄 경기 사이클 단계 분석</h2>
+  <div style="display:flex;gap:8px;margin-bottom:16px"><div style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:12px;font-weight:400;color:#94a3b8">Early</div><div style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:#dbeafe;border:2px solid #0284c7;font-size:12px;font-weight:700;color:#0284c7">Mid✓</div><div style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:12px;font-weight:400;color:#94a3b8">Late</div><div style="flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:12px;font-weight:400;color:#94a3b8">Recession</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+    <div style="background:#f8fafc;border-radius:10px;padding:14px;border-top:3px solid #0284c7">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">현재 사이클 단계</div>
+      <div style="font-size:20px;font-weight:800;color:#0284c7">Mid</div>
+      <div style="font-size:12px;color:#64748b;margin-top:4px">경기 확장 중반 — 이익 성장, 금리 상승 시작, 유동성 양호</div>
+    </div>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">US 사이클 선호 섹터 (●사이클)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px"><span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:12px">XLK</span> <span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:12px">XLI</span> <span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:12px">XLC</span></div>
+    </div>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">KR 사이클 선호 섹터 (●사이클)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px"><span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:12px">반도체</span></div>
+    </div>
+  </div>
+  <!-- 섹터 모멘텀 분산도 -->
+  <div style="margin-top:16px;background:#f8fafc;border-radius:10px;padding:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:11px;color:#94a3b8">모멘텀 분산도 (Range)</div>
+      <div style="font-size:22px;font-weight:800;color:#059669">1.600</div>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:#059669">강한 로테이션 — 섹터 선택 효과 극대화</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:2px">Top − Bottom 복합점수 차이. 0.6↑ = 강한 로테이션, 0.3↓ = 인덱스 중립</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:#94a3b8">Top 점수</div>
+      <div style="font-size:15px;font-weight:700;color:#059669">+1.000</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">Bottom 점수</div>
+      <div style="font-size:15px;font-weight:700;color:#dc2626">-0.600</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📊 섹터 요약 (리더 vs 래거)</h2>
+  <div style="display:flex;gap:40px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">🇺🇸 US 섹터 리더 (모멘텀 Top3)</div>
+      <div class="chips"><span style="background:#dcfce7;color:#16a34a;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">XLI</span> <span style="background:#dcfce7;color:#16a34a;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">XLB</span> <span style="background:#dcfce7;color:#16a34a;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">XLRE</span></div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">🇺🇸 US 섹터 래거 (모멘텀 Bottom3)</div>
+      <div class="chips"><span style="background:#fee2e2;color:#dc2626;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">XLF</span> <span style="background:#fee2e2;color:#dc2626;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">XLY</span> <span style="background:#fee2e2;color:#dc2626;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">XLV</span></div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">🇰🇷 KR 섹터 리더</div>
+      <div class="chips"><span style="background:#dcfce7;color:#16a34a;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">반도체</span> <span style="background:#dcfce7;color:#16a34a;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">2차전지</span></div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">🇰🇷 KR 섹터 래거</div>
+      <div class="chips"><span style="background:#fee2e2;color:#dc2626;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">바이오/헬스</span> <span style="background:#fee2e2;color:#dc2626;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:600">금융</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <h2>🇺🇸 US 섹터 로테이션 (vs S&amp;P500)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th style="text-align:left">섹터</th>
+          <th>1M</th>
+          <th>3M</th>
+          <th>6M</th>
+          <th>추세</th>
+          <th>vs SPY</th>
+          <th>점수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:4px;font-weight:700;font-size:11px">1위</span></td>
+          <td>
+            <strong>Industrials</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLI</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600">★ 선호</span><span style="background:#dbeafe;color:#2563eb;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:600">●사이클</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+5.20%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+6.16%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+15.95%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+7.46%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+1.000</td>
+        </tr>
+        <tr>
+          <td><span style="background:#f0f9ff;color:#0284c7;padding:2px 7px;border-radius:4px;font-size:11px">2위</span></td>
+          <td>
+            <strong>Materials</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLB</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600">★ 선호</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+6.57%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+8.04%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+21.34%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+9.35%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+1.000</td>
+        </tr>
+        <tr>
+          <td><span style="background:#f0f9ff;color:#0284c7;padding:2px 7px;border-radius:4px;font-size:11px">3위</span></td>
+          <td>
+            <strong>Real Estate</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLRE</span>
+            
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+2.51%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+6.62%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+7.63%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+7.92%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+1.000</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">4위</span></td>
+          <td>
+            <strong>Energy</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLE</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600">★ 선호</span>
+          </td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.38%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+24.05%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+36.05%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+25.35%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+0.700</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">5위</span></td>
+          <td>
+            <strong>Utilities</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLU</span>
+            
+          </td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.52%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+9.71%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+4.36%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+11.02%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+0.700</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">6위</span></td>
+          <td>
+            <strong>Consumer Staples</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLP</span>
+            
+          </td>
+          <td style="text-align:right"><span style="color:#dc2626">-3.22%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+2.28%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+5.85%</span></td>
+          <td style="text-align:center"><span style="color:#22c55e">↑ 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+3.59%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+0.600</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">7위</span></td>
+          <td>
+            <strong>Technology</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLK</span>
+            <span style="background:#dbeafe;color:#2563eb;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:600">●사이클</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+6.57%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.68%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+4.90%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+0.62%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+0.500</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">8위</span></td>
+          <td>
+            <strong>Communication</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLC</span>
+            <span style="background:#dbeafe;color:#2563eb;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:600">●사이클</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+0.64%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-2.01%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+2.45%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.71%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#64748b;font-weight:700">+0.200</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">9위</span></td>
+          <td>
+            <strong>Health Care</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLV</span>
+            
+          </td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.81%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-5.59%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+5.00%</span></td>
+          <td style="text-align:center"><span style="color:#22c55e">↑ 상승</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-4.29%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#64748b;font-weight:700">-0.200</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">10위</span></td>
+          <td>
+            <strong>Consumer Discr.</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLY</span>
+            
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+2.97%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-8.33%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+0.00%</span></td>
+          <td style="text-align:center"><span style="color:#f97316">↓ 약세</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-7.02%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#dc2626;font-weight:700">-0.350</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">11위</span></td>
+          <td>
+            <strong>Financials</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">XLF</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600">★ 선호</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+6.21%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-6.08%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.10%</span></td>
+          <td style="text-align:center"><span style="color:#f97316">↓ 약세</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-4.78%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#dc2626;font-weight:700">-0.600</td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🇰🇷 KR 섹터 로테이션 (vs KOSPI)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th style="text-align:left">섹터</th>
+          <th>1M</th>
+          <th>3M</th>
+          <th>6M</th>
+          <th>추세</th>
+          <th>vs KOSPI</th>
+          <th>점수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:4px;font-weight:700;font-size:11px">1위</span></td>
+          <td>
+            <strong>반도체</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">KODEX 반도체</span>
+            <span style="background:#dbeafe;color:#2563eb;padding:2px 5px;border-radius:4px;font-size:10px;font-weight:600">●사이클</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+3.60%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+48.70%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+108.63%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+22.05%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+1.000</td>
+        </tr>
+        <tr>
+          <td><span style="background:#f0f9ff;color:#0284c7;padding:2px 7px;border-radius:4px;font-size:11px">2위</span></td>
+          <td>
+            <strong>2차전지</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">KODEX 2차전지</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600">★ 선호</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+11.01%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+30.51%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+49.60%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+3.85%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+1.000</td>
+        </tr>
+        <tr>
+          <td><span style="background:#f0f9ff;color:#0284c7;padding:2px 7px;border-radius:4px;font-size:11px">3위</span></td>
+          <td>
+            <strong>금융</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">KODEX 금융</span>
+            <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600">★ 선호</span>
+          </td>
+          <td style="text-align:right"><span style="color:#16a34a">+5.33%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+30.90%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+38.75%</span></td>
+          <td style="text-align:center"><span style="color:#16a34a">↑↑ 강한 상승</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+4.25%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#16a34a;font-weight:700">+1.000</td>
+        </tr>
+        <tr>
+          <td><span style="color:#94a3b8;font-size:12px">4위</span></td>
+          <td>
+            <strong>바이오/헬스</strong>
+            <span style="color:#94a3b8;font-size:12px;margin-left:6px">KODEX 바이오</span>
+            
+          </td>
+          <td style="text-align:right"><span style="color:#dc2626">-9.22%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-7.43%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+16.97%</span></td>
+          <td style="text-align:center"><span style="color:#22c55e">↑ 상승</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-34.08%</span></td>
+          <td style="text-align:right;font-family:monospace;color:#64748b;font-weight:700">-0.200</td>
+        </tr></tbody>
+    </table>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted)">
+      ⚠️ KR 섹터 ETF 데이터 미수집 시 점수 0. 데이터 수집 후 재실행 필요.
+    </div>
+  </div>
+</div>
+
+<div class="card" style="font-size:13px;color:var(--muted)">
+  <strong>해석 안내</strong> &nbsp;|&nbsp;
+  복합점수 = 1M(15%) + 3M(25%) + 6M(25%) + MA추세(20%) + vs벤치(15%)
+  &nbsp;|&nbsp; ★ 선호 = 현재 매크로 국면(Reflation) 친화 섹터
+</div>
+
+<div class="footer">Sector View &nbsp;·&nbsp; 미래에셋생명 변액보험 운용 참고 &nbsp;·&nbsp; 본 자료는 투자 권유가 아닙니다</div>
+</div>
+</body>
+</html>

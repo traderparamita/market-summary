@@ -131,14 +131,33 @@ def compute_price_view(date: str, csv_path: str | Path | None = None) -> dict:
                 "n_assets": int(grouped.count().get(ac, 0)),
             })
 
+        # ── Technical signal summary (cross-sectional) ────────────
+        rsi_oversold  = int((asset_scores["rsi_14"].dropna() <= 30).sum())
+        rsi_overbought = int((asset_scores["rsi_14"].dropna() >= 70).sum())
+        macd_bullish  = int((asset_scores["macd_cross"] == 1.0).sum())
+        macd_bearish  = int((asset_scores["macd_cross"] == -1.0).sum())
+        bb_oversold   = int((asset_scores["bb_pct_b"].dropna() < 0.2).sum())
+        bb_overbought = int((asset_scores["bb_pct_b"].dropna() > 0.8).sum())
+
+        market_pulse["tech_rsi_oversold"]   = rsi_oversold
+        market_pulse["tech_rsi_overbought"] = rsi_overbought
+        market_pulse["tech_macd_bullish"]   = macd_bullish
+        market_pulse["tech_macd_bearish"]   = macd_bearish
+        market_pulse["tech_bb_oversold"]    = bb_oversold
+        market_pulse["tech_bb_overbought"]  = bb_overbought
+        market_pulse["tech_n_assets"]       = len(asset_scores)
+
         # ── Individual assets ──────────────────────────────────────
         cols = [
             "etf", "asset_class", "close",
             "mom_12_1", "mom_6_1", "mom_3_1",
             "trend_ma200", "trend_ma50", "nearness_52w",
             "vol_ratio", "composite_score",
+            "rsi_14", "macd_hist", "bb_pct_b",
         ]
-        top_assets = asset_scores[cols].to_dict("records")
+        # 일부 컬럼이 없을 수 있으므로 존재하는 것만
+        existing_cols = [c for c in cols if c in asset_scores.columns]
+        top_assets = asset_scores[existing_cols].to_dict("records")
 
     return {
         "date":              date,
@@ -281,6 +300,37 @@ def generate_price_html(view: dict) -> str:
         ("Label", f'<span style="color:{sent_color};font-weight:600">{sent_label}</span>', ""),
     ])
 
+    # ── Technical Signals card (RSI/MACD/Bollinger) ──────────────
+    n_assets   = pulse.get("tech_n_assets", 0)
+    rsi_os     = pulse.get("tech_rsi_oversold",   0)
+    rsi_ob     = pulse.get("tech_rsi_overbought", 0)
+    macd_bull  = pulse.get("tech_macd_bullish",   0)
+    macd_bear  = pulse.get("tech_macd_bearish",   0)
+    bb_os      = pulse.get("tech_bb_oversold",    0)
+    bb_ob      = pulse.get("tech_bb_overbought",  0)
+
+    def _tech_row(label, oversold, overbought, n):
+        os_pct = f"{oversold/n:.0%}" if n > 0 else "—"
+        ob_pct = f"{overbought/n:.0%}" if n > 0 else "—"
+        os_cls = "up" if oversold > 0 else ""
+        ob_cls = "down" if overbought > 0 else ""
+        return (
+            label,
+            f'<span class="{os_cls}">{oversold}({os_pct}) 과매도</span> / '
+            f'<span class="{ob_cls}">{overbought}({ob_pct}) 과매수</span>',
+            ""
+        )
+
+    tech_card = _pulse_card("Technical Signals", [
+        _tech_row("RSI(14)",    rsi_os,   rsi_ob,  n_assets),
+        _tech_row("Bollinger",  bb_os,    bb_ob,   n_assets),
+        (
+            "MACD Cross",
+            f'<span class="up">▲ {macd_bull}개</span> / <span class="down">▼ {macd_bear}개</span>',
+            f"(총 {n_assets}자산)"
+        ),
+    ])
+
     pulse_html = f"""
     <div class="section">
       <h2>Market Pulse <span class="badge">{report_date}</span>
@@ -292,6 +342,7 @@ def generate_price_html(view: dict) -> str:
         {breadth_card}
         {dxy_card}
         {sent_card}
+        {tech_card}
       </div>
     </div>"""
 
@@ -333,6 +384,21 @@ def generate_price_html(view: dict) -> str:
         sc     = a["composite_score"]
         sc_cls = "up" if sc > 0.3 else ("down" if sc < -0.3 else "")
 
+        # RSI
+        rsi_v   = a.get("rsi_14")
+        rsi_str = f"{rsi_v:.0f}" if rsi_v == rsi_v and rsi_v is not None else "—"
+        rsi_cls = "down" if (rsi_v and rsi_v >= 70) else ("up" if (rsi_v and rsi_v <= 30) else "")
+
+        # BB %B
+        bb_v   = a.get("bb_pct_b")
+        bb_str = f"{bb_v:.2f}" if bb_v == bb_v and bb_v is not None else "—"
+        bb_cls = "down" if (bb_v and bb_v > 0.8) else ("up" if (bb_v and bb_v < 0.2) else "")
+
+        # MACD hist
+        macd_v   = a.get("macd_hist")
+        macd_str = f"{macd_v:+.3f}" if macd_v == macd_v and macd_v is not None else "—"
+        macd_cls = "up" if (macd_v and macd_v > 0) else ("down" if (macd_v and macd_v < 0) else "")
+
         asset_rows += (
             f'<tr>'
             f'<td class="mono">{a["etf"]}</td>'
@@ -344,6 +410,9 @@ def generate_price_html(view: dict) -> str:
             f'<td class="center">{trend_200}&nbsp;{trend_50}</td>'
             f'<td class="right mono {near_cls}">{near_str}</td>'
             f'<td class="right mono {vr_cls}">{vr_str}</td>'
+            f'<td class="right mono {rsi_cls}">{rsi_str}</td>'
+            f'<td class="right mono {bb_cls}">{bb_str}</td>'
+            f'<td class="right mono {macd_cls}">{macd_str}</td>'
             f'<td class="right mono {sc_cls}">{sc:+.3f}</td>'
             f'</tr>'
         )
@@ -468,6 +537,9 @@ body{{font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;background:var(-
       <th style="text-align:center">Trend</th>
       <th style="text-align:right">52W Hi%</th>
       <th style="text-align:right">Vol Ratio</th>
+      <th style="text-align:right">RSI</th>
+      <th style="text-align:right">BB%B</th>
+      <th style="text-align:right">MACD</th>
       <th style="text-align:right">Score</th>
     </tr></thead>
     <tbody>{asset_rows}</tbody>

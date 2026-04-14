@@ -1,8 +1,9 @@
 """Asset scoring engine — Option A enhanced signals.
 
 Loads history/market_data.csv, computes per-asset signals (momentum, trend,
-volatility, reversal, nearness) plus market-level overlays (VIX regime,
-breadth, yield curve, DXY), then derives a regime-conditional composite score.
+volatility, reversal, nearness, RSI, MACD, Bollinger) plus market-level
+overlays (VIX regime, breadth, yield curve, DXY), then derives a
+regime-conditional composite score.
 
 Usage:
     python -m portfolio.view.scoring --date 2026-04-09
@@ -57,6 +58,80 @@ def _cs_z(series: pd.Series) -> pd.Series:
     return pd.Series(0.0, index=series.index)
 
 
+# ─────────────────────────────────────────────────────────────
+# 기술적 지표 계산 함수
+# ─────────────────────────────────────────────────────────────
+
+def _rsi(series: pd.Series, period: int = 14) -> float:
+    """RSI(period) — returns latest value (0–100)."""
+    if len(series) < period + 1:
+        return np.nan
+    delta = series.diff().dropna()
+    gain = delta.clip(lower=0).tail(period).mean()
+    loss = (-delta.clip(upper=0)).tail(period).mean()
+    if loss == 0:
+        return 100.0
+    rs = gain / loss
+    return float(100.0 - 100.0 / (1.0 + rs))
+
+
+def _ema(series: pd.Series, span: int) -> pd.Series:
+    """Exponential moving average."""
+    return series.ewm(span=span, adjust=False).mean()
+
+
+def _macd_histogram(series: pd.Series, fast: int = 12, slow: int = 26, signal: int = 9) -> float:
+    """MACD histogram = MACD line − Signal line.
+
+    Positive = bullish momentum, negative = bearish.
+    """
+    if len(series) < slow + signal:
+        return np.nan
+    macd_line   = _ema(series, fast) - _ema(series, slow)
+    signal_line = _ema(macd_line, signal)
+    hist = macd_line - signal_line
+    return float(hist.iloc[-1])
+
+
+def _bollinger_pct_b(series: pd.Series, period: int = 20, n_std: float = 2.0) -> float:
+    """Bollinger %B = (price - lower band) / (upper - lower).
+
+    0 = at lower band, 1 = at upper band, >1 = above upper (over-bought).
+    """
+    if len(series) < period:
+        return np.nan
+    tail = series.tail(period)
+    mid  = tail.mean()
+    std  = tail.std()
+    if std == 0:
+        return np.nan
+    upper = mid + n_std * std
+    lower = mid - n_std * std
+    last  = float(series.iloc[-1])
+    band_range = upper - lower
+    if band_range == 0:
+        return np.nan
+    return float((last - lower) / band_range)
+
+
+def _macd_crossover(series: pd.Series, fast: int = 12, slow: int = 26, signal: int = 9) -> float:
+    """MACD 크로스오버 신호: +1(골든크로스) / -1(데드크로스) / 0(유지)."""
+    if len(series) < slow + signal + 2:
+        return 0.0
+    macd_line   = _ema(series, fast) - _ema(series, slow)
+    signal_line = _ema(macd_line, signal)
+    hist        = macd_line - signal_line
+    if len(hist) < 2:
+        return 0.0
+    prev_hist = float(hist.iloc[-2])
+    curr_hist = float(hist.iloc[-1])
+    if prev_hist <= 0 and curr_hist > 0:
+        return 1.0   # 골든크로스
+    if prev_hist >= 0 and curr_hist < 0:
+        return -1.0  # 데드크로스
+    return 0.0
+
+
 def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataFrame:
     """Compute per-asset signals as of a given date."""
     target = pd.Timestamp(date)
@@ -108,6 +183,34 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
             not np.isnan(vol_20d) and vol_60d and vol_60d > 0
         ) else np.nan
 
+        # ── Technical signals (RSI / MACD / Bollinger) ────────────
+        rsi_14        = _rsi(series, 14)
+        macd_hist     = _macd_histogram(series)
+        macd_cross    = _macd_crossover(series)
+        bollinger_pct = _bollinger_pct_b(series, 20)
+
+        # RSI signal: oversold(≤30) = +1, overbought(≥70) = -1, neutral = 0
+        if not np.isnan(rsi_14):
+            if rsi_14 <= 30:
+                rsi_signal = 1.0    # 과매도 = 반등 기대
+            elif rsi_14 >= 70:
+                rsi_signal = -1.0   # 과매수 = 조정 경고
+            else:
+                rsi_signal = 0.0
+        else:
+            rsi_signal = np.nan
+
+        # Bollinger signal: <0.2 = oversold (buy), >0.8 = overbought (sell)
+        if not np.isnan(bollinger_pct):
+            if bollinger_pct < 0.2:
+                bb_signal = 1.0
+            elif bollinger_pct > 0.8:
+                bb_signal = -1.0
+            else:
+                bb_signal = 0.0
+        else:
+            bb_signal = np.nan
+
         records.append({
             "etf": etf,
             "asset_class": info["asset_class"],
@@ -126,6 +229,13 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
             # Volatility
             "vol_20d":   vol_20d,
             "vol_ratio": vol_ratio,
+            # Technical (RSI / MACD / Bollinger)
+            "rsi_14":        rsi_14,
+            "rsi_signal":    rsi_signal,
+            "macd_hist":     macd_hist,
+            "macd_cross":    macd_cross,
+            "bb_pct_b":      bollinger_pct,
+            "bb_signal":     bb_signal,
         })
 
     df = pd.DataFrame(records)
@@ -134,7 +244,7 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
 
     # ── Cross-sectional z-scores ──────────────────────────────────
     for col in ["mom_12_1", "mom_6_1", "mom_3_1", "reversal",
-                "mom_12_1_adj", "nearness_52w"]:
+                "mom_12_1_adj", "nearness_52w", "macd_hist"]:
         df[f"{col}_z"] = _cs_z(df[col])
 
     # ── Market-level signals ──────────────────────────────────────
@@ -228,6 +338,16 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
     nearness_z_cs  = df["nearness_52w_z"].fillna(0)
     reversal_z_cs  = df["reversal_z"].fillna(0)
     mom_adj_z_cs   = df["mom_12_1_adj_z"].fillna(0)
+    macd_z_cs      = df["macd_hist_z"].fillna(0)
+
+    # RSI/BB 역방향 신호 (과매도=매수 / 과매수=매도) — 레짐에 따라 가중치 조절
+    rsi_signal_cs  = df["rsi_signal"].fillna(0)
+    bb_signal_cs   = df["bb_signal"].fillna(0)
+    # MACD 크로스오버 (순방향)
+    macd_cross_cs  = df["macd_cross"].fillna(0)
+
+    # 기술적 신호 합성 (Bollinger + RSI 평균)
+    tech_contrarian = (rsi_signal_cs + bb_signal_cs) / 2.0
 
     vol_penalty = df["vol_ratio"].apply(
         lambda x: -0.25 if (not np.isnan(x) and x > 1.3) else 0.0
@@ -235,31 +355,39 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
 
     if market_regime == "RiskOFF":
         # Defence: trend dominates, momentum discounted, expanding vol heavily penalised
+        # RSI/BB 역발상 신호 비중 소폭 추가 (바닥 매수 기회)
         composite = (
-            trend_score    * 1.5  +
-            mom_z          * 0.5  +
-            nearness_z_cs  * 0.1  +
-            vol_penalty    * 2.0  +
+            trend_score      * 1.5  +
+            mom_z            * 0.5  +
+            nearness_z_cs    * 0.1  +
+            vol_penalty      * 2.0  +
+            tech_contrarian  * 0.2  +  # 과매도 신호 소폭 반영
+            macd_cross_cs    * 0.1  +
             macro_adj
         )
     elif market_regime == "RiskON":
         # Offence: momentum + breakouts lead, trend confirms
+        # MACD 추세 추종 신호 강화
         composite = (
             mom_z          * 1.5  +
             trend_score    * 0.8  +
             nearness_z_cs  * 0.3  +
             mom_adj_z_cs   * 0.3  +
+            macd_z_cs      * 0.2  +  # MACD 모멘텀 추가
+            macd_cross_cs  * 0.15 +  # 크로스오버 신호
             vix_regime     * 0.1  +
             macro_adj
         )
     else:  # Neutral — balanced weighting
         composite = (
-            mom_z          * 1.0  +
-            trend_score    * 1.0  +
-            nearness_z_cs  * 0.2  +
-            reversal_z_cs  * -0.1 +   # small contrarian discount
-            vol_penalty              +
-            vix_regime     * 0.1  +
+            mom_z            * 1.0  +
+            trend_score      * 1.0  +
+            nearness_z_cs    * 0.2  +
+            reversal_z_cs    * -0.1 +   # small contrarian discount
+            vol_penalty               +
+            macd_z_cs        * 0.15 +  # MACD 신호 (중립 구간 보조)
+            tech_contrarian  * 0.1  +  # 기술적 역발상
+            vix_regime       * 0.1  +
             macro_adj
         )
 

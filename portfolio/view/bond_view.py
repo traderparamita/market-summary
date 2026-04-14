@@ -40,12 +40,20 @@ KR_BOND_SEGMENTS = {
 
 # FRED macro codes for yield/spread context
 MACRO_RATES = {
-    "US_FED_RATE":    "연준 기준금리",
-    "US_2Y_YIELD":    "미국 2년 국채",
-    "US_10Y_YIELD":   "미국 10년 국채",
-    "US_YIELD_CURVE": "미국 10Y-2Y 스프레드",
-    "US_IG_SPREAD":   "IG 크레딧 스프레드",
-    "US_HY_SPREAD":   "HY 크레딧 스프레드",
+    "US_FED_RATE":       "연준 기준금리",
+    "US_2Y_YIELD":       "미국 2년 국채",
+    "US_10Y_YIELD":      "미국 10년 국채",
+    "US_YIELD_CURVE":    "미국 10Y-2Y 스프레드",
+    "US_IG_SPREAD":      "IG 크레딧 스프레드",
+    "US_HY_SPREAD":      "HY 크레딧 스프레드",
+    # 확장 지표 (collect_extended.py)
+    "BOND_REAL_YIELD_10Y": "10Y TIPS 실질금리",
+    "BOND_TERM_PREMIUM":   "ACM 기간프리미엄",
+    "BOND_BREAKEVEN_10Y":  "10Y 손익분기점 인플레이션",
+    "BOND_MOVE_INDEX":     "MOVE 채권변동성지수",
+    "CREDIT_HY_SPREAD":    "HY 스프레드 (BAML)",
+    "CREDIT_IG_SPREAD":    "IG 스프레드 (BAML)",
+    "CREDIT_TED_SPREAD":   "TED 스프레드",
 }
 
 
@@ -207,6 +215,102 @@ def _score_bond_segment(code: str, prices: pd.DataFrame) -> dict:
     return result
 
 
+def _decompose_yield(nominal_10y: float, real_yield_10y: float,
+                     breakeven_10y: float, fed_rate: float) -> dict:
+    """명목금리 분해: 실질금리 + 기대인플레이션 + 기간프리미엄 근사.
+
+    명목 ≈ 실질 + 손익분기점 (TIPS 기반)
+    기간프리미엄 ≈ 명목 - 실질 - 손익분기점 (잔차)
+    """
+    result = {
+        "nominal": nominal_10y,
+        "real":    real_yield_10y,
+        "breakeven": breakeven_10y,
+        "term_premium": np.nan,
+        "interpretation": "데이터 부족",
+    }
+    if np.isnan(nominal_10y) or np.isnan(real_yield_10y):
+        return result
+
+    if not np.isnan(breakeven_10y):
+        term_prem = nominal_10y - real_yield_10y - breakeven_10y
+    else:
+        # 근사: 목표 인플레이션 2%로 가정
+        term_prem = nominal_10y - real_yield_10y - 2.0
+
+    result["term_premium"] = round(term_prem, 3)
+
+    # 해석
+    if real_yield_10y < 0:
+        interp = "실질금리 음수 → 유동성 장세, 위험자산 우호"
+    elif real_yield_10y > 2.5:
+        interp = f"실질금리 {real_yield_10y:.2f}% 고점 → 성장주·EM 밸류에이션 압박"
+    elif term_prem > 0.5:
+        interp = f"기간프리미엄 {term_prem:.2f}% 상승 → 장기채 공급 압력 / 재정 우려"
+    elif term_prem < -0.3:
+        interp = f"기간프리미엄 {term_prem:.2f}% 음수 → 안전자산 수요 강세"
+    else:
+        interp = f"실질금리 {real_yield_10y:.2f}%, 기간프리미엄 {term_prem:.2f}% 중립 수준"
+
+    result["interpretation"] = interp
+    return result
+
+
+def _nelson_siegel_approx(fed_rate: float, us_2y: float, us_10y: float,
+                          us_30y: float = np.nan) -> dict:
+    """Nelson-Siegel 커브 Level/Slope/Curvature 근사치.
+
+    β0 (Level)    ≈ 장기금리 수준 (10Y 근사)
+    β1 (Slope)    ≈ -(단기 - 장기) = -(FF - 10Y)
+    β2 (Curvature)≈ 2×중기 - 단기 - 장기 (2Y를 중기로 사용)
+    """
+    result = {
+        "level": np.nan, "slope": np.nan, "curvature": np.nan,
+        "interpretation": "데이터 부족"
+    }
+    if np.isnan(us_10y):
+        return result
+
+    level = us_10y
+    slope = -(fed_rate - us_10y) if not np.isnan(fed_rate) else np.nan
+    curv  = (2 * us_2y - fed_rate - us_10y) if not np.isnan(us_2y) and not np.isnan(fed_rate) else np.nan
+
+    result.update({"level": round(level, 3),
+                   "slope": round(slope, 3) if not np.isnan(slope) else np.nan,
+                   "curvature": round(curv, 3) if not np.isnan(curv) else np.nan})
+
+    # 해석
+    interps = []
+    if not np.isnan(level):
+        if level > 4.5:
+            interps.append(f"장기금리 수준 높음({level:.2f}%) → 채권 발행 비용 상승")
+        elif level < 2.5:
+            interps.append(f"장기금리 낮음({level:.2f}%) → 성장 기대 약화 또는 안전자산 선호")
+    if not np.isnan(slope):
+        if slope < 0:
+            interps.append(f"기울기 역전({slope:+.2f}%) → 경기침체 선행 경고")
+        elif slope > 1.5:
+            interps.append(f"기울기 가파름({slope:+.2f}%) → 경기 정상화 기대")
+    if not np.isnan(curv):
+        if curv > 1.0:
+            interps.append(f"곡률 높음({curv:+.2f}%) → 중기채 상대적 고금리")
+
+    result["interpretation"] = "; ".join(interps) if interps else "커브 구조 중립"
+    return result
+
+
+def _move_regime(move_index: float) -> tuple[str, str]:
+    """MOVE 지수 기준 채권 변동성 국면."""
+    if np.isnan(move_index):
+        return "N/A", "#94a3b8"
+    if move_index > 140:
+        return "채권변동성 극도 위험 (MOVE>140)", "#dc2626"
+    elif move_index > 100:
+        return "채권변동성 경계 (MOVE>100)", "#f59e0b"
+    else:
+        return f"채권변동성 안정 (MOVE={move_index:.0f})", "#059669"
+
+
 def compute_bond_view(date) -> dict:
     date_str = str(date)
     prices = _load_prices(date_str)
@@ -216,13 +320,26 @@ def compute_bond_view(date) -> dict:
     us_bonds = [_score_bond_segment(c, prices) for c in US_BOND_SEGMENTS]
     kr_bonds = [_score_bond_segment(c, prices) for c in KR_BOND_SEGMENTS]
 
-    # FRED macro rates
+    # FRED macro rates (기존)
     fed_rate   = macro.get("US_FED_RATE",    {}).get("value", np.nan)
     us_2y      = macro.get("US_2Y_YIELD",    {}).get("value", np.nan)
     us_10y     = macro.get("US_10Y_YIELD",   {}).get("value", np.nan)
     yield_curve = macro.get("US_YIELD_CURVE", {}).get("value", np.nan)
     hy_spread  = macro.get("US_HY_SPREAD",   {}).get("value", np.nan)
     ig_spread  = macro.get("US_IG_SPREAD",   {}).get("value", np.nan)
+
+    # 확장 지표 (collect_extended.py로 수집)
+    real_yield_10y = macro.get("BOND_REAL_YIELD_10Y", {}).get("value", np.nan)
+    term_premium   = macro.get("BOND_TERM_PREMIUM",   {}).get("value", np.nan)
+    breakeven_10y  = macro.get("BOND_BREAKEVEN_10Y",  {}).get("value", np.nan)
+    move_index     = macro.get("BOND_MOVE_INDEX",     {}).get("value", np.nan)
+    hy_baml        = macro.get("CREDIT_HY_SPREAD",    {}).get("value", np.nan)
+    ig_baml        = macro.get("CREDIT_IG_SPREAD",    {}).get("value", np.nan)
+    ted_spread     = macro.get("CREDIT_TED_SPREAD",   {}).get("value", np.nan)
+
+    # 최선 HY 스프레드 (BAML 우선, 기존 폴백)
+    hy_best = hy_baml if not np.isnan(hy_baml) else hy_spread
+    ig_best = ig_baml if not np.isnan(ig_baml) else ig_spread
 
     # KR rates from ETF price data (ECOS: level = rate)
     kr_cd91d_row = kr_bonds[0]
@@ -231,7 +348,7 @@ def compute_bond_view(date) -> dict:
     kr_10y_val   = kr_10y_row["last"] if not np.isnan(kr_10y_row["last"]) else np.nan
 
     # Spread and regime signals
-    credit_reg, credit_color = _credit_regime(hy_spread)
+    credit_reg, credit_color = _credit_regime(hy_best)
     dur_rec  = _duration_rec(yield_curve, fed_rate, us_10y)
     kr_us_diff = _kr_us_rate_diff(kr_10y_val, us_10y)
 
@@ -240,8 +357,17 @@ def compute_bond_view(date) -> dict:
     implied_sig = "금리 인하 기대" if (not np.isnan(implied) and implied < -0.25) \
         else ("금리 인상 기대" if (not np.isnan(implied) and implied > 0.25) else "동결 기대")
 
+    # ── 새로운 분석 ───────────────────────────────────────────
+    yield_decomp = _decompose_yield(us_10y, real_yield_10y, breakeven_10y, fed_rate)
+    ns_curve     = _nelson_siegel_approx(fed_rate, us_2y, us_10y)
+    move_label, move_color = _move_regime(move_index)
+
+    # MOVE 기반 듀레이션 조정 권고
+    if not np.isnan(move_index) and move_index > 100:
+        dur_rec["rationale"] += f" | MOVE {move_index:.0f} 상승 → 변동성 주의, 듀레이션 축소 경향"
+
     # ALM recommendation for 변액보험
-    alm_rec = _alm_recommendation(dur_rec["bias"], hy_spread, kr_us_diff["diff"])
+    alm_rec = _alm_recommendation(dur_rec["bias"], hy_best, kr_us_diff["diff"])
 
     return {
         "date": date_str,
@@ -252,9 +378,14 @@ def compute_bond_view(date) -> dict:
             "us_2y": us_2y,
             "us_10y": us_10y,
             "yield_curve": yield_curve,
-            "hy_spread": hy_spread,
-            "ig_spread": ig_spread,
+            "hy_spread": hy_best,
+            "ig_spread": ig_best,
             "kr_10y": kr_10y_val,
+            # 확장
+            "real_yield_10y": real_yield_10y,
+            "breakeven_10y":  breakeven_10y,
+            "move_index":     move_index,
+            "ted_spread":     ted_spread,
         },
         "credit_regime": credit_reg,
         "credit_color": credit_color,
@@ -262,6 +393,10 @@ def compute_bond_view(date) -> dict:
         "kr_us_diff": kr_us_diff,
         "implied_move": {"value": implied, "signal": implied_sig},
         "alm_rec": alm_rec,
+        # 새로운 분석 결과
+        "yield_decomp": yield_decomp,
+        "ns_curve": ns_curve,
+        "move_regime": {"label": move_label, "color": move_color, "value": move_index},
     }
 
 
@@ -320,15 +455,50 @@ def _pct_bar(v) -> str:
     return (f'<span style="color:{color}">{v:.0f}%ile</span>')
 
 
+def _decomp_bar(label: str, value: float, color: str, total: float = 5.0) -> str:
+    """수익률 분해 가로 막대."""
+    if np.isnan(value):
+        return f'<div style="margin:6px 0"><span style="color:#94a3b8;font-size:12px">{label}: —</span></div>'
+    pct = min(max(abs(value) / total * 100, 2), 100)
+    sign_color = color if value >= 0 else "#dc2626"
+    sign = "+" if value > 0 else ""
+    return f"""<div style="margin:6px 0">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:160px;font-size:12px;color:#64748b">{label}</span>
+        <div style="flex:1;height:10px;background:#f1f5f9;border-radius:5px;overflow:hidden">
+          <div style="width:{pct:.0f}%;height:100%;background:{sign_color};border-radius:5px"></div>
+        </div>
+        <span style="width:60px;text-align:right;font-weight:700;color:{sign_color};font-size:13px">{sign}{value:.2f}%</span>
+      </div>
+    </div>"""
+
+
+def _ns_component_badge(label: str, value: float, hint: str) -> str:
+    if np.isnan(value):
+        return f'<div class="stat-card"><div class="label">{label}</div><div style="font-size:18px;font-weight:700;color:#94a3b8">—</div><div class="sub">{hint}</div></div>'
+    # color logic
+    if label == "Level":
+        color = "#dc2626" if value > 4.5 else ("#059669" if value < 2.5 else "#d97706")
+    elif label == "Slope":
+        color = "#dc2626" if value < 0 else ("#059669" if value > 1.5 else "#d97706")
+    else:
+        color = "#7c3aed" if abs(value) > 1 else "#64748b"
+    sign = "+" if value > 0 else ""
+    return f'<div class="stat-card"><div class="label">{label}</div><div style="font-size:18px;font-weight:700;color:{color}">{sign}{value:.2f}%</div><div class="sub">{hint}</div></div>'
+
+
 def render_html(data: dict) -> str:
     from ._shared import html_page
 
-    date_str = data["date"]
-    rates    = data["rates"]
-    dur      = data["duration_rec"]
-    kr_us    = data["kr_us_diff"]
-    alm      = data["alm_rec"]
-    implied  = data["implied_move"]
+    date_str     = data["date"]
+    rates        = data["rates"]
+    dur          = data["duration_rec"]
+    kr_us        = data["kr_us_diff"]
+    alm          = data["alm_rec"]
+    implied      = data["implied_move"]
+    yield_decomp = data.get("yield_decomp", {})
+    ns_curve     = data.get("ns_curve", {})
+    move_regime  = data.get("move_regime", {})
 
     # ── signal colors (light-theme friendly)
     bias_colors = {"long": "#059669", "short": "#dc2626", "neutral": "#d97706"}
@@ -387,6 +557,45 @@ def render_html(data: dict) -> str:
     krus_color_map = {"#e74c3c": "var(--down)", "#27ae60": "var(--up)", "#f39c12": "#d97706"}
     krus_fg = krus_color_map.get(kr_us["color"], kr_us["color"])
 
+    # ── Yield Decomposition HTML ───────────────────────────────────────────
+    yd = yield_decomp
+    yd_nominal   = yd.get("nominal",     np.nan)
+    yd_real      = yd.get("real",        np.nan)
+    yd_breakeven = yd.get("breakeven",   np.nan)
+    yd_term      = yd.get("term_premium",np.nan)
+    yd_interp    = yd.get("interpretation", "데이터 부족")
+
+    decomp_total  = max(abs(yd_nominal) if not np.isnan(yd_nominal) else 0,
+                        abs(yd_real) if not np.isnan(yd_real) else 0, 6.0)
+    decomp_html   = (
+        _decomp_bar("명목 10Y 금리",     yd_nominal,   "#1d4ed8", decomp_total) +
+        _decomp_bar("실질금리 (TIPS)",   yd_real,      "#059669", decomp_total) +
+        _decomp_bar("기대인플레이션",    yd_breakeven, "#d97706", decomp_total) +
+        _decomp_bar("기간프리미엄",      yd_term,      "#7c3aed", decomp_total)
+    )
+
+    # ── Nelson-Siegel badges ───────────────────────────────────────────────
+    ns_level  = ns_curve.get("level",       np.nan)
+    ns_slope  = ns_curve.get("slope",       np.nan)
+    ns_curv   = ns_curve.get("curvature",   np.nan)
+    ns_interp = ns_curve.get("interpretation", "데이터 부족")
+    ns_badges = (
+        _ns_component_badge("Level (β₀)", ns_level,  "장기금리 수준") +
+        _ns_component_badge("Slope (β₁)", ns_slope,  "장단기 기울기") +
+        _ns_component_badge("Curvature (β₂)", ns_curv, "중기채 곡률")
+    )
+
+    # ── MOVE Index ────────────────────────────────────────────────────────
+    move_label = move_regime.get("label", "N/A")
+    move_color = move_regime.get("color", "#94a3b8")
+    move_val   = move_regime.get("value", np.nan)
+    move_val_str = f"{move_val:.1f}" if not np.isnan(move_val) else "—"
+
+    # TED spread
+    ted = rates.get("ted_spread", np.nan)
+    ted_color = "#dc2626" if (not np.isnan(ted) and ted > 100) else \
+                "#d97706" if (not np.isnan(ted) and ted > 50) else "#059669"
+
     body = f"""
 <div class="card">
   <h2>💰 금리 환경 요약</h2>
@@ -415,6 +624,51 @@ def render_html(data: dict) -> str:
     {sig_card("듀레이션 포지셔닝",
       f'<span style="color:{bias_color}">{dur["label"]}</span>',
       dur["rationale"])}
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔬 채권 수익률 분해 (Yield Decomposition)</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <h3 style="font-size:14px;color:#64748b;margin-bottom:12px">명목금리 = 실질금리 + 기대인플레이션 + 기간프리미엄</h3>
+      {decomp_html}
+      <div style="margin-top:12px;padding:10px 14px;background:#f8fafc;border-radius:8px;font-size:12px;color:#475569;line-height:1.6">
+        💡 {yd_interp}
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:14px;color:#64748b;margin-bottom:12px">Nelson-Siegel 커브 분해 (근사)</h3>
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        {ns_badges}
+      </div>
+      <div style="margin-top:10px;padding:10px 14px;background:#f8fafc;border-radius:8px;font-size:12px;color:#475569;line-height:1.6">
+        💡 {ns_interp}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📊 채권 변동성 & 신용 시장</h2>
+  <div class="stat-grid">
+    <div class="stat-card" style="border-top:3px solid {move_color}">
+      <div class="label">MOVE 채권변동성지수</div>
+      <div style="font-size:22px;font-weight:800;color:{move_color}">{move_val_str}</div>
+      <div class="sub" style="color:{move_color}">{move_label}</div>
+    </div>
+    {sig_card("TED 스프레드",
+      f'<span style="color:{ted_color}">{_fmt(ted,1)} bp</span>',
+      "단기 달러 유동성 긴장도 (>50bp 경계)")}
+    {sig_card("TIPS 실질금리",
+      f'<span style="color:{"#dc2626" if (not np.isnan(yd_real) and yd_real > 2.5) else ("#059669" if (not np.isnan(yd_real) and yd_real < 0) else "#d97706")}">{_fmt(yd_real,2)}%</span>',
+      "양수·상승 → 성장주 밸류에이션 압박")}
+    {sig_card("기간프리미엄 (ACM)",
+      f'<span style="color:{"#d97706" if (not np.isnan(yd_term) and yd_term > 0.5) else "#64748b"}">{_fmt(yd_term,2)}%</span>',
+      ">0.5% → 장기채 공급 압력")}
+    {sig_card("기대인플레이션 (BEI)",
+      f'<span style="color:{"#dc2626" if (not np.isnan(yd_breakeven) and yd_breakeven > 2.5) else "#059669"}">{_fmt(yd_breakeven,2)}%</span>',
+      "10Y 손익분기점")}
   </div>
 </div>
 

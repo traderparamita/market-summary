@@ -177,6 +177,111 @@ def _vix_regime(prices: pd.DataFrame) -> str:
     return "high"
 
 
+# ── Factor valuation spread ───────────────────────────────────────────────
+
+def _factor_val_spread(
+    growth_px: pd.Series,
+    value_px: pd.Series,
+    lookback: int = 504,   # ~2 years
+) -> dict:
+    """Growth/Value 가격 비율의 상대 밸류에이션 신호.
+
+    GV ratio = Growth price / Value price
+    현재 비율이 2년 히스토리 내 상위 80%ile → Growth 과열, Value 저평가 → Value 선호
+    현재 비율이 하위 20%ile → Growth 저평가 → Growth 선호
+
+    Returns:
+        dict with ratio, percentile, signal, interpretation
+    """
+    result = {"ratio": np.nan, "percentile": np.nan, "signal": "neutral",
+              "interpretation": "데이터 부족"}
+
+    if growth_px.empty or value_px.empty:
+        return result
+
+    # 공통 날짜에서 비율 계산
+    combined = pd.concat([growth_px, value_px], axis=1, keys=["G", "V"]).dropna()
+    if len(combined) < 60:
+        return result
+
+    hist = combined.iloc[-lookback:] if len(combined) > lookback else combined
+    ratio_series = hist["G"] / hist["V"]
+    current_ratio = float(ratio_series.iloc[-1])
+    pct = float(np.sum(ratio_series <= current_ratio) / len(ratio_series) * 100)
+
+    result["ratio"] = round(current_ratio, 4)
+    result["percentile"] = round(pct, 1)
+
+    if pct >= 80:
+        result["signal"] = "value_preferred"
+        result["interpretation"] = f"Growth/Value 비율 {pct:.0f}%ile — Growth 상대 과열, Value 저평가 매력"
+    elif pct <= 20:
+        result["signal"] = "growth_preferred"
+        result["interpretation"] = f"Growth/Value 비율 {pct:.0f}%ile — Growth 상대 저평가, 추세 반전 기대"
+    else:
+        result["signal"] = "neutral"
+        result["interpretation"] = f"Growth/Value 비율 {pct:.0f}%ile — 중립 구간"
+
+    return result
+
+
+def _vm_interaction(value_rel_3m: float, momentum_rel_3m: float) -> dict:
+    """Value × Momentum 상호작용 신호.
+
+    Both positive (value cheap AND momentum up) → Strong OW
+    Value cheap but momentum negative → wait / cautious OW
+    Both negative → Strong UW
+    Momentum positive but expensive → momentum only, watch for reversal
+
+    value_rel_3m: value factor's 3M relative return vs benchmark (positive = value outperforming)
+    momentum_rel_3m: momentum factor's 3M relative return vs benchmark
+    """
+    result = {"signal": "neutral", "label": "중립", "color": "#64748b", "icon": "→"}
+
+    v_pos = not np.isnan(value_rel_3m)   and value_rel_3m   > 0
+    m_pos = not np.isnan(momentum_rel_3m) and momentum_rel_3m > 0
+
+    if v_pos and m_pos:
+        result.update({"signal": "strong_ow", "label": "강한 OW (Value+Momentum 동조)",
+                       "color": "#059669", "icon": "◎"})
+    elif v_pos and not m_pos:
+        result.update({"signal": "cautious_ow", "label": "신중한 OW (Value↑, Momentum↓)",
+                       "color": "#d97706", "icon": "△"})
+    elif not v_pos and m_pos:
+        result.update({"signal": "momentum_only", "label": "모멘텀만 (Value 비쌈, 단기 추세만)",
+                       "color": "#0284c7", "icon": "→"})
+    else:
+        result.update({"signal": "strong_uw", "label": "강한 UW (Value+Momentum 부정)",
+                       "color": "#dc2626", "icon": "✕"})
+
+    return result
+
+
+# ── Regime-conditional composite weights ──────────────────────────────────
+
+_REGIME_WEIGHTS = {
+    # (mom_1m, mom_3m, mom_6m, trend, rel_3m)
+    "Goldilocks":  (0.15, 0.30, 0.25, 0.15, 0.15),   # momentum-heavy
+    "Reflation":   (0.15, 0.25, 0.25, 0.20, 0.15),   # balanced
+    "Stagflation": (0.10, 0.20, 0.20, 0.30, 0.20),   # trend-heavy (defensive)
+    "Deflation":   (0.10, 0.20, 0.20, 0.30, 0.20),   # trend-heavy (defensive)
+    "N/A":         (0.15, 0.25, 0.25, 0.20, 0.15),   # default
+}
+
+
+def _composite_regime(mom_1m, mom_3m, mom_6m, trend, rel_3m, regime: str = "N/A") -> float:
+    """Regime-conditional composite score."""
+    w = _REGIME_WEIGHTS.get(regime, _REGIME_WEIGHTS["N/A"])
+    def _s(v, wt):
+        return 0.0 if np.isnan(v) else np.sign(v) * wt
+    return round(
+        _s(mom_1m, w[0]) + _s(mom_3m, w[1]) + _s(mom_6m, w[2])
+        + (trend / 2 * w[3])
+        + _s(rel_3m, w[4]),
+        3,
+    )
+
+
 # ── Preference matching ───────────────────────────────────────────────────
 
 def _regime_favored(code: str, regime: str, vix_reg: str,
@@ -195,7 +300,8 @@ def _view_label(score: float) -> str:
 
 # ── Main compute ──────────────────────────────────────────────────────────
 
-def _score_style(code: str, prices: pd.DataFrame, bench: pd.Series) -> dict:
+def _score_style(code: str, prices: pd.DataFrame, bench: pd.Series,
+                 regime: str = "N/A") -> dict:
     result = {
         "code": code, "last": np.nan, "last_date": "N/A",
         "mom_1m": np.nan, "mom_3m": np.nan, "mom_6m": np.nan,
@@ -207,18 +313,19 @@ def _score_style(code: str, prices: pd.DataFrame, bench: pd.Series) -> dict:
     if len(px) < 5:
         return result
 
-    result["last"]       = round(float(px.iloc[-1]), 2)
-    result["last_date"]  = str(px.index[-1].date())
-    result["mom_1m"]     = round(_momentum(px, 21),  2)
-    result["mom_3m"]     = round(_momentum(px, 63),  2)
-    result["mom_6m"]     = round(_momentum(px, 126), 2)
-    result["trend"]      = _trend_score(px)
-    result["rel_3m"]     = round(_relative_mom(px, bench, 63) * 100, 2) if len(bench) >= 66 else np.nan
-    result["composite"]  = _composite(
+    result["last"]      = round(float(px.iloc[-1]), 2)
+    result["last_date"] = str(px.index[-1].date())
+    result["mom_1m"]    = round(_momentum(px, 21),  2)
+    result["mom_3m"]    = round(_momentum(px, 63),  2)
+    result["mom_6m"]    = round(_momentum(px, 126), 2)
+    result["trend"]     = _trend_score(px)
+    result["rel_3m"]    = round(_relative_mom(px, bench, 63) * 100, 2) if len(bench) >= 66 else np.nan
+    # Use regime-conditional weights instead of static
+    result["composite"] = _composite_regime(
         result["mom_1m"], result["mom_3m"], result["mom_6m"],
-        result["trend"],  result["rel_3m"]
+        result["trend"],  result["rel_3m"], regime
     )
-    result["view"]       = _view_label(result["composite"])
+    result["view"] = _view_label(result["composite"])
     return result
 
 
@@ -231,13 +338,13 @@ def compute_style_view(date) -> dict:
     rate_dir  = macro.get("rate_direction", "stable")
     vix_reg   = _vix_regime(prices)
 
-    bench_us = prices[SP500_CODE].dropna()  if SP500_CODE  in prices.columns else pd.Series(dtype=float)
-    bench_kr = prices[KOSPI_CODE].dropna()  if KOSPI_CODE  in prices.columns else pd.Series(dtype=float)
+    bench_us = prices[SP500_CODE].dropna() if SP500_CODE in prices.columns else pd.Series(dtype=float)
+    bench_kr = prices[KOSPI_CODE].dropna() if KOSPI_CODE in prices.columns else pd.Series(dtype=float)
 
-    # US factor styles vs SP500
+    # US factor styles vs SP500 (regime-conditional composite)
     us_styles = []
     for code, meta in US_STYLES.items():
-        row = _score_style(code, prices, bench_us)
+        row = _score_style(code, prices, bench_us, regime)
         row.update({
             "name":           meta["name"],
             "etf":            meta["etf"],
@@ -246,13 +353,25 @@ def compute_style_view(date) -> dict:
         us_styles.append(row)
     us_styles.sort(key=lambda x: (-(x.get("composite") or -99)))
 
-    # KR/comparison styles (KOSPI/KOSDAQ vs SP500)
+    # KR/comparison styles
     kr_styles = []
     for code, meta in KR_STYLES.items():
-        bench = bench_kr if code in ("EQ_SP500", "EQ_RUSSELL2000") else bench_kr
-        row = _score_style(code, prices, bench_us)
+        row = _score_style(code, prices, bench_us, regime)
         row.update({"name": meta["name"], "etf": meta["etf"]})
         kr_styles.append(row)
+
+    # ── Factor valuation spread (Growth vs Value) ────────────────────────
+    growth_px = prices["FA_US_GROWTH"].dropna() if "FA_US_GROWTH" in prices.columns else pd.Series(dtype=float)
+    value_px  = prices["FA_US_VALUE"].dropna()  if "FA_US_VALUE"  in prices.columns else pd.Series(dtype=float)
+    val_spread = _factor_val_spread(growth_px, value_px)
+
+    # ── Value × Momentum interaction ─────────────────────────────────────
+    value_row    = next((r for r in us_styles if r["code"] == "FA_US_VALUE"),    {})
+    momentum_row = next((r for r in us_styles if r["code"] == "FA_US_MOMENTUM"), {})
+    vm_inter = _vm_interaction(
+        value_row.get("rel_3m", np.nan),
+        momentum_row.get("rel_3m", np.nan),
+    )
 
     # Regime-favored style codes
     favored_codes = REGIME_STYLE_MAP.get(regime, [])
@@ -277,16 +396,19 @@ def compute_style_view(date) -> dict:
         row["fund_type"] = fund_style_map.get(row["code"], "해외주식형")
 
     return {
-        "date":           date_str,
-        "regime":         regime,
-        "vix_regime":     vix_reg,
-        "rate_direction": rate_dir,
-        "rate_style_note":rate_style_note,
-        "macro":          macro,
-        "us_styles":      us_styles,
-        "kr_styles":      kr_styles,
-        "favored_codes":  favored_codes,
-        "vix_favored":    vix_favored,
+        "date":            date_str,
+        "regime":          regime,
+        "vix_regime":      vix_reg,
+        "rate_direction":  rate_dir,
+        "rate_style_note": rate_style_note,
+        "macro":           macro,
+        "us_styles":       us_styles,
+        "kr_styles":       kr_styles,
+        "favored_codes":   favored_codes,
+        "vix_favored":     vix_favored,
+        "val_spread":      val_spread,
+        "vm_interaction":  vm_inter,
+        "regime_weights":  _REGIME_WEIGHTS.get(regime, _REGIME_WEIGHTS["N/A"]),
     }
 
 
@@ -396,11 +518,34 @@ def render_html(data: dict) -> str:
         </div>""" for r in top_picks[:3])
         top_html = f'<div class="stat-grid">{cards}</div>'
 
+    # ── Factor val spread & VM interaction data ───────────────────────────
+    val_spread  = data.get("val_spread", {})
+    vm_inter    = data.get("vm_interaction", {})
+    reg_weights = data.get("regime_weights", _REGIME_WEIGHTS["N/A"])
+
+    vs_pct  = val_spread.get("percentile", np.nan)
+    vs_interp = val_spread.get("interpretation", "데이터 부족")
+    vs_sig  = val_spread.get("signal", "neutral")
+    vs_color = {"value_preferred": "#059669", "growth_preferred": "#7c3aed", "neutral": "#64748b"}.get(vs_sig, "#64748b")
+    vs_pct_str = f"{vs_pct:.0f}%ile" if not np.isnan(vs_pct) else "—"
+
+    vm_label = vm_inter.get("label", "—")
+    vm_color = vm_inter.get("color", "#64748b")
+    vm_icon  = vm_inter.get("icon", "→")
+
+    # Regime weight display
+    w_labels = ["1M", "3M", "6M", "추세", "vs벤치"]
+    weight_html = "".join(
+        f'<span style="background:#f1f5f9;border-radius:6px;padding:4px 10px;font-size:12px;color:#475569">'
+        f'{w_labels[i]}: <strong>{reg_weights[i]:.0%}</strong></span>'
+        for i in range(len(w_labels))
+    )
+
     from ._shared import html_page
     body = f"""<div class="ma-header">
   <div>
     <h1>스타일 / 팩터 View</h1>
-    <div class="meta">변액보험 스타일 팩터 로테이션</div>
+    <div class="meta">변액보험 스타일 팩터 로테이션 (Regime-Conditional Weights)</div>
   </div>
   <div class="date-badge">{date_str}</div>
 </div>
@@ -451,6 +596,59 @@ def render_html(data: dict) -> str:
     <tbody>{kr_rows}</tbody>
   </table>
   <div class="muted" style="font-size:11px;margin-top:8px">* KOSPI/KOSDAQ: 원화 기준 / SP500/Russell2000: USD 기준. vs KOSPI 초과수익 표시.</div>
+</div>
+
+<div class="card">
+  <h2>📐 팩터 밸류에이션 스프레드 & Value×Momentum 상호작용</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <!-- Growth/Value spread -->
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:12px">Growth/Value 상대 밸류에이션 (2Y 히스토리)</h3>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+        <div style="flex:1;height:12px;background:linear-gradient(to right,#7c3aed,#f1f5f9,#059669);border-radius:6px;position:relative">
+          <div style="position:absolute;top:-4px;left:{min(max((vs_pct or 50),2),98):.0f}%;transform:translateX(-50%);width:4px;height:20px;background:#1e293b;border-radius:2px"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;margin-bottom:12px">
+        <span>Growth 저평가 (0%ile)</span><span>중립</span><span>Value 저평가 (100%ile)</span>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:12px 16px">
+        <span style="font-size:18px;font-weight:800;color:{vs_color}">{vs_pct_str}</span>
+        <p style="font-size:12px;color:#64748b;margin-top:6px">{vs_interp}</p>
+      </div>
+    </div>
+    <!-- VM Interaction -->
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:12px">Value × Momentum 상호작용</h3>
+      <div style="background:#f8fafc;border-radius:10px;padding:16px;margin-bottom:12px;text-align:center">
+        <div style="font-size:32px;margin-bottom:6px">{vm_icon}</div>
+        <div style="font-size:16px;font-weight:700;color:{vm_color}">{vm_label}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px">
+        <div style="background:#dcfce7;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#059669">◎ 강한 OW</div>
+          <div style="color:#64748b">Value↑ + Mom↑</div>
+        </div>
+        <div style="background:#fef3c7;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#d97706">△ 신중한 OW</div>
+          <div style="color:#64748b">Value↑, Mom↓</div>
+        </div>
+        <div style="background:#dbeafe;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#0284c7">→ 모멘텀만</div>
+          <div style="color:#64748b">Value↓, Mom↑</div>
+        </div>
+        <div style="background:#fee2e2;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-weight:700;color:#dc2626">✕ 강한 UW</div>
+          <div style="color:#64748b">Value↓ + Mom↓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Regime-conditional weights -->
+  <div style="margin-top:16px;padding:12px 16px;background:#f8fafc;border-radius:8px">
+    <span style="font-size:12px;color:#94a3b8;margin-right:10px">현재 국면({regime}) 적용 가중치:</span>
+    <div style="display:inline-flex;gap:6px;flex-wrap:wrap;margin-top:4px">{weight_html}</div>
+  </div>
 </div>
 
 <div class="card">

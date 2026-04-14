@@ -209,20 +209,159 @@ def _macro_score(regime: str) -> int:
     }.get(regime, 0)
 
 
+# ── Multi-factor signal additions ─────────────────────────────────────────
+
+# Known approximate policy rates for countries without FRED data (fallback table)
+_APPROX_POLICY_RATES = {
+    "JP": 0.1,    # BOJ 0% ~ +0.1% (2024)
+    "CN": 3.45,   # PBoC LPR 1Y (2024)
+    "EU": 4.0,    # ECB deposit rate (2024)
+    "UK": 5.25,   # BOE (2024)
+    "IN": 6.5,    # RBI (2024)
+    "EM": 8.0,    # EM average estimate
+    "US": np.nan, # from FRED
+    "KR": np.nan, # from ECOS
+}
+
+_POLICY_RATE_MACRO_CODES = {
+    "US": "US_FED_RATE",
+    "KR": "KR_BOK_RATE",
+}
+
+
+def _carry_proxy(country_code: str, macro_df: pd.DataFrame, us_fed: float) -> int:
+    """캐리 신호: 국가 정책금리 − US 연준금리.
+
+    양수(국가 금리 > US) → 자본 유입 압력, 현지 자산 매력 증가 → +1
+    음수(국가 금리 < US) → 달러 캐리 우호, USD 자산으로 자금 유출 압력 → -1
+
+    KRW 투자자 입장에서 해외자산(USD) 배분 시:
+    - KR 금리 > US → 헤지 비용 낮음 (유리) → 해외 OW 여지
+    - KR 금리 < US → 헤지 비용 높음 (불리) → 해외 UW 압력
+    """
+    # US가 기준이므로 0
+    if country_code == "US":
+        return 0
+
+    # macro_df에서 정책금리 조회
+    rate_code = _POLICY_RATE_MACRO_CODES.get(country_code)
+    if rate_code and not macro_df.empty:
+        sub = macro_df[macro_df["INDICATOR_CODE"] == rate_code]
+        if not sub.empty:
+            local_rate = float(sub.sort_values("DATE").iloc[-1]["VALUE"])
+        else:
+            local_rate = _APPROX_POLICY_RATES.get(country_code, np.nan)
+    else:
+        local_rate = _APPROX_POLICY_RATES.get(country_code, np.nan)
+
+    if np.isnan(local_rate) or np.isnan(us_fed):
+        return 0
+
+    diff = local_rate - us_fed
+    if diff > 0.5:
+        return +1
+    elif diff < -0.5:
+        return -1
+    return 0
+
+
+def _value_proxy(eq_px: pd.Series, acwi_px: pd.Series) -> int:
+    """밸류 프록시: 단기 모멘텀 대비 장기 모멘텀 역전 신호.
+
+    단기(3M) 수익률 < 장기(12M) 수익률 → 최근 조정, 저평가 가능성 → +1(Value 매력)
+    단기 >> 장기 → 최근 과매수, 고평가 가능성 → -1
+
+    ACWI 대비 3년 누적 상대수익률도 고려 (원래 계획은 P/E인데 데이터 없음).
+    """
+    if len(eq_px) < 260:
+        return 0
+
+    mom_3m  = float(eq_px.iloc[-1] / eq_px.iloc[-63]  - 1) if len(eq_px) >= 66  else np.nan
+    mom_12m = float(eq_px.iloc[-1] / eq_px.iloc[-252] - 1) if len(eq_px) >= 255 else np.nan
+
+    if np.isnan(mom_3m) or np.isnan(mom_12m):
+        return 0
+
+    # 최근 급등 후 단기 조정 = Value 신호
+    if mom_3m < -0.05 and mom_12m > 0.10:
+        return +1   # 단기 조정, 장기 추세 양호 → 매수 기회
+    elif mom_3m > 0.10 and mom_12m < 0.02:
+        return -1   # 단기 급등, 장기 성과 부진 → 과매수
+    return 0
+
+
+def _dynamic_hedge(prices: pd.DataFrame) -> dict:
+    """USDKRW 변동성 기반 동적 환헤지 비율 계산.
+
+    Returns:
+        vol_30d: 30일 연율화 변동성
+        vol_1y_pct: 1년 히스토리 내 현재 vol 백분위
+        base_ratio: 기본 헤지 비율 (0.7)
+        adj_ratio: 변동성 조정 헤지 비율
+        note: 권고 메모
+    """
+    code = "FX_USDKRW"
+    result = {"vol_30d": np.nan, "vol_1y_pct": np.nan,
+              "base_ratio": 0.7, "adj_ratio": 0.7, "note": "데이터 부족"}
+
+    if code not in prices.columns:
+        return result
+
+    px = prices[code].dropna()
+    if len(px) < 35:
+        return result
+
+    log_ret = np.log(px / px.shift(1)).dropna()
+    vol_30d = float(log_ret.iloc[-30:].std() * np.sqrt(252) * 100) if len(log_ret) >= 30 else np.nan
+
+    if np.isnan(vol_30d):
+        return result
+
+    result["vol_30d"] = round(vol_30d, 2)
+
+    # 1Y 백분위
+    if len(log_ret) >= 252:
+        vol_series = log_ret.rolling(30).std() * np.sqrt(252) * 100
+        vol_series = vol_series.dropna()
+        pct = float(np.sum(vol_series <= vol_30d) / len(vol_series) * 100)
+        result["vol_1y_pct"] = round(pct, 1)
+    else:
+        pct = 50.0
+
+    # 조정 헤지 비율
+    base = 0.7
+    if vol_30d > 15:       # 고변동성: 헤지 효과 불확실 → 비율 축소
+        adj = max(base - 0.15, 0.4)
+        note = f"USDKRW 변동성 {vol_30d:.1f}% (고위험) → 헤지 비율 {adj:.0%} 권고"
+    elif vol_30d < 7:       # 저변동성: 헤지 비용 낮고 안정 → 비율 확대
+        adj = min(base + 0.10, 0.90)
+        note = f"USDKRW 변동성 {vol_30d:.1f}% (안정) → 헤지 비율 {adj:.0%} 권고"
+    else:
+        adj = base
+        note = f"USDKRW 변동성 {vol_30d:.1f}% (중립) → 기본 헤지 비율 {adj:.0%} 유지"
+
+    result["adj_ratio"] = round(adj, 2)
+    result["note"] = note
+    return result
+
+
 # ── Composite OW/N/UW ────────────────────────────────────────────────────
 
-def _composite(mom_3m, mom_6m, mom_12m, excess_6m, fx_s, mac_s) -> float:
-    """복합 점수 (-1 ~ +1 내외)."""
+def _composite(mom_3m, mom_6m, mom_12m, excess_6m, fx_s, mac_s,
+               carry_s=0, value_s=0) -> float:
+    """복합 점수 (-1 ~ +1 내외). carry/value 추가."""
     def _safe(v, w):
         return 0.0 if np.isnan(v) else np.sign(v) * w
 
     score = (
-        _safe(mom_3m, 0.15)
-        + _safe(mom_6m, 0.20)
-        + _safe(mom_12m, 0.15)
-        + _safe(excess_6m, 0.20)
-        + (fx_s * 0.15)
-        + (mac_s / 2 * 0.15)   # mac_s 범위 -2~+2 → /2 로 정규화
+        _safe(mom_3m,   0.13)
+        + _safe(mom_6m,   0.18)
+        + _safe(mom_12m,  0.13)
+        + _safe(excess_6m,0.18)
+        + (fx_s    * 0.13)
+        + (mac_s / 2 * 0.13)
+        + (carry_s * 0.08)
+        + (value_s * 0.04)
     )
     return round(score, 3)
 
@@ -272,6 +411,10 @@ def compute_country_view(date: str) -> dict:
 
     acwi = prices[ACWI_CODE].dropna() if ACWI_CODE in prices.columns else pd.Series(dtype=float)
 
+    # US Fed rate for carry calculation
+    us_fed_sub = macro_df[macro_df["INDICATOR_CODE"] == "US_FED_RATE"]
+    us_fed = float(us_fed_sub.sort_values("DATE").iloc[-1]["VALUE"]) if not us_fed_sub.empty else np.nan
+
     results = []
     for code, info in COUNTRIES.items():
         eq_c = info["eq_code"]
@@ -304,14 +447,29 @@ def compute_country_view(date: str) -> dict:
         regime = _macro_regime(gdp_val, cpi_val)
         mac_s = _macro_score(regime)
 
+        # ── New signals ──────────────────────────────────────────────
+        carry_s = _carry_proxy(code, macro_df, us_fed)
+        value_s = _value_proxy(eq_px, acwi)
+
         # Composite
-        comp = _composite(mom_3m, mom_6m, mom_12m, excess_6m, fx_s, mac_s)
+        comp = _composite(mom_3m, mom_6m, mom_12m, excess_6m, fx_s, mac_s,
+                          carry_s, value_s)
         view = _view_label(comp)
 
         # Latest price for display
         last_price = float(eq_px.iloc[-1]) if not eq_px.empty else np.nan
         last_date = str(eq_px.index[-1].date()) if not eq_px.empty else "—"
         fx_last = float(fx_px.iloc[-1]) if not fx_px.empty else np.nan
+
+        # Carry rate info for display
+        rate_code = _POLICY_RATE_MACRO_CODES.get(code)
+        local_rate = np.nan
+        if rate_code and not macro_df.empty:
+            sub = macro_df[macro_df["INDICATOR_CODE"] == rate_code]
+            if not sub.empty:
+                local_rate = float(sub.sort_values("DATE").iloc[-1]["VALUE"])
+        if np.isnan(local_rate):
+            local_rate = _APPROX_POLICY_RATES.get(code, np.nan)
 
         results.append({
             "code": code,
@@ -331,16 +489,22 @@ def compute_country_view(date: str) -> dict:
             "cpi": round(cpi_val, 2) if not np.isnan(cpi_val) else np.nan,
             "regime": regime,
             "macro_score": mac_s,
+            "carry_score": carry_s,
+            "value_score": value_s,
+            "local_rate": round(local_rate, 2) if not np.isnan(local_rate) else np.nan,
             "composite": comp,
             "view": view,
         })
 
     krw_fx = _krw_fx_return(prices)
+    hedge_info = _dynamic_hedge(prices)
 
     return {
         "date": date,
         "countries": results,
         "krw_fx": krw_fx,
+        "hedge_info": hedge_info,
+        "us_fed_rate": round(us_fed, 2) if not np.isnan(us_fed) else np.nan,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
 
@@ -386,12 +550,26 @@ def _chg_span(v) -> str:
     return f'<span style="color:{color}">{v:+.2f}%</span>'
 
 
+def _carry_badge(s: int) -> str:
+    if s > 0:  return '<span style="color:#16a34a;font-size:12px">캐리 ↑</span>'
+    if s < 0:  return '<span style="color:#dc2626;font-size:12px">캐리 ↓</span>'
+    return '<span style="color:#94a3b8;font-size:12px">—</span>'
+
+
+def _value_badge(s: int) -> str:
+    if s > 0:  return '<span style="color:#2563eb;font-size:12px">저평가</span>'
+    if s < 0:  return '<span style="color:#f97316;font-size:12px">과매수</span>'
+    return '<span style="color:#94a3b8;font-size:12px">—</span>'
+
+
 def render_html(data: dict) -> str:
     from ._shared import nav_html, NAV_CSS
     date = data["date"]
     countries = data["countries"]
     krw_fx = data["krw_fx"]
+    hedge_info = data.get("hedge_info", {})
     gen = data["generated_at"]
+    us_fed = data.get("us_fed_rate", np.nan)
     _nav_html = nav_html(date, "country")
 
     # KRW 배너
@@ -401,11 +579,25 @@ def render_html(data: dict) -> str:
     krw_banner_color = "#fef3c7" if "약세" in krw_trend else ("#dcfce7" if "강세" in krw_trend else "#f1f5f9")
     krw_chg_str = f"{krw_chg:+.2f}%" if not np.isnan(krw_chg) else "—"
 
+    # Dynamic hedge card
+    vol_30d    = hedge_info.get("vol_30d", np.nan)
+    vol_pct    = hedge_info.get("vol_1y_pct", np.nan)
+    adj_ratio  = hedge_info.get("adj_ratio", 0.7)
+    hedge_note = hedge_info.get("note", "—")
+    vol_color  = "#dc2626" if (not np.isnan(vol_30d) and vol_30d > 15) else \
+                 "#d97706" if (not np.isnan(vol_30d) and vol_30d > 9) else "#059669"
+    vol_str    = f"{vol_30d:.1f}%" if not np.isnan(vol_30d) else "—"
+    vol_pct_str= f"{vol_pct:.0f}%ile" if not np.isnan(vol_pct) else "—"
+
     # Rows
     rows_html = ""
     for c in countries:
         view_b = _view_badge(c["view"])
         regime_b = _regime_badge(c["regime"])
+        lr = c.get("local_rate", np.nan)
+        lr_str = f"{lr:.2f}%" if not np.isnan(lr) else "—"
+        carry_diff = round(lr - us_fed, 2) if (not np.isnan(lr) and not np.isnan(us_fed)) else np.nan
+        carry_diff_str = f"{carry_diff:+.2f}%p" if not np.isnan(carry_diff) else "—"
 
         rows_html += f"""
         <tr>
@@ -421,6 +613,9 @@ def render_html(data: dict) -> str:
           <td style="text-align:right">{_chg_span(c["excess_6m"])}</td>
           <td style="text-align:center">{_fx_score_label(c["fx_score"])}</td>
           <td style="text-align:center">{regime_b}</td>
+          <td style="text-align:center;font-size:11px">{lr_str}<br><span style="color:#94a3b8">{carry_diff_str}</span></td>
+          <td style="text-align:center">{_carry_badge(c.get("carry_score",0))}</td>
+          <td style="text-align:center">{_value_badge(c.get("value_score",0))}</td>
           <td style="text-align:right;font-family:monospace;font-size:13px">{c["composite"]:+.3f}</td>
         </tr>"""
 
@@ -447,35 +642,38 @@ def render_html(data: dict) -> str:
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
 :root {{
   --bg: #f4f5f9; --card: #fff; --border: #e0e3ed;
-  --text: #2d3148; --muted: #7c8298; --primary: #F58220;
+  --text: #2d3148; --muted: #7c8298; --primary: #F58220; --navy: #043B72;
 }}
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-body {{ font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); padding:32px 24px; max-width:1300px; margin:0 auto; }}
+body {{ font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); }}
 .header {{ margin-bottom:24px; padding-bottom:20px; border-bottom:2px solid var(--border); }}
 .header h1 {{ font-size:26px; font-weight:700; }}
 .header .sub {{ font-size:14px; color:var(--muted); margin-top:6px; }}
 .card {{ background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,.04); }}
 .card h2 {{ font-size:16px; font-weight:700; margin-bottom:14px; }}
 .krw-banner {{ border-radius:10px; padding:14px 20px; margin-bottom:20px; font-size:14px; }}
-table {{ width:100%; border-collapse:collapse; font-size:13.5px; }}
+table {{ width:100%; border-collapse:collapse; font-size:13px; }}
 thead tr {{ background:#f8f9fc; }}
-th {{ padding:10px 12px; font-weight:600; font-size:12px; color:var(--muted); text-align:center; border-bottom:2px solid var(--border); white-space:nowrap; }}
-td {{ padding:10px 12px; border-bottom:1px solid #f0f1f7; vertical-align:middle; }}
+th {{ padding:10px 10px; font-weight:600; font-size:11px; color:var(--muted); text-align:center; border-bottom:2px solid var(--border); white-space:nowrap; }}
+td {{ padding:9px 10px; border-bottom:1px solid #f0f1f7; vertical-align:middle; }}
 tr:hover td {{ background:#fafbff; }}
 .summary-row {{ display:flex; gap:24px; flex-wrap:wrap; margin-bottom:12px; }}
-.summary-item {{ }}
 .summary-item .label {{ font-size:12px; color:var(--muted); margin-bottom:4px; }}
 .chips {{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }}
 .footer {{ text-align:center; font-size:12px; color:var(--muted); margin-top:32px; padding-top:16px; border-top:1px solid var(--border); }}
+.stat-grid {{ display:flex;gap:16px;flex-wrap:wrap;margin-top:12px }}
+.stat-card {{ background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;min-width:160px;flex:1 }}
+.stat-card .label {{ font-size:11px;color:#94a3b8;margin-bottom:4px }}
+.stat-card .value {{ font-size:20px;font-weight:800 }}
 {NAV_CSS}
 </style>
 </head>
 <body>
 {_nav_html}
-<div style="max-width:1300px;margin:0 auto;padding:28px 24px 48px">
+<div style="max-width:1400px;margin:0 auto;padding:28px 24px 48px">
 <div class="header">
   <h1>🌍 Country Allocation View</h1>
-  <div class="sub">국가별 투자 배분 의견 &nbsp;|&nbsp; 기준일: {date} &nbsp;|&nbsp; 생성: {gen}</div>
+  <div class="sub">국가별 투자 배분 의견 (Momentum+FX+Macro+Carry+Value) &nbsp;|&nbsp; 기준일: {date} &nbsp;|&nbsp; 생성: {gen}</div>
 </div>
 
 <!-- KRW 투자자 배너 -->
@@ -499,9 +697,36 @@ tr:hover td {{ background:#fafbff; }}
   </div>
 </div>
 
+<!-- 동적 환헤지 권고 -->
+<div class="card">
+  <h2>💱 동적 환헤지 권고 (USDKRW 변동성 기반)</h2>
+  <div class="stat-grid">
+    <div class="stat-card" style="border-top:3px solid {vol_color}">
+      <div class="label">USDKRW 30D 변동성(연율)</div>
+      <div class="value" style="color:{vol_color}">{vol_str}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">1Y 백분위 {vol_pct_str}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">기본 헤지 비율</div>
+      <div class="value" style="color:#64748b">70%</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">변액보험 기본값</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid {vol_color}">
+      <div class="label">변동성 조정 권고 헤지 비율</div>
+      <div class="value" style="color:{vol_color}">{adj_ratio:.0%}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">{hedge_note}</div>
+    </div>
+    <div class="stat-card" style="flex:2">
+      <div class="label">US Fed Rate (캐리 기준)</div>
+      <div class="value" style="color:#475569">{f"{us_fed:.2f}%" if not np.isnan(us_fed) else "—"}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">각국 금리 − US Fed = 캐리 스프레드 (양수 → 현지 자산 매력)</div>
+    </div>
+  </div>
+</div>
+
 <!-- 국가별 상세 -->
 <div class="card">
-  <h2>🗺️ 국가별 신호 상세</h2>
+  <h2>🗺️ 국가별 신호 상세 (Momentum + FX + Macro + Carry + Value)</h2>
   <table>
     <thead>
       <tr>
@@ -514,6 +739,9 @@ tr:hover td {{ background:#fafbff; }}
         <th>vs ACWI(6M)</th>
         <th>FX 신호</th>
         <th>매크로 국면</th>
+        <th>정책금리<br>캐리차</th>
+        <th>캐리</th>
+        <th>밸류</th>
         <th>복합점수</th>
       </tr>
     </thead>
@@ -530,8 +758,9 @@ tr:hover td {{ background:#fafbff; }}
   &nbsp;|&nbsp; <span style="color:#64748b">N</span> ±0.25 이내
   &nbsp;|&nbsp; <span style="color:#dc2626">UW</span> < −0.25
   <br><br>
-  복합점수 = 3M모멘텀(15%) + 6M모멘텀(20%) + 12M모멘텀(15%) + vs ACWI 초과수익(20%) + FX 추세(15%) + 매크로 국면(15%)
-  <br>매크로 국면: Goldilocks(성장↑·물가안정) / Reflation(성장↑·물가↑) / Stagflation(성장↓·물가↑) / Deflation(성장↓·물가↓)
+  복합점수 = 3M모멘텀(13%) + 6M모멘텀(18%) + 12M모멘텀(13%) + vs ACWI(18%) + FX 추세(13%) + 매크로 국면(13%) + <strong>캐리(8%) + 밸류(4%)</strong>
+  <br>캐리: 현지 정책금리 − US Fed Rate. 양수 = 현지 금리 우위 → 자본 유입 압력.
+  <br>밸류 프록시: 단기 조정(3M < −5%) + 장기 성과(12M > +10%) → 저평가 신호.
 </div>
 
 <div class="footer">Country View &nbsp;·&nbsp; 미래에셋생명 변액보험 운용 참고 &nbsp;·&nbsp; 본 자료는 투자 권유가 아닙니다</div>

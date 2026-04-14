@@ -22,9 +22,38 @@ import numpy as np
 from .macro_view import compute_macro_view
 from .price_view import compute_price_view, AC_LABELS
 from .correlation_view import compute_correlation_view
+from .scoring import load_universe, load_prices
+try:
+    from .regime_classifier import RegimeClassifier, build_hmm_features
+    _HMM_OK = True
+except Exception:
+    _HMM_OK = False
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 OUTPUT_DIR = ROOT / "output" / "view" / "regime"
+HISTORY_CSV = ROOT / "history" / "market_data.csv"
+
+
+# ── 12-Cell 매트릭스 정의 ─────────────────────────────────────────────────
+
+_CELL_12 = {
+    # (macro_regime, price_regime): (한국어 액션, 색상, 이모지)
+    ("Goldilocks",  "RiskON"):  ("공세적 배분",   "#059669", "◎"),
+    ("Goldilocks",  "Neutral"): ("중립 유지",     "#0d9b6a", "○"),
+    ("Goldilocks",  "RiskOFF"): ("주의 필요",     "#f59e0b", "△"),
+    ("Reflation",   "RiskON"):  ("원자재·가치주", "#f59e0b", "○"),
+    ("Reflation",   "Neutral"): ("혼합 포지션",   "#f59e0b", "△"),
+    ("Reflation",   "RiskOFF"): ("방어·원자재",   "#d9304f", "▲"),
+    ("Stagflation", "RiskON"):  ("방어적 접근",   "#d9304f", "▲"),
+    ("Stagflation", "Neutral"): ("방어 강화",     "#d9304f", "▲"),
+    ("Stagflation", "RiskOFF"): ("최대 방어",     "#991b1b", "✕"),
+    ("Deflation",   "RiskON"):  ("채권·금",       "#64748b", "△"),
+    ("Deflation",   "Neutral"): ("방어 대기",     "#64748b", "▲"),
+    ("Deflation",   "RiskOFF"): ("위기 모드",     "#1e293b", "✕"),
+    ("Unknown",     "RiskON"):  ("불확실",        "#94a3b8", "?"),
+    ("Unknown",     "Neutral"): ("불확실",        "#94a3b8", "?"),
+    ("Unknown",     "RiskOFF"): ("불확실",        "#94a3b8", "?"),
+}
 
 
 # ── Korean label maps ─────────────────────────────────────────────────
@@ -689,6 +718,57 @@ def generate_commentary(s: dict) -> dict:
 
 # ── Public API ────────────────────────────────────────────────────────
 
+def _compute_hmm_proba(date: str, signals: dict) -> dict:
+    """HMM 기반 레짐 확률 계산.
+
+    Returns:
+        dict with keys: RiskOFF, Neutral, RiskON, dominant, method
+    """
+    default = {
+        "RiskOFF": 0.15, "Neutral": 0.60, "RiskON": 0.25,
+        "dominant": signals.get("price_regime", "Neutral"),
+        "method": "rule-based",
+    }
+
+    if not _HMM_OK:
+        return default
+
+    try:
+        universe = load_universe()
+        prices   = load_prices(HISTORY_CSV)
+        macro_sig = universe.get("macro_signals", {})
+
+        feats = build_hmm_features(prices, macro_sig, end_date=date)
+        if feats.empty or len(feats) < 100:
+            return default
+
+        # breadth_ma200을 signals에서 주입
+        bm = signals.get("breadth_ma200")
+        if bm is not None:
+            feats["breadth_ma200"] = bm
+
+        clf = RegimeClassifier()
+        clf.fit(feats)
+        proba = clf.predict_proba(feats)
+        last  = proba.iloc[-1]
+
+        result = last.to_dict()
+        result["dominant"] = last.idxmax()
+        result["method"]   = "HMM" if clf._fitted else "rule-based"
+        return result
+
+    except Exception:
+        return default
+
+
+def _get_cell12_info(macro_regime: str, price_regime: str) -> dict:
+    """12-cell 매트릭스에서 현재 셀 정보 반환."""
+    key  = (macro_regime, price_regime)
+    info = _CELL_12.get(key, _CELL_12.get(("Unknown", price_regime),
+                                          ("—", "#94a3b8", "?")))
+    return {"action": info[0], "color": info[1], "icon": info[2]}
+
+
 def compute_regime_view(date: str) -> dict:
     """Gather all view data and generate rule-based commentary."""
     macro = compute_macro_view(date)
@@ -698,10 +778,34 @@ def compute_regime_view(date: str) -> dict:
     signals    = _build_signals(macro, price, corr)
     commentary = generate_commentary(signals)
 
+    # ── HMM 확률 레이어 ───────────────────────────────────────
+    hmm_proba = _compute_hmm_proba(date, signals)
+
+    # ── 12-cell 매트릭스 ──────────────────────────────────────
+    cell12 = _get_cell12_info(signals["us_regime"], signals["price_regime"])
+
+    # ── 레짐 전환 경보 (HMM 전이 확률 기반) ──────────────────
+    price_r = signals["price_regime"]
+    hmm_dominant = hmm_proba.get("dominant", price_r)
+    regime_alert = None
+    if price_r != hmm_dominant:
+        regime_alert = {
+            "current_rule": price_r,
+            "hmm_dominant": hmm_dominant,
+            "hmm_prob": round(hmm_proba.get(hmm_dominant, 0), 3),
+            "message": (
+                f"규칙 기반 레짐({price_r})과 HMM 확률 우세 레짐({hmm_dominant}) 불일치. "
+                f"전환 가능성 모니터링 권고 (HMM 확률: {hmm_proba.get(hmm_dominant,0):.0%})"
+            ),
+        }
+
     return {
         "date":         date,
         "signals":      signals,
         "commentary":   commentary,
+        "hmm_proba":    hmm_proba,
+        "cell12":       cell12,
+        "regime_alert": regime_alert,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
 
@@ -720,6 +824,96 @@ def _view_colors(v: str) -> tuple[str, str]:
     return ("#f3f4f6", "#6b7280")
 
 
+def _build_cell12_html(signals: dict, cell12: dict, hmm_proba: dict, regime_alert: dict | None) -> str:
+    """12-cell 매트릭스 + HMM 확률 HTML 블록."""
+    macro_regimes  = ["Goldilocks", "Reflation", "Stagflation", "Deflation"]
+    price_regimes  = ["RiskON", "Neutral", "RiskOFF"]
+    pr_labels      = {"RiskON": "위험선호", "Neutral": "중립", "RiskOFF": "위험회피"}
+
+    current_macro  = signals["us_regime"]
+    current_price  = signals["price_regime"]
+
+    # 12-cell 테이블
+    header_cells = '<th style="width:100px"></th>'
+    for pr in price_regimes:
+        bg = "#ecfdf5" if pr == "RiskON" else ("#fff8ed" if pr == "Neutral" else "#fef2f2")
+        header_cells += f'<th style="background:{bg};padding:6px 8px;font-size:11px;font-weight:700;text-align:center">{pr}<br><span style="font-weight:400;font-size:10px">{pr_labels[pr]}</span></th>'
+
+    rows = ""
+    for mr in macro_regimes:
+        cells = f'<td style="padding:6px 10px;font-size:12px;font-weight:700;white-space:nowrap;color:#4b5563">{mr}</td>'
+        for pr in price_regimes:
+            key   = (mr, pr)
+            info  = _CELL_12.get(key, ("—", "#94a3b8", "?"))
+            is_current = (mr == current_macro and pr == current_price)
+            bg = f"background:{info[1]}22" if not is_current else f"background:{info[1]};color:#fff"
+            border = "border:2px solid " + info[1] if is_current else "border:1px solid #e0e3ed"
+            icon_disp = info[2] if not is_current else f"<b>{info[2]}</b>"
+            label_disp = f"<br><span style='font-size:10px'>{info[0]}</span>"
+            cells += f'<td style="{bg};{border};padding:6px 8px;text-align:center;border-radius:4px;font-size:12px">{icon_disp}{label_disp}</td>'
+        rows += f"<tr>{cells}</tr>"
+
+    # HMM 확률 바
+    hmm_method = hmm_proba.get("method", "rule-based")
+    hmm_bars = ""
+    for state, p in [("RiskOFF", hmm_proba.get("RiskOFF", 0)),
+                     ("Neutral",  hmm_proba.get("Neutral",  0)),
+                     ("RiskON",   hmm_proba.get("RiskON",   0))]:
+        color = {"RiskOFF": "#dc2626", "Neutral": "#d97706", "RiskON": "#059669"}[state]
+        is_dom = state == hmm_proba.get("dominant")
+        fw = "font-weight:700" if is_dom else ""
+        hmm_bars += f"""
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-size:11px;{fw};min-width:72px;color:#4b5563">{state}</span>
+          <div style="flex:1;background:#f0f1f6;border-radius:4px;height:10px;overflow:hidden">
+            <div style="width:{p*100:.0f}%;background:{color};height:100%;border-radius:4px"></div>
+          </div>
+          <span style="font-size:11px;{fw};color:{color};min-width:36px;text-align:right">{p*100:.0f}%</span>
+        </div>"""
+
+    # 전환 경보
+    alert_html = ""
+    if regime_alert:
+        alert_html = f"""
+        <div style="margin-top:12px;padding:10px 14px;background:#fffbeb;
+                    border:1px solid #f59e0b;border-radius:8px;font-size:12px;color:#92400e">
+          ⚠️ <b>레짐 전환 경보:</b> {regime_alert['message']}
+        </div>"""
+
+    return f"""
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title" style="margin-bottom:16px">
+        12-Cell 레짐 매트릭스
+        <span style="font-size:11px;font-weight:400;color:#7c8298;margin-left:8px">
+          현재: {current_macro} × {current_price}
+        </span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 260px;gap:20px">
+        <div style="overflow-x:auto">
+          <table style="border-collapse:separate;border-spacing:3px;width:100%">
+            <thead><tr>{header_cells}</tr></thead>
+            <tbody>{rows}</tbody>
+          </table>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#7c8298;
+                      text-transform:uppercase;margin-bottom:8px">
+            HMM 레짐 확률 <span style="font-weight:400;font-size:10px">({hmm_method})</span>
+          </div>
+          {hmm_bars}
+          <div style="margin-top:14px;padding:10px 12px;background:#f8fafc;
+                      border:1px solid #e0e3ed;border-radius:8px">
+            <div style="font-size:10px;font-weight:700;color:#7c8298;margin-bottom:4px">현재 셀 액션</div>
+            <div style="font-size:15px;font-weight:700;color:{cell12['color']}">
+              {cell12['icon']} {cell12['action']}
+            </div>
+          </div>
+        </div>
+      </div>
+      {alert_html}
+    </div>"""
+
+
 def generate_regime_html(view: dict) -> str:  # noqa: C901
     report_date  = view["date"]
     generated_at = view["generated_at"]
@@ -727,6 +921,9 @@ def generate_regime_html(view: dict) -> str:  # noqa: C901
     _nav = nav_html(report_date, "regime")
     s   = view["signals"]
     com = view["commentary"]
+    hmm_proba    = view.get("hmm_proba", {})
+    cell12       = view.get("cell12", {"action": "—", "color": "#94a3b8", "icon": "?"})
+    regime_alert = view.get("regime_alert")
 
     pr    = s["price_regime"]
     us_r  = s["us_regime"]
@@ -980,6 +1177,9 @@ strong {{ font-weight:600 }}
   {price_card}
   {corr_card}
 </div>
+
+<!-- 12-Cell 매트릭스 + HMM 확률 -->
+{_build_cell12_html(s, cell12, hmm_proba, regime_alert)}
 
 <!-- 1. 현재 국면 진단 -->
 <div class="card">
