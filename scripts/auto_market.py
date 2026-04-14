@@ -1,11 +1,14 @@
-"""scripts/auto_market.py — 일일 시장 보고서 자동화
+"""scripts/auto_market.py — 일일 시장 보고서 완전 자동화
 
 매일 08:05 KST macOS launchd가 이 스크립트를 실행한다.
-  1. generate.py 실행 (데이터 수집 + HTML 생성 + Snowflake dual-write)
-  2. git add / commit / push (output/ + history/market_data.csv)
-  3. Telegram 알림 (배포 완료 + 핵심 지표)
 
-Story 작성은 Claude가 필요하므로 별도 (Claude Code 세션 CronCreate 활용).
+  claude --dangerously-skip-permissions -p "/market-full DATE"
+
+로 전체 워크플로우를 Claude가 직접 수행:
+  - generate.py (데이터 + HTML)
+  - Market Story 작성 (일/주/월)
+  - git commit + push
+  - Telegram 알림 (완료 후)
 
 Usage:
     .venv/bin/python scripts/auto_market.py            # 오늘 날짜
@@ -25,9 +28,8 @@ import requests
 from dotenv import load_dotenv
 
 # ── 경로 설정 ─────────────────────────────────────────────────
-ROOT        = Path(__file__).resolve().parent.parent
-VENV_PYTHON = ROOT / ".venv" / "bin" / "python"
-LOG_DIR     = ROOT / "logs"
+ROOT    = Path(__file__).resolve().parent.parent
+LOG_DIR = ROOT / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 
 load_dotenv(ROOT / ".env")
@@ -38,16 +40,24 @@ GITHUB_PAGES     = "https://traderparamita.github.io/market-summary"
 
 KST = ZoneInfo("Asia/Seoul")
 
+# nvm 기본 노드 버전의 claude 경로 (launchd는 nvm PATH를 모름)
+NVM_NODE_DEFAULT = Path.home() / ".nvm" / "alias" / "default"
+CLAUDE_CANDIDATES = [
+    Path("/usr/local/bin/claude"),
+    Path("/opt/homebrew/bin/claude"),
+    Path.home() / ".local" / "bin" / "claude",
+]
+
 # 핵심 지표: (섹션, 이름, 표시라벨, 이모지)
 KEY_METRICS = [
-    ("equity",    "KOSPI",     "KOSPI",    "🇰🇷"),
-    ("equity",    "S&P500",    "S&P500",   "🇺🇸"),
-    ("equity",    "NASDAQ",    "NASDAQ",   "💻"),
-    ("fx",        "USD/KRW",   "USD/KRW",  "💵"),
-    ("commodity", "WTI",       "WTI",      "🛢"),
-    ("commodity", "Gold",      "Gold",     "🥇"),
-    ("risk",      "VIX",       "VIX",      "😰"),
-    ("bond",      "US 10Y",    "US 10Y",   "📈"),
+    ("equity",    "KOSPI",    "KOSPI",   "🇰🇷"),
+    ("equity",    "S&P500",   "S&P500",  "🇺🇸"),
+    ("equity",    "NASDAQ",   "NASDAQ",  "💻"),
+    ("fx",        "USD/KRW",  "USD/KRW", "💵"),
+    ("commodity", "WTI",      "WTI",     "🛢"),
+    ("commodity", "Gold",     "Gold",    "🥇"),
+    ("risk",      "VIX",      "VIX",     "😰"),
+    ("bond",      "US 10Y",   "US 10Y",  "📈"),
 ]
 
 
@@ -64,58 +74,84 @@ def is_weekend(date_str: str) -> bool:
 
 
 # ─────────────────────────────────────────────────────────────
-# 2. generate.py 실행
+# 2. claude 바이너리 탐색
 # ─────────────────────────────────────────────────────────────
 
-def run_generate(date_str: str) -> bool:
-    print(f"\n[1/3] generate.py {date_str} ...")
+def find_claude() -> str | None:
+    """claude CLI 바이너리 경로 반환. 못 찾으면 None."""
+
+    # 후보 1: 고정 경로들
+    for p in CLAUDE_CANDIDATES:
+        if p.exists():
+            return str(p)
+
+    # 후보 2: nvm default 버전에서 찾기
+    # ~/.nvm/alias/default 파일에 버전 번호가 있음 (예: "24")
+    if NVM_NODE_DEFAULT.exists():
+        nvm_ver = NVM_NODE_DEFAULT.read_text().strip()
+        nvm_root = Path.home() / ".nvm" / "versions" / "node"
+        # "24" → v24.x.x 최신 디렉터리 검색
+        candidates = sorted(nvm_root.glob(f"v{nvm_ver}*/bin/claude"), reverse=True)
+        if not candidates:
+            # 정확한 버전 매칭 실패 시 전체 검색
+            candidates = sorted(nvm_root.glob("v*/bin/claude"), reverse=True)
+        if candidates:
+            return str(candidates[0])
+
+    # 후보 3: PATH에서 찾기 (launchd PATH가 좁아 보통 실패하지만 시도)
+    import shutil
+    found = shutil.which("claude")
+    return found
+
+
+# ─────────────────────────────────────────────────────────────
+# 3. Claude Code로 market-full 실행
+# ─────────────────────────────────────────────────────────────
+
+def run_market_full(date_str: str) -> bool:
+    """claude --dangerously-skip-permissions 로 전체 워크플로우 실행."""
+    claude_bin = find_claude()
+    if not claude_bin:
+        print("[ERROR] claude CLI를 찾을 수 없습니다.")
+        print("        후보 경로: " + ", ".join(str(p) for p in CLAUDE_CANDIDATES))
+        return False
+
+    print(f"\n[1/2] Claude Code 실행: {claude_bin}")
+    print(f"      /market-full {date_str}")
+
+    prompt = f"/market-full {date_str}"
+
     result = subprocess.run(
-        [str(VENV_PYTHON), "generate.py", date_str],
+        [claude_bin, "--dangerously-skip-permissions", "-p", prompt],
         cwd=str(ROOT),
         capture_output=True,
         text=True,
+        timeout=3600,   # Story 작성 + 웹 검색 포함 최대 1시간
+        env={
+            **os.environ,
+            # nvm PATH 보강
+            "PATH": (
+                str(Path(claude_bin).parent)
+                + ":/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+                + ":/opt/homebrew/bin"
+            ),
+            "HOME":     str(Path.home()),
+            "LANG":     "ko_KR.UTF-8",
+        },
     )
+
+    # 출력 마지막 50줄 기록
     if result.stdout:
-        # 마지막 10줄만 출력
         lines = result.stdout.strip().splitlines()
-        print("\n".join(lines[-10:]))
+        print("\n".join(lines[-50:]))
+    if result.stderr:
+        print("[STDERR]", result.stderr[-300:])
+
     if result.returncode != 0:
-        print(f"[ERROR] generate.py 실패:\n{result.stderr[-500:]}")
+        print(f"[ERROR] claude 실행 실패 (exit {result.returncode})")
         return False
+
     print("  → 완료")
-    return True
-
-
-# ─────────────────────────────────────────────────────────────
-# 3. git commit + push
-# ─────────────────────────────────────────────────────────────
-
-def git_commit_push(date_str: str) -> bool:
-    print("\n[2/3] git commit + push ...")
-
-    def run(cmd: list[str]) -> tuple[bool, str]:
-        r = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
-        return r.returncode == 0, r.stdout + r.stderr
-
-    # stage
-    ok, _ = run(["git", "add", "output/", "history/market_data.csv"])
-    if not ok:
-        print("[ERROR] git add 실패")
-        return False
-
-    # commit (nothing-to-commit은 OK)
-    ok, out = run(["git", "commit", "-m", f"market: {date_str} daily report"])
-    if not ok and "nothing to commit" not in out:
-        print(f"[ERROR] git commit 실패:\n{out}")
-        return False
-
-    # push
-    ok, out = run(["git", "push", "origin", "main"])
-    if not ok:
-        print(f"[ERROR] git push 실패:\n{out}")
-        return False
-
-    print("  → push 완료")
     return True
 
 
@@ -138,11 +174,10 @@ def load_metrics(date_str: str) -> list[dict]:
         if not asset:
             continue
         metrics.append({
-            "label":  label,
-            "icon":   icon,
-            "close":  asset.get("close"),
-            "daily":  asset.get("daily"),      # % change
-            "weekly": asset.get("weekly"),
+            "label": label,
+            "icon":  icon,
+            "close": asset.get("close"),
+            "daily": asset.get("daily"),
         })
     return metrics
 
@@ -154,7 +189,7 @@ def load_metrics(date_str: str) -> list[dict]:
 def _fmt_chg(chg: float | None) -> str:
     if chg is None:
         return ""
-    sign = "+" if chg > 0 else ""
+    sign  = "+" if chg > 0 else ""
     arrow = "▲" if chg > 0 else ("▼" if chg < 0 else "–")
     return f" {arrow} {sign}{chg:.2f}%"
 
@@ -164,9 +199,9 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
         print("[WARN] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID 미설정 → 알림 생략")
         return False
 
-    print("\n[3/3] Telegram 알림 발송 ...")
+    print("\n[2/2] Telegram 알림 발송 ...")
 
-    yyyy_mm   = date_str[:7]
+    yyyy_mm    = date_str[:7]
     report_url = f"{GITHUB_PAGES}/summary/{yyyy_mm}/{date_str}.html"
     now_kst    = datetime.now(KST).strftime("%H:%M KST")
     weekdays   = ["월", "화", "수", "목", "금", "토", "일"]
@@ -174,7 +209,7 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
 
     if success:
         lines = [
-            f"📊 <b>Market Summary 배포 완료</b>",
+            "📊 <b>Market Summary 배포 완료</b>",
             f"📅 {date_str} ({wd})",
             f'🔗 <a href="{report_url}">보고서 열기</a>',
             "",
@@ -187,15 +222,13 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
                 else f"{close:.2f}" if close else "—"
             )
             lines.append(f"{m['icon']} {m['label']}: {close_str}{_fmt_chg(chg)}")
-
-        lines += ["", f"⏱ {now_kst}  |  📝 Story 작성 필요"]
+        lines += ["", f"⏱ {now_kst}"]
     else:
         lines = [
             "❌ <b>Market Summary 생성 실패</b>",
             f"📅 {date_str} ({wd})",
             f"⏱ {now_kst}",
-            "서버 로그를 확인해주세요.",
-            f"<code>logs/auto_market.log</code>",
+            "로그: <code>logs/auto_market.log</code>",
         ]
 
     text = "\n".join(lines)
@@ -214,9 +247,8 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
         if resp.ok:
             print("  → 발송 완료")
             return True
-        else:
-            print(f"  [ERROR] Telegram API: {resp.status_code} — {resp.text[:200]}")
-            return False
+        print(f"  [ERROR] Telegram {resp.status_code}: {resp.text[:200]}")
+        return False
     except Exception as e:
         print(f"  [ERROR] Telegram 전송 실패: {e}")
         return False
@@ -237,13 +269,9 @@ def main() -> None:
         print("주말입니다. 실행을 건너뜁니다.")
         return
 
-    ok_gen = run_generate(date_str)
-    if ok_gen:
-        ok_push   = git_commit_push(date_str)
-        metrics   = load_metrics(date_str)
-        send_telegram(date_str, metrics, ok_push)
-    else:
-        send_telegram(date_str, [], False)
+    ok = run_market_full(date_str)
+    metrics = load_metrics(date_str)
+    send_telegram(date_str, metrics, ok)
 
 
 if __name__ == "__main__":
