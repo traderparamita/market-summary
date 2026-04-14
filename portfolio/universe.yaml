@@ -1,8 +1,14 @@
 # Portfolio Universe Definition
 # Maps investable ETFs/stocks -> indicator_codes in history/market_data.csv
 #
-# Phase 0 MVP: 13 ETFs + 14 stocks (per ROADMAP.md)
-# indicator_code must exist in generate.py INDICATOR_CODES
+# asset_class 분류:
+#   equity_us / equity_dm / equity_em / equity_global
+#   ust_long / ust_mid / ust_short / agg_bond / credit_hy / credit_ig / em_debt / tips
+#   gold / commodity / usd
+#   sector_us (XLK 등 SPDR 11섹터)
+#   sector_kr (KODEX 4섹터)
+#   style_us  (팩터 ETF: 모멘텀/가치/퀄리티/저변동)
+#   stocks    (개별 주식 — 백테스트 IC 분석에서 제외)
 
 macro_signals:
   yield_curve:
@@ -12,7 +18,7 @@ macro_signals:
   dxy: FX_DXY
 
 assets:
-  # ── Equity ─────────────────────────────────────────
+  # ── Broad Equity ───────────────────────────────────
   SPY:
     asset_class: equity_us
     indicator_code: EQ_SP500
@@ -24,7 +30,7 @@ assets:
   EFA:
     asset_class: equity_dm
     indicator_code: EQ_MSCI_WORLD
-    name: "MSCI EAFE (proxy: MSCI World ETF)"
+    name: "MSCI EAFE (proxy: MSCI World)"
   EEM:
     asset_class: equity_em
     indicator_code: EQ_HSI
@@ -34,39 +40,214 @@ assets:
     indicator_code: EQ_MSCI_ACWI
     name: "MSCI ACWI"
 
+  # ── US Sector ETFs (SPDR) ──────────────────────────
+  XLK:
+    asset_class: sector_us
+    indicator_code: SC_US_TECH
+    name: "Technology"
+  XLF:
+    asset_class: sector_us
+    indicator_code: SC_US_FIN
+    name: "Financials"
+  XLE:
+    asset_class: sector_us
+    indicator_code: SC_US_ENERGY
+    name: "Energy"
+  XLV:
+    asset_class: sector_us
+    indicator_code: SC_US_HEALTH
+    name: "Health Care"
+  XLI:
+    asset_class: sector_us
+    indicator_code: SC_US_INDU
+    name: "Industrials"
+  XLY:
+    asset_class: sector_us
+    indicator_code: SC_US_DISCR
+    name: "Consumer Discretionary"
+  XLP:
+    asset_class: sector_us
+    indicator_code: SC_US_STAPLES
+    name: "Consumer Staples"
+  XLU:
+    asset_class: sector_us
+    indicator_code: SC_US_UTIL
+    name: "Utilities"
+  XLB:
+    asset_class: sector_us
+    indicator_code: SC_US_MATL
+    name: "Materials"
+  XLRE:
+    asset_class: sector_us
+    indicator_code: SC_US_REIT
+    name: "Real Estate"
+  XLC:
+    asset_class: sector_us
+    indicator_code: SC_US_COMM
+    name: "Communication Services"
+
+  # ── KR Sector ETFs ────────────────────────────────────────────────
+  # 기존 4종
+  "091160.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_SEMI
+    name: "KODEX 반도체"          # 2006~
+  "139270.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_FIN
+    name: "KODEX 금융"            # 2009~
+  "244580.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_BIO
+    name: "KODEX 바이오"          # 2016~
+  "305720.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_BATTERY
+    name: "KODEX 2차전지"         # 2018~
+  # 2006~2010 상장
+  "091180.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_AUTO
+    name: "KODEX 자동차"
+  "091170.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_CONSTR
+    name: "KODEX 건설"
+  "117460.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_ENERGY
+    name: "KODEX 에너지화학"
+  "117680.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_STEEL
+    name: "KODEX 철강"
+  "091220.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_BANK
+    name: "KODEX 은행"
+  "098560.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_TELECOM
+    name: "KODEX 통신"
+  # 2011~2013 상장
+  "140700.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_INSUR
+    name: "KODEX 보험"
+  "130730.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_HEALTH
+    name: "KODEX 헬스케어"
+  "140710.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_TRANSPORT
+    name: "KODEX 운송"
+  "108590.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_MEDIA
+    name: "KODEX 미디어&엔터"
+  "157490.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_HEAVY
+    name: "TIGER 200 중공업"
+  "174360.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_DEFENSE
+    name: "TIGER 경기방어"
+  # 2015~2017 상장
+  "228800.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_GAME
+    name: "KODEX 게임&엔터"
+  "227540.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_DISCR
+    name: "TIGER 200 경기소비재"
+  "227550.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_STAPLES
+    name: "TIGER 200 필수소비재"
+  "227560.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_INDU
+    name: "TIGER 200 산업재"
+  # 2019 상장
+  "278530.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_BIOTECH
+    name: "KODEX 바이오테크"
+  "261240.KS":
+    asset_class: sector_kr
+    indicator_code: SC_KR_COSDAQ_IT
+    name: "KODEX 코스닥150IT"
+
+  # ── US Factor / Style ETFs ─────────────────────────
+  IVW:
+    asset_class: style_us
+    indicator_code: FA_US_GROWTH
+    name: "iShares Growth (IVW)"
+  IVE:
+    asset_class: style_us
+    indicator_code: FA_US_VALUE
+    name: "iShares Value (IVE)"
+  QUAL:
+    asset_class: style_us
+    indicator_code: FA_US_QUALITY
+    name: "iShares Quality (QUAL)"
+  MTUM:
+    asset_class: style_us
+    indicator_code: FA_US_MOMENTUM
+    name: "iShares Momentum (MTUM)"
+  USMV:
+    asset_class: style_us
+    indicator_code: FA_US_LOWVOL
+    name: "iShares Low Volatility (USMV)"
+
   # ── Fixed Income ───────────────────────────────────
   TLT:
     asset_class: ust_long
     indicator_code: BD_TLT
-    name: "20+ Year Treasury Bond"
+    name: "20+ Year Treasury (TLT)"
   IEF:
     asset_class: ust_mid
     indicator_code: BD_US_10Y
-    name: "7-10 Year Treasury (proxy: 10Y yield)"
+    name: "7-10Y Treasury (proxy: 10Y yield)"
     is_yield: true
     duration: 7.5
+  SHY:
+    asset_class: ust_short
+    indicator_code: BD_US_1_3Y
+    name: "1-3Y Treasury (SHY)"
+  IEI:
+    asset_class: ust_mid_etf
+    indicator_code: BD_US_3_7Y
+    name: "3-7Y Treasury (IEI)"
+  TIP:
+    asset_class: tips
+    indicator_code: BD_US_TIPS
+    name: "TIPS (TIP)"
   AGG:
     asset_class: agg_bond
     indicator_code: BD_AGG
-    name: "US Aggregate Bond"
+    name: "US Aggregate Bond (AGG)"
   HYG:
     asset_class: credit_hy
     indicator_code: BD_HYG
-    name: "High Yield Corporate Bond"
+    name: "High Yield Corp Bond (HYG)"
   LQD:
     asset_class: credit_ig
     indicator_code: BD_LQD
-    name: "Investment Grade Corporate Bond"
+    name: "Investment Grade Corp Bond (LQD)"
   EMB:
     asset_class: em_debt
     indicator_code: BD_EMB
-    name: "EM USD Bond"
+    name: "EM USD Bond (EMB)"
 
   # ── Alternatives ───────────────────────────────────
   GLD:
     asset_class: gold
     indicator_code: CM_GOLD
-    name: "Gold"
+    name: "Gold (GLD)"
   DBC:
     asset_class: commodity
     indicator_code: CM_WTI
@@ -74,9 +255,9 @@ assets:
   UUP:
     asset_class: usd
     indicator_code: FX_DXY
-    name: "US Dollar Index"
+    name: "US Dollar Index (DXY)"
 
-  # ── Stocks ─────────────────────────────────────────
+  # ── Stocks (IC 분석 제외) ───────────────────────────
   NVDA:
     asset_class: stocks
     indicator_code: ST_NVDA
