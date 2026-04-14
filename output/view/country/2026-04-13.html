@@ -8,26 +8,29 @@
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
 :root {
   --bg: #f4f5f9; --card: #fff; --border: #e0e3ed;
-  --text: #2d3148; --muted: #7c8298; --primary: #F58220;
+  --text: #2d3148; --muted: #7c8298; --primary: #F58220; --navy: #043B72;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); padding:32px 24px; max-width:1300px; margin:0 auto; }
+body { font-family:'Spoqa Han Sans Neo',sans-serif; background:var(--bg); color:var(--text); }
 .header { margin-bottom:24px; padding-bottom:20px; border-bottom:2px solid var(--border); }
 .header h1 { font-size:26px; font-weight:700; }
 .header .sub { font-size:14px; color:var(--muted); margin-top:6px; }
 .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 24px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,.04); }
 .card h2 { font-size:16px; font-weight:700; margin-bottom:14px; }
 .krw-banner { border-radius:10px; padding:14px 20px; margin-bottom:20px; font-size:14px; }
-table { width:100%; border-collapse:collapse; font-size:13.5px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
 thead tr { background:#f8f9fc; }
-th { padding:10px 12px; font-weight:600; font-size:12px; color:var(--muted); text-align:center; border-bottom:2px solid var(--border); white-space:nowrap; }
-td { padding:10px 12px; border-bottom:1px solid #f0f1f7; vertical-align:middle; }
+th { padding:10px 10px; font-weight:600; font-size:11px; color:var(--muted); text-align:center; border-bottom:2px solid var(--border); white-space:nowrap; }
+td { padding:9px 10px; border-bottom:1px solid #f0f1f7; vertical-align:middle; }
 tr:hover td { background:#fafbff; }
 .summary-row { display:flex; gap:24px; flex-wrap:wrap; margin-bottom:12px; }
-.summary-item { }
 .summary-item .label { font-size:12px; color:var(--muted); margin-bottom:4px; }
 .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
 .footer { text-align:center; font-size:12px; color:var(--muted); margin-top:32px; padding-top:16px; border-top:1px solid var(--border); }
+.stat-grid { display:flex;gap:16px;flex-wrap:wrap;margin-top:12px }
+.stat-card { background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;min-width:160px;flex:1 }
+.stat-card .label { font-size:11px;color:#94a3b8;margin-bottom:4px }
+.stat-card .value { font-size:20px;font-weight:800 }
 .ma-nav{background:var(--navy);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(4,59,114,.25)}
 .ma-nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:0;height:48px;overflow-x:auto;scrollbar-width:none}
 .ma-nav-inner::-webkit-scrollbar{display:none}
@@ -56,12 +59,13 @@ tr:hover td { background:#fafbff; }
     <a href="../bond/2026-04-13.html" class="ma-nav-link">채권</a>
     <a href="../style/2026-04-13.html" class="ma-nav-link">스타일</a>
     <a href="../allocation/2026-04-13.html" class="ma-nav-link">배분안</a>
+    <a href="../alternative/2026-04-13.html" class="ma-nav-link">대체자산</a>
   </div>
 </nav>
-<div style="max-width:1300px;margin:0 auto;padding:28px 24px 48px">
+<div style="max-width:1400px;margin:0 auto;padding:28px 24px 48px">
 <div class="header">
   <h1>🌍 Country Allocation View</h1>
-  <div class="sub">국가별 투자 배분 의견 &nbsp;|&nbsp; 기준일: 2026-04-13 &nbsp;|&nbsp; 생성: 2026-04-13 19:57</div>
+  <div class="sub">국가별 투자 배분 의견 (Momentum+FX+Macro+Carry+Value) &nbsp;|&nbsp; 기준일: 2026-04-13 &nbsp;|&nbsp; 생성: 2026-04-14 10:39</div>
 </div>
 
 <!-- KRW 투자자 배너 -->
@@ -85,9 +89,36 @@ tr:hover td { background:#fafbff; }
   </div>
 </div>
 
+<!-- 동적 환헤지 권고 -->
+<div class="card">
+  <h2>💱 동적 환헤지 권고 (USDKRW 변동성 기반)</h2>
+  <div class="stat-grid">
+    <div class="stat-card" style="border-top:3px solid #d97706">
+      <div class="label">USDKRW 30D 변동성(연율)</div>
+      <div class="value" style="color:#d97706">13.8%</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">1Y 백분위 94%ile</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">기본 헤지 비율</div>
+      <div class="value" style="color:#64748b">70%</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">변액보험 기본값</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid #d97706">
+      <div class="label">변동성 조정 권고 헤지 비율</div>
+      <div class="value" style="color:#d97706">70%</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">USDKRW 변동성 13.7% (중립) → 기본 헤지 비율 70% 유지</div>
+    </div>
+    <div class="stat-card" style="flex:2">
+      <div class="label">US Fed Rate (캐리 기준)</div>
+      <div class="value" style="color:#475569">3.64%</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">각국 금리 − US Fed = 캐리 스프레드 (양수 → 현지 자산 매력)</div>
+    </div>
+  </div>
+</div>
+
 <!-- 국가별 상세 -->
 <div class="card">
-  <h2>🗺️ 국가별 신호 상세</h2>
+  <h2>🗺️ 국가별 신호 상세 (Momentum + FX + Macro + Carry + Value)</h2>
   <table>
     <thead>
       <tr>
@@ -100,6 +131,9 @@ tr:hover td { background:#fafbff; }
         <th>vs ACWI(6M)</th>
         <th>FX 신호</th>
         <th>매크로 국면</th>
+        <th>정책금리<br>캐리차</th>
+        <th>캐리</th>
+        <th>밸류</th>
         <th>복합점수</th>
       </tr>
     </thead>
@@ -112,13 +146,16 @@ tr:hover td { background:#fafbff; }
             <div style="font-size:11px;color:#64748b;margin-top:2px">해외주식형(미국)</div>
           </td>
           <td style="text-align:center"><span style="background:#f1f5f9;color:#64748b;padding:3px 10px;border-radius:6px;font-weight:700;font-size:13px">N</span></td>
-          <td style="text-align:right"><span style="color:#dc2626">-2.14%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+1.21%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+24.92%</span></td>
-          <td style="text-align:right"><span style="color:#dc2626">-3.78%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-1.30%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+5.09%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+30.72%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-3.74%</span></td>
           <td style="text-align:center"><span style="color:#64748b">중립 →</span></td>
           <td style="text-align:center"><span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Reflation</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">+0.075</td>
+          <td style="text-align:center;font-size:11px">3.64%<br><span style="color:#94a3b8">+0.00%p</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">+0.065</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🇰🇷</td>
@@ -130,10 +167,13 @@ tr:hover td { background:#fafbff; }
           <td style="text-align:right"><span style="color:#16a34a">+26.65%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+63.66%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+130.37%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+58.66%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+54.83%</span></td>
           <td style="text-align:center"><span style="color:#64748b">중립 →</span></td>
           <td style="text-align:center"><span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Deflation</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">+0.625</td>
+          <td style="text-align:center;font-size:11px">—<br><span style="color:#94a3b8">—</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">+0.555</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🇯🇵</td>
@@ -145,10 +185,13 @@ tr:hover td { background:#fafbff; }
           <td style="text-align:right"><span style="color:#16a34a">+8.78%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+17.85%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+58.16%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+12.85%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+9.02%</span></td>
           <td style="text-align:center"><span style="color:#dc2626">현지통화 약세 ↓</span></td>
           <td style="text-align:center"><span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Deflation</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">+0.475</td>
+          <td style="text-align:center;font-size:11px">0.10%<br><span style="color:#94a3b8">-3.54%p</span></td>
+          <td style="text-align:center"><span style="color:#dc2626;font-size:12px">캐리 ↓</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">+0.345</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🇨🇳</td>
@@ -160,10 +203,13 @@ tr:hover td { background:#fafbff; }
           <td style="text-align:right"><span style="color:#dc2626">-2.33%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+3.26%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+19.01%</span></td>
-          <td style="text-align:right"><span style="color:#dc2626">-1.74%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-5.57%</span></td>
           <td style="text-align:center"><span style="color:#16a34a">현지통화 강세 ↑</span></td>
           <td style="text-align:center"><span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Goldilocks</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">+0.300</td>
+          <td style="text-align:center;font-size:11px">3.45%<br><span style="color:#94a3b8">-0.19%p</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">+0.260</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🇪🇺</td>
@@ -175,10 +221,13 @@ tr:hover td { background:#fafbff; }
           <td style="text-align:right"><span style="color:#dc2626">-2.63%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+3.93%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+26.09%</span></td>
-          <td style="text-align:right"><span style="color:#dc2626">-1.07%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-4.91%</span></td>
           <td style="text-align:center"><span style="color:#64748b">중립 →</span></td>
           <td style="text-align:center"><span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Deflation</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">-0.075</td>
+          <td style="text-align:center;font-size:11px">4.00%<br><span style="color:#94a3b8">+0.36%p</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">-0.065</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🇬🇧</td>
@@ -190,10 +239,13 @@ tr:hover td { background:#fafbff; }
           <td style="text-align:right"><span style="color:#16a34a">+4.17%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+11.83%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+32.59%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+6.83%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+2.99%</span></td>
           <td style="text-align:center"><span style="color:#64748b">중립 →</span></td>
           <td style="text-align:center"><span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Stagflation</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">+0.550</td>
+          <td style="text-align:center;font-size:11px">5.25%<br><span style="color:#94a3b8">+1.61%p</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-size:12px">캐리 ↑</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">+0.570</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🇮🇳</td>
@@ -205,10 +257,13 @@ tr:hover td { background:#fafbff; }
           <td style="text-align:right"><span style="color:#dc2626">-8.78%</span></td>
           <td style="text-align:right"><span style="color:#dc2626">-5.03%</span></td>
           <td style="text-align:right"><span style="color:#16a34a">+2.56%</span></td>
-          <td style="text-align:right"><span style="color:#dc2626">-10.03%</span></td>
+          <td style="text-align:right"><span style="color:#dc2626">-13.86%</span></td>
           <td style="text-align:center"><span style="color:#dc2626">현지통화 약세 ↓</span></td>
           <td style="text-align:center"><span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">Goldilocks</span></td>
-          <td style="text-align:right;font-family:monospace;font-size:13px">-0.400</td>
+          <td style="text-align:center;font-size:11px">6.50%<br><span style="color:#94a3b8">+2.86%p</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-size:12px">캐리 ↑</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
+          <td style="text-align:right;font-family:monospace;font-size:13px">-0.280</td>
         </tr>
         <tr>
           <td style="font-size:20px;text-align:center">🌍</td>
@@ -217,12 +272,15 @@ tr:hover td { background:#fafbff; }
             <div style="font-size:11px;color:#64748b;margin-top:2px">해외주식형(이머징)</div>
           </td>
           <td style="text-align:center"><span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:6px;font-weight:700;font-size:13px">OW</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+18.71%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+38.78%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+74.11%</span></td>
-          <td style="text-align:right"><span style="color:#16a34a">+33.78%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+19.30%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+43.28%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+80.78%</span></td>
+          <td style="text-align:right"><span style="color:#16a34a">+34.44%</span></td>
           <td style="text-align:center"><span style="color:#64748b">중립 →</span></td>
           <td style="text-align:center"><span style="background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">N/A</span></td>
+          <td style="text-align:center;font-size:11px">8.00%<br><span style="color:#94a3b8">+4.36%p</span></td>
+          <td style="text-align:center"><span style="color:#16a34a;font-size:12px">캐리 ↑</span></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-size:12px">—</span></td>
           <td style="text-align:right;font-family:monospace;font-size:13px">+0.700</td>
         </tr>
     </tbody>
@@ -236,8 +294,9 @@ tr:hover td { background:#fafbff; }
   &nbsp;|&nbsp; <span style="color:#64748b">N</span> ±0.25 이내
   &nbsp;|&nbsp; <span style="color:#dc2626">UW</span> < −0.25
   <br><br>
-  복합점수 = 3M모멘텀(15%) + 6M모멘텀(20%) + 12M모멘텀(15%) + vs ACWI 초과수익(20%) + FX 추세(15%) + 매크로 국면(15%)
-  <br>매크로 국면: Goldilocks(성장↑·물가안정) / Reflation(성장↑·물가↑) / Stagflation(성장↓·물가↑) / Deflation(성장↓·물가↓)
+  복합점수 = 3M모멘텀(13%) + 6M모멘텀(18%) + 12M모멘텀(13%) + vs ACWI(18%) + FX 추세(13%) + 매크로 국면(13%) + <strong>캐리(8%) + 밸류(4%)</strong>
+  <br>캐리: 현지 정책금리 − US Fed Rate. 양수 = 현지 금리 우위 → 자본 유입 압력.
+  <br>밸류 프록시: 단기 조정(3M < −5%) + 장기 성과(12M > +10%) → 저평가 신호.
 </div>
 
 <div class="footer">Country View &nbsp;·&nbsp; 미래에셋생명 변액보험 운용 참고 &nbsp;·&nbsp; 본 자료는 투자 권유가 아닙니다</div>
