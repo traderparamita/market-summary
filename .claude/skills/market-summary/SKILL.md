@@ -97,6 +97,21 @@ metadata:
 - 미국 공휴일: Presidents' Day, Memorial Day, Thanksgiving, Independence Day 등
 - **금지**: "금요일 발표된 고용지표"라고 쓰기 전에 실제 금요일인지 확인
 
+### 7. "사상 최고치" 표현 금지 (검증 없이)
+
+- "사상 최고치" / "역대 최고" / "all-time high" 같은 **절대적 최고가 표현은 과거 데이터를 검증한 후에만** 사용
+- `_data.json`의 spark·YTD 필드는 상대 변동률일 뿐, 과거 절대 최고가를 증명하지 않는다
+- 검증이 애매하면 **"주간 신고점"**, **"월간 고점"**, **"YTD 신고점"** 같이 범위를 명시한 표현으로 축약
+- 정말 사상 최고를 주장하려면 `history/market_data.csv` 또는 외부 소스로 직접 확인
+- verdict 배지·causal node 제목·insight card 헤드라인 어디에 쓰든 동일 규칙
+
+### 8. Story Hero 세션 간 `<br><br>` 여백
+
+- `<div class="story-hero">` 내부 `<div class="story-text">`에서 **아시아 → 유럽 → 미국 세션 문단을 `<br><br>`로 분리**
+- 단일 `<br>`만 쓰면 세션이 한 덩어리로 붙어 가독성이 떨어진다
+- 세션 도입부(서두 → 첫 세션)와 세션 종료 후(마지막 세션 → VIX/마무리 단락)에도 `<br><br>` 유지
+- Session Grid 영역(`session-grid`)은 CSS로 이미 분리돼 있어 불필요. **Story Hero 텍스트 블록에만 해당**
+
 ---
 
 ## 일간 Story 작성 절차

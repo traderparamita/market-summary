@@ -1,6 +1,6 @@
 """scripts/auto_market.py — 일일 시장 보고서 완전 자동화
 
-매일 08:05 KST macOS launchd가 이 스크립트를 실행한다.
+매일 06:50 KST macOS launchd가 이 스크립트를 실행한다.
 
   claude --dangerously-skip-permissions -p "/market-full DATE"
 
@@ -66,11 +66,11 @@ KEY_METRICS = [
 # ─────────────────────────────────────────────────────────────
 
 def prev_business_day() -> str:
-    """08:05 KST 실행 시점 기준 전 영업일 = 보고서 대상 날짜.
+    """06:50 KST 실행 시점 기준 전 영업일 = 보고서 대상 날짜.
 
     실행일(스크립트 구동일)과 보고서 날짜는 다르다:
-      월요일 08:05 실행 → 금요일 보고서
-      화~금  08:05 실행 → 전날 보고서
+      월요일 06:50 실행 → 금요일 보고서
+      화~금  06:50 실행 → 전날 보고서
     """
     today = datetime.now(KST).date()
     days_back = 3 if today.weekday() == 0 else 1  # 월=금요일, 그 외=전날
