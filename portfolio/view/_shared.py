@@ -21,8 +21,8 @@ ALL_VIEWS = [
     ("sector",      "섹터",       "P2"),
     ("bond",        "채권",       "P2"),
     ("style",       "스타일",     "P2"),
-    ("allocation",  "배분안",     "P2"),
     ("alternative", "대체자산",   "P2"),
+    ("allocation",  "배분안",     "P2"),
 
 ]
 
