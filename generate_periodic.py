@@ -776,8 +776,7 @@ def generate_monthly_reports(year=2026):
 
         html = generate_periodic_html(agg, title, subtitle, "Monthly", filename)
         path = os.path.join(monthly_dir, filename)
-        with open(path, "w") as f:
-            f.write(html)
+        _inject_existing_macro(path, html)
         count += 1
         print(f"  [MONTHLY] {filename}: {month_dates[0]} ~ {month_dates[-1]}")
 

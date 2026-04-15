@@ -85,6 +85,27 @@ Step 1~2에서 자동 갱신됨. 별도 실행 불필요.
 - `market-summary` 스킬의 "월간 Story 작성 절차" 따름
 - `output/summary/monthly/YYYY-MM.html`에 주입
 
+### Step 7.5: 월간 매크로 데이터 수집 (마지막 영업일만)
+
+대상 날짜가 해당 월의 **마지막 영업일**인 경우에만 실행:
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -m portfolio.collect_macro
+```
+
+실패 시 경고 후 계속 진행.
+
+### Step 7.6: 월간 Macro & Events 탭 작성 (마지막 영업일만)
+
+대상 날짜가 해당 월의 **마지막 영업일**인 경우에만 `macro-events` **스킬**의 작성 절차를 따른다.
+
+핵심:
+1. `history/macro_indicators.csv` 에서 이번 달 날짜 범위 필터링 (bash grep)
+2. Tavily MCP(`mcp__tavily__search`)로 이번 달 주요 이벤트 수집·해설 (월간은 FOMC, CPI, GDP, NFP 등 핵심 이벤트 중심으로 요약)
+3. Tavily MCP로 다음 달 주목할 이벤트 캘린더 수집
+4. `output/summary/monthly/YYYY-MM.html`의 `tab-macro` 블록에 주입
+5. `YYYY-MM_macro.html` 저장 확인
+
 ### Step 8: Git Commit + Push
 
 변경된 모든 보고서를 커밋·푸시한다. `/market-deploy` 커맨드와 동일한 규칙 적용:
