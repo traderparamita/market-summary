@@ -451,12 +451,29 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 .risk-tag{{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}}
 .risk-tag.high{{background:rgba(217,48,79,0.15);color:var(--down)}}.risk-tag.med{{background:rgba(212,139,7,0.15);color:var(--warn)}}
 
+/* ── Macro & Events Tab ── */
+.macro-section{{margin-bottom:32px}}
+.macro-section h2{{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border)}}
+.macro-cards{{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}}
+.macro-card{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;border-left:4px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.macro-date{{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}}
+.macro-title{{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px}}
+.macro-values{{font-size:13px;margin-bottom:8px;font-family:'JetBrains Mono',monospace}}
+.macro-explain{{font-size:13px;color:var(--text);line-height:1.75;background:var(--card2);padding:10px 12px;border-radius:6px;margin-bottom:8px}}
+.macro-reaction{{font-size:12px;color:var(--muted);font-style:italic}}
+.macro-calendar{{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.macro-calendar th{{background:var(--accent2);color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:600}}
+.macro-calendar td{{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}}
+.macro-calendar tr:last-child td{{border-bottom:none}}
+.macro-calendar tr:hover td{{background:var(--card2)}}
+.macro-importance{{color:var(--warn);font-weight:700}}
 @media(max-width:900px){{
   .chart-grid,.movers-row{{grid-template-columns:1fr}}
   .kpi-strip{{grid-template-columns:repeat(3,1fr)}}
   .session-grid,.insight-grid{{grid-template-columns:1fr}}
   .causal-chain{{flex-direction:column}}.cause-arrow{{transform:rotate(90deg);padding:4px 0}}
   .af-map{{grid-template-columns:1fr}}.risk-items{{grid-template-columns:1fr}}
+  .macro-cards{{grid-template-columns:1fr}}
 }}
 </style>
 </head>
@@ -478,6 +495,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('story')">{period_label} Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
 </div>
 
 <div id="tab-data" class="tab-panel">
@@ -589,6 +607,10 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 
 </div><!-- /tab-data -->
 
+<div id="tab-macro" class="tab-panel">
+<!-- MACRO_EVENTS_PLACEHOLDER -->
+</div><!-- /tab-macro -->
+
 <div id="tab-story" class="tab-panel active">
 <!-- STORY_CONTENT_PLACEHOLDER -->
 </div><!-- /tab-story -->
@@ -651,6 +673,51 @@ new Chart(document.getElementById('cmChart'),{{
     return html
 
 
+def _save_macro_file(html_path, html_content):
+    """HTML에서 Macro & Events 콘텐츠를 추출하여 _macro.html 파일로 저장"""
+    m = re.search(
+        r'<div id="tab-macro" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-macro -->',
+        html_content, re.DOTALL)
+    if not m:
+        return
+    macro = m.group(1).strip()
+    if not macro or "MACRO_EVENTS_PLACEHOLDER" in macro:
+        return
+    base, ext = os.path.splitext(html_path)
+    macro_path = f"{base}_macro{ext}"
+    with open(macro_path, "w") as f:
+        f.write(macro)
+    print(f"  Macro saved: {os.path.basename(macro_path)}")
+
+
+def _inject_existing_macro(path, new_html):
+    """기존 파일에 Macro & Events가 있으면 새 HTML의 placeholder에 주입 + _macro.html 저장"""
+    old_macro = ""
+    if os.path.exists(path):
+        with open(path) as f:
+            old_content = f.read()
+        m = re.search(
+            r'<div id="tab-macro" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-macro -->',
+            old_content, re.DOTALL)
+        if m:
+            candidate = m.group(1).strip()
+            if candidate and "MACRO_EVENTS_PLACEHOLDER" not in candidate:
+                old_macro = candidate
+        if not old_macro:
+            base, ext = os.path.splitext(path)
+            sib_path = f"{base}_macro{ext}"
+            if os.path.exists(sib_path):
+                with open(sib_path) as f:
+                    sib_macro = f.read().strip()
+                if sib_macro and "MACRO_EVENTS_PLACEHOLDER" not in sib_macro:
+                    old_macro = sib_macro
+    if old_macro:
+        new_html = new_html.replace("<!-- MACRO_EVENTS_PLACEHOLDER -->", old_macro)
+    with open(path, "w") as f:
+        f.write(new_html)
+    _save_macro_file(path, new_html)
+
+
 def generate_weekly_reports(year=2026):
     """주간 보고서 생성 (market_data.csv 기반)"""
     market_data, trading_days = load_market_data()
@@ -675,8 +742,7 @@ def generate_weekly_reports(year=2026):
 
         html = generate_periodic_html(agg, title, subtitle, "Weekly", filename)
         path = os.path.join(weekly_dir, filename)
-        with open(path, "w") as f:
-            f.write(html)
+        _inject_existing_macro(path, html)
         count += 1
         print(f"  [WEEKLY] {filename}: {first} ~ {last}")
 
