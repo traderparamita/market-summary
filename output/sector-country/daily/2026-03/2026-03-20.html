@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>섹터·국가 보고서 2026-03-20 (일간) — 인도·신흥국</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --orange: #F58220;
+  --navy:   #043B72;
+  --bg:     #f8fafc;
+  --card:   #ffffff;
+  --text:   #1e293b;
+  --muted:  #64748b;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Spoqa Han Sans Neo', 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6;
+}
+.header {
+  background: var(--navy); color: #fff; padding: 20px 32px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.header-title { font-size: 20px; font-weight: 700; }
+.header-sub   { font-size: 13px; color: #93c5fd; }
+.badge { padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+.main { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+
+/* 오늘의 주제 배너 */
+.focus-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, #1e40af 100%);
+  color: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.focus-label { font-size: 11px; color: #93c5fd; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.focus-theme { font-size: 22px; font-weight: 800; margin: 4px 0; }
+.focus-en    { font-size: 12px; color: #93c5fd; }
+.focus-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.focus-chip {
+  background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 14px;
+  font-size: 13px; font-weight: 600;
+}
+.focus-day { margin-left: auto; font-size: 11px; color: #93c5fd; text-align: right; }
+
+.section-title {
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  margin: 32px 0 12px; padding-bottom: 6px;
+  border-bottom: 2px solid var(--orange);
+  display: flex; align-items: center; gap: 8px;
+}
+.summary-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px;
+}
+.summary-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;
+}
+.summary-card .num   { font-size: 28px; font-weight: 800; color: var(--navy); }
+.summary-card .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.sector-grid   { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.country-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+
+.sector-card, .country-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+  transition: box-shadow 0.2s;
+}
+.sector-card:hover, .country-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+/* MA200 기준 왼쪽 테두리 색상 */
+.sector-card.above200, .country-card.above200 { border-left: 4px solid #16a34a; }
+.sector-card.below200, .country-card.below200 { border-left: 4px solid #dc2626; }
+.sector-card.neutral200, .country-card.neutral200 { border-left: 4px solid #d97706; }
+.sector-card.nodata200, .country-card.nodata200  { border-left: 4px solid #94a3b8; }
+
+/* 오늘의 주제 하이라이트 */
+.sector-card.focus, .country-card.focus {
+  border: 2px solid var(--orange) !important;
+  background: #fffbf5;
+  box-shadow: 0 0 0 3px rgba(245,130,32,0.12);
+}
+
+/* MA 블록 */
+.ma-block { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+.ma-row   { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 2px 0; }
+.ma-label { color: var(--muted); font-size: 11px; min-width: 46px; }
+.ma-val   { font-weight: 700; font-size: 12px; }
+.trend-label {
+  margin-top: 6px; font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px; background: #f8fafc;
+  display: inline-block;
+}
+.focus-star {
+  background: var(--orange); color: #fff;
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+  margin-left: 4px;
+}
+
+.sc-name { font-weight: 700; font-size: 14px; }
+.sc-etf  { font-size: 11px; color: var(--muted); }
+.sc-metrics { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; margin-top: 6px; }
+.sc-metric  { display: flex; flex-direction: column; }
+.sc-metric .mk { color: var(--muted); font-size: 10px; }
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.tag { background: #f0f9ff; color: #0369a1; border-radius: 4px; padding: 1px 6px; font-size: 10px; }
+
+.cc-flag { font-size: 24px; }
+.cc-name { font-weight: 700; font-size: 15px; }
+
+.story-section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 24px;
+}
+.story-section h2 {
+  font-size: 18px; font-weight: 700; color: var(--navy);
+  margin-bottom: 16px; border-bottom: 2px solid var(--orange); padding-bottom: 8px;
+}
+.story-placeholder { color: var(--muted); font-style: italic; text-align: center; padding: 32px; }
+
+.footer {
+  text-align: center; color: var(--muted); font-size: 11px;
+  padding: 24px; margin-top: 32px; border-top: 1px solid var(--border);
+}
+</style>
+
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="header-title">🌐 섹터·국가 보고서</div>
+    <div class="header-sub">2026-03-20 (일간)</div>
+  </div>
+  <span style="margin-left:auto;font-size:11px;color:#93c5fd">생성: 2026-04-16 20:26</span>
+</div>
+
+<div class="main">
+
+  
+<div class="focus-banner">
+  <div style="flex:1">
+    <div class="focus-label">🎯 오늘의 주제 (Day 15 / 15)</div>
+    <div class="focus-theme">인도·신흥국</div>
+    <div class="focus-en">India & Emerging Markets</div>
+    <div class="focus-chips"><span class="focus-chip">🇮🇳 인도 ()</span><span class="focus-chip">🌍 신흥국 ()</span></div>
+    
+  </div>
+  <div class="focus-day">
+    2026-03-20<br>
+    <span style="color:#bfdbfe">Friday</span>
+  </div>
+</div>
+  
+<div class="summary-cards">
+  <div class="summary-card">
+    <div class="num" style="color:#16a34a">5</div>
+    <div class="label">미국 섹터 MA200 위</div>
+  </div>
+  <div class="summary-card">
+    <div class="num" style="color:#16a34a">9</div>
+    <div class="label">한국 섹터 MA200 위</div>
+  </div>
+  <div class="summary-card">
+    <div class="num" style="color:#16a34a">5</div>
+    <div class="label">국가 지수 MA200 위</div>
+  </div>
+</div>
+
+  <div class="story-section" id="story-section">
+    <h2>📰 오늘의 심층 분석 — 인도·신흥국</h2>
+    <div class="story-content" id="story-content">
+
+<h3 style="font-size:15px;font-weight:700;color:#043B72;margin:0 0 12px">🇮🇳 인도 — 전방위 하락 압력 속 NIFTY50 소폭 반등</h3>
+
+<p style="margin-bottom:12px;line-height:1.75">
+3월 9일(월) NIFTY50은 개장 첫 10분 만에 700포인트 이상 급락했다. 브렌트유가 배럴당 114~117달러로 치솟으면서 인도 증시 전체가 패닉에 빠졌다. 인도는 세계 3위 원유 수입국이자 2위 LPG 소비국으로, 유가 급등의 충격을 직접 흡수하는 구조다. 이날 NIFTY50은 하루 만에 약 3% 하락했고, 투자자들이 집합적으로 약 12.4조 루피의 시가총액을 잃었다.
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+3월 13일(금) 주간 기준으로 NIFTY50은 −5.31% 마감했다. NIFTY BANK −6.97%, NIFTY IT −3.54%, NIFTY MID 100 −4.59% 등 전 섹터가 동반 하락했다. FII(외국인기관투자자)는 3월 한 달에만 120억 달러 이상 인도 주식을 순매도했다(CNBC). Matthews Asia 포트폴리오 매니저는 "중동 분쟁이 장기화될수록 인도 성장률에 미치는 부정적 영향이 커진다"고 경고했다.
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+루피화는 달러 대비 사상 최저치로 추락했다. 3월 20일(금) 장중 루피는 93.49까지 약세를 보였고 — 달러 강세, FII 자금 이탈, 유가 상승이 맞물린 결과다. 루피 약세는 수입 비용을 더 끌어올리는 악순환을 만든다. 한편 3월 20일 NIFTY50은 IT 업종 반등에 힘입어 Sensex +821포인트, NIFTY +252포인트 소폭 반등하며 마감했다(The Hindu Business Line).
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+<strong>포지셔닝 근거:</strong> 현재 NIFTY50은 MA20 −4.9%, MA60 −8.9%, MA200 −9.9%에 위치해 단기·중기·장기 모두 이동평균선 아래에 있다. 3M −10.46%, 6M −8.75%, 월간 −10.15%로 모멘텀 신호는 전방위 약세다. VanEck EM Fund 리포트에 따르면 "인도는 분기 기준 마이너스 상대 성과를 기록했으며, 중동 갈등이 단기 역풍이 되고 있다"고 밝혔다. <em>지금은 담기보다 지켜보는 구간이다.</em>
+</p>
+
+<hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0">
+
+<h3 style="font-size:15px;font-weight:700;color:#043B72;margin:0 0 12px">🌍 신흥국(EM) — MA200 위에서 버티는 장기 추세, 단기는 균열</h3>
+
+<p style="margin-bottom:12px;line-height:1.75">
+2026년 연초 EM은 강세로 출발했다. MSCI EM IMI는 1~2월 견조한 상승세를 보였고, 한국(KOSPI)과 대만(TSMC 관련)이 주요 기여국이었다. VanEck Emerging Markets Fund 분기 보고서는 "한국과 대만이 1분기 톱 컨트리뷰터"라고 밝혔다.
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+3월 초 미국-이란 전쟁이 본격화되면서 흐름이 바뀌었다. 유가가 100달러를 돌파하자 원유 수입의존도가 높은 EM국가들(인도·한국·대만)은 타격을 받았고, 반면 원유 수출국(사우디·UAE 등)은 반사이익을 누렸다. MSCI는 "EM 내 유가 민감도는 국가별로 극명하게 갈린다 — 에너지 섹터와 소재 섹터는 양의 민감도"라고 분석했다.
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+3월 전체로는 MSCI EM 지수가 달러 기준 −13.0%를 기록하며 2020년 3월 팬데믹 이후 최대 월간 낙폭을 기록했다(Janus Henderson). 한국 MSCI는 −19.1%로 월간 최악이었다. 그러나 중국은 3월 PMI가 확장세를 유지하고 전략적 비축유 덕분에 −7.7%로 상대적 선방했다.
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+3월 20일(금) 현재 EM 데이터 신호를 보면: MA200 +11.5%(장기 추세선 위, 긍정적), 그러나 MA20 −6.6%, MA60 −4.9%(단기·중기는 추세선 아래로 하락). 3M 수익률은 +8.73%로 아직 플러스를 유지하지만, 3월 한 달만 보면 급락이 진행 중이다.
+</p>
+
+<p style="margin-bottom:12px;line-height:1.75">
+<strong>포지셔닝 근거:</strong> EM의 장기 구조적 추세(MA200 +11.5%)는 아직 살아있다. AI 공급망(한국·대만 반도체), 상품 수출국(브라질·인도네시아)의 이익 모멘텀이 남아있다. 다만 유가·금리 충격이 단기 역풍을 만들고 있어, <em>지금 당장 전체 EM을 담기보다는 원유 수출 EM(소재·에너지 노출)을 중심으로 선별적 접근이 유효하다.</em> 인도처럼 원유 수입국 비중이 높은 EM은 단기 회피가 적절하다.
+</p>
+
+<hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0">
+
+<h3 style="font-size:15px;font-weight:700;color:#043B72;margin:0 0 10px">📊 인도 vs 신흥국 비교 요약</h3>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
+  <thead>
+    <tr style="background:#f0f9ff">
+      <th style="padding:8px 10px;text-align:left;border:1px solid #e2e8f0">항목</th>
+      <th style="padding:8px 10px;text-align:center;border:1px solid #e2e8f0">🇮🇳 인도 (NIFTY50)</th>
+      <th style="padding:8px 10px;text-align:center;border:1px solid #e2e8f0">🌍 신흥국 (EEM/VWO)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding:7px 10px;border:1px solid #e2e8f0">3개월 수익률</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#dc2626;font-weight:700">−10.46%</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#16a34a;font-weight:700">+8.73%</td>
+    </tr>
+    <tr style="background:#fafafa">
+      <td style="padding:7px 10px;border:1px solid #e2e8f0">MA200 위치</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#dc2626">−9.9% (아래)</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#16a34a">+11.5% (위)</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:1px solid #e2e8f0">유가 충격 민감도</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0">높음 (3위 수입국)</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0">혼재 (수출국 포함)</td>
+    </tr>
+    <tr style="background:#fafafa">
+      <td style="padding:7px 10px;border:1px solid #e2e8f0">FII 동향</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#dc2626">순매도 120억 달러</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0">국가별 상이</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:1px solid #e2e8f0">포지셔닝 의견</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#b45309;font-weight:700">지켜보는 구간</td>
+      <td style="padding:7px 10px;text-align:center;border:1px solid #e2e8f0;color:#d97706;font-weight:700">선별적 접근</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style="font-size:12px;color:#64748b;border-left:3px solid #e2e8f0;padding-left:10px;margin-top:8px">
+  ※ 데이터 기준: 2026-03-20 종가. 인도 NIFTY50 일간 +0.49%(IT 반등 주도), 루피 93.49/달러. EM 신호는 EEM/VWO 대용 사용. 일본(Nikkei225)은 춘분절(국경일)로 휴장.
+</p>
+
+    </div>
+  </div>
+
+  <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
+  <div class="sector-grid">
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Energy</span>
+  </div>
+  <div class="sc-etf">XLE</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+8.07%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+35.54%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+36.30%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#16a34a">▲ +4.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +14.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +29.2%</span></div>
+    <div><span class="trend-label" style="color:#16a34a">단기·중기·장기 모두 상승</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Industrials</span>
+  </div>
+  <div class="sc-etf">XLI</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-8.78%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+4.98%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+6.38%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -3.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +3.9%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Consumer Staples</span>
+  </div>
+  <div class="sc-etf">XLP</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-7.51%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+3.48%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+3.94%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.6%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -3.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +1.2%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Utilities</span>
+  </div>
+  <div class="sc-etf">XLU</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-3.63%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+4.18%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+6.62%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -4.7%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#d97706">→ +0.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +3.6%</span></div>
+    <div><span class="trend-label" style="color:#eab308">단기 조정, 중기·장기 상승 유지</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Materials</span>
+  </div>
+  <div class="sc-etf">XLB</div>
+  <div class="tag-row"><span class="tag">대응: SC_KR_BATTERY</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-11.29%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+4.54%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+4.47%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -7.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -5.8%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +2.4%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="sector-card neutral200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Health Care</span>
+  </div>
+  <div class="sc-etf">XLV</div>
+  <div class="tag-row"><span class="tag">대응: SC_KR_BIO</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-7.33%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-5.17%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+6.79%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.3%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -6.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#d97706">→ +0.5%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="sector-card below200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Real Estate</span>
+  </div>
+  <div class="sc-etf">XLRE</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-6.82%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+1.37%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-1.20%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -3.2%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -1.6%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div>
+
+<div class="sector-card neutral200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Communication</span>
+  </div>
+  <div class="sc-etf">XLC</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-3.91%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-3.33%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-5.38%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -3.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -3.8%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#d97706">→ -0.5%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="sector-card below200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Technology</span>
+  </div>
+  <div class="sc-etf">XLK</div>
+  <div class="tag-row"><span class="tag">대응: SC_KR_SEMI</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-3.97%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-4.27%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-2.72%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -2.7%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -4.9%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -1.7%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div>
+
+<div class="sector-card below200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Financials</span>
+  </div>
+  <div class="sc-etf">XLF</div>
+  <div class="tag-row"><span class="tag">대응: SC_KR_FIN</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-6.50%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-9.70%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-8.91%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -2.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -7.0%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -6.7%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div>
+
+<div class="sector-card below200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Consumer Discr.</span>
+  </div>
+  <div class="sc-etf">XLY</div>
+  <div class="tag-row"></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-8.27%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-11.76%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-10.40%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -8.9%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -6.9%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div></div>
+
+  <div class="section-title">🇰🇷 한국 섹터 (TIGER ETF 10개)</div>
+  <div class="sector-grid">
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">반도체</span>
+  </div>
+  <div class="sc-etf">TIGER 반도체</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_TECH</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+13.41%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+85.16%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+156.49%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#16a34a">▲ +5.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +26.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +86.9%</span></div>
+    <div><span class="trend-label" style="color:#16a34a">단기·중기·장기 모두 상승</span></div>
+  </div>
+</div>
+
+<div class="sector-card neutral200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">의료기기</span>
+  </div>
+  <div class="sc-etf">TIGER 의료기기</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_HEALTH</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+0.20%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+0.72%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+1.23%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#d97706">→ +0.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#d97706">→ +0.3%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#d97706">→ +1.0%</span></div>
+    <div><span class="trend-label" style="color:#94a3b8">추세 혼조</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">헬스케어</span>
+  </div>
+  <div class="sc-etf">TIGER 헬스케어</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_HEALTH</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-1.80%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+4.01%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+32.16%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#d97706">→ +0.6%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +3.6%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +21.3%</span></div>
+    <div><span class="trend-label" style="color:#94a3b8">추세 혼조</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">금융</span>
+  </div>
+  <div class="sc-etf">TIGER 200 금융</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_FIN</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-7.13%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+32.36%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+36.88%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#d97706">→ -0.2%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +11.7%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +30.8%</span></div>
+    <div><span class="trend-label" style="color:#94a3b8">추세 혼조</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">은행</span>
+  </div>
+  <div class="sc-etf">TIGER 은행</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_FIN</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-8.17%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+24.69%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+32.64%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#d97706">→ -0.0%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +9.3%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +25.7%</span></div>
+    <div><span class="trend-label" style="color:#94a3b8">추세 혼조</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">철강소재</span>
+  </div>
+  <div class="sc-etf">TIGER 200 철강소재</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_MATL</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-3.15%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+12.81%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+29.64%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -3.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +3.7%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +20.9%</span></div>
+    <div><span class="trend-label" style="color:#eab308">단기 조정, 중기·장기 상승 유지</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">에너지화학</span>
+  </div>
+  <div class="sc-etf">TIGER 200 에너지화학</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_ENERGY</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-3.59%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+15.51%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+36.19%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -1.7%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +7.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +23.1%</span></div>
+    <div><span class="trend-label" style="color:#eab308">단기 조정, 중기·장기 상승 유지</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">건설</span>
+  </div>
+  <div class="sc-etf">TIGER 200 건설</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_INDU</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-8.13%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+25.02%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+33.49%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#d97706">→ +0.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +9.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +25.9%</span></div>
+    <div><span class="trend-label" style="color:#94a3b8">추세 혼조</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">산업재</span>
+  </div>
+  <div class="sc-etf">TIGER 200 산업재</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_INDU</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-6.94%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+9.81%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+15.42%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#16a34a">▲ +1.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +3.3%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +11.9%</span></div>
+    <div><span class="trend-label" style="color:#16a34a">단기·중기·장기 모두 상승</span></div>
+  </div>
+</div>
+
+<div class="sector-card above200">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">2차전지</span>
+  </div>
+  <div class="sc-etf">TIGER 2차전지테마</div>
+  <div class="tag-row"><span class="tag">대응: SC_US_MATL</span></div>
+  <div class="sc-metrics" style="margin-top:6px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-8.66%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+1.87%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+39.18%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -4.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +1.4%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +18.2%</span></div>
+    <div><span class="trend-label" style="color:#eab308">단기 조정, 중기·장기 상승 유지</span></div>
+  </div>
+</div></div>
+
+  <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
+  <div class="country-grid">
+<div class="country-card below200">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇺🇸</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">미국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(미국)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-3.96%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-2.37%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -3.9%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -5.2%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -1.7%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div>
+
+<div class="country-card above200">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇰🇷</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">한국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">국내주식형</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+41.33%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+74.42%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#16a34a">▲ +1.0%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#16a34a">▲ +13.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +46.7%</span></div>
+    <div><span class="trend-label" style="color:#16a34a">단기·중기·장기 모두 상승</span></div>
+  </div>
+</div>
+
+<div class="country-card above200">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇯🇵</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">일본</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(일본)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+6.39%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+21.75%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -4.2%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -1.2%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +13.1%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="country-card above200">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇨🇳</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">중국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(중국)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+1.74%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+3.40%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -3.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -2.9%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +3.4%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="country-card below200">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇪🇺</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">유럽</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(유럽)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-3.79%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+0.82%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.9%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -7.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -2.0%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div>
+
+<div class="country-card above200">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇬🇧</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">영국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(선진국)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+0.21%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+7.54%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -3.8%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +3.2%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div>
+
+<div class="country-card below200 focus">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇮🇳</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">인도</span><span class="focus-star">★ 오늘 주제</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(이머징)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-10.46%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-8.75%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -5.1%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -8.5%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#dc2626">▼ -8.6%</span></div>
+    <div><span class="trend-label" style="color:#dc2626">전 구간 하락 추세</span></div>
+  </div>
+</div>
+
+<div class="country-card above200 focus">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🌍</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">신흥국(EM)</span><span class="focus-star">★ 오늘 주제</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(이머징)</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+8.73%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+17.03%</span></div>
+  </div>
+  <div class="ma-block">
+    <div class="ma-row"><span class="ma-label">MA20</span><span class="ma-val" style="color:#dc2626">▼ -6.6%</span></div>
+    <div class="ma-row"><span class="ma-label">MA60</span><span class="ma-val" style="color:#dc2626">▼ -4.9%</span></div>
+    <div class="ma-row"><span class="ma-label">MA200</span><span class="ma-val" style="color:#16a34a">▲ +11.5%</span></div>
+    <div><span class="trend-label" style="color:#f97316">단기·중기 약세, 장기 지지선</span></div>
+  </div>
+</div></div>
+
+</div>
+
+<div class="footer">
+  Mirae Asset Securities · 섹터·국가 보고서 · 2026-03-20 (일간) · 데이터: history/market_data.csv
+</div>
+</body>
+</html>
