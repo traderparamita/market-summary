@@ -28,6 +28,17 @@ Load and follow `.claude/skills/sector-country/SKILL.md`.
 
 ---
 
+## Step 0 — Telegram 시작 알림
+
+사전 점검 통과 후 즉시 전송. 실패해도 계속 진행.
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  .venv/bin/python notify_telegram.py {date} --start --label "섹터·국가"
+```
+
+---
+
 ## Step 1 — Data Dashboard 생성 + 오늘의 주제 확인
 
 ```bash
@@ -223,6 +234,24 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 ## Step 6 — `_story.html` 저장
 
 경로: `output/sector-country/daily/YYYY-MM/{date}_story.html`
+
+---
+
+## Step 7 — Telegram 완료 알림
+
+Story 주입 성공 후 전송. 실패해도 계속.
+
+- `--focus`: Step 1에서 확인한 오늘의 주제 텍스트 (예: `"Day 6/15 — 소재·2차전지"`)
+- `--ow`: OW 섹터/국가 목록 (Step 2 결과 기반, 없으면 생략)
+- `--uw`: UW 섹터/국가 목록 (없으면 생략)
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  .venv/bin/python notify_telegram.py {date} --sc-complete \
+    --focus "Day N/15 — 오늘의 주제" \
+    --ow "XLK, 반도체" \
+    --uw "XLE"
+```
 
 ---
 

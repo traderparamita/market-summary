@@ -154,15 +154,69 @@ def send(message: str) -> bool:
         return False
 
 
+def build_start_message(date_str: str, label: str = "") -> str:
+    dt = datetime.date.fromisoformat(date_str)
+    weekday_ko = ["월", "화", "수", "목", "금", "토", "일"][dt.weekday()]
+    now = datetime.datetime.now().strftime("%H:%M")
+    title = f"{label} 보고서 생성 시작" if label else "보고서 생성 시작"
+    workflow = "데이터 수집 → Dashboard → Story → 배포" if not label else f"Dashboard → Tavily 검색 → Story 주입"
+    return (
+        f"⏳ *{date_str}({weekday_ko}) {title}*\n"
+        f"\n"
+        f"  시각: {now} KST\n"
+        f"  워크플로우: {workflow}\n"
+        f"\n"
+        f"_완료 시 결과 브리핑을 전송합니다._"
+    )
+
+
+def build_sc_complete_message(date_str: str, focus: str = "", ow_sectors: str = "", uw_sectors: str = "") -> str:
+    dt = datetime.date.fromisoformat(date_str)
+    weekday_ko = ["월", "화", "수", "목", "금", "토", "일"][dt.weekday()]
+    now = datetime.datetime.now().strftime("%H:%M")
+    year_month = date_str[:7]
+    sc_url = f"{GITHUB_PAGES}/sector-country/daily/{year_month}/{date_str}.html"
+
+    lines = [
+        f"✅ *{date_str}({weekday_ko}) 섹터·국가 보고서 완료*",
+        f"",
+        f"  완료 시각: {now} KST",
+    ]
+    if focus:
+        lines += [f"", f"*🎯 오늘의 주제*", f"  {focus}"]
+    if ow_sectors:
+        lines += [f"", f"*▲ OW*  {ow_sectors}"]
+    if uw_sectors:
+        lines += [f"*▼ UW*  {uw_sectors}"]
+    lines += [f"", f"🔗 [섹터·국가 보고서]({sc_url})"]
+    return "\n".join(lines)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("date", help="YYYY-MM-DD")
     parser.add_argument("--weekly", action="store_true", help="주간 마감일 여부")
     parser.add_argument("--monthly", action="store_true", help="월간 마감일 여부")
     parser.add_argument("--focus", default="", help="섹터·국가 오늘의 주제 텍스트")
+    parser.add_argument("--start", action="store_true", help="생성 시작 알림 전송")
+    parser.add_argument("--label", default="", help="시작 알림에 표시할 레이블 (예: '섹터·국가')")
+    parser.add_argument("--sc-complete", action="store_true", help="섹터·국가 보고서 완료 알림")
+    parser.add_argument("--ow", default="", help="OW 섹터/국가 목록 (--sc-complete용)")
+    parser.add_argument("--uw", default="", help="UW 섹터/국가 목록 (--sc-complete용)")
     args = parser.parse_args()
 
     date_str = args.date
+
+    if args.start:
+        message = build_start_message(date_str, args.label)
+        send(message)
+        return
+
+    if args.sc_complete:
+        message = build_sc_complete_message(date_str, args.focus, args.ow, args.uw)
+        send(message)
+        return
+
     year_month = date_str[:7]
     data_path = ROOT / "output" / "summary" / year_month / f"{date_str}_data.json"
 

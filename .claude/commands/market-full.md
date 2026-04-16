@@ -22,6 +22,15 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 1. 대상 날짜가 **오늘보다 미래가 아닌지 확인**. 미래면 즉시 중단하고 사용자에게 보고.
 2. 대상 날짜가 주말이거나 한국·미국 공휴일이면 사용자에게 "해당일 보고서를 생성할지" 확인.
 
+### Step 0: Telegram 시작 알림
+
+사전 점검 통과 후, 데이터 수집 전에 즉시 전송한다. 실패해도 워크플로우 계속.
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  .venv/bin/python notify_telegram.py $ARGUMENTS --start
+```
+
 ### Step 1~2: Data Dashboard 생성
 
 아래 명령 **하나만** 실행한다. 이 명령이 데이터 수집과 HTML 생성을 모두 처리한다.
@@ -164,6 +173,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 모든 단계 완료 후 Step별 실행 결과를 표 형식으로 보고:
 
 ```
+Step 0:    Telegram 시작   — ✅ 전송 / ⚠ 실패(계속)
 Step 1~2:  Data Dashboard  — ✅ 성공 / ❌ 실패 (이유)
 Step 3:    일간 Story       — ✅ 성공 / ❌ 실패
 Step 4:    주간 Dashboard   — ✅ 자동 갱신
