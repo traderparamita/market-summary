@@ -280,8 +280,12 @@ def main() -> None:
     print("=" * 52)
 
     ok = run_market_full(date_str)
-    metrics = load_metrics(date_str)
-    send_telegram(date_str, metrics, ok)
+
+    # 성공 시 Telegram은 Claude market-full Step 10(notify_telegram.py)이 담당.
+    # 실패 시에만 여기서 오류 알림 발송.
+    if not ok:
+        metrics = load_metrics(date_str)
+        send_telegram(date_str, metrics, ok)
 
 
 if __name__ == "__main__":
