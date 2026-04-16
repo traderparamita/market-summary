@@ -69,13 +69,19 @@ def run_simulation():
         # 2) 모듈 임포트 전에 OUTPUT_DIR과 HISTORY_CSV를 패치
         #    매번 fresh import를 위해 캐시 제거
         for mod_name in list(sys.modules.keys()):
-            if mod_name in ("generate", "generate_periodic"):
+            if mod_name in ("generate", "generate_periodic", "collect_market"):
                 del sys.modules[mod_name]
 
-        # generate 모듈 패치
+        # collect_market: HISTORY_CSV 패치 (수집 로직의 데이터 소스)
+        import collect_market
+        collect_market.HISTORY_CSV = tmp_csv
+
+        # generate: OUTPUT_DIR 패치 (HTML 출력 경로)
         import generate
         generate.OUTPUT_DIR = SIM_DIR
-        generate.HISTORY_CSV = tmp_csv
+        # generate.HISTORY_CSV는 collect_market에서 import한 심볼이므로
+        # collect_market 패치만으로 build_report_data가 tmp_csv를 읽음
+        generate.HISTORY_CSV = tmp_csv  # snowflake_loader 등 로컬 참조용
 
         import generate_periodic
         generate_periodic.OUTPUT_DIR = SIM_DIR
@@ -83,7 +89,7 @@ def run_simulation():
 
         # 3) 일간 보고서 생성 (fetch_data 건너뜀 — CSV 데이터 직접 사용)
         print(f"\n  [DAILY] Generating daily report...")
-        data = generate.build_report_data(sim_date)
+        data = collect_market.build_report_data(sim_date)
 
         month_dir = os.path.join(SIM_DIR, sim_date[:7])
         os.makedirs(month_dir, exist_ok=True)
