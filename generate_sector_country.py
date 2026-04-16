@@ -307,7 +307,6 @@ body {
 .header-title { font-size: 20px; font-weight: 700; }
 .header-sub   { font-size: 13px; color: #93c5fd; }
 .badge { padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
-.badge-regime { background: rgba(245,130,32,0.25); color: #F58220; }
 .main { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
 
 /* 오늘의 주제 배너 */
@@ -385,10 +384,6 @@ body {
 }
 .story-placeholder { color: var(--muted); font-style: italic; text-align: center; padding: 32px; }
 
-.regime-explain {
-  background: #fffbeb; border: 1px solid #fed7aa; border-radius: 8px;
-  padding: 10px 14px; font-size: 12px; color: #92400e; margin-bottom: 16px;
-}
 .footer {
   text-align: center; color: var(--muted); font-size: 11px;
   padding: 24px; margin-top: 32px; border-top: 1px solid var(--border);
@@ -442,10 +437,6 @@ def _sector_card_html(s: dict, is_focus: bool = False) -> str:
         etf_line += f' ({s["ticker"]})'
 
     tags = ""
-    if s.get("regime_favored"):
-        tags += '<span class="tag" style="background:#dcfce7;color:#166534">★ 국면 선호</span>'
-    if s.get("cycle_favored"):
-        tags += '<span class="tag" style="background:#dbeafe;color:#1e40af">● 사이클</span>'
     peer = s.get("us_peer") or s.get("kr_peer")
     if peer and not is_focus:
         tags += f'<span class="tag">대응: {peer}</span>'
@@ -493,7 +484,6 @@ def _country_card_html(c: dict, is_focus: bool = False) -> str:
   <div class="sc-metrics">
     <div class="sc-metric"><span class="mk">3개월</span>{_chg_span(c.get('mom_3m'))}</div>
     <div class="sc-metric"><span class="mk">6개월</span>{_chg_span(c.get('mom_6m'))}</div>
-    <div class="sc-metric"><span class="mk">매크로</span><span style="color:#64748b">{regime_kr}</span></div>
   </div>
 </div>"""
 
@@ -511,10 +501,6 @@ def _summary_cards_html(sv: dict, cv: dict) -> str:
     cycle_color = CYCLE_COLOR.get(cycle, "#64748b")
 
     return f"""
-<div class="regime-explain">
-  <strong>현재 시장 국면: {regime_kr}</strong> — {regime_desc}
-  &nbsp;|&nbsp; 경기 사이클: <span style="color:{cycle_color};font-weight:700">{cycle_kr}</span>
-</div>
 <div class="summary-cards">
   <div class="summary-card">
     <div class="num" style="color:#16a34a">{us_ow}</div>
@@ -527,10 +513,6 @@ def _summary_cards_html(sv: dict, cv: dict) -> str:
   <div class="summary-card">
     <div class="num" style="color:#16a34a">{country_ow}</div>
     <div class="label">국가 OW</div>
-  </div>
-  <div class="summary-card">
-    <div class="num" style="color:{cycle_color}">{cycle_kr}</div>
-    <div class="label">경기 사이클</div>
   </div>
 </div>"""
 
@@ -589,8 +571,6 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     <div class="header-title">🌐 섹터·국가 보고서</div>
     <div class="header-sub">{date_str} ({period_label})</div>
   </div>
-  <span class="badge badge-regime">{regime_kr}</span>
-  <span class="badge" style="background:{cycle_color}33;color:{cycle_color}">{cycle_kr}</span>
   <span style="margin-left:auto;font-size:11px;color:#93c5fd">생성: {generated_at}</span>
 </div>
 
