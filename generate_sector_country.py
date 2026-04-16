@@ -579,15 +579,6 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
   {banner}
   {summary}
 
-  <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
-  <div class="sector-grid">{us_cards}</div>
-
-  <div class="section-title">🇰🇷 한국 섹터 (TIGER ETF 10개)</div>
-  <div class="sector-grid">{kr_cards}</div>
-
-  <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
-  <div class="country-grid">{country_cards}</div>
-
   <div class="story-section" id="story-section">
     <h2>📰 오늘의 심층 분석 — {focus["theme"]}</h2>
     {STORY_PLACEHOLDER}
@@ -596,6 +587,15 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
       {focus_hint}
     </div>
   </div>
+
+  <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
+  <div class="sector-grid">{us_cards}</div>
+
+  <div class="section-title">🇰🇷 한국 섹터 (TIGER ETF 10개)</div>
+  <div class="sector-grid">{kr_cards}</div>
+
+  <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
+  <div class="country-grid">{country_cards}</div>
 
 </div>
 
