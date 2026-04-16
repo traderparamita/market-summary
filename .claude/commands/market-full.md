@@ -28,8 +28,9 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py $ARGUMENTS
 ```
 
+- `generate.py`는 HTML 생성 전용. 실제 **데이터 수집은 `collect_market.py`** 가 담당 (`from collect_market import fetch_data, build_report_data, ...`).
 - 이 명령 하나로 일간 데이터 수집 + 일간 HTML + 주간·월간 HTML 자동 갱신까지 수행된다.
-- 실패 시 재시도 또는 사용자에게 보고 후 중단.
+- 실패 시 `collect_market.py` 로그 확인 후 재시도 또는 사용자에게 보고 후 중단.
 
 ### Step 3: 일간 Market Story 작성
 
