@@ -37,22 +37,22 @@ TARGETS: list[tuple[str, str, str, str]] = [
     ("SC_US_MATL",    "XLB",       "sector_us", "SPDR Matl"),
     ("SC_US_REIT",    "XLRE",      "sector_us", "SPDR REIT"),    # since 2015
     ("SC_US_COMM",    "XLC",       "sector_us", "SPDR Comm"),    # since 2018
-    # ── KR 섹터 ETF (기존) ─────────────────────────────────────────
-    ("SC_KR_SEMI",      "091160.KS", "sector_kr", "KODEX 반도체"),
-    ("SC_KR_FIN",       "139270.KS", "sector_kr", "KODEX 금융"),
-    ("SC_KR_BIO",       "244580.KS", "sector_kr", "KODEX 바이오"),
-    ("SC_KR_BATTERY",   "305720.KS", "sector_kr", "KODEX 2차전지"),
-    # ── KR 섹터 ETF (신규 — 2010년 이후 상장) ──────────────────────
-    ("SC_KR_AUTO",      "091180.KS", "sector_kr", "KODEX 자동차"),       # 2006~
-    ("SC_KR_CONSTR",    "091170.KS", "sector_kr", "KODEX 건설"),         # 2006~
-    ("SC_KR_ENERGY",    "117460.KS", "sector_kr", "KODEX 에너지화학"),    # 2009~
-    ("SC_KR_STEEL",     "117680.KS", "sector_kr", "KODEX 철강"),         # 2009~
-    ("SC_KR_BANK",      "091220.KS", "sector_kr", "KODEX 은행"),         # 2009~
-    ("SC_KR_TELECOM",   "098560.KS", "sector_kr", "KODEX 통신"),         # 2010~
-    ("SC_KR_INSUR",     "140700.KS", "sector_kr", "KODEX 보험"),         # 2011~
-    ("SC_KR_HEALTH",    "130730.KS", "sector_kr", "KODEX 헬스케어"),      # 2011~
-    ("SC_KR_TRANSPORT", "140710.KS", "sector_kr", "KODEX 운송"),         # 2011~
-    ("SC_KR_MEDIA",     "108590.KS", "sector_kr", "KODEX 미디어&엔터"),   # 2011~
+    # ── KR 섹터 ETF (collect_market.py TIGER 기준과 통일) ──────────
+    ("SC_KR_SEMI",      "277630.KS", "sector_kr", "TIGER 반도체"),        # 2009~
+    ("SC_KR_FIN",       "435420.KS", "sector_kr", "TIGER 200 금융"),      # 2021~
+    ("SC_KR_BIO",       "166400.KS", "sector_kr", "TIGER 헬스케어"),       # 2013~
+    ("SC_KR_BATTERY",   "137610.KS", "sector_kr", "TIGER 2차전지테마"),    # 2018~
+    ("SC_KR_BANK",      "261140.KS", "sector_kr", "TIGER 은행"),           # 2016~
+    ("SC_KR_ENERGY",    "472170.KS", "sector_kr", "TIGER 200 에너지화학"), # 2022~
+    ("SC_KR_STEEL",     "494840.KS", "sector_kr", "TIGER 200 철강소재"),   # 2022~
+    ("SC_KR_HEALTH",    "400970.KS", "sector_kr", "TIGER 의료기기"),        # 2021~
+    ("SC_KR_CONSTR",    "139270.KS", "sector_kr", "TIGER 200 건설"),       # 2011~
+    # ── KR 기타 섹터 ETF (참조용, sector_country에 미사용) ───────────
+    ("SC_KR_AUTO",      "091180.KS", "sector_kr", "KODEX 자동차"),         # 2006~
+    ("SC_KR_TELECOM",   "098560.KS", "sector_kr", "KODEX 통신"),           # 2010~
+    ("SC_KR_INSUR",     "140700.KS", "sector_kr", "KODEX 보험"),           # 2011~
+    ("SC_KR_TRANSPORT", "140710.KS", "sector_kr", "KODEX 운송"),           # 2011~
+    ("SC_KR_MEDIA",     "108590.KS", "sector_kr", "KODEX 미디어&엔터"),    # 2011~
     ("SC_KR_HEAVY",     "157490.KS", "sector_kr", "TIGER 200 중공업"),   # 2012~
     ("SC_KR_DEFENSE",   "174360.KS", "sector_kr", "TIGER 경기방어"),      # 2013~
     ("SC_KR_DISCR",     "227540.KS", "sector_kr", "TIGER 200 경기소비재"), # 2017~
