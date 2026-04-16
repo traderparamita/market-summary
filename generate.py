@@ -677,7 +677,7 @@ def generate_index():
     weekly_by_month = {}
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*.html")), reverse=True):
         fname = os.path.basename(path)
-        if fname.endswith("_story.html"):
+        if "_story" in fname or "_macro" in fname:
             continue
         week_label = fname.replace(".html", "")  # e.g. "2026-W02"
 
