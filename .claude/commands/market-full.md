@@ -107,7 +107,31 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 4. `output/summary/monthly/YYYY-MM.html`의 `tab-macro` 블록에 주입
 5. `YYYY-MM_macro.html` 저장 확인
 
-### Step 8: Git Commit + Push
+### Step 8: Sector-Country Data Dashboard + Story (매 영업일)
+
+**매 영업일 무조건 실행**한다 (조건 없음).
+
+#### 8-A: Data Dashboard 생성
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate_sector_country.py $ARGUMENTS
+```
+
+- 실패 시 경고 로그 후 **계속 진행** (Step 9 중단 없음).
+
+#### 8-B: Sector-Country Story 작성
+
+`sector-country` **스킬**의 작성 절차를 따른다.
+
+핵심:
+1. `get_focus(date)` 결과로 오늘의 2개 주제(섹터 페어 또는 국가 페어) 확인
+2. 주제별 Tavily 검색 (최근 1~2주 트렌드 맥락)
+3. Story 작성 후 `output/sector-country/daily/YYYY-MM/YYYY-MM-DD.html`에 주입
+4. `YYYY-MM-DD_story.html` 저장 확인
+
+**이 단계는 선택적이다.** 실패하거나 시간이 과도하게 걸리면 경고 후 Step 9로 넘어간다. Story 없이 Data Dashboard만 있어도 배포는 정상 진행한다.
+
+### Step 9: Git Commit + Push
 
 변경된 모든 보고서를 커밋·푸시한다. `/market-deploy` 커맨드와 동일한 규칙 적용:
 
@@ -119,7 +143,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 
 모든 단계 완료 후 한 번에 요약:
 
-- 생성·갱신된 보고서 목록 (일간/주간/월간)
+- 생성·갱신된 보고서 목록 (일간/주간/월간 + sector-country)
 - 스킵한 단계 (있다면 이유 명시)
 - 커밋 해시와 푸시 결과
 - 다음 영업일 실행 권장 시각
@@ -128,4 +152,6 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 
 - Step 1~2 실패: 즉시 중단
 - Step 3/5/7 훅 block: 사유 읽고 수정 재시도 (2회까지), 계속 실패 시 사용자에게 보고
-- Step 8 git 실패: 중단하고 사용자에게 상태 보고
+- Step 8-A 실패: 경고 후 계속 진행
+- Step 8-B 실패: 경고 후 계속 진행
+- Step 9 git 실패: 중단하고 사용자에게 상태 보고
