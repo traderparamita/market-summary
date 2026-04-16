@@ -71,18 +71,22 @@ model = hmm.GaussianHMM(n_components=3, covariance_type='full', n_iter=100)
 # → P(regime | 현재 지표) 확률 벡터 반환
 ```
 
-### 1.4 데이터 수집 확장 (`portfolio/collect_extended.py` 신규)
+### 1.4 데이터 수집 확장 (`portfolio/macro_indicators.yaml`에 통합 완료)
+
+> `collect_extended.py`는 삭제되었고 모든 지표는 `macro_indicators.yaml`에 흡수됨.
+> `python -m portfolio.collect_macro` 단일 명령으로 수집.
 
 | 데이터 | 소스 | INDICATOR_CODE | 활용 뷰 |
 |--------|------|----------------|---------|
-| HY Credit Spread | FRED: BAMLH0A0HYM2 | CREDIT_HY_SPREAD | Regime, Bond, Allocation |
-| TED Spread | FRED: TEDRATE | CREDIT_TED | Regime, Bond |
-| MOVE Index | FRED: MOVE | BOND_MOVE_VOL | Bond, Style |
-| US Mfg PMI | FRED: MANEMP → ISM대체 | MACRO_US_PMI_MFG | Macro, Regime |
+| HY Credit Spread | FRED: BAMLH0A0HYM2 | US_HY_SPREAD | Regime, Bond, Allocation |
+| TED Spread | FRED: TEDRATE | CREDIT_TED_SPREAD | Regime, Bond |
+| MOVE Index | FRED: MOVE | BOND_MOVE_INDEX | Bond, Style |
 | Real Yield (10Y) | FRED: DFII10 | BOND_REAL_YIELD_10Y | Bond, Allocation |
-| Term Premium | FRED: ACMTP10 | BOND_TERM_PREM | Bond, Regime |
-| CFTC Net Position | CFTC (주간 COT) | CFTC_SPX_NET | Country, Style |
-| Fed Balance Sheet | FRED: WALCL | MACRO_FED_BS | Macro, Regime |
+| Term Premium | FRED: ACMTP10 | BOND_TERM_PREMIUM | Bond, Regime |
+| Consumer Sentiment | FRED: UMCSENT | MACRO_US_CONSUMER_SENT | Macro, Regime |
+| JOLTS | FRED: JTSJOL | MACRO_US_JOLTS | Macro |
+| Industrial Production | FRED: INDPRO | MACRO_US_INDPRO | Macro |
+| Retail Sales | FRED: RSXFS | MACRO_US_RETAIL_SALES | Macro |
 
 ---
 
@@ -744,7 +748,7 @@ def estimate_expected_returns(scoring_df, prices_df, macro_df):
 |------|------|---------|
 | 백테스트 신호 검증 함수 | `portfolio/backtest_signals.py` | ★★★ |
 | Walk-Forward 엔진 | `portfolio/walk_forward.py` | ★★★ |
-| FRED 데이터 확장 수집 | `portfolio/collect_extended.py` | ★★★ |
+| FRED 데이터 확장 수집 | `portfolio/macro_indicators.yaml` (통합 완료 ✅) | ★★★ |
 | HMM 레짐 분류기 | `portfolio/view/regime_classifier.py` | ★★☆ |
 
 ```bash

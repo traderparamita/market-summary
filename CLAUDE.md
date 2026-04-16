@@ -24,7 +24,8 @@ Market Story 작성 규칙·절차는 **`market-summary` 스킬**에 있다 (Sto
 ## 구조
 
 ```
-generate.py          # 핵심 엔진 - 데이터 수집 + HTML 보고서 생성 + Snowflake dual-write
+collect_market.py    # 시장 데이터 수집 전용 - TICKERS/INDICATOR_CODES + fetch_data/build_report_data
+generate.py          # HTML 보고서 생성 전용 - collect_market에서 수집 함수 import + Snowflake dual-write
 generate_periodic.py # 주간/월간 집계 보고서 생성
 snowflake_loader.py  # CSV ↔ Snowflake MKT100_MARKET_DAILY 적재 유틸 (bulk / upsert)
 simulate.py          # 과거 날짜 시뮬레이션
@@ -34,6 +35,7 @@ history/market_data.csv       # 일별 시계열 (10컬럼 대문자, Snowflake 
 history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
 
 portfolio/
+├── io.py            # CSV 공통 유틸 - load_csv_dedup(), append_save_csv()
 ├── aimvp/           # Portfolio Agent (AIMVP RiskOn 전략)
 │   ├── generate.py      # 백테스트 HTML 생성
 │   ├── backfill.py      # 장기 히스토리 백필 (2010~)
@@ -55,8 +57,9 @@ portfolio/
 │   ├── bond_view.py        # [P2] 채권 커브·크레딧·ALM 포지셔닝
 │   ├── style_view.py       # [P2] 팩터 로테이션 (Growth/Value/Quality/Momentum/LowVol)
 │   └── allocation_view.py  # [P2] 변액보험 펀드 배분안 (K-ICS 체크, KR+US 2-패널)
-├── collect_macro.py     # 거시지표 수집 (FRED/ECOS)
-├── macro_indicators.yaml # 거시지표 정의
+├── collect_macro.py     # 거시지표 수집 (FRED/ECOS) — macro_indicators.yaml 정의 기반
+├── collect_sector_etfs.py # 섹터/스타일/채권 ETF 72개 이력 수집 (yfinance)
+├── macro_indicators.yaml # 거시지표 정의 (FRED/ECOS 지표 + 확장 지표 통합)
 ├── backtest.py      # 공통 백테스트 엔진
 ├── universe.yaml    # 자산 유니버스
 └── strategies/      # 전략 YAML
@@ -67,7 +70,7 @@ portfolio/
 DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
 ```
 
-- `INDICATOR_CODE`: MKT000_MARKET_INDICATOR 의 `지표코드` (EQ_KOSPI, BD_US_10Y, ...). `generate.py` 상단 `INDICATOR_CODES` dict 로 `(category, ticker) → 지표코드` 매핑.
+- `INDICATOR_CODE`: MKT000_MARKET_INDICATOR 의 `지표코드` (EQ_KOSPI, BD_US_10Y, ...). `collect_market.py` 상단 `INDICATOR_CODES` dict 로 `(category, ticker) → 지표코드` 매핑.
 - `SOURCE`: 실제 수집 승자 (`yfinance` / `investiny` / `FDR` / `ECOS`)
 - KR bond 행은 OHLCV 전부 NULL (ECOS 는 금리만)
 - FX/risk 행은 VOLUME NULL (시장 특성)

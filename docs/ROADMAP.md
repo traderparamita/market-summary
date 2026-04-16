@@ -180,7 +180,7 @@ python -m portfolio.view.regime_view --date 2026-04-09 --html
 #### 데이터 확장
 
 **시장 데이터 확장**
-- ✅ `generate.py` TICKERS/INDICATOR_CODES 확장
+- ✅ `collect_market.py` TICKERS/INDICATOR_CODES 확장
   - **US 섹터 ETF 11개**: XLK / XLF / XLE / XLV / XLI / XLY / XLP / XLU / XLB / XLRE / XLC
   - **스타일 ETF 5개**: IVW(Growth) / IVE(Value) / QUAL(Quality) / MTUM(Momentum) / USMV(LowVol)
   - **채권 3개**: SHY / IEI / TIP
@@ -449,7 +449,8 @@ python -m portfolio.view.allocation_view --date 2026-04-09 --html
 
 ```
 market_summary/
-├── generate.py                   # 일일 데이터 수집 + HTML 보고서 생성
+├── collect_market.py              # 시장 데이터 수집 전용 (TICKERS/INDICATOR_CODES + fetch/build)
+├── generate.py                   # HTML 보고서 생성 전용 (collect_market에서 수집 함수 import)
 ├── generate_periodic.py          # 주간/월간 집계 보고서
 ├── inject_stories.py             # Story 주입 유틸
 ├── snowflake_loader.py           # CSV ↔ Snowflake 적재 유틸
@@ -457,10 +458,12 @@ market_summary/
 │   ├── market_data.csv           # ✅ 시장 가격 시계열 (56개 지표, 일별)
 │   └── macro_indicators.csv      # ✅ 거시지표 시계열 (37개 지표, 14,206행)
 ├── portfolio/
+│   ├── io.py                     # ✅ CSV 공통 유틸 (load_csv_dedup, append_save_csv)
 │   ├── universe.yaml             # ✅ 자산 유니버스 정의
 │   ├── backtest.py               # ✅ 공통 백테스트 엔진
-│   ├── macro_indicators.yaml     # ✅ 37개 거시지표 정의
-│   ├── collect_macro.py          # ✅ FRED + ECOS 수집기
+│   ├── macro_indicators.yaml     # ✅ 거시지표 정의 (FRED/ECOS + 확장 지표 통합)
+│   ├── collect_macro.py          # ✅ FRED + ECOS 수집기 (macro_indicators.yaml 기반)
+│   ├── collect_sector_etfs.py    # ✅ 섹터/스타일/채권 ETF 이력 수집 (yfinance)
 │   ├── aimvp/                    # ✅ AIMVP RiskOn 전략
 │   │   ├── generate.py
 │   │   ├── backfill.py
