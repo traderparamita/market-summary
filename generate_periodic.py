@@ -673,6 +673,49 @@ new Chart(document.getElementById('cmChart'),{{
     return html
 
 
+def _save_story_file(html_path, html_content):
+    """HTML에서 Story 콘텐츠를 추출하여 _story.html 파일로 저장"""
+    m = re.search(
+        r'<div id="tab-story" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
+        html_content, re.DOTALL)
+    if not m:
+        return
+    story = m.group(1).strip()
+    if not story or "STORY_CONTENT_PLACEHOLDER" in story:
+        return
+    base, ext = os.path.splitext(html_path)
+    story_path = f"{base}_story{ext}"
+    with open(story_path, "w") as f:
+        f.write(story)
+    print(f"  Story saved: {os.path.basename(story_path)}")
+
+
+def _inject_existing_story(path, new_html):
+    """기존 파일에 Story가 있으면 새 HTML의 placeholder에 주입 + _story.html 저장"""
+    old_story = ""
+    if os.path.exists(path):
+        with open(path) as f:
+            old_content = f.read()
+        m = re.search(
+            r'<div id="tab-story" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
+            old_content, re.DOTALL)
+        if m:
+            candidate = m.group(1).strip()
+            if candidate and "STORY_CONTENT_PLACEHOLDER" not in candidate:
+                old_story = candidate
+        if not old_story:
+            base, ext = os.path.splitext(path)
+            sib_path = f"{base}_story{ext}"
+            if os.path.exists(sib_path):
+                with open(sib_path) as f:
+                    sib_story = f.read().strip()
+                if sib_story and "STORY_CONTENT_PLACEHOLDER" not in sib_story:
+                    old_story = sib_story
+    if old_story:
+        new_html = new_html.replace("<!-- STORY_CONTENT_PLACEHOLDER -->", old_story)
+    return new_html
+
+
 def _save_macro_file(html_path, html_content):
     """HTML에서 Macro & Events 콘텐츠를 추출하여 _macro.html 파일로 저장"""
     m = re.search(
@@ -713,9 +756,12 @@ def _inject_existing_macro(path, new_html):
                     old_macro = sib_macro
     if old_macro:
         new_html = new_html.replace("<!-- MACRO_EVENTS_PLACEHOLDER -->", old_macro)
+    # story도 보존
+    new_html = _inject_existing_story(path, new_html)
     with open(path, "w") as f:
         f.write(new_html)
     _save_macro_file(path, new_html)
+    _save_story_file(path, new_html)
 
 
 def generate_weekly_reports(year=2026):
