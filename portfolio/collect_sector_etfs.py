@@ -17,6 +17,8 @@ from pathlib import Path
 import pandas as pd
 import yfinance as yf
 
+from portfolio.io import load_csv_dedup, append_save_csv
+
 ROOT = Path(__file__).resolve().parent.parent
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
@@ -72,12 +74,6 @@ TARGETS: list[tuple[str, str, str, str]] = [
 ]
 
 
-def load_existing(csv_path: Path) -> pd.DataFrame:
-    df = pd.read_csv(csv_path, parse_dates=["DATE"])
-    df.columns = df.columns.str.upper()
-    return df
-
-
 def fetch_yfinance(ticker: str, start: str, end: str) -> pd.DataFrame | None:
     """yfinance에서 OHLCV 수집."""
     try:
@@ -107,9 +103,10 @@ def collect_sector_etfs(
     targets: list | None = None,
 ) -> int:
     """백필 수집. 추가된 행 수 반환."""
-    existing = load_existing(MARKET_CSV)
-    existing_set = set(
-        zip(existing["DATE"].dt.strftime("%Y-%m-%d"), existing["INDICATOR_CODE"])
+    market_cols = ["DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
+                   "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE"]
+    existing, existing_set = load_csv_dedup(
+        MARKET_CSV, market_cols, parse_dates=True,
     )
 
     new_rows: list[dict] = []
@@ -148,13 +145,12 @@ def collect_sector_etfs(
         print(f"{added}행 추가")
         time.sleep(0.3)
 
-    if new_rows:
-        df_new = pd.DataFrame(new_rows)
-        df_all = pd.concat([existing, df_new], ignore_index=True)
-        df_all["DATE"] = pd.to_datetime(df_all["DATE"])
-        df_all = df_all.sort_values(["INDICATOR_CODE", "DATE"]).reset_index(drop=True)
-        df_all.to_csv(MARKET_CSV, index=False, date_format="%Y-%m-%d")
-        print(f"\n  → market_data.csv 업데이트: {len(new_rows)}행 추가")
+    n = append_save_csv(
+        MARKET_CSV, existing, new_rows,
+        sort_cols=("INDICATOR_CODE", "DATE"),
+    )
+    if n:
+        print(f"\n  → market_data.csv 업데이트: {n}행 추가")
     else:
         print("\n  → 신규 데이터 없음")
 

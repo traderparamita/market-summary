@@ -19,6 +19,8 @@ import requests
 import yaml
 from dotenv import load_dotenv
 
+from portfolio.io import load_csv_dedup, append_save_csv
+
 # Load environment
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -220,15 +222,8 @@ def main():
 
     indicators = load_indicators()
 
-    # Load existing CSV to find dates already present
-    existing = pd.DataFrame(columns=CSV_COLUMNS)
-    if HISTORY_CSV.exists():
-        existing = pd.read_csv(HISTORY_CSV)
-        existing_keys = set(zip(existing["DATE"], existing["INDICATOR_CODE"]))
-        print(f"Existing CSV: {len(existing)} rows")
-    else:
-        existing_keys = set()
-        print("Creating new CSV")
+    existing, existing_keys = load_csv_dedup(HISTORY_CSV, CSV_COLUMNS)
+    print(f"Existing CSV: {len(existing)} rows" if not existing.empty else "Creating new CSV")
 
     all_new = []
     for code, info in indicators.items():
@@ -236,9 +231,8 @@ def main():
         if df.empty:
             continue
 
-        # Filter out dates already in CSV
         before = len(df)
-        df = df[~df.apply(lambda r: (r["DATE"], r["INDICATOR_CODE"]) in existing_keys, axis=1)]
+        df = df[~df.apply(lambda r: (str(r["DATE"]), r["INDICATOR_CODE"]) in existing_keys, axis=1)]
         print(f"    Fetched {before} rows, {len(df)} new")
         all_new.append(df)
 
@@ -249,21 +243,8 @@ def main():
     new_df = pd.concat(all_new, ignore_index=True)
     print(f"\nTotal new rows: {len(new_df)}")
 
-    # Append to CSV
-    if HISTORY_CSV.exists():
-        new_df.to_csv(HISTORY_CSV, mode="a", header=False, index=False)
-    else:
-        new_df.to_csv(HISTORY_CSV, index=False)
-
-    total = len(existing) + len(new_df)
-    print(f"CSV updated: {total} total rows")
-
-    # Sort CSV by DATE, INDICATOR_CODE
-    print("Sorting CSV ...")
-    full = pd.read_csv(HISTORY_CSV)
-    full = full.sort_values(["DATE", "INDICATOR_CODE"]).reset_index(drop=True)
-    full.to_csv(HISTORY_CSV, index=False)
-    print(f"CSV sorted: {len(full)} rows")
+    n = append_save_csv(HISTORY_CSV, existing, new_df)
+    print(f"CSV updated: {len(existing) + n} total rows")
 
     # Snowflake upload (TODO)
     if args.snowflake:
