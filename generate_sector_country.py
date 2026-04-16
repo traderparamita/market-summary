@@ -770,8 +770,33 @@ def _update_index_link(date_str: str, period: str, out_path: Path) -> None:
         index_path.write_text(updated, encoding="utf-8")
 
 
+def _extract_existing_story(html_path: Path) -> str | None:
+    """기존 HTML에서 story 블록 추출. 없으면 None."""
+    if not html_path.exists():
+        return None
+    # _story.html 파일 우선
+    story_path = html_path.with_name(html_path.stem + "_story.html")
+    if story_path.exists():
+        return story_path.read_text(encoding="utf-8")
+    # HTML 내 인라인 story 추출
+    content = html_path.read_text(encoding="utf-8")
+    if STORY_PLACEHOLDER in content:
+        return None  # placeholder 그대로 → story 없음
+    import re
+    m = re.search(r'(<!-- STORY_START -->.*?<!-- STORY_END -->)', content, re.DOTALL)
+    if m:
+        return m.group(1)
+    return None
+
+
+def _save_story_file(html_path: Path, story_html: str) -> None:
+    """story HTML을 _story.html 파일로 저장."""
+    story_path = html_path.with_name(html_path.stem + "_story.html")
+    story_path.write_text(story_html, encoding="utf-8")
+
+
 def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
-    """Data Dashboard HTML 생성 → (파일경로, focus) 반환."""
+    """Data Dashboard HTML 생성 → (파일경로, focus) 반환. 기존 story 자동 보존."""
     sv = compute_sector_view(date_str)
     cv = compute_country_view(date_str)
     focus = get_focus(date_str)
@@ -785,7 +810,15 @@ def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
 
     out = _out_path(date_str, period)
     out.parent.mkdir(parents=True, exist_ok=True)
+
+    # 기존 story 보존
+    existing_story = _extract_existing_story(out)
+
     out.write_text(html, encoding="utf-8")
+
+    if existing_story:
+        inject_story(str(out), existing_story)
+        _save_story_file(out, existing_story)
 
     _update_index_link(date_str, period, out)
 
