@@ -40,17 +40,32 @@
 
 ---
 
-## 데이터 수집 및 CSV 저장
+## 공통 작성 절차 (주간 / 월간 동일)
 
-Macro & Events 탭 작성 전 반드시 `collect_macro`를 실행해 `history/macro_indicators.csv`를 최신 상태로 업데이트한다.
+### 주간 vs 월간 차이
+
+| | 주간 | 월간 |
+|---|---|---|
+| 날짜 범위 | ISO 주차 월~금 (`{WEEK_START}` ~ `{WEEK_END}`) | 해당 월 1일~말일 (`{YYYY}-{MM}`) |
+| CSV grep 패턴 | `^{WEEK_START}` ~ `^{WEEK_END}` | `^{YYYY}-{MM}` |
+| 검색 키워드 | "이번 주 {WEEK_START}~{WEEK_END}" | "YYYY년 MM월" |
+| 리뷰 제목 | 이번 주 주요 이벤트 리뷰 (날짜 범위) | 이번 달 주요 이벤트 리뷰 (YYYY년 MM월) |
+| 캘린더 제목 | 다음 주 주목할 이벤트 (날짜 범위) | 다음 달 주목할 이벤트 (YYYY년 MM+1월) |
+| 출력 파일 | `YYYY-WNN.html` + `YYYY-WNN_macro.html` | `YYYY-MM.html` + `YYYY-MM_macro.html` |
+
+---
+
+### Step 0 — 사전 준비: macro_indicators.csv 최신화
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary
 .venv/bin/python -m portfolio.collect_macro
 ```
 
-이 명령 하나로 FRED + ECOS에서 최신 데이터를 가져와 CSV에 자동 저장된다.
-수집 후 저장되는 주요 지표 (월간 발표 기준):
+수집 확인: 출력 결과에서 각 지표의 날짜 범위가 최신인지 확인.
+예: `US_CPI_YOY: 2011-01-01 ~ 2026-03-01` → 3월 데이터 수집 완료.
+
+주요 수집 지표:
 
 | 지표코드 | 설명 | 소스 |
 |---------|------|------|
@@ -65,85 +80,44 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary
 | KR_BASE_RATE | 한국 기준금리 | ECOS |
 | EU_POLICY_RATE | 유럽 ECB 예금금리 | FRED ECBDFR |
 
-**수집 확인 방법**: 실행 결과의 각 지표 뒤 날짜 범위가 최신인지 확인.
-예: `US_CPI_YOY: 2011-01-01 ~ 2026-03-01` → 3월 데이터 수집 완료.
-
-수집 후 CSV에서 이번 주/달 데이터를 직접 조회해 HTML 카드에 넣는다 (아래 Step 2).
-
 ---
 
-## 주간 작성 절차
+### Step 1 — 날짜 범위 확인
 
-### Step 1 — 이번 주 날짜 범위 확인
-
-이번 주 ISO 주차의 월~금 날짜 범위를 파악한다.
-예: 2026-W16 → 4/13(월) ~ 4/17(금)
+대상 기간의 시작일·종료일을 파악한다.
+예: 2026-W16 → `{WEEK_START}` = 2026-04-13, `{WEEK_END}` = 2026-04-17
 
 ### Step 2 — macro_indicators.csv 조회
 
 ```bash
-grep "^2026-04-1[3-9]\|^2026-04-2[0-5]" /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/macro_indicators.csv | sort
+grep "^{DATE_PATTERN}" history/macro_indicators.csv | sort
 ```
 
-(날짜 범위를 실제 이번 주에 맞게 조정)
+`{DATE_PATTERN}` 예시:
+- 주간: `"^2026-04-1[3-7]"` (월~금 범위)
+- 월간: `"^2026-04"`
 
-### Step 3 — Tavily 웹 검색: 이번 주 주요 이벤트
-
-```
-mcp__tavily__search: "이번 주 주요 경제지표 발표 결과 [날짜범위] CPI FOMC NFP"
-mcp__tavily__search: "[날짜범위] economic data releases results"
-```
-
-### Step 4 — Tavily 웹 검색: 다음 주 캘린더
+### Step 3 — Tavily 검색: 이번 기간 주요 이벤트
 
 ```
-mcp__tavily__search: "다음 주 경제지표 캘린더 [다음주 날짜범위]"
-mcp__tavily__search: "next week economic calendar [next week range]"
+mcp__tavily__search: "이번 {주/달} 주요 경제지표 발표 결과 {날짜범위} CPI FOMC NFP"
+mcp__tavily__search: "{날짜범위} economic data releases results"
 ```
 
-### Step 5 — HTML 작성 → 보고서 주입
-
-`output/summary/weekly/YYYY-WNN.html`의 `tab-macro` 블록 Edit (아래 주입 방법 참조)
-
-### Step 6 — `YYYY-WNN_macro.html` 저장
-
----
-
-## 월간 작성 절차
-
-### Step 1 — 이번 달 날짜 범위 확인
-
-해당 월 전체 (YYYY-MM-01 ~ YYYY-MM-말일)
-
-### Step 2 — macro_indicators.csv 조회
-
-```bash
-grep "^2026-04" /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/macro_indicators.csv | sort
-```
-
-(월을 실제 해당 월로 교체)
-
-### Step 3 — Tavily 웹 검색: 이번 달 주요 이벤트
+### Step 4 — Tavily 검색: 다음 기간 캘린더
 
 ```
-mcp__tavily__search: "YYYY년 MM월 주요 경제지표 결과 CPI FOMC GDP NFP"
-mcp__tavily__search: "YYYY MM economic highlights monthly recap"
-```
-
-이번 달 발표된 핵심 이벤트(FOMC, CPI, NFP, GDP 등) 위주로 수집. 너무 세세한 지표는 생략.
-
-### Step 4 — Tavily 웹 검색: 다음 달 캘린더
-
-```
-mcp__tavily__search: "YYYY년 MM+1월 경제지표 캘린더 주요 일정"
-mcp__tavily__search: "next month economic calendar YYYY MM+1"
+mcp__tavily__search: "다음 {주/달} 경제지표 캘린더 {다음 기간 날짜범위}"
+mcp__tavily__search: "next {week/month} economic calendar {next period range}"
 ```
 
 ### Step 5 — HTML 작성 → 보고서 주입
 
-`output/summary/monthly/YYYY-MM.html`의 `tab-macro` 블록 Edit (아래 주입 방법 참조)
+아래 "보고서 주입 방법" 참조.
 
-### Step 6 — `YYYY-MM_macro.html` 저장
+### Step 6 — `_macro.html` 저장
+
+`output/summary/{weekly or monthly}/YYYY-WNN_macro.html` (또는 `YYYY-MM_macro.html`) 동일 내용으로 Write/Edit.
 
 ---
 
@@ -187,12 +161,11 @@ new_string:
           실제 <span class="hl-up">X.X%</span> · 예상 X.X% · 이전 X.X%
         </div>
         <div class="macro-explain">
-          [지표명(한국어 설명)]: 이게 왜 중요한지 초보자 눈높이 설명. 예상보다 높으면/낮으면 어떤 의미인지.
+          [지표명(한국어 설명)]: 이게 왜 중요한지 초보자 눈높이 설명.
         </div>
         <div class="macro-reaction">시장 반응: [발표 후 주요 시장 움직임]</div>
       </div>
-
-      <!-- 추가 카드들 반복 -->
+      <!-- 추가 카드 반복 -->
 
     </div>
   </div>
@@ -203,13 +176,7 @@ new_string:
     <!-- 월간이면: <h2>다음 달 주목할 이벤트 (YYYY년 MM+1월)</h2> -->
     <table class="macro-calendar">
       <thead>
-        <tr>
-          <th>날짜</th>
-          <th>이벤트</th>
-          <th>예상</th>
-          <th>중요도</th>
-          <th>한 줄 설명</th>
-        </tr>
+        <tr><th>날짜</th><th>이벤트</th><th>예상</th><th>중요도</th><th>한 줄 설명</th></tr>
       </thead>
       <tbody>
         <tr>
