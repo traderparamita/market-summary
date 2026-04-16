@@ -153,6 +153,92 @@ indicators:
     description: "High Yield Bond Spread"
     transform: none
 
+  CREDIT_TED_SPREAD:
+    category: credit
+    region: US
+    source: FRED
+    series_id: TEDRATE
+    unit: "%"
+    description: "TED Spread (3M LIBOR - T-Bill)"
+    transform: none
+
+  # ─── US Rates (decomposition) ───────────────────────────────
+  BOND_REAL_YIELD_10Y:
+    category: rates
+    region: US
+    source: FRED
+    series_id: DFII10
+    unit: "%"
+    description: "10Y TIPS Real Yield"
+    transform: none
+
+  BOND_TERM_PREMIUM:
+    category: rates
+    region: US
+    source: FRED
+    series_id: ACMTP10
+    unit: "%"
+    description: "ACM Term Premium 10Y"
+    transform: none
+
+  BOND_BREAKEVEN_10Y:
+    category: rates
+    region: US
+    source: FRED
+    series_id: T10YIE
+    unit: "%"
+    description: "10Y Breakeven Inflation Rate"
+    transform: none
+
+  # ─── Bond Volatility ────────────────────────────────────────
+  BOND_MOVE_INDEX:
+    category: volatility
+    region: US
+    source: FRED
+    series_id: MOVE
+    unit: "index"
+    description: "MOVE Index (Bond Volatility)"
+    transform: none
+
+  # ─── US Sentiment / Activity ────────────────────────────────
+  MACRO_US_CONSUMER_SENT:
+    category: sentiment
+    region: US
+    source: FRED
+    series_id: UMCSENT
+    unit: "index"
+    description: "U Michigan Consumer Sentiment"
+    transform: none
+
+  MACRO_US_JOLTS:
+    category: employment
+    region: US
+    source: FRED
+    series_id: JTSJOL
+    unit: "thousands"
+    description: "JOLTS Job Openings"
+    transform: none
+    cycle: "M"
+
+  MACRO_US_INDPRO:
+    category: activity
+    region: US
+    source: FRED
+    series_id: INDPRO
+    unit: "index"
+    description: "Industrial Production Index"
+    transform: none
+
+  MACRO_US_RETAIL_SALES:
+    category: activity
+    region: US
+    source: FRED
+    series_id: RSXFS
+    unit: "millions"
+    description: "Advance Retail Sales (ex-food)"
+    transform: none
+    cycle: "M"
+
   # ─── Korea Growth ───────────────────────────────────────────
   KR_GDP_QOQ:
     category: growth

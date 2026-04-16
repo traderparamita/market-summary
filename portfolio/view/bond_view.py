@@ -44,16 +44,13 @@ MACRO_RATES = {
     "US_2Y_YIELD":       "미국 2년 국채",
     "US_10Y_YIELD":      "미국 10년 국채",
     "US_YIELD_CURVE":    "미국 10Y-2Y 스프레드",
-    "US_IG_SPREAD":      "IG 크레딧 스프레드",
-    "US_HY_SPREAD":      "HY 크레딧 스프레드",
-    # 확장 지표 (collect_extended.py)
+    "US_IG_SPREAD":        "IG 크레딧 스프레드",
+    "US_HY_SPREAD":        "HY 크레딧 스프레드",
+    "CREDIT_TED_SPREAD":   "TED 스프레드",
     "BOND_REAL_YIELD_10Y": "10Y TIPS 실질금리",
     "BOND_TERM_PREMIUM":   "ACM 기간프리미엄",
     "BOND_BREAKEVEN_10Y":  "10Y 손익분기점 인플레이션",
     "BOND_MOVE_INDEX":     "MOVE 채권변동성지수",
-    "CREDIT_HY_SPREAD":    "HY 스프레드 (BAML)",
-    "CREDIT_IG_SPREAD":    "IG 스프레드 (BAML)",
-    "CREDIT_TED_SPREAD":   "TED 스프레드",
 }
 
 
@@ -328,18 +325,14 @@ def compute_bond_view(date) -> dict:
     hy_spread  = macro.get("US_HY_SPREAD",   {}).get("value", np.nan)
     ig_spread  = macro.get("US_IG_SPREAD",   {}).get("value", np.nan)
 
-    # 확장 지표 (collect_extended.py로 수집)
     real_yield_10y = macro.get("BOND_REAL_YIELD_10Y", {}).get("value", np.nan)
     term_premium   = macro.get("BOND_TERM_PREMIUM",   {}).get("value", np.nan)
     breakeven_10y  = macro.get("BOND_BREAKEVEN_10Y",  {}).get("value", np.nan)
     move_index     = macro.get("BOND_MOVE_INDEX",     {}).get("value", np.nan)
-    hy_baml        = macro.get("CREDIT_HY_SPREAD",    {}).get("value", np.nan)
-    ig_baml        = macro.get("CREDIT_IG_SPREAD",    {}).get("value", np.nan)
     ted_spread     = macro.get("CREDIT_TED_SPREAD",   {}).get("value", np.nan)
 
-    # 최선 HY 스프레드 (BAML 우선, 기존 폴백)
-    hy_best = hy_baml if not np.isnan(hy_baml) else hy_spread
-    ig_best = ig_baml if not np.isnan(ig_baml) else ig_spread
+    hy_best = hy_spread
+    ig_best = ig_spread
 
     # KR rates from ETF price data (ECOS: level = rate)
     kr_cd91d_row = kr_bonds[0]
