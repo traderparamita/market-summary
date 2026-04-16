@@ -40,6 +40,38 @@
 
 ---
 
+## 데이터 수집 및 CSV 저장
+
+Macro & Events 탭 작성 전 반드시 `collect_macro`를 실행해 `history/macro_indicators.csv`를 최신 상태로 업데이트한다.
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary
+.venv/bin/python -m portfolio.collect_macro
+```
+
+이 명령 하나로 FRED + ECOS에서 최신 데이터를 가져와 CSV에 자동 저장된다.
+수집 후 저장되는 주요 지표 (월간 발표 기준):
+
+| 지표코드 | 설명 | 소스 |
+|---------|------|------|
+| US_CPI_YOY | 미국 CPI (YoY) | FRED CPIAUCSL |
+| US_CORE_CPI_YOY | 미국 Core CPI (YoY) | FRED CPILFESL |
+| US_PCE_YOY | 미국 PCE 물가 (YoY) | FRED PCEPI |
+| US_CORE_PCE_YOY | 미국 Core PCE (YoY) | FRED PCEPILFE |
+| US_NFP_MOM | 미국 비농업 고용 변화 (MoM) | FRED PAYEMS |
+| US_UNEMP_RATE | 미국 실업률 | FRED UNRATE |
+| US_FED_RATE | 미국 연방기금금리 | FRED FEDFUNDS |
+| KR_CPI_YOY | 한국 CPI (YoY) | ECOS |
+| KR_BASE_RATE | 한국 기준금리 | ECOS |
+| EU_POLICY_RATE | 유럽 ECB 예금금리 | FRED ECBDFR |
+
+**수집 확인 방법**: 실행 결과의 각 지표 뒤 날짜 범위가 최신인지 확인.
+예: `US_CPI_YOY: 2011-01-01 ~ 2026-03-01` → 3월 데이터 수집 완료.
+
+수집 후 CSV에서 이번 주/달 데이터를 직접 조회해 HTML 카드에 넣는다 (아래 Step 2).
+
+---
+
 ## 주간 작성 절차
 
 ### Step 1 — 이번 주 날짜 범위 확인
