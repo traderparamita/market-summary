@@ -22,15 +22,19 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 1. 대상 날짜가 **오늘보다 미래가 아닌지 확인**. 미래면 즉시 중단하고 사용자에게 보고.
 2. 대상 날짜가 주말이거나 한국·미국 공휴일이면 사용자에게 "해당일 보고서를 생성할지" 확인.
 
-### Step 1~2: 데이터 수집 + Data Dashboard
+### Step 1~2: Data Dashboard 생성
+
+아래 명령 **하나만** 실행한다. 이 명령이 데이터 수집과 HTML 생성을 모두 처리한다.
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py $ARGUMENTS
 ```
 
-- `generate.py`는 HTML 생성 전용. 실제 **데이터 수집은 `collect_market.py`** 가 담당 (`from collect_market import fetch_data, build_report_data, ...`).
-- 이 명령 하나로 일간 데이터 수집 + 일간 HTML + 주간·월간 HTML 자동 갱신까지 수행된다.
-- 실패 시 `collect_market.py` 로그 확인 후 재시도 또는 사용자에게 보고 후 중단.
+**내부 동작 (참고용 — 별도로 실행하지 않는다)**:
+- `generate.py`가 `collect_market.py`의 `fetch_data()` / `build_report_data()`를 import해서 호출 → CSV 수집 + Snowflake dual-write
+- 이어서 HTML 생성: 일간 보고서 + `update_current_periodic()`으로 주간·월간 HTML도 자동 갱신
+
+실패 시 오류 로그 확인 후 재시도 또는 사용자에게 보고 후 중단. **`collect_market.py`를 별도로 실행하지 않는다.**
 
 ### Step 3: 일간 Market Story 작성
 
