@@ -18,14 +18,16 @@ from datetime import date, datetime
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from portfolio.view.sector_view import compute_sector_view
-from portfolio.view.country_view import compute_country_view
+from portfolio.view.country_view import compute_country_view, COUNTRIES
 
 OUTPUT_ROOT = ROOT / "output" / "sector-country"
+HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
 # ── 15일 로테이션 사이클 ──────────────────────────────────────────────────
 # 기준일: 2026-01-05 (월요일) → day 0
@@ -236,33 +238,106 @@ CYCLE_COLOR = {
 }
 
 
-def _comp_to_view(comp) -> str:
-    if comp is None or (isinstance(comp, float) and math.isnan(comp)):
-        return "N"
-    if comp >= 0.25:
-        return "OW"
-    if comp <= -0.25:
-        return "UW"
-    return "N"
+def _ma_pct(last: float, ma: float) -> float:
+    """현재가의 MA 대비 괴리율 (%)."""
+    if ma == 0:
+        return float("nan")
+    return (last / ma - 1) * 100
 
 
-def _view_badge_html(view: str) -> str:
-    styles = {
-        "OW": "background:#dcfce7;color:#16a34a",
-        "N":  "background:#f1f5f9;color:#64748b",
-        "UW": "background:#fee2e2;color:#dc2626",
-    }
-    labels = {
-        "OW": "지금 담으면 좋은",
-        "N":  "지켜보는",
-        "UW": "줄이거나 피하는",
-    }
-    s = styles.get(view, styles["N"])
-    l = labels.get(view, view)
+def _ma_dir(pct: float) -> tuple[str, str]:
+    """괴리율 → (방향기호, 색상). ±1% 이내는 '→' 중립."""
+    if math.isnan(pct):
+        return "—", "#94a3b8"
+    if pct > 1.0:
+        return "▲", "#16a34a"
+    if pct < -1.0:
+        return "▼", "#dc2626"
+    return "→", "#d97706"
+
+
+def _ma_row_html(label: str, pct) -> str:
+    """MA 한 줄 HTML (라벨 + 방향 + 괴리율)."""
+    if pct is None or (isinstance(pct, float) and math.isnan(pct)):
+        return (
+            f'<div class="ma-row">'
+            f'<span class="ma-label">{label}</span>'
+            f'<span class="ma-val" style="color:#94a3b8">데이터 없음</span>'
+            f'</div>'
+        )
+    arrow, color = _ma_dir(pct)
     return (
-        f'<span style="{s};padding:3px 8px;border-radius:5px;font-weight:700;font-size:12px">{view}</span>'
-        f'<span style="color:#64748b;font-size:11px;margin-left:4px">{l}</span>'
+        f'<div class="ma-row">'
+        f'<span class="ma-label">{label}</span>'
+        f'<span class="ma-val" style="color:{color}">{arrow} {pct:+.1f}%</span>'
+        f'</div>'
     )
+
+
+def _trend_label(pct20, pct60, pct200) -> tuple[str, str]:
+    """MA20/60/200 방향 조합 → (한글 요약, 색상)."""
+    def _sig(p):
+        if p is None or (isinstance(p, float) and math.isnan(p)):
+            return 0
+        return 1 if p > 1.0 else (-1 if p < -1.0 else 0)
+
+    s20, s60, s200 = _sig(pct20), _sig(pct60), _sig(pct200)
+    if s20 == 1 and s60 == 1 and s200 == 1:
+        return "단기·중기·장기 모두 상승", "#16a34a"
+    if s20 == 1 and s60 == 1 and s200 <= 0:
+        return "단기·중기 강세, 장기 회복 중", "#65a30d"
+    if s20 == 1 and s60 <= 0 and s200 <= 0:
+        return "단기 반등, 중기·장기 약세", "#d97706"
+    if s20 == -1 and s60 == -1 and s200 == -1:
+        return "전 구간 하락 추세", "#dc2626"
+    if s20 == -1 and s60 == -1 and s200 >= 0:
+        return "단기·중기 약세, 장기 지지선", "#f97316"
+    if s20 == -1 and s60 >= 0 and s200 >= 0:
+        return "단기 조정, 중기·장기 상승 유지", "#eab308"
+    return "추세 혼조", "#94a3b8"
+
+
+# ── MA 데이터 계산 ────────────────────────────────────────────────────────
+
+def _load_prices_for_ma(date_str: str) -> pd.DataFrame:
+    """HISTORY_CSV에서 date_str 이하 가격 데이터를 피벗해 반환."""
+    df = pd.read_csv(HISTORY_CSV, parse_dates=["DATE"])
+    df = df[df["DATE"] <= pd.Timestamp(date_str)]
+    pivot = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE", aggfunc="last")
+    pivot = pivot.sort_index()
+    return pivot
+
+
+def _calc_ma_data(px: pd.Series) -> dict:
+    """MA20/60/200 및 현재가 대비 괴리율 계산."""
+    px = px.dropna()
+    if px.empty:
+        return {"last": None, "pct20": float("nan"), "pct60": float("nan"), "pct200": float("nan")}
+    last = float(px.iloc[-1])
+    ma20  = float(px.tail(20).mean())  if len(px) >= 20  else float("nan")
+    ma60  = float(px.tail(60).mean())  if len(px) >= 60  else float("nan")
+    ma200 = float(px.tail(200).mean()) if len(px) >= 200 else float("nan")
+    return {
+        "last":   last,
+        "ma20":   round(ma20, 4)  if not math.isnan(ma20)  else float("nan"),
+        "ma60":   round(ma60, 4)  if not math.isnan(ma60)  else float("nan"),
+        "ma200":  round(ma200, 4) if not math.isnan(ma200) else float("nan"),
+        "pct20":  round(_ma_pct(last, ma20), 2)  if not math.isnan(ma20)  else float("nan"),
+        "pct60":  round(_ma_pct(last, ma60), 2)  if not math.isnan(ma60)  else float("nan"),
+        "pct200": round(_ma_pct(last, ma200), 2) if not math.isnan(ma200) else float("nan"),
+    }
+
+
+def build_ma_map(date_str: str, sector_codes: list[str], country_codes: list[str]) -> dict[str, dict]:
+    """섹터·국가 지표코드 → MA 데이터 딕셔너리."""
+    prices = _load_prices_for_ma(date_str)
+    result = {}
+    for code in sector_codes + country_codes:
+        if code in prices.columns:
+            result[code] = _calc_ma_data(prices[code])
+        else:
+            result[code] = {"last": None, "pct20": float("nan"), "pct60": float("nan"), "pct200": float("nan")}
+    return result
 
 
 def _chg_span(v, na="—") -> str:
@@ -348,15 +423,28 @@ body {
   transition: box-shadow 0.2s;
 }
 .sector-card:hover, .country-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-.sector-card.ow, .country-card.ow { border-left: 4px solid #16a34a; }
-.sector-card.uw, .country-card.uw { border-left: 4px solid #dc2626; }
-.sector-card.n,  .country-card.n  { border-left: 4px solid #94a3b8; }
+/* MA200 기준 왼쪽 테두리 색상 */
+.sector-card.above200, .country-card.above200 { border-left: 4px solid #16a34a; }
+.sector-card.below200, .country-card.below200 { border-left: 4px solid #dc2626; }
+.sector-card.neutral200, .country-card.neutral200 { border-left: 4px solid #d97706; }
+.sector-card.nodata200, .country-card.nodata200  { border-left: 4px solid #94a3b8; }
 
 /* 오늘의 주제 하이라이트 */
 .sector-card.focus, .country-card.focus {
   border: 2px solid var(--orange) !important;
   background: #fffbf5;
   box-shadow: 0 0 0 3px rgba(245,130,32,0.12);
+}
+
+/* MA 블록 */
+.ma-block { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+.ma-row   { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 2px 0; }
+.ma-label { color: var(--muted); font-size: 11px; min-width: 46px; }
+.ma-val   { font-weight: 700; font-size: 12px; }
+.trend-label {
+  margin-top: 6px; font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px; background: #f8fafc;
+  display: inline-block;
 }
 .focus-star {
   background: var(--orange); color: #fff;
@@ -426,10 +514,24 @@ def _focus_banner_html(focus: dict, date_str: str) -> str:
 </div>"""
 
 
-def _sector_card_html(s: dict, is_focus: bool = False) -> str:
-    view = _comp_to_view(s.get("composite"))
-    vc = view.lower()
-    focus_cls = " focus" if is_focus else ""
+def _ma200_cls(pct200) -> str:
+    """MA200 괴리율 → CSS 클래스."""
+    if pct200 is None or (isinstance(pct200, float) and math.isnan(pct200)):
+        return "nodata200"
+    if pct200 > 1.0:
+        return "above200"
+    if pct200 < -1.0:
+        return "below200"
+    return "neutral200"
+
+
+def _sector_card_html(s: dict, ma: dict, is_focus: bool = False) -> str:
+    pct20  = ma.get("pct20",  float("nan"))
+    pct60  = ma.get("pct60",  float("nan"))
+    pct200 = ma.get("pct200", float("nan"))
+
+    ma200_cls  = _ma200_cls(pct200)
+    focus_cls  = " focus" if is_focus else ""
     focus_star = '<span class="focus-star">★ 오늘 주제</span>' if is_focus else ""
 
     etf_line = s.get("etf", "")
@@ -441,36 +543,42 @@ def _sector_card_html(s: dict, is_focus: bool = False) -> str:
     if peer and not is_focus:
         tags += f'<span class="tag">대응: {peer}</span>'
 
+    trend_txt, trend_color = _trend_label(pct20, pct60, pct200)
+
     return f"""
-<div class="sector-card {vc}{focus_cls}">
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
-    {_view_badge_html(view)}{focus_star}
+<div class="sector-card {ma200_cls}{focus_cls}">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">{s.get('name', '')}</span>{focus_star}
   </div>
-  <div class="sc-name">{s.get('name', '')}</div>
   <div class="sc-etf">{etf_line}</div>
   <div class="tag-row">{tags}</div>
-  <div class="sc-metrics">
+  <div class="sc-metrics" style="margin-top:6px">
     <div class="sc-metric"><span class="mk">1개월</span>{_chg_span(s.get('mom_1m'))}</div>
     <div class="sc-metric"><span class="mk">3개월</span>{_chg_span(s.get('mom_3m'))}</div>
     <div class="sc-metric"><span class="mk">6개월</span>{_chg_span(s.get('mom_6m'))}</div>
   </div>
+  <div class="ma-block">
+    {_ma_row_html("MA20", pct20)}
+    {_ma_row_html("MA60", pct60)}
+    {_ma_row_html("MA200", pct200)}
+    <div><span class="trend-label" style="color:{trend_color}">{trend_txt}</span></div>
+  </div>
 </div>"""
 
 
-def _country_card_html(c: dict, is_focus: bool = False) -> str:
-    view = c.get("view", "N")
-    vc = view.lower()
-    focus_cls = " focus" if is_focus else ""
+def _country_card_html(c: dict, ma: dict, is_focus: bool = False) -> str:
+    pct20  = ma.get("pct20",  float("nan"))
+    pct60  = ma.get("pct60",  float("nan"))
+    pct200 = ma.get("pct200", float("nan"))
+
+    ma200_cls  = _ma200_cls(pct200)
+    focus_cls  = " focus" if is_focus else ""
     focus_star = '<span class="focus-star">★ 오늘 주제</span>' if is_focus else ""
 
-    regime_map = {
-        "Goldilocks": "골디락스", "Reflation": "리플레이션",
-        "Stagflation": "스태그플레이션", "Deflation": "디플레이션", "N/A": "미확인",
-    }
-    regime_kr = regime_map.get(c.get("regime", ""), "")
+    trend_txt, trend_color = _trend_label(pct20, pct60, pct200)
 
     return f"""
-<div class="country-card {vc}{focus_cls}">
+<div class="country-card {ma200_cls}{focus_cls}">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <span class="cc-flag">{c.get('flag', '')}</span>
     <div style="flex:1">
@@ -479,19 +587,34 @@ def _country_card_html(c: dict, is_focus: bool = False) -> str:
       </div>
       <div style="font-size:11px;color:#64748b">{c.get('fund_type', '')}</div>
     </div>
-    <div>{_view_badge_html(view)}</div>
   </div>
   <div class="sc-metrics">
     <div class="sc-metric"><span class="mk">3개월</span>{_chg_span(c.get('mom_3m'))}</div>
     <div class="sc-metric"><span class="mk">6개월</span>{_chg_span(c.get('mom_6m'))}</div>
   </div>
+  <div class="ma-block">
+    {_ma_row_html("MA20", pct20)}
+    {_ma_row_html("MA60", pct60)}
+    {_ma_row_html("MA200", pct200)}
+    <div><span class="trend-label" style="color:{trend_color}">{trend_txt}</span></div>
+  </div>
 </div>"""
 
 
-def _summary_cards_html(sv: dict, cv: dict) -> str:
-    us_ow = sum(1 for s in sv["us_sectors"] if _comp_to_view(s.get("composite")) == "OW")
-    kr_ow = sum(1 for s in sv["kr_sectors"] if _comp_to_view(s.get("composite")) == "OW")
-    country_ow = sum(1 for c in cv["countries"] if c.get("view") == "OW")
+def _summary_cards_html(sv: dict, cv: dict, ma_map: dict) -> str:
+    # 섹터 코드 목록 수집
+    us_codes = [s["code"] for s in sv["us_sectors"]]
+    kr_codes = [s["code"] for s in sv["kr_sectors"]]
+    country_eq_codes = [COUNTRIES[c["code"]]["eq_code"] for c in cv["countries"] if c["code"] in COUNTRIES]
+
+    def _above200(code):
+        ma = ma_map.get(code, {})
+        p = ma.get("pct200", float("nan"))
+        return not (p is None or (isinstance(p, float) and math.isnan(p))) and p > 1.0
+
+    us_above  = sum(1 for c in us_codes if _above200(c))
+    kr_above  = sum(1 for c in kr_codes if _above200(c))
+    cty_above = sum(1 for c in country_eq_codes if _above200(c))
 
     regime = sv.get("us_regime", "N/A")
     regime_kr = REGIME_KR.get(regime, regime)
@@ -503,16 +626,16 @@ def _summary_cards_html(sv: dict, cv: dict) -> str:
     return f"""
 <div class="summary-cards">
   <div class="summary-card">
-    <div class="num" style="color:#16a34a">{us_ow}</div>
-    <div class="label">미국 섹터 OW</div>
+    <div class="num" style="color:#16a34a">{us_above}</div>
+    <div class="label">미국 섹터 MA200 위</div>
   </div>
   <div class="summary-card">
-    <div class="num" style="color:#16a34a">{kr_ow}</div>
-    <div class="label">한국 섹터 OW</div>
+    <div class="num" style="color:#16a34a">{kr_above}</div>
+    <div class="label">한국 섹터 MA200 위</div>
   </div>
   <div class="summary-card">
-    <div class="num" style="color:#16a34a">{country_ow}</div>
-    <div class="label">국가 OW</div>
+    <div class="num" style="color:#16a34a">{cty_above}</div>
+    <div class="label">국가 지수 MA200 위</div>
   </div>
 </div>"""
 
@@ -524,7 +647,7 @@ def _get_focus_codes(focus: dict) -> set:
     return {s["code"] for s in focus["subjects"]}
 
 
-def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> str:
+def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict, ma_map: dict) -> str:
     regime = sv.get("us_regime", "N/A")
     regime_kr = REGIME_KR.get(regime, regime)
     cycle = sv.get("cycle_phase", "N/A")
@@ -536,18 +659,22 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     focus_codes = _get_focus_codes(focus)
 
     banner = _focus_banner_html(focus, date_str) if period == "daily" else ""
-    summary = _summary_cards_html(sv, cv)
+    summary = _summary_cards_html(sv, cv, ma_map)
 
     us_cards = "\n".join(
-        _sector_card_html(s, is_focus=(s["code"] in focus_codes))
+        _sector_card_html(s, ma_map.get(s["code"], {}), is_focus=(s["code"] in focus_codes))
         for s in sv["us_sectors"]
     )
     kr_cards = "\n".join(
-        _sector_card_html(s, is_focus=(s["code"] in focus_codes))
+        _sector_card_html(s, ma_map.get(s["code"], {}), is_focus=(s["code"] in focus_codes))
         for s in sv["kr_sectors"]
     )
     country_cards = "\n".join(
-        _country_card_html(c, is_focus=(c["code"] in focus_codes))
+        _country_card_html(
+            c,
+            ma_map.get(COUNTRIES.get(c["code"], {}).get("eq_code", ""), {}),
+            is_focus=(c["code"] in focus_codes),
+        )
         for c in cv["countries"]
     )
 
@@ -649,7 +776,12 @@ def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
     cv = compute_country_view(date_str)
     focus = get_focus(date_str)
 
-    html = _build_html(date_str, period, sv, cv, focus)
+    # MA 계산용 코드 수집
+    sector_codes = [s["code"] for s in sv["us_sectors"]] + [s["code"] for s in sv["kr_sectors"]]
+    country_eq_codes = [COUNTRIES[c["code"]]["eq_code"] for c in cv["countries"] if c["code"] in COUNTRIES]
+    ma_map = build_ma_map(date_str, sector_codes, country_eq_codes)
+
+    html = _build_html(date_str, period, sv, cv, focus, ma_map)
 
     out = _out_path(date_str, period)
     out.parent.mkdir(parents=True, exist_ok=True)
