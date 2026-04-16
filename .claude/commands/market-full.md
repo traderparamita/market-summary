@@ -143,14 +143,44 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 - 커밋 메시지: `market: YYYY-MM-DD daily report` (주간/월간도 같이 포함되면 범위 표기)
 - `git push origin main`
 
+### Step 10: Telegram 알림 전송
+
+Step 9 성공 후 항상 실행한다. 실패해도 워크플로우에 영향 없음 (best-effort).
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  .venv/bin/python notify_telegram.py $ARGUMENTS \
+    [--weekly]   # 해당 주 마지막 영업일이면 추가 \
+    [--monthly]  # 해당 월 마지막 영업일이면 추가 \
+    --focus "Day N — 오늘의 섹터·국가 주제"  # Step 8에서 확인한 포커스 텍스트
+```
+
+- `--weekly` / `--monthly` 플래그는 Step 5 / Step 7 실행 여부와 동일한 조건으로 붙인다
+- `--focus` 값은 Step 8-A 실행 결과에서 확인한 테마 텍스트 (예: `"Day 15 — 🇮🇳 인도·🌍 신흥국"`)
+- 실패 시 경고 로그만 출력하고 완료 보고로 넘어간다
+
 ### 완료 보고
 
-모든 단계 완료 후 한 번에 요약:
+모든 단계 완료 후 Step별 실행 결과를 표 형식으로 보고:
 
-- 생성·갱신된 보고서 목록 (일간/주간/월간 + sector-country)
-- 스킵한 단계 (있다면 이유 명시)
-- 커밋 해시와 푸시 결과
-- 다음 영업일 실행 권장 시각
+```
+Step 1~2:  Data Dashboard  — ✅ 성공 / ❌ 실패 (이유)
+Step 3:    일간 Story       — ✅ 성공 / ❌ 실패
+Step 4:    주간 Dashboard   — ✅ 자동 갱신
+Step 5:    주간 Story       — ✅ 성공 / ⏭ 스킵 (이유)
+Step 5.5:  매크로 수집      — ✅ 성공 / ⏭ 스킵 / ⚠ 실패(계속)
+Step 5.6:  Macro 탭         — ✅ 성공 / ⏭ 스킵
+Step 6:    월간 Dashboard   — ✅ 자동 갱신
+Step 7:    월간 Story       — ✅ 성공 / ⏭ 스킵 (이유)
+Step 7.5:  월간 매크로      — ✅ 성공 / ⏭ 스킵
+Step 7.6:  월간 Macro 탭    — ✅ 성공 / ⏭ 스킵
+Step 8-A:  SC Dashboard     — ✅ 성공 / ⚠ 실패(계속)
+Step 8-B:  SC Story         — ✅ 성공 / ⚠ 실패(계속)
+Step 9:    Git Push         — ✅ 커밋해시
+Step 10:   Telegram         — ✅ 전송 / ⚠ 실패(계속)
+```
+
+- 다음 영업일 실행 권장 시각도 함께 표기
 
 ### 중단 규칙
 
@@ -159,3 +189,4 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 - Step 8-A 실패: 경고 후 계속 진행
 - Step 8-B 실패: 경고 후 계속 진행
 - Step 9 git 실패: 중단하고 사용자에게 상태 보고
+- Step 10 실패: 경고 후 완료 보고로 넘어간다
