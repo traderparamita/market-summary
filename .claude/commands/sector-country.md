@@ -256,7 +256,22 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 
 ---
 
-## Step 7 — Telegram 완료 알림
+## Step 7 — Git commit + push
+
+Story 주입 및 `_story.html` 저장 완료 후 변경분을 커밋·푸시한다. 실패해도 Step 8로 계속 진행.
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  git add output/sector-country/ && \
+  git commit -m "feat: {date} sector-country 보고서 — 섹터 Day N/11 · 국가 Day M/11
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>" && \
+  git push origin main
+```
+
+---
+
+## Step 8 — Telegram 완료 알림
 
 Story 주입 성공 후 전송. 실패해도 계속.
 
