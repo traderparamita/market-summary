@@ -1158,23 +1158,31 @@ def _load_story_chart_data(date_str: str, focus: dict) -> dict:
     kr_norm      = norm(kr_series["prices"])
     kospi_norm   = norm(kospi_series["prices"])
 
-    # S&P500 원시 가격 (국가 섹션용)
-    sp500_raw = sp500_series["prices"]
+    # 국가 지수 (focus 국가에 맞는 eq_code 사용)
+    try:
+        from portfolio.view.country_view import COUNTRY_INFO
+        country_eq_code = COUNTRY_INFO.get(focus_country_code, {}).get("eq_code", "EQ_SP500") if focus_country_code else "EQ_SP500"
+    except Exception:
+        country_eq_code = "EQ_SP500"
+    country_series = _load_price_series(country_eq_code, date_str, 60)
+    country_raw    = country_series["prices"]
 
     us_name      = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "us_sector"), "")
     kr_name      = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "kr_sector"), "")
+    country_name = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "country"), "")
 
     return {
-        "us_dates":    _json.dumps(us_series["dates"]),
-        "us_norm":     _json.dumps(us_norm),
-        "sp500_norm":  _json.dumps(sp500_norm),
-        "kr_dates":    _json.dumps(kr_series["dates"]),
-        "kr_norm":     _json.dumps(kr_norm),
-        "kospi_norm":  _json.dumps(kospi_norm),
-        "sp500_dates": _json.dumps(sp500_series["dates"]),
-        "sp500_raw":   _json.dumps([round(p, 2) for p in sp500_raw]),
-        "us_name":     us_name,
-        "kr_name":     kr_name,
+        "us_dates":       _json.dumps(us_series["dates"]),
+        "us_norm":        _json.dumps(us_norm),
+        "sp500_norm":     _json.dumps(sp500_norm),
+        "kr_dates":       _json.dumps(kr_series["dates"]),
+        "kr_norm":        _json.dumps(kr_norm),
+        "kospi_norm":     _json.dumps(kospi_norm),
+        "country_dates":  _json.dumps(country_series["dates"]),
+        "country_raw":    _json.dumps([round(p, 2) for p in country_raw]),
+        "us_name":        us_name,
+        "kr_name":        kr_name,
+        "country_name":   country_name,
     }
 
 
@@ -1208,16 +1216,16 @@ def _make_story_charts(cd: dict) -> dict:
         f'{{"label":"KOSPI","data":{cd["kospi_norm"]},'
         f'"borderColor":"#94a3b8","borderWidth":2,"fill":false,"tension":0.1,"pointRadius":0,"borderDash":[5,5]}}]'
     )
-    sp500_datasets = (
-        f'[{{"label":"S&P500","data":{cd["sp500_raw"]},'
+    country_datasets = (
+        f'[{{"label":"{cd["country_name"]}","data":{cd["country_raw"]},'
         f'"borderColor":"#F58220","backgroundColor":"rgba(245,130,32,0.1)","borderWidth":2,'
         f'"fill":true,"tension":0.1,"pointRadius":0}}]'
     )
 
     return {
-        "us":      _build_inline_chart("sc_us_rel_chart",      "line", cd["us_dates"],    us_datasets,    line_opts),
-        "kr":      _build_inline_chart("sc_kr_rel_chart",      "line", cd["kr_dates"],    kr_datasets,    line_opts),
-        "country": _build_inline_chart("sc_country_raw_chart", "line", cd["sp500_dates"], sp500_datasets, raw_opts),
+        "us":      _build_inline_chart("sc_us_rel_chart",      "line", cd["us_dates"],      us_datasets,      line_opts),
+        "kr":      _build_inline_chart("sc_kr_rel_chart",      "line", cd["kr_dates"],      kr_datasets,      line_opts),
+        "country": _build_inline_chart("sc_country_raw_chart", "line", cd["country_dates"], country_datasets, raw_opts),
     }
 
 
@@ -1328,14 +1336,15 @@ def _do_replace(p: Path, content: str, new_story: str) -> None:
         )
     else:
         # 이미 주입된 HTML — story-section 블록을 새 내용으로 교체
+        # story-section은 중첩 div를 포함하므로 </body> 직전까지 greedy 매칭
         replaced = re.sub(
-            r'<div class="story-section"[^>]*>.*?</div>\s*</div>',
+            r'<div class="story-section"[^>]*>.*(?=\s*</body>)',
             new_story.rstrip(),
             content, count=1, flags=re.DOTALL
         )
     p.write_text(replaced, encoding="utf-8")
-    # _story.html 저장
-    m = re.search(r'(<div class="story-content">.*?</div>\s*</div>)', new_story, re.DOTALL)
+    # _story.html 저장 — story-content 전체를 greedy로 추출
+    m = re.search(r'(<div class="story-content">.*</div>)', new_story, re.DOTALL)
     if m:
         _save_story_file(p, m.group(1))
 
