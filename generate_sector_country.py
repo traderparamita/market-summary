@@ -690,27 +690,24 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     cur_country_idx = elapsed_today % len(COUNTRY_ROTATION)
 
     def _country_prev_date(country_code: str) -> str | None:
-        """해당 국가 코드의 가장 최근 이전 사이클 날짜 반환.
-        같은 국가가 여러 번 등장할 경우 steps_back이 최소인 idx를 선택.
+        """해당 국가 코드가 마지막으로 등장한 과거 영업일 반환 (최대 90일 역산).
+        get_focus()로 실제 사이클 계산 기준으로 탐색하므로 사이클 길이 변경에 안전.
         """
-        best_steps = None
-        for i, slot in enumerate(COUNTRY_ROTATION):
-            if slot["code"] != country_code:
-                continue
-            steps = (cur_country_idx - i) % len(COUNTRY_ROTATION)
-            if steps == 0:
-                steps = len(COUNTRY_ROTATION)
-            if best_steps is None or steps < best_steps:
-                best_steps = steps
-        if best_steps is None:
-            return None
-        cur = d_today
-        counted = 0
-        while counted < best_steps:
-            cur -= _td(days=1)
+        cur = d_today - _td(days=1)
+        for _ in range(90 * 2):  # 최대 90 영업일
             if cur.weekday() < 5:
-                counted += 1
-        return cur.isoformat()
+                try:
+                    f = get_focus(cur.isoformat())
+                    if f["country_name"] and any(
+                        s.get("code") == country_code
+                        for s in f.get("subjects", [])
+                        if s.get("type") == "country"
+                    ):
+                        return cur.isoformat()
+                except Exception:
+                    pass
+            cur -= _td(days=1)
+        return None
 
     us_cards = "\n".join(
         _sector_card_html(s, is_focus=(s["code"] in focus_codes),
