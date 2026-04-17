@@ -96,8 +96,6 @@ for c in cv['countries']:
     mark = ' ★' if c['code'] in focus_codes else ''
     print(f\"{c['view']} | {c['flag']} {c['name']:15s} | 3M={c.get('mom_3m','—')}%{mark}\")
 
-print()
-print(f'Regime: {sv[\"us_regime\"]} | Cycle: {sv[\"cycle_phase\"]}')
 "
 ```
 

@@ -384,14 +384,6 @@ body {
   border-bottom: 2px solid var(--orange);
   display: flex; align-items: center; gap: 8px;
 }
-.summary-cards {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px;
-}
-.summary-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;
-}
-.summary-card .num   { font-size: 28px; font-weight: 800; color: var(--navy); }
-.summary-card .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
 .sector-grid   { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 8px; }
 .country-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
@@ -552,42 +544,6 @@ def _country_card_html(c: dict, is_focus: bool = False, prev_date: str = None) -
 </div>"""
 
 
-def _summary_cards_html(sv: dict, cv: dict) -> str:
-    regime = sv.get("us_regime", "N/A")
-    regime_kr = REGIME_KR.get(regime, regime)
-    regime_desc = REGIME_DESC_KR.get(regime, "")
-    cycle = sv.get("cycle_phase", "N/A")
-    cycle_kr = CYCLE_KR.get(cycle, cycle)
-    cycle_color = CYCLE_COLOR.get(cycle, "#64748b")
-
-    ow_us = sum(1 for s in sv["us_sectors"] if s.get("composite", 0) is not None and not (isinstance(s.get("composite"), float) and math.isnan(s.get("composite", float("nan")))) and s.get("composite", 0) >= 0.25)
-    ow_kr = sum(1 for s in sv["kr_sectors"] if s.get("composite", 0) is not None and not (isinstance(s.get("composite"), float) and math.isnan(s.get("composite", float("nan")))) and s.get("composite", 0) >= 0.25)
-    ow_ct = sum(1 for c in cv["countries"] if c.get("view") == "OW")
-
-    return f"""
-<div class="summary-cards">
-  <div class="summary-card">
-    <div class="num" style="color:#16a34a">{ow_us}</div>
-    <div class="label">미국 OW 섹터</div>
-  </div>
-  <div class="summary-card">
-    <div class="num" style="color:#16a34a">{ow_kr}</div>
-    <div class="label">한국 OW 섹터</div>
-  </div>
-  <div class="summary-card">
-    <div class="num" style="color:#16a34a">{ow_ct}</div>
-    <div class="label">OW 국가</div>
-  </div>
-  <div class="summary-card">
-    <div class="num" style="font-size:18px;color:{cycle_color}">{cycle_kr}</div>
-    <div class="label">경기 사이클</div>
-  </div>
-  <div class="summary-card">
-    <div class="num" style="font-size:18px;color:var(--navy)">{regime_kr}</div>
-    <div class="label" title="{regime_desc}">시장 국면 ⓘ</div>
-  </div>
-</div>"""
-
 
 # ── HTML 전체 조립 ─────────────────────────────────────────────────────────
 
@@ -605,7 +561,6 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     prev_country_date = focus.get("prev_country_date")
 
     banner  = _focus_banner_html(focus, date_str) if period == "daily" else ""
-    summary = _summary_cards_html(sv, cv)
 
     # 오늘 주제인 섹터에만 이전 사이클 링크 표시
     us_cards = "\n".join(
@@ -652,7 +607,6 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
 <div class="main">
 
   {banner}
-  {summary}
 
   <div class="story-section" id="story-section">
     <h2>📰 오늘의 심층 분석 — {focus["theme"]} + {focus["country_name"]}</h2>
