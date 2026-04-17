@@ -331,7 +331,7 @@ def _prev_cycle_link_html(prev_date: str, label: str = "섹터") -> str:
     display = prev_date.replace("-", ".")
     return (
         f'<a href="{url}" class="prev-cycle-link" target="_blank">'
-        f'↩ 이전 {label} 보고서 ({display})'
+        f'↩ 이전 보고서'
         f'</a>'
     )
 
