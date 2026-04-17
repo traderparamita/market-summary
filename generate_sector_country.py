@@ -1335,10 +1335,11 @@ def _do_replace(p: Path, content: str, new_story: str) -> None:
             '', replaced, count=1, flags=re.DOTALL
         )
     else:
-        # 이미 주입된 HTML — story-section 블록을 새 내용으로 교체
-        # story-section은 중첩 div를 포함하므로 </body> 직전까지 greedy 매칭
+        # 이미 주입된 HTML — story-section 블록만 교체 (tab-data는 보존)
+        # story-section은 tab-story 안에 있고, 그 뒤에 tab-data가 온다
+        # <!-- /tab-story --> 직전까지만 교체
         replaced = re.sub(
-            r'<div class="story-section"[^>]*>.*(?=\s*</body>)',
+            r'<div class="story-section"[^>]*>.*?(?=\s*</div><!--\s*/tab-story\s*-->)',
             new_story.rstrip(),
             content, count=1, flags=re.DOTALL
         )
