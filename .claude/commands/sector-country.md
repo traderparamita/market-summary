@@ -122,8 +122,7 @@ for c in cv['countries']:
 | 4 | Subject 2 (KR 섹터) 대표주 | KR 섹터 대표 기업 최신 뉴스 | `"LG화학 롯데케미칼 에너지화학 April 2026"` |
 | 5 | Subject 3 (국가) | 주가지수 흐름 + 경제지표 + 정책 | `"China CSI300 Shanghai April 2026 market"` |
 | 6 | Subject 3 (국가) 대표주 | 국가 대표 기업 최신 뉴스 | `"Alibaba Tencent China tech April 2026"` |
-| 7 | US↔KR 섹터 비교 | 글로벌 신호가 한국에 어떻게 연결되는가 | `"energy sector Korea US comparison 2026"` |
-| 8 | 전체 맥락 (선택) | 이번 주 GICS 섹터 로테이션 흐름 | `"GICS sector rotation April 2026 winners"` |
+| 7 | 전체 맥락 (선택) | 이번 주 GICS 섹터 로테이션 흐름 | `"GICS sector rotation April 2026 winners"` |
 
 #### 섹터별 대표주 검색 가이드
 
@@ -147,7 +146,7 @@ for c in cv['countries']:
 
 SKILL.md의 초보자 언어 변환 규칙 및 시간순 서술 원칙을 따른다.
 
-**보고서 전체가 오늘의 3개 주제 중심이다.** 나머지 섹터·국가는 전체 현황 요약 1~2줄로만 축소.  
+**보고서 전체가 오늘의 3개 주제 중심이다.** 섹터와 국가는 독립적으로 서술하며 억지로 연결짓는 "연결 고리" 단락은 쓰지 않는다.  
 일간/주간/월간 구분 없이 동일한 형식으로 작성한다.
 
 ### 품질 규칙
@@ -187,22 +186,13 @@ grep "{indicator_code}" history/market_data.csv | grep "^2026" | sort | awk -F',
   <h3 style="color:#F58220;margin:16px 0 12px">🎯 {KR섹터명} 심층 분석</h3>
   <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
   <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {국내 업종 트렌드}<br><br>
-  <strong>대표주 동향</strong>: {KR 대표 기업 최신 동향}<br><br>
-  <strong>글로벌 연결</strong>: {US 섹터와의 연결 고리 — 어떻게 연동·차별화되는가}</p>
+  <strong>대표주 동향</strong>: {KR 대표 기업 최신 동향}</p>
 
   <!-- Subject 3: 국가 심층 분석 -->
   <h3 style="color:#F58220;margin:16px 0 12px">🎯 {국가명} 시장 심층 분석</h3>
   <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
   <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {주가지수 흐름 + 경제지표 + 정책}<br><br>
   <strong>대표주 동향</strong>: {COUNTRY_REP_STOCKS 기업 최신 동향}</p>
-
-  <!-- 비교 포인트 (US섹터 ↔ KR섹터 연결 + 국가 맥락) -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🔍 연결 고리: {테마}의 글로벌↔한국↔{국가} 신호</h3>
-  <p>{US 섹터 글로벌 신호 → KR 섹터 연결 방식 + 국가 매크로 배경이 어떻게 얽히는가}</p>
-
-  <!-- 전체 현황 요약 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">📊 전체 현황 요약</h3>
-  <p>{전체 US/KR 섹터 OW/UW 상위 2~3개 + 전체 국가 OW/UW 상위 1~2줄 요약}</p>
 
   <!-- 핵심 포인트 3가지 -->
   <h3 style="color:#F58220;margin:16px 0 12px">💡 핵심 포인트 3가지</h3>
