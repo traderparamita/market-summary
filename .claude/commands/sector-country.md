@@ -178,27 +178,46 @@ grep "{indicator_code}" history/market_data.csv | grep "^2026" | sort | awk -F',
 <div class="story-content">
   <!-- Subject 1: US 섹터 심층 분석 -->
   <h3 style="color:#F58220;margin-bottom:12px">🎯 {US섹터명} 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
-  <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {트렌드 배경 → 전개 → 현재 신호 이유}<br><br>
-  <strong>대표주 동향</strong>: {SECTOR_REP_STOCKS 기업 최신 동향 — 실적·뉴스 중심}</p>
+  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong></p>
+
+  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
+  <p>{트렌드 배경 문단 1}</p>
+  <p>{전개 문단 2}</p>
+  <p>{현재 신호 이유 문단 3}</p>
+
+  <p><strong>대표주 동향</strong></p>
+  <p>{SECTOR_REP_STOCKS 기업 동향 — 2~3 문단으로 분리}</p>
 
   <!-- Subject 2: KR 섹터 심층 분석 -->
   <h3 style="color:#F58220;margin:16px 0 12px">🎯 {KR섹터명} 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
-  <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {국내 업종 트렌드}<br><br>
-  <strong>대표주 동향</strong>: {KR 대표 기업 최신 동향}</p>
+  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong></p>
+
+  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
+  <p>{국내 업종 트렌드 — 2~3 문단}</p>
+
+  <p><strong>대표주 동향</strong></p>
+  <p>{KR 대표 기업 최신 동향 — 2~3 문단}</p>
 
   <!-- Subject 3: 국가 심층 분석 -->
   <h3 style="color:#F58220;margin:16px 0 12px">🎯 {국가명} 시장 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
-  <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {주가지수 흐름 + 경제지표 + 정책}<br><br>
-  <strong>대표주 동향</strong>: {COUNTRY_REP_STOCKS 기업 최신 동향}</p>
+  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong></p>
+
+  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
+  <p>{주가지수 흐름 + 경제지표 + 정책 — 2~3 문단}</p>
+
+  <p><strong>대표 지수·지표 동향</strong></p>
+  <p>{COUNTRY_REP_STOCKS 기업 또는 지수 동향 — 2~3 문단}</p>
 
   <!-- 핵심 포인트 3가지 -->
   <h3 style="color:#F58220;margin:16px 0 12px">💡 핵심 포인트 3가지</h3>
-  <p>① <strong>{US섹터 — 핵심 메시지}</strong>: {초보자 설명 1~2문장}<br><br>
-  ② <strong>{KR섹터 — 핵심 메시지}</strong>: {초보자 설명 1~2문장}<br><br>
-  ③ <strong>{국가 — 핵심 메시지}</strong>: {초보자 설명 1~2문장}</p>
+  <p>① <strong>{US섹터 — 핵심 메시지}</strong></p>
+  <p>{초보자 설명 1~2문장}</p>
+
+  <p>② <strong>{KR섹터 — 핵심 메시지}</strong></p>
+  <p>{초보자 설명 1~2문장}</p>
+
+  <p>③ <strong>{국가 — 핵심 메시지}</strong></p>
+  <p>{초보자 설명 1~2문장}</p>
 
   <div style="font-size:11px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:8px">
     출처: Tavily 뉴스 검색 + 계량 신호 (history/market_data.csv) · {date} ({period}) · 섹터 Day {sector_day}/11 · 국가 Day {country_day}/10
