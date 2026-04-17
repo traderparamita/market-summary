@@ -24,13 +24,14 @@ Market Story 작성 규칙·절차는 **`market-summary` 스킬**에 있다 (Sto
 ## 구조
 
 ```
-collect_market.py    # 시장 데이터 수집 전용 - TICKERS/INDICATOR_CODES + fetch_data/build_report_data
-generate.py          # HTML 보고서 생성 전용 - collect_market에서 수집 함수 import + Snowflake dual-write
-generate_periodic.py # 주간/월간 집계 보고서 생성
-snowflake_loader.py  # CSV ↔ Snowflake MKT100_MARKET_DAILY 적재 유틸 (bulk / upsert)
-simulate.py          # 과거 날짜 시뮬레이션
-inject_stories.py    # 시뮬레이션 보고서에 Story 주입
-gen_assets.py        # favicon 등 assets 생성
+collect_market.py         # 시장 데이터 수집 전용 - TICKERS/INDICATOR_CODES + fetch_data/build_report_data
+generate.py               # HTML 보고서 생성 전용 - collect_market에서 수집 함수 import + Snowflake dual-write
+generate_periodic.py      # 주간/월간 집계 보고서 생성
+generate_sector_country.py # 섹터·국가 초보자 보고서 생성 (11일 사이클, /sector-country 커맨드)
+snowflake_loader.py       # CSV ↔ Snowflake MKT100_MARKET_DAILY 적재 유틸 (bulk / upsert)
+simulate.py               # 과거 날짜 시뮬레이션
+inject_stories.py         # 시뮬레이션 보고서에 Story 주입
+gen_assets.py             # favicon 등 assets 생성
 history/market_data.csv       # 일별 시계열 (10컬럼 대문자, Snowflake MKT100_MARKET_DAILY 1:1)
 history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
 
@@ -126,6 +127,11 @@ output/
 │   └── monthly/
 │       ├── YYYY-MM.html
 │       └── YYYY-MM_story.html
+├── sector-country/              # 섹터·국가 초보자 포지셔닝 보고서 (11일 사이클)
+│   └── daily/
+│       └── YYYY-MM/
+│           ├── YYYY-MM-DD.html       # Data + Story 탭 (섹터 Day N/11 · 국가 Day M/11)
+│           └── YYYY-MM-DD_story.html
 ├── portfolio/                   # Portfolio Agent
 │   └── aimvp/
 │       └── YYYY-MM-DD.html     # 백테스트 리포트
@@ -317,4 +323,15 @@ python -m portfolio.view.allocation_view --date YYYY-MM-DD --html
 
 - `.claude/settings.json`: Market Story 시간 정확성 검증 훅 3개 (PreToolUse WebSearch, PreToolUse Edit, PostToolUse Write)
 - `.claude/skills/market-summary/SKILL.md`: Story 작성 규칙·절차 (Story 작업 시 자동 로드)
-- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`
+- `.claude/skills/sector-country/SKILL.md`: 섹터·국가 보고서 작성 규칙 (Tavily 검색 전략, 초보자 언어 변환, 품질 기준)
+- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/sector-country`
+
+## 섹터·국가 사이클
+
+`generate_sector_country.py`의 `get_focus(date)` 로 자동 계산. 섹터(11일)·국가(11일) 사이클 모두 **기준일 2026-01-05** 영업일 기준으로 독립 순환.
+
+국가 사이클: KR(1) · US(2) · CN(3) · JP(4) · EU(5) · KR(6) · US(7) · CN(8) · UK(9) · IN(10) · EM(11)
+
+- 각 국가 차트는 해당 국가의 고유 지수를 표시 (`portfolio/view/country_view.py` `COUNTRIES` dict의 `eq_code` 사용)
+- 이전 보고서 링크 레이블: `↩ 이전 보고서` (날짜·타입 불포함)
+- `_country_prev_date()`: `get_focus()` 역방향 스캔으로 이전 사이클 날짜 탐색 (idx 산술 불사용)
