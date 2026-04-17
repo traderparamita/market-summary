@@ -1236,20 +1236,29 @@ def inject_story(html_path: str, story_html: str, focus: dict = None, date_str: 
         except Exception:
             pass
 
-    # story-content 내부 추출 (story-content div와 story-section div의 닫힘 태그 2개를 제외한 나머지)
+    # focus에서 오늘 주제 키워드 추출 (차트 매칭용)
+    us_keywords: list[str] = []
+    kr_keywords: list[str] = []
+    country_keywords: list[str] = []
+    if focus:
+        for s in focus.get("subjects", []):
+            kind = s.get("type", "")
+            if kind == "us_sector":
+                us_keywords += [s.get("etf", ""), s.get("name", "")]
+            elif kind == "kr_sector":
+                kr_keywords += [s.get("etf", ""), s.get("name", ""), s.get("ticker", "")]
+            elif kind == "country":
+                country_keywords += [s.get("name", ""), s.get("flag", "")]
+
+    # story-content 내부 추출
     story_match = re.search(r'<div class="story-content">(.*)</div>\s*</div>\s*$', story_html, re.DOTALL)
     if not story_match:
-        # 파싱 실패 → 차트 없이 그대로 삽입 (div 균형 보정만)
+        # 파싱 실패 → div 균형 보정 후 삽입
         opens = story_html.count('<div')
         closes = story_html.count('</div>')
         if opens > closes:
             story_html = story_html.rstrip() + '\n' + '</div>\n' * (opens - closes)
-        replaced = content.replace(STORY_PLACEHOLDER, story_html, 1)
-        replaced = re.sub(
-            r'<div class="story-section"[^>]*?style="display:none"[^>]*>.*?</div>\s*</div>',
-            '', replaced, count=1, flags=re.DOTALL
-        )
-        p.write_text(replaced, encoding="utf-8")
+        _do_replace(p, content, story_html)
         return
 
     story_inner = story_match.group(1)
@@ -1281,24 +1290,54 @@ def inject_story(html_path: str, story_html: str, focus: dict = None, date_str: 
         text = sections[i + 1] if i + 1 < len(sections) else ''
         rebuilt += text
 
-        # h3 내용으로 차트 결정
-        if ('XLF' in part or '미국 금융' in part) and 'us' in charts:
+        # h3 내용으로 차트 결정 — focus 키워드 동적 매칭
+        def _kw_match(kws: list[str]) -> bool:
+            return any(k and k in part for k in kws)
+
+        if _kw_match(us_keywords) and 'us' in charts:
             rebuilt += charts['us']
-        elif ('TIGER' in part or '한국 금융' in part) and 'kr' in charts:
+        elif _kw_match(kr_keywords) and 'kr' in charts:
             rebuilt += charts['kr']
-        elif '미국 시장' in part and 'country' in charts:
+        elif _kw_match(country_keywords) and 'country' in charts:
             rebuilt += charts['country']
+        # fallback: 키워드 없으면 h3 순서로 배분 (1→us, 2→kr, 3→country)
+        elif not (us_keywords or kr_keywords or country_keywords) and charts:
+            h3_idx = sum(1 for s in sections[:i] if s.startswith('<h3'))
+            if h3_idx == 0 and 'us' in charts:
+                rebuilt += charts['us']
+            elif h3_idx == 1 and 'kr' in charts:
+                rebuilt += charts['kr']
+            elif h3_idx == 2 and 'country' in charts:
+                rebuilt += charts['country']
 
         i += 2  # h3 + 내용 함께 소비
 
     rebuilt += '</div>\n</div>\n'
 
-    replaced = content.replace(STORY_PLACEHOLDER, rebuilt, 1)
-    replaced = re.sub(
-        r'<div class="story-section"[^>]*?style="display:none"[^>]*>.*?</div>\s*</div>',
-        '', replaced, count=1, flags=re.DOTALL
-    )
+    _do_replace(p, content, rebuilt)
+
+
+def _do_replace(p: Path, content: str, new_story: str) -> None:
+    """STORY_PLACEHOLDER 교체. 없으면 기존 story-section 블록을 통째로 교체."""
+    import re
+    if STORY_PLACEHOLDER in content:
+        replaced = content.replace(STORY_PLACEHOLDER, new_story, 1)
+        replaced = re.sub(
+            r'<div class="story-section"[^>]*?style="display:none"[^>]*>.*?</div>\s*</div>',
+            '', replaced, count=1, flags=re.DOTALL
+        )
+    else:
+        # 이미 주입된 HTML — story-section 블록을 새 내용으로 교체
+        replaced = re.sub(
+            r'<div class="story-section"[^>]*>.*?</div>\s*</div>',
+            new_story.rstrip(),
+            content, count=1, flags=re.DOTALL
+        )
     p.write_text(replaced, encoding="utf-8")
+    # _story.html 저장
+    m = re.search(r'(<div class="story-content">.*?</div>\s*</div>)', new_story, re.DOTALL)
+    if m:
+        _save_story_file(p, m.group(1))
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────
