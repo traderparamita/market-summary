@@ -225,9 +225,20 @@ def get_focus(date_str: str) -> dict:
     sector_slot  = SECTOR_ROTATION[sector_idx]
     country_slot = COUNTRY_ROTATION[country_idx]
 
-    # 이전 사이클 날짜 계산
-    prev_sector_date  = (d - __import__('datetime').timedelta(days=len(SECTOR_ROTATION))).isoformat()
-    prev_country_date = (d - __import__('datetime').timedelta(days=len(COUNTRY_ROTATION))).isoformat()
+    # 이전 사이클 날짜 계산 (영업일 기준 역산)
+    from datetime import timedelta as _td
+    def _prev_biz_date(start: date, biz_days: int) -> date:
+        """start에서 biz_days 영업일 전 날짜를 반환 (주말 건너뜀)."""
+        cur = start
+        counted = 0
+        while counted < biz_days:
+            cur -= _td(days=1)
+            if cur.weekday() < 5:  # 0=Mon … 4=Fri
+                counted += 1
+        return cur
+
+    prev_sector_date  = _prev_biz_date(d, len(SECTOR_ROTATION)).isoformat()
+    prev_country_date = _prev_biz_date(d, len(COUNTRY_ROTATION)).isoformat()
 
     country_subject = {
         "type": "country",
