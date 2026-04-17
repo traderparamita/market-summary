@@ -1160,8 +1160,8 @@ def _load_story_chart_data(date_str: str, focus: dict) -> dict:
 
     # 국가 지수 (focus 국가에 맞는 eq_code 사용)
     try:
-        from portfolio.view.country_view import COUNTRY_INFO
-        country_eq_code = COUNTRY_INFO.get(focus_country_code, {}).get("eq_code", "EQ_SP500") if focus_country_code else "EQ_SP500"
+        from portfolio.view.country_view import COUNTRIES
+        country_eq_code = COUNTRIES.get(focus_country_code, {}).get("eq_code", "EQ_SP500") if focus_country_code else "EQ_SP500"
     except Exception:
         country_eq_code = "EQ_SP500"
     country_series = _load_price_series(country_eq_code, date_str, 60)
