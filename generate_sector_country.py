@@ -2,7 +2,11 @@
 
 compute_sector_view() + compute_country_view() 데이터를 결합해
 초보자 친화 HTML Data Dashboard를 생성한다.
-하루 2개 주제(섹터 페어 or 국가 페어)를 15일 사이클로 로테이션.
+
+사이클 구조:
+  - 섹터: 11일 사이클 (US SPDR 11개 × KR TIGER 200 11개 1:1 페어)
+  - 국가: 10일 독립 사이클 (한국·미국 5일 간격 2회 반복)
+  - 하루에 섹터 2개(US + KR) + 국가 1개 = 3개 주제
 
 Usage:
     python generate_sector_country.py 2026-04-16        # daily (자동 주제 선택)
@@ -29,180 +33,220 @@ from portfolio.view.country_view import compute_country_view, COUNTRIES
 OUTPUT_ROOT = ROOT / "output" / "sector-country"
 HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
-# ── 15일 로테이션 사이클 ──────────────────────────────────────────────────
-# 기준일: 2026-01-05 (월요일) → day 0
+# ── 사이클 기준일 ─────────────────────────────────────────────────────────
+# 섹터: 11일 사이클 / 국가: 10일 독립 사이클
+# 기준일: 2026-01-05 (월요일)
 
 REFERENCE_DATE = date(2026, 1, 5)
 
-# subject type: "us_sector" | "kr_sector" | "country"
-ROTATION = [
-    # ── 섹터 페어 (US + KR 대응) ─────────────────────────────────────────
+# ── 대표 주식 정의 ─────────────────────────────────────────────────────────
+# 각 섹터/국가별 대표 주식 3~5개 (code, 이름, 시가총액 기준 상위)
+SECTOR_REP_STOCKS = {
+    # US 섹터
+    "SC_US_TECH":    [("NVDA", "NVIDIA"), ("AAPL", "Apple"), ("MSFT", "Microsoft"), ("AVGO", "Broadcom")],
+    "SC_US_COMM":    [("GOOGL", "Alphabet"), ("META", "Meta"), ("NFLX", "Netflix"), ("DIS", "Disney")],
+    "SC_US_FIN":     [("JPM", "JPMorgan"), ("BAC", "Bank of America"), ("V", "Visa"), ("MS", "Morgan Stanley")],
+    "SC_US_ENERGY":  [("XOM", "ExxonMobil"), ("CVX", "Chevron"), ("COP", "ConocoPhillips"), ("SLB", "Schlumberger")],
+    "SC_US_HEALTH":  [("UNH", "UnitedHealth"), ("LLY", "Eli Lilly"), ("JNJ", "J&J"), ("PFE", "Pfizer")],
+    "SC_US_INDU":    [("GE", "GE Aerospace"), ("CAT", "Caterpillar"), ("RTX", "RTX"), ("HON", "Honeywell")],
+    "SC_US_MATL":    [("LIN", "Linde"), ("APD", "Air Products"), ("FCX", "Freeport-McMoRan"), ("NEM", "Newmont")],
+    "SC_US_DISCR":   [("AMZN", "Amazon"), ("TSLA", "Tesla"), ("HD", "Home Depot"), ("MCD", "McDonald's")],
+    "SC_US_STAPLES": [("PG", "P&G"), ("KO", "Coca-Cola"), ("PEP", "PepsiCo"), ("WMT", "Walmart")],
+    "SC_US_UTIL":    [("NEE", "NextEra Energy"), ("SO", "Southern Co"), ("DUK", "Duke Energy")],
+    "SC_US_REIT":    [("PLD", "Prologis"), ("AMT", "American Tower"), ("EQIX", "Equinix")],
+    # KR 섹터
+    "SC_KR_CONSTR":  [("000720.KS", "현대건설"), ("047040.KS", "대우건설"), ("000080.KS", "하이트진로건설")],
+    "SC_KR_DISCR":   [("005380.KS", "현대차"), ("000270.KS", "기아"), ("012330.KS", "현대모비스")],
+    "SC_KR_FIN":     [("055550.KS", "신한지주"), ("105560.KS", "KB금융"), ("086790.KS", "하나금융지주")],
+    "SC_KR_INDU":    [("042660.KS", "한화오션"), ("329180.KS", "HD현대중공업"), ("010140.KS", "삼성중공업")],
+    "SC_KR_STAPLES": [("097950.KS", "CJ제일제당"), ("271560.KS", "오리온"), ("004370.KS", "농심")],
+    "SC_KR_ENERGY":  [("051910.KS", "LG화학"), ("011170.KS", "롯데케미칼"), ("096770.KS", "SK이노베이션")],
+    "SC_KR_HEAVY":   [("047050.KS", "포스코인터내셔널"), ("012450.KS", "한화에어로스페이스"), ("064350.KS", "현대로템")],
+    "SC_KR_STEEL":   [("005490.KS", "POSCO홀딩스"), ("004020.KS", "현대제철"), ("010060.KS", "OCI홀딩스")],
+    "SC_KR_COMM":    [("017670.KS", "SK텔레콤"), ("030200.KS", "KT"), ("032640.KS", "LG유플러스")],
+    "SC_KR_HLTH":    [("068270.KS", "셀트리온"), ("207940.KS", "삼성바이오로직스"), ("128940.KS", "한미약품")],
+    "SC_KR_IT":      [("005930.KS", "삼성전자"), ("000660.KS", "SK하이닉스"), ("066570.KS", "LG전자")],
+}
+
+# 국가별 대표 주식/지수 구성종목
+COUNTRY_REP_STOCKS = {
+    "KR": [("005930.KS", "삼성전자"), ("000660.KS", "SK하이닉스"), ("005380.KS", "현대차"), ("051910.KS", "LG화학")],
+    "US": [("AAPL", "Apple"), ("MSFT", "Microsoft"), ("NVDA", "NVIDIA"), ("AMZN", "Amazon")],
+    "JP": [("7203.T", "Toyota"), ("6758.T", "Sony"), ("9984.T", "SoftBank"), ("6861.T", "Keyence")],
+    "CN": [("0700.HK", "Tencent"), ("9988.HK", "Alibaba"), ("3690.HK", "Meituan"), ("1810.HK", "Xiaomi")],
+    "EU": [("ASML", "ASML"), ("MC.PA", "LVMH"), ("SAP", "SAP"), ("NESN.SW", "Nestlé")],
+    "UK": [("SHEL.L", "Shell"), ("AZN.L", "AstraZeneca"), ("HSBA.L", "HSBC"), ("BP.L", "BP")],
+    "IN": [("RELIANCE.NS", "Reliance"), ("TCS.NS", "TCS"), ("INFY.NS", "Infosys"), ("HDFCBANK.NS", "HDFC Bank")],
+    "EM": [("TSM", "TSMC"), ("005930.KS", "삼성전자"), ("BABA", "Alibaba"), ("VALE3.SA", "Vale")],
+}
+
+# ── 섹터 11일 로테이션 ─────────────────────────────────────────────────────
+# US SPDR 11개 × KR TIGER 200 11개 1:1 페어
+SECTOR_ROTATION = [
     {
-        "day": 1,
-        "theme": "기술·반도체",
-        "theme_en": "Technology & Semiconductor",
-        "type": "sector_pair",
+        "sector_day": 1,
+        "theme": "기술·IT",
+        "theme_en": "Technology & IT",
         "subjects": [
-            {"type": "us_sector", "code": "SC_US_TECH",   "name": "Technology",   "etf": "XLK"},
-            {"type": "kr_sector", "code": "SC_KR_SEMI",   "name": "반도체",        "etf": "TIGER 반도체",        "ticker": "277630.KS"},
+            {"type": "us_sector", "code": "SC_US_TECH",  "name": "Technology",   "etf": "XLK"},
+            {"type": "kr_sector", "code": "SC_KR_IT",    "name": "IT",           "etf": "TIGER 200 IT",               "ticker": "364980.KS"},
         ],
     },
     {
-        "day": 2,
+        "sector_day": 2,
+        "theme": "통신·커뮤니케이션",
+        "theme_en": "Communication Services",
+        "subjects": [
+            {"type": "us_sector", "code": "SC_US_COMM",    "name": "Communication",  "etf": "XLC"},
+            {"type": "kr_sector", "code": "SC_KR_COMM",   "name": "커뮤니케이션서비스", "etf": "TIGER 200 커뮤니케이션서비스", "ticker": "364990.KS"},
+        ],
+    },
+    {
+        "sector_day": 3,
         "theme": "금융",
         "theme_en": "Financials",
-        "type": "sector_pair",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_FIN",    "name": "Financials",   "etf": "XLF"},
-            {"type": "kr_sector", "code": "SC_KR_FIN",    "name": "금융",          "etf": "TIGER 200 금융",      "ticker": "435420.KS"},
+            {"type": "kr_sector", "code": "SC_KR_FIN",    "name": "금융",          "etf": "TIGER 200 금융",              "ticker": "435420.KS"},
         ],
     },
     {
-        "day": 3,
+        "sector_day": 4,
         "theme": "에너지·화학",
         "theme_en": "Energy & Chemicals",
-        "type": "sector_pair",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_ENERGY", "name": "Energy",       "etf": "XLE"},
-            {"type": "kr_sector", "code": "SC_KR_ENERGY", "name": "에너지화학",   "etf": "TIGER 200 에너지화학", "ticker": "472170.KS"},
+            {"type": "kr_sector", "code": "SC_KR_ENERGY", "name": "에너지화학",    "etf": "TIGER 200 에너지화학",         "ticker": "472170.KS"},
         ],
     },
     {
-        "day": 4,
+        "sector_day": 5,
         "theme": "헬스케어",
         "theme_en": "Health Care",
-        "type": "sector_pair",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_HEALTH", "name": "Health Care",  "etf": "XLV"},
-            {"type": "kr_sector", "code": "SC_KR_BIO",    "name": "헬스케어",      "etf": "TIGER 헬스케어",      "ticker": "166400.KS"},
+            {"type": "kr_sector", "code": "SC_KR_HLTH",   "name": "헬스케어",      "etf": "TIGER 200 헬스케어",           "ticker": "227570.KS"},
         ],
     },
     {
-        "day": 5,
+        "sector_day": 6,
         "theme": "산업재",
         "theme_en": "Industrials",
-        "type": "sector_pair",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_INDU",   "name": "Industrials",  "etf": "XLI"},
-            {"type": "kr_sector", "code": "SC_KR_INDU",   "name": "산업재",        "etf": "TIGER 200 산업재",    "ticker": "227560.KS"},
+            {"type": "kr_sector", "code": "SC_KR_INDU",   "name": "산업재",        "etf": "TIGER 200 산업재",             "ticker": "227560.KS"},
         ],
     },
     {
-        "day": 6,
-        "theme": "소재·2차전지",
-        "theme_en": "Materials & Battery",
-        "type": "sector_pair",
+        "sector_day": 7,
+        "theme": "소재·중공업",
+        "theme_en": "Materials & Heavy Industry",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_MATL",   "name": "Materials",    "etf": "XLB"},
-            {"type": "kr_sector", "code": "SC_KR_BATTERY","name": "2차전지",       "etf": "TIGER 2차전지테마",   "ticker": "137610.KS"},
+            {"type": "kr_sector", "code": "SC_KR_HEAVY",  "name": "중공업",        "etf": "TIGER 200 중공업",             "ticker": "157490.KS"},
         ],
     },
-    # ── KR 대응 없는 US 섹터 묶음 ──────────────────────────────────────────
     {
-        "day": 7,
-        "theme": "소비재 (임의·필수)",
-        "theme_en": "Consumer (Discretionary & Staples)",
-        "type": "sector_pair",
+        "sector_day": 8,
+        "theme": "경기소비재",
+        "theme_en": "Consumer Discretionary",
         "subjects": [
-            {"type": "us_sector", "code": "SC_US_DISCR",   "name": "Consumer Discr.", "etf": "XLY"},
-            {"type": "us_sector", "code": "SC_US_STAPLES", "name": "Consumer Staples","etf": "XLP"},
+            {"type": "us_sector", "code": "SC_US_DISCR",  "name": "Consumer Discr.", "etf": "XLY"},
+            {"type": "kr_sector", "code": "SC_KR_DISCR",  "name": "경기소비재",      "etf": "TIGER 200 경기소비재",        "ticker": "227540.KS"},
         ],
-        "kr_note": "한국에는 직접 대응 TIGER ETF 없음 — KOSPI 소비재 업종 참조",
     },
     {
-        "day": 8,
-        "theme": "유틸리티·부동산",
-        "theme_en": "Utilities & Real Estate",
-        "type": "sector_pair",
+        "sector_day": 9,
+        "theme": "생활소비재",
+        "theme_en": "Consumer Staples",
+        "subjects": [
+            {"type": "us_sector", "code": "SC_US_STAPLES","name": "Consumer Staples","etf": "XLP"},
+            {"type": "kr_sector", "code": "SC_KR_STAPLES","name": "생활소비재",      "etf": "TIGER 200 생활소비재",        "ticker": "227550.KS"},
+        ],
+    },
+    {
+        "sector_day": 10,
+        "theme": "유틸리티·철강소재",
+        "theme_en": "Utilities & Steel/Materials",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_UTIL",   "name": "Utilities",    "etf": "XLU"},
+            {"type": "kr_sector", "code": "SC_KR_STEEL",  "name": "철강소재",      "etf": "TIGER 200 철강소재",           "ticker": "494840.KS"},
+        ],
+    },
+    {
+        "sector_day": 11,
+        "theme": "부동산·건설",
+        "theme_en": "Real Estate & Construction",
+        "subjects": [
             {"type": "us_sector", "code": "SC_US_REIT",   "name": "Real Estate",  "etf": "XLRE"},
-        ],
-        "kr_note": "한국에는 직접 대응 TIGER ETF 없음 — 국내 리츠·한국전력 참조",
-    },
-    {
-        "day": 9,
-        "theme": "통신·미디어",
-        "theme_en": "Communication Services",
-        "type": "sector_pair",
-        "subjects": [
-            {"type": "us_sector", "code": "SC_US_COMM",   "name": "Communication", "etf": "XLC"},
-            {"type": "kr_sector", "code": "SC_KR_SEMI",   "name": "반도체 (IT·통신 연계)", "etf": "TIGER 반도체", "ticker": "277630.KS"},
-        ],
-        "kr_note": "한국 통신 ETF 없음 — 반도체·IT 업종과 연계해 해설",
-    },
-    # ── KR 단독 페어 ───────────────────────────────────────────────────────
-    {
-        "day": 10,
-        "theme": "은행·철강소재",
-        "theme_en": "Banking & Steel/Materials (KR)",
-        "type": "kr_pair",
-        "subjects": [
-            {"type": "kr_sector", "code": "SC_KR_BANK",  "name": "은행",     "etf": "TIGER 은행",          "ticker": "261140.KS"},
-            {"type": "kr_sector", "code": "SC_KR_STEEL", "name": "철강소재", "etf": "TIGER 200 철강소재",  "ticker": "494840.KS"},
-        ],
-        "us_note": "US 대응: XLF (금융), XLB (소재)",
-    },
-    {
-        "day": 11,
-        "theme": "의료기기·건설",
-        "theme_en": "Medical Device & Construction (KR)",
-        "type": "kr_pair",
-        "subjects": [
-            {"type": "kr_sector", "code": "SC_KR_HEALTH",  "name": "의료기기", "etf": "TIGER 의료기기",    "ticker": "400970.KS"},
-            {"type": "kr_sector", "code": "SC_KR_CONSTR",  "name": "건설",     "etf": "TIGER 200 건설",   "ticker": "139270.KS"},
-        ],
-        "us_note": "US 대응: XLV (헬스케어), XLI (산업재)",
-    },
-    # ── 국가 페어 ──────────────────────────────────────────────────────────
-    {
-        "day": 12,
-        "theme": "미국·한국",
-        "theme_en": "United States & South Korea",
-        "type": "country_pair",
-        "subjects": [
-            {"type": "country", "code": "US", "name": "미국",  "flag": "🇺🇸"},
-            {"type": "country", "code": "KR", "name": "한국",  "flag": "🇰🇷"},
-        ],
-    },
-    {
-        "day": 13,
-        "theme": "일본·중국",
-        "theme_en": "Japan & China",
-        "type": "country_pair",
-        "subjects": [
-            {"type": "country", "code": "JP", "name": "일본",  "flag": "🇯🇵"},
-            {"type": "country", "code": "CN", "name": "중국",  "flag": "🇨🇳"},
-        ],
-    },
-    {
-        "day": 14,
-        "theme": "유럽·영국",
-        "theme_en": "Europe & United Kingdom",
-        "type": "country_pair",
-        "subjects": [
-            {"type": "country", "code": "EU", "name": "유럽",  "flag": "🇪🇺"},
-            {"type": "country", "code": "UK", "name": "영국",  "flag": "🇬🇧"},
-        ],
-    },
-    {
-        "day": 15,
-        "theme": "인도·신흥국",
-        "theme_en": "India & Emerging Markets",
-        "type": "country_pair",
-        "subjects": [
-            {"type": "country", "code": "IN", "name": "인도",   "flag": "🇮🇳"},
-            {"type": "country", "code": "EM", "name": "신흥국", "flag": "🌍"},
+            {"type": "kr_sector", "code": "SC_KR_CONSTR", "name": "건설",          "etf": "TIGER 200 건설",              "ticker": "139270.KS"},
         ],
     },
 ]
 
+# ── 국가 10일 로테이션 (섹터와 독립) ──────────────────────────────────────
+# 한국·미국 5일 간격으로 2회 반복
+COUNTRY_ROTATION = [
+    {"country_day": 1,  "code": "KR", "name": "한국",   "flag": "🇰🇷"},
+    {"country_day": 2,  "code": "US", "name": "미국",   "flag": "🇺🇸"},
+    {"country_day": 3,  "code": "CN", "name": "중국",   "flag": "🇨🇳"},
+    {"country_day": 4,  "code": "JP", "name": "일본",   "flag": "🇯🇵"},
+    {"country_day": 5,  "code": "EU", "name": "유럽",   "flag": "🇪🇺"},
+    {"country_day": 6,  "code": "KR", "name": "한국",   "flag": "🇰🇷"},
+    {"country_day": 7,  "code": "US", "name": "미국",   "flag": "🇺🇸"},
+    {"country_day": 8,  "code": "CN", "name": "중국",   "flag": "🇨🇳"},
+    {"country_day": 9,  "code": "IN", "name": "인도",   "flag": "🇮🇳"},
+    {"country_day": 10, "code": "EM", "name": "신흥국", "flag": "🌍"},
+]
+
 
 def get_focus(date_str: str) -> dict:
-    """날짜 → 오늘의 로테이션 슬롯."""
+    """날짜 → 오늘의 섹터(2개) + 국가(1개) 로테이션 슬롯.
+
+    반환 형식:
+    {
+        "sector_day": int,      # 1~11
+        "country_day": int,     # 1~10
+        "theme": str,           # 섹터 테마 (예: "기술·IT")
+        "country_name": str,    # 오늘의 국가 이름
+        "type": "sector_country",
+        "subjects": [us_sector_dict, kr_sector_dict, country_dict],
+        # 이전 사이클 링크용
+        "prev_sector_date": str | None,
+        "prev_country_date": str | None,
+    }
+    """
     d = date.fromisoformat(date_str)
-    idx = (d - REFERENCE_DATE).days % len(ROTATION)
-    return ROTATION[idx]
+    elapsed = (d - REFERENCE_DATE).days
+
+    sector_idx   = elapsed % len(SECTOR_ROTATION)
+    country_idx  = elapsed % len(COUNTRY_ROTATION)
+
+    sector_slot  = SECTOR_ROTATION[sector_idx]
+    country_slot = COUNTRY_ROTATION[country_idx]
+
+    # 이전 사이클 날짜 계산
+    prev_sector_date  = (d - __import__('datetime').timedelta(days=len(SECTOR_ROTATION))).isoformat()
+    prev_country_date = (d - __import__('datetime').timedelta(days=len(COUNTRY_ROTATION))).isoformat()
+
+    country_subject = {
+        "type": "country",
+        "code": country_slot["code"],
+        "name": country_slot["name"],
+        "flag": country_slot["flag"],
+    }
+
+    return {
+        "sector_day":        sector_slot["sector_day"],
+        "country_day":       country_slot["country_day"],
+        "theme":             sector_slot["theme"],
+        "theme_en":          sector_slot["theme_en"],
+        "country_name":      country_slot["name"],
+        "type":              "sector_country",
+        "subjects":          sector_slot["subjects"] + [country_subject],
+        "prev_sector_date":  prev_sector_date,
+        "prev_country_date": prev_country_date,
+    }
 
 
 # ── 초보자 언어 변환 ──────────────────────────────────────────────────────
@@ -238,106 +282,29 @@ CYCLE_COLOR = {
 }
 
 
-def _ma_pct(last: float, ma: float) -> float:
-    """현재가의 MA 대비 괴리율 (%)."""
-    if ma == 0:
-        return float("nan")
-    return (last / ma - 1) * 100
-
-
-def _ma_dir(pct: float) -> tuple[str, str]:
-    """괴리율 → (방향기호, 색상). ±1% 이내는 '→' 중립."""
-    if math.isnan(pct):
-        return "—", "#94a3b8"
-    if pct > 1.0:
-        return "▲", "#16a34a"
-    if pct < -1.0:
-        return "▼", "#dc2626"
-    return "→", "#d97706"
-
-
-def _ma_row_html(label: str, pct) -> str:
-    """MA 한 줄 HTML (라벨 + 방향 + 괴리율)."""
-    if pct is None or (isinstance(pct, float) and math.isnan(pct)):
-        return (
-            f'<div class="ma-row">'
-            f'<span class="ma-label">{label}</span>'
-            f'<span class="ma-val" style="color:#94a3b8">데이터 없음</span>'
-            f'</div>'
-        )
-    arrow, color = _ma_dir(pct)
-    return (
-        f'<div class="ma-row">'
-        f'<span class="ma-label">{label}</span>'
-        f'<span class="ma-val" style="color:{color}">{arrow} {pct:+.1f}%</span>'
-        f'</div>'
+def _rep_stocks_html(code: str, is_country: bool = False) -> str:
+    """대표 주식 칩 HTML."""
+    stocks = (COUNTRY_REP_STOCKS if is_country else SECTOR_REP_STOCKS).get(code, [])
+    if not stocks:
+        return ""
+    chips = "".join(
+        f'<span class="rep-stock">{name}</span>'
+        for _, name in stocks
     )
+    return f'<div class="rep-stocks">{chips}</div>'
 
 
-def _trend_label(pct20, pct60, pct200) -> tuple[str, str]:
-    """MA20/60/200 방향 조합 → (한글 요약, 색상)."""
-    def _sig(p):
-        if p is None or (isinstance(p, float) and math.isnan(p)):
-            return 0
-        return 1 if p > 1.0 else (-1 if p < -1.0 else 0)
-
-    s20, s60, s200 = _sig(pct20), _sig(pct60), _sig(pct200)
-    if s20 == 1 and s60 == 1 and s200 == 1:
-        return "단기·중기·장기 모두 상승", "#16a34a"
-    if s20 == 1 and s60 == 1 and s200 <= 0:
-        return "단기·중기 강세, 장기 회복 중", "#65a30d"
-    if s20 == 1 and s60 <= 0 and s200 <= 0:
-        return "단기 반등, 중기·장기 약세", "#d97706"
-    if s20 == -1 and s60 == -1 and s200 == -1:
-        return "전 구간 하락 추세", "#dc2626"
-    if s20 == -1 and s60 == -1 and s200 >= 0:
-        return "단기·중기 약세, 장기 지지선", "#f97316"
-    if s20 == -1 and s60 >= 0 and s200 >= 0:
-        return "단기 조정, 중기·장기 상승 유지", "#eab308"
-    return "추세 혼조", "#94a3b8"
-
-
-# ── MA 데이터 계산 ────────────────────────────────────────────────────────
-
-def _load_prices_for_ma(date_str: str) -> pd.DataFrame:
-    """HISTORY_CSV에서 date_str 이하 가격 데이터를 피벗해 반환."""
-    df = pd.read_csv(HISTORY_CSV, parse_dates=["DATE"])
-    df = df[df["DATE"] <= pd.Timestamp(date_str)]
-    pivot = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE", aggfunc="last")
-    pivot = pivot.sort_index()
-    return pivot
-
-
-def _calc_ma_data(px: pd.Series) -> dict:
-    """MA20/60/200 및 현재가 대비 괴리율 계산."""
-    px = px.dropna()
-    if px.empty:
-        return {"last": None, "pct20": float("nan"), "pct60": float("nan"), "pct200": float("nan")}
-    last = float(px.iloc[-1])
-    ma20  = float(px.tail(20).mean())  if len(px) >= 20  else float("nan")
-    ma60  = float(px.tail(60).mean())  if len(px) >= 60  else float("nan")
-    ma200 = float(px.tail(200).mean()) if len(px) >= 200 else float("nan")
-    return {
-        "last":   last,
-        "ma20":   round(ma20, 4)  if not math.isnan(ma20)  else float("nan"),
-        "ma60":   round(ma60, 4)  if not math.isnan(ma60)  else float("nan"),
-        "ma200":  round(ma200, 4) if not math.isnan(ma200) else float("nan"),
-        "pct20":  round(_ma_pct(last, ma20), 2)  if not math.isnan(ma20)  else float("nan"),
-        "pct60":  round(_ma_pct(last, ma60), 2)  if not math.isnan(ma60)  else float("nan"),
-        "pct200": round(_ma_pct(last, ma200), 2) if not math.isnan(ma200) else float("nan"),
-    }
-
-
-def build_ma_map(date_str: str, sector_codes: list[str], country_codes: list[str]) -> dict[str, dict]:
-    """섹터·국가 지표코드 → MA 데이터 딕셔너리."""
-    prices = _load_prices_for_ma(date_str)
-    result = {}
-    for code in sector_codes + country_codes:
-        if code in prices.columns:
-            result[code] = _calc_ma_data(prices[code])
-        else:
-            result[code] = {"last": None, "pct20": float("nan"), "pct60": float("nan"), "pct200": float("nan")}
-    return result
+def _prev_cycle_link_html(prev_date: str, label: str) -> str:
+    """이전 사이클 보고서 링크 HTML."""
+    if not prev_date:
+        return ""
+    ym = prev_date[:7]
+    url = f"../../daily/{ym}/{prev_date}.html"
+    return (
+        f'<a href="{url}" class="prev-cycle-link" target="_blank">'
+        f'↩ 이전 사이클 ({prev_date}) {label}'
+        f'</a>'
+    )
 
 
 def _chg_span(v, na="—") -> str:
@@ -423,12 +390,6 @@ body {
   transition: box-shadow 0.2s;
 }
 .sector-card:hover, .country-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-/* MA200 기준 왼쪽 테두리 색상 */
-.sector-card.above200, .country-card.above200 { border-left: 4px solid #16a34a; }
-.sector-card.below200, .country-card.below200 { border-left: 4px solid #dc2626; }
-.sector-card.neutral200, .country-card.neutral200 { border-left: 4px solid #d97706; }
-.sector-card.nodata200, .country-card.nodata200  { border-left: 4px solid #94a3b8; }
-
 /* 오늘의 주제 하이라이트 */
 .sector-card.focus, .country-card.focus {
   border: 2px solid var(--orange) !important;
@@ -436,16 +397,20 @@ body {
   box-shadow: 0 0 0 3px rgba(245,130,32,0.12);
 }
 
-/* MA 블록 */
-.ma-block { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
-.ma-row   { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 2px 0; }
-.ma-label { color: var(--muted); font-size: 11px; min-width: 46px; }
-.ma-val   { font-weight: 700; font-size: 12px; }
-.trend-label {
-  margin-top: 6px; font-size: 11px; font-weight: 600;
-  padding: 3px 8px; border-radius: 4px; background: #f8fafc;
-  display: inline-block;
+/* 대표 주식 칩 */
+.rep-stocks { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.rep-stock  {
+  background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd;
+  border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600;
 }
+
+/* 이전 사이클 링크 */
+.prev-cycle-link {
+  display: inline-block; margin-top: 8px;
+  font-size: 11px; color: #6366f1; text-decoration: none;
+  background: #eef2ff; padding: 3px 8px; border-radius: 4px;
+}
+.prev-cycle-link:hover { background: #e0e7ff; text-decoration: underline; }
 .focus-star {
   background: var(--orange); color: #fff;
   padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
@@ -485,27 +450,31 @@ STORY_PLACEHOLDER = "<!-- STORY_PLACEHOLDER -->"
 # ── HTML 컴포넌트 ─────────────────────────────────────────────────────────
 
 def _focus_banner_html(focus: dict, date_str: str) -> str:
-    chips = "".join(
-        f'<span class="focus-chip">'
-        f'{"🇺🇸" if s["type"]=="us_sector" else ("🇰🇷" if s["type"]=="kr_sector" else s.get("flag","🌍"))} '
-        f'{s["name"]} ({s.get("etf","")}{(" "+s["ticker"]) if s.get("ticker") else ""})'
-        f'</span>'
-        for s in focus["subjects"]
-    )
-    note = ""
-    if focus.get("kr_note"):
-        note = f'<div style="font-size:11px;color:#bfdbfe;margin-top:8px">※ {focus["kr_note"]}</div>'
-    elif focus.get("us_note"):
-        note = f'<div style="font-size:11px;color:#bfdbfe;margin-top:8px">※ {focus["us_note"]}</div>'
+    chips = []
+    for s in focus["subjects"]:
+        if s["type"] == "country":
+            label = f'{s["flag"]} {s["name"]}'
+        elif s["type"] == "us_sector":
+            label = f'🇺🇸 {s["name"]} ({s.get("etf","")})'
+        else:
+            label = f'🇰🇷 {s["name"]} ({s.get("etf","")})'
+        chips.append(f'<span class="focus-chip">{label}</span>')
+    chips_html = "".join(chips)
+
+    sector_day   = focus.get("sector_day", "?")
+    country_day  = focus.get("country_day", "?")
+    country_name = focus.get("country_name", "")
 
     return f"""
 <div class="focus-banner">
   <div style="flex:1">
-    <div class="focus-label">🎯 오늘의 주제 (Day {focus["day"]} / 15)</div>
-    <div class="focus-theme">{focus["theme"]}</div>
+    <div class="focus-label">🎯 오늘의 주제</div>
+    <div class="focus-theme">{focus["theme"]} + {country_name}</div>
     <div class="focus-en">{focus["theme_en"]}</div>
-    <div class="focus-chips">{chips}</div>
-    {note}
+    <div class="focus-chips">{chips_html}</div>
+    <div style="font-size:11px;color:#bfdbfe;margin-top:8px">
+      섹터 Day {sector_day}/11 &nbsp;|&nbsp; 국가 Day {country_day}/10
+    </div>
   </div>
   <div class="focus-day">
     {date_str}<br>
@@ -514,23 +483,7 @@ def _focus_banner_html(focus: dict, date_str: str) -> str:
 </div>"""
 
 
-def _ma200_cls(pct200) -> str:
-    """MA200 괴리율 → CSS 클래스."""
-    if pct200 is None or (isinstance(pct200, float) and math.isnan(pct200)):
-        return "nodata200"
-    if pct200 > 1.0:
-        return "above200"
-    if pct200 < -1.0:
-        return "below200"
-    return "neutral200"
-
-
-def _sector_card_html(s: dict, ma: dict, is_focus: bool = False) -> str:
-    pct20  = ma.get("pct20",  float("nan"))
-    pct60  = ma.get("pct60",  float("nan"))
-    pct200 = ma.get("pct200", float("nan"))
-
-    ma200_cls  = _ma200_cls(pct200)
+def _sector_card_html(s: dict, is_focus: bool = False, prev_date: str = None) -> str:
     focus_cls  = " focus" if is_focus else ""
     focus_star = '<span class="focus-star">★ 오늘 주제</span>' if is_focus else ""
 
@@ -538,47 +491,37 @@ def _sector_card_html(s: dict, ma: dict, is_focus: bool = False) -> str:
     if s.get("ticker"):
         etf_line += f' ({s["ticker"]})'
 
-    tags = ""
-    peer = s.get("us_peer") or s.get("kr_peer")
-    if peer and not is_focus:
-        tags += f'<span class="tag">대응: {peer}</span>'
-
-    trend_txt, trend_color = _trend_label(pct20, pct60, pct200)
+    rep = _rep_stocks_html(s["code"])
+    prev_link = _prev_cycle_link_html(prev_date, "섹터 보고서") if is_focus and prev_date else ""
 
     return f"""
-<div class="sector-card {ma200_cls}{focus_cls}">
+<div class="sector-card{focus_cls}">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
     <span class="sc-name">{s.get('name', '')}</span>{focus_star}
   </div>
   <div class="sc-etf">{etf_line}</div>
-  <div class="tag-row">{tags}</div>
-  <div class="sc-metrics" style="margin-top:6px">
+  <div class="sc-metrics" style="margin-top:8px">
     <div class="sc-metric"><span class="mk">1개월</span>{_chg_span(s.get('mom_1m'))}</div>
     <div class="sc-metric"><span class="mk">3개월</span>{_chg_span(s.get('mom_3m'))}</div>
     <div class="sc-metric"><span class="mk">6개월</span>{_chg_span(s.get('mom_6m'))}</div>
   </div>
-  <div class="ma-block">
-    {_ma_row_html("MA20", pct20)}
-    {_ma_row_html("MA60", pct60)}
-    {_ma_row_html("MA200", pct200)}
-    <div><span class="trend-label" style="color:{trend_color}">{trend_txt}</span></div>
-  </div>
+  {rep}
+  {prev_link}
 </div>"""
 
 
-def _country_card_html(c: dict, ma: dict, is_focus: bool = False) -> str:
-    pct20  = ma.get("pct20",  float("nan"))
-    pct60  = ma.get("pct60",  float("nan"))
-    pct200 = ma.get("pct200", float("nan"))
-
-    ma200_cls  = _ma200_cls(pct200)
+def _country_card_html(c: dict, is_focus: bool = False, prev_date: str = None) -> str:
     focus_cls  = " focus" if is_focus else ""
     focus_star = '<span class="focus-star">★ 오늘 주제</span>' if is_focus else ""
 
-    trend_txt, trend_color = _trend_label(pct20, pct60, pct200)
+    rep = _rep_stocks_html(c.get("code", ""), is_country=True)
+    prev_link = _prev_cycle_link_html(prev_date, "국가 보고서") if is_focus and prev_date else ""
+
+    view_label = {"OW": "▲ 비중확대", "UW": "▼ 비중축소", "N": "→ 중립"}.get(c.get("view"), c.get("view", ""))
+    view_color = {"OW": "#16a34a", "UW": "#dc2626", "N": "#d97706"}.get(c.get("view"), "#64748b")
 
     return f"""
-<div class="country-card {ma200_cls}{focus_cls}">
+<div class="country-card{focus_cls}">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <span class="cc-flag">{c.get('flag', '')}</span>
     <div style="flex:1">
@@ -587,35 +530,18 @@ def _country_card_html(c: dict, ma: dict, is_focus: bool = False) -> str:
       </div>
       <div style="font-size:11px;color:#64748b">{c.get('fund_type', '')}</div>
     </div>
+    <span style="font-weight:700;font-size:12px;color:{view_color}">{view_label}</span>
   </div>
   <div class="sc-metrics">
     <div class="sc-metric"><span class="mk">3개월</span>{_chg_span(c.get('mom_3m'))}</div>
     <div class="sc-metric"><span class="mk">6개월</span>{_chg_span(c.get('mom_6m'))}</div>
   </div>
-  <div class="ma-block">
-    {_ma_row_html("MA20", pct20)}
-    {_ma_row_html("MA60", pct60)}
-    {_ma_row_html("MA200", pct200)}
-    <div><span class="trend-label" style="color:{trend_color}">{trend_txt}</span></div>
-  </div>
+  {rep}
+  {prev_link}
 </div>"""
 
 
-def _summary_cards_html(sv: dict, cv: dict, ma_map: dict) -> str:
-    # 섹터 코드 목록 수집
-    us_codes = [s["code"] for s in sv["us_sectors"]]
-    kr_codes = [s["code"] for s in sv["kr_sectors"]]
-    country_eq_codes = [COUNTRIES[c["code"]]["eq_code"] for c in cv["countries"] if c["code"] in COUNTRIES]
-
-    def _above200(code):
-        ma = ma_map.get(code, {})
-        p = ma.get("pct200", float("nan"))
-        return not (p is None or (isinstance(p, float) and math.isnan(p))) and p > 1.0
-
-    us_above  = sum(1 for c in us_codes if _above200(c))
-    kr_above  = sum(1 for c in kr_codes if _above200(c))
-    cty_above = sum(1 for c in country_eq_codes if _above200(c))
-
+def _summary_cards_html(sv: dict, cv: dict) -> str:
     regime = sv.get("us_regime", "N/A")
     regime_kr = REGIME_KR.get(regime, regime)
     regime_desc = REGIME_DESC_KR.get(regime, "")
@@ -623,19 +549,31 @@ def _summary_cards_html(sv: dict, cv: dict, ma_map: dict) -> str:
     cycle_kr = CYCLE_KR.get(cycle, cycle)
     cycle_color = CYCLE_COLOR.get(cycle, "#64748b")
 
+    ow_us = sum(1 for s in sv["us_sectors"] if s.get("composite", 0) is not None and not (isinstance(s.get("composite"), float) and math.isnan(s.get("composite", float("nan")))) and s.get("composite", 0) >= 0.25)
+    ow_kr = sum(1 for s in sv["kr_sectors"] if s.get("composite", 0) is not None and not (isinstance(s.get("composite"), float) and math.isnan(s.get("composite", float("nan")))) and s.get("composite", 0) >= 0.25)
+    ow_ct = sum(1 for c in cv["countries"] if c.get("view") == "OW")
+
     return f"""
 <div class="summary-cards">
   <div class="summary-card">
-    <div class="num" style="color:#16a34a">{us_above}</div>
-    <div class="label">미국 섹터 MA200 위</div>
+    <div class="num" style="color:#16a34a">{ow_us}</div>
+    <div class="label">미국 OW 섹터</div>
   </div>
   <div class="summary-card">
-    <div class="num" style="color:#16a34a">{kr_above}</div>
-    <div class="label">한국 섹터 MA200 위</div>
+    <div class="num" style="color:#16a34a">{ow_kr}</div>
+    <div class="label">한국 OW 섹터</div>
   </div>
   <div class="summary-card">
-    <div class="num" style="color:#16a34a">{cty_above}</div>
-    <div class="label">국가 지수 MA200 위</div>
+    <div class="num" style="color:#16a34a">{ow_ct}</div>
+    <div class="label">OW 국가</div>
+  </div>
+  <div class="summary-card">
+    <div class="num" style="font-size:18px;color:{cycle_color}">{cycle_kr}</div>
+    <div class="label">경기 사이클</div>
+  </div>
+  <div class="summary-card">
+    <div class="num" style="font-size:18px;color:var(--navy)">{regime_kr}</div>
+    <div class="label" title="{regime_desc}">시장 국면 ⓘ</div>
   </div>
 </div>"""
 
@@ -647,40 +585,39 @@ def _get_focus_codes(focus: dict) -> set:
     return {s["code"] for s in focus["subjects"]}
 
 
-def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict, ma_map: dict) -> str:
-    regime = sv.get("us_regime", "N/A")
-    regime_kr = REGIME_KR.get(regime, regime)
-    cycle = sv.get("cycle_phase", "N/A")
-    cycle_kr = CYCLE_KR.get(cycle, cycle)
-    cycle_color = CYCLE_COLOR.get(cycle, "#64748b")
+def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> str:
     period_label = {"daily": "일간", "weekly": "주간", "monthly": "월간"}.get(period, period)
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     focus_codes = _get_focus_codes(focus)
+    prev_sector_date  = focus.get("prev_sector_date")
+    prev_country_date = focus.get("prev_country_date")
 
-    banner = _focus_banner_html(focus, date_str) if period == "daily" else ""
-    summary = _summary_cards_html(sv, cv, ma_map)
+    banner  = _focus_banner_html(focus, date_str) if period == "daily" else ""
+    summary = _summary_cards_html(sv, cv)
 
+    # 오늘 주제인 섹터에만 이전 사이클 링크 표시
     us_cards = "\n".join(
-        _sector_card_html(s, ma_map.get(s["code"], {}), is_focus=(s["code"] in focus_codes))
+        _sector_card_html(s, is_focus=(s["code"] in focus_codes),
+                          prev_date=prev_sector_date if s["code"] in focus_codes else None)
         for s in sv["us_sectors"]
     )
     kr_cards = "\n".join(
-        _sector_card_html(s, ma_map.get(s["code"], {}), is_focus=(s["code"] in focus_codes))
+        _sector_card_html(s, is_focus=(s["code"] in focus_codes),
+                          prev_date=prev_sector_date if s["code"] in focus_codes else None)
         for s in sv["kr_sectors"]
     )
     country_cards = "\n".join(
-        _country_card_html(
-            c,
-            ma_map.get(COUNTRIES.get(c["code"], {}).get("eq_code", ""), {}),
-            is_focus=(c["code"] in focus_codes),
-        )
+        _country_card_html(c, is_focus=(c["code"] in focus_codes),
+                           prev_date=prev_country_date if c["code"] in focus_codes else None)
         for c in cv["countries"]
     )
 
     focus_hint = ""
     if period == "daily":
-        focus_hint = f'<p style="margin-top:8px;font-size:12px">오늘 주제: <strong>{focus["theme"]}</strong> — /sector-country {date_str} 커맨드를 실행하면 심층 분석이 추가됩니다.</p>'
+        focus_hint = (f'<p style="margin-top:8px;font-size:12px">오늘 주제: '
+                      f'<strong>{focus["theme"]} + {focus["country_name"]}</strong> '
+                      f'— /sector-country {date_str} 커맨드를 실행하면 심층 분석이 추가됩니다.</p>')
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
@@ -707,7 +644,7 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict, ma_
   {summary}
 
   <div class="story-section" id="story-section">
-    <h2>📰 오늘의 심층 분석 — {focus["theme"]}</h2>
+    <h2>📰 오늘의 심층 분석 — {focus["theme"]} + {focus["country_name"]}</h2>
     {STORY_PLACEHOLDER}
     <div class="story-placeholder" id="story-default">
       <p>아직 심층 분석이 추가되지 않았습니다.</p>
@@ -718,7 +655,7 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict, ma_
   <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
   <div class="sector-grid">{us_cards}</div>
 
-  <div class="section-title">🇰🇷 한국 섹터 (TIGER ETF 10개)</div>
+  <div class="section-title">🇰🇷 한국 섹터 (TIGER 200 GICS 11개)</div>
   <div class="sector-grid">{kr_cards}</div>
 
   <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
@@ -801,12 +738,7 @@ def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
     cv = compute_country_view(date_str)
     focus = get_focus(date_str)
 
-    # MA 계산용 코드 수집
-    sector_codes = [s["code"] for s in sv["us_sectors"]] + [s["code"] for s in sv["kr_sectors"]]
-    country_eq_codes = [COUNTRIES[c["code"]]["eq_code"] for c in cv["countries"] if c["code"] in COUNTRIES]
-    ma_map = build_ma_map(date_str, sector_codes, country_eq_codes)
-
-    html = _build_html(date_str, period, sv, cv, focus, ma_map)
+    html = _build_html(date_str, period, sv, cv, focus)
 
     out = _out_path(date_str, period)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -849,8 +781,10 @@ if __name__ == "__main__":
 
     out_path, focus = generate(args.date, args.period)
     print(f"✓ 생성 완료: {out_path}")
-    print(f"  오늘의 주제 (Day {focus['day']}/15): {focus['theme']} — {focus['theme_en']}")
+    print(f"  섹터 Day {focus['sector_day']}/11: {focus['theme']} — {focus['theme_en']}")
+    print(f"  국가 Day {focus['country_day']}/10: {focus['country_name']}")
     for s in focus["subjects"]:
         etf = s.get("etf", "")
         ticker = f" ({s['ticker']})" if s.get("ticker") else ""
-        print(f"    • {s['name']} {etf}{ticker}")
+        flag = s.get("flag", "")
+        print(f"    • {flag} {s['name']} {etf}{ticker}")

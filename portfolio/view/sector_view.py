@@ -23,42 +23,44 @@ MACRO_CSV = ROOT / "history" / "macro_indicators.csv"
 # ── Sector definitions ────────────────────────────────────────────────────
 
 US_SECTORS = {
-    "SC_US_TECH":    {"name": "Technology",       "etf": "XLK",  "cycle": ["Goldilocks"], "kr_peer": "SC_KR_SEMI"},
+    "SC_US_TECH":    {"name": "Technology",       "etf": "XLK",  "cycle": ["Goldilocks"], "kr_peer": "SC_KR_IT"},
+    "SC_US_COMM":    {"name": "Communication",    "etf": "XLC",  "cycle": ["Goldilocks"], "kr_peer": "SC_KR_COMM"},
     "SC_US_FIN":     {"name": "Financials",       "etf": "XLF",  "cycle": ["Reflation"], "kr_peer": "SC_KR_FIN"},
-    "SC_US_ENERGY":  {"name": "Energy",           "etf": "XLE",  "cycle": ["Reflation", "Stagflation"], "kr_peer": None},
-    "SC_US_HEALTH":  {"name": "Health Care",      "etf": "XLV",  "cycle": ["Deflation", "Stagflation"], "kr_peer": "SC_KR_BIO"},
-    "SC_US_INDU":    {"name": "Industrials",      "etf": "XLI",  "cycle": ["Goldilocks", "Reflation"], "kr_peer": None},
-    "SC_US_DISCR":   {"name": "Consumer Discr.",  "etf": "XLY",  "cycle": ["Goldilocks"], "kr_peer": None},
-    "SC_US_STAPLES": {"name": "Consumer Staples", "etf": "XLP",  "cycle": ["Deflation", "Stagflation"], "kr_peer": None},
-    "SC_US_UTIL":    {"name": "Utilities",        "etf": "XLU",  "cycle": ["Deflation"], "kr_peer": None},
-    "SC_US_MATL":    {"name": "Materials",        "etf": "XLB",  "cycle": ["Reflation"], "kr_peer": "SC_KR_BATTERY"},
-    "SC_US_REIT":    {"name": "Real Estate",      "etf": "XLRE", "cycle": ["Deflation"], "kr_peer": None},
-    "SC_US_COMM":    {"name": "Communication",    "etf": "XLC",  "cycle": ["Goldilocks"], "kr_peer": None},
+    "SC_US_ENERGY":  {"name": "Energy",           "etf": "XLE",  "cycle": ["Reflation", "Stagflation"], "kr_peer": "SC_KR_ENERGY"},
+    "SC_US_HEALTH":  {"name": "Health Care",      "etf": "XLV",  "cycle": ["Deflation", "Stagflation"], "kr_peer": "SC_KR_HLTH"},
+    "SC_US_INDU":    {"name": "Industrials",      "etf": "XLI",  "cycle": ["Goldilocks", "Reflation"], "kr_peer": "SC_KR_INDU"},
+    "SC_US_MATL":    {"name": "Materials",        "etf": "XLB",  "cycle": ["Reflation"], "kr_peer": "SC_KR_HEAVY"},
+    "SC_US_DISCR":   {"name": "Consumer Discr.",  "etf": "XLY",  "cycle": ["Goldilocks"], "kr_peer": "SC_KR_DISCR"},
+    "SC_US_STAPLES": {"name": "Consumer Staples", "etf": "XLP",  "cycle": ["Deflation", "Stagflation"], "kr_peer": "SC_KR_STAPLES"},
+    "SC_US_UTIL":    {"name": "Utilities",        "etf": "XLU",  "cycle": ["Deflation"], "kr_peer": "SC_KR_STEEL"},
+    "SC_US_REIT":    {"name": "Real Estate",      "etf": "XLRE", "cycle": ["Deflation"], "kr_peer": "SC_KR_CONSTR"},
 }
 
+# ── TIGER 200 GICS 11개 (sector_country 사이클 기준) ─────────────────────
 KR_SECTORS = {
-    "SC_KR_SEMI":    {"name": "반도체",    "etf": "TIGER 반도체",        "ticker": "277630.KS", "cycle": ["Goldilocks", "Mid"],              "us_peer": "SC_US_TECH"},
-    "SC_KR_BATTERY": {"name": "2차전지",   "etf": "TIGER 2차전지테마",   "ticker": "137610.KS", "cycle": ["Goldilocks", "Reflation"],         "us_peer": "SC_US_MATL"},
-    "SC_KR_BIO":     {"name": "헬스케어",  "etf": "TIGER 헬스케어",      "ticker": "166400.KS", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_HEALTH"},
-    "SC_KR_FIN":     {"name": "금융",      "etf": "TIGER 200 금융",      "ticker": "435420.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
-    "SC_KR_BANK":    {"name": "은행",      "etf": "TIGER 은행",          "ticker": "261140.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
-    "SC_KR_STEEL":   {"name": "철강소재",  "etf": "TIGER 200 철강소재",  "ticker": "494840.KS", "cycle": ["Reflation"],                       "us_peer": "SC_US_MATL"},
-    "SC_KR_ENERGY":  {"name": "에너지화학","etf": "TIGER 200 에너지화학","ticker": "472170.KS", "cycle": ["Reflation", "Stagflation"],        "us_peer": "SC_US_ENERGY"},
-    "SC_KR_HEALTH":  {"name": "의료기기",  "etf": "TIGER 의료기기",      "ticker": "400970.KS", "cycle": ["Deflation", "Recession"],          "us_peer": "SC_US_HEALTH"},
-    "SC_KR_CONSTR":  {"name": "건설",      "etf": "TIGER 200 건설",      "ticker": "139270.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_INDU"},
-    "SC_KR_INDU":    {"name": "산업재",    "etf": "TIGER 200 산업재",    "ticker": "227560.KS", "cycle": ["Goldilocks", "Reflation", "Early"], "us_peer": "SC_US_INDU"},
+    "SC_KR_CONSTR":  {"name": "건설",             "etf": "TIGER 200 건설",              "ticker": "139270.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_REIT"},
+    "SC_KR_DISCR":   {"name": "경기소비재",        "etf": "TIGER 200 경기소비재",        "ticker": "227540.KS", "cycle": ["Goldilocks", "Early"],              "us_peer": "SC_US_DISCR"},
+    "SC_KR_FIN":     {"name": "금융",             "etf": "TIGER 200 금융",              "ticker": "435420.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
+    "SC_KR_INDU":    {"name": "산업재",            "etf": "TIGER 200 산업재",            "ticker": "227560.KS", "cycle": ["Goldilocks", "Reflation", "Early"], "us_peer": "SC_US_INDU"},
+    "SC_KR_STAPLES": {"name": "생활소비재",        "etf": "TIGER 200 생활소비재",        "ticker": "227550.KS", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_STAPLES"},
+    "SC_KR_ENERGY":  {"name": "에너지화학",        "etf": "TIGER 200 에너지화학",        "ticker": "472170.KS", "cycle": ["Reflation", "Stagflation"],        "us_peer": "SC_US_ENERGY"},
+    "SC_KR_HEAVY":   {"name": "중공업",            "etf": "TIGER 200 중공업",            "ticker": "157490.KS", "cycle": ["Reflation", "Mid"],                "us_peer": "SC_US_MATL"},
+    "SC_KR_STEEL":   {"name": "철강소재",          "etf": "TIGER 200 철강소재",          "ticker": "494840.KS", "cycle": ["Reflation"],                       "us_peer": "SC_US_UTIL"},
+    "SC_KR_COMM":    {"name": "커뮤니케이션서비스","etf": "TIGER 200 커뮤니케이션서비스","ticker": "364990.KS", "cycle": ["Goldilocks"],                      "us_peer": "SC_US_COMM"},
+    "SC_KR_HLTH":    {"name": "헬스케어",          "etf": "TIGER 200 헬스케어",          "ticker": "227570.KS", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_HEALTH"},
+    "SC_KR_IT":      {"name": "IT",               "etf": "TIGER 200 IT",               "ticker": "364980.KS", "cycle": ["Goldilocks", "Mid"],              "us_peer": "SC_US_TECH"},
 }
 
 # 매크로 국면 → 선호 섹터 매핑
 REGIME_SECTOR_MAP = {
     "Goldilocks":  ["SC_US_TECH", "SC_US_DISCR", "SC_US_INDU", "SC_US_COMM",
-                    "SC_KR_SEMI", "SC_KR_BATTERY", "SC_KR_INDU"],
+                    "SC_KR_IT", "SC_KR_COMM", "SC_KR_INDU", "SC_KR_DISCR"],
     "Reflation":   ["SC_US_ENERGY", "SC_US_FIN", "SC_US_MATL", "SC_US_INDU",
-                    "SC_KR_FIN", "SC_KR_BANK", "SC_KR_STEEL", "SC_KR_ENERGY", "SC_KR_CONSTR"],
+                    "SC_KR_FIN", "SC_KR_HEAVY", "SC_KR_STEEL", "SC_KR_ENERGY", "SC_KR_CONSTR"],
     "Stagflation": ["SC_US_ENERGY", "SC_US_HEALTH", "SC_US_STAPLES",
-                    "SC_KR_BIO", "SC_KR_ENERGY"],
+                    "SC_KR_STAPLES", "SC_KR_ENERGY", "SC_KR_HLTH"],
     "Deflation":   ["SC_US_HEALTH", "SC_US_STAPLES", "SC_US_UTIL", "SC_US_REIT",
-                    "SC_KR_BIO", "SC_KR_HEALTH"],
+                    "SC_KR_HLTH", "SC_KR_STAPLES", "SC_KR_CONSTR"],
 }
 
 SP500_CODE = "EQ_SP500"
@@ -70,13 +72,13 @@ KOSPI_CODE = "EQ_KOSPI"
 
 CYCLE_SECTOR_MAP = {
     "Early":     ["SC_US_DISCR", "SC_US_FIN",    "SC_US_INDU",
-                  "SC_KR_FIN",   "SC_KR_BANK",   "SC_KR_CONSTR", "SC_KR_INDU"],
+                  "SC_KR_FIN",   "SC_KR_DISCR",  "SC_KR_CONSTR", "SC_KR_INDU"],
     "Mid":       ["SC_US_TECH",  "SC_US_INDU",   "SC_US_COMM",
-                  "SC_KR_SEMI",  "SC_KR_BATTERY"],
+                  "SC_KR_IT",    "SC_KR_COMM",   "SC_KR_HEAVY"],
     "Late":      ["SC_US_ENERGY","SC_US_MATL",   "SC_US_HEALTH", "SC_US_STAPLES",
-                  "SC_KR_STEEL", "SC_KR_ENERGY"],
+                  "SC_KR_STEEL", "SC_KR_ENERGY", "SC_KR_STAPLES"],
     "Recession": ["SC_US_HEALTH","SC_US_STAPLES","SC_US_UTIL",   "SC_US_REIT",
-                  "SC_KR_BIO",   "SC_KR_HEALTH"],
+                  "SC_KR_HLTH",  "SC_KR_STAPLES","SC_KR_CONSTR"],
 }
 
 CYCLE_DESCRIPTIONS = {

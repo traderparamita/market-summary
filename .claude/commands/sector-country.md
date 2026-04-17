@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Bash(tail:*), Bash(awk:*), Bash(sort:*), Bash(cut:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (날짜 생략 시 전 영업일)"
-description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오늘의 2개 주제 Tavily 검색 → Story 주입"
+description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오늘의 3개 주제(US섹터+KR섹터+국가) Tavily 검색 → Story 주입"
 ---
 
 ## Context
@@ -45,8 +45,8 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate_sector_country.py {date}
 ```
 
-CLI 출력에서 **오늘의 주제(theme)**, `type`, 대상 2개(subjects)를 기록한다.  
-예: `Day 6/15: 소재·2차전지 — XLB (Materials) + TIGER 2차전지테마 (137610.KS)`
+CLI 출력에서 **섹터 Day N/11**, **국가 Day M/10**, **theme**, 3개 subjects를 기록한다.  
+예: `섹터 Day 4/11 — 에너지·화학 (XLE + TIGER 200 에너지화학) | 국가 Day 3/10 — 중국`
 
 실패 시 오류 확인 후 재시도 또는 중단.
 
@@ -70,9 +70,13 @@ def v(c):
     return 'OW' if c >= 0.25 else ('UW' if c <= -0.25 else 'N')
 
 focus_codes = {s['code'] for s in focus['subjects']}
-print(f'=== 오늘의 주제 (Day {focus[\"day\"]}/15): {focus[\"theme\"]} ===')
+print(f'=== 오늘의 주제 ===')
+print(f'  섹터 Day {focus[\"sector_day\"]}/11 — {focus[\"theme\"]}')
+print(f'  국가 Day {focus[\"country_day\"]}/10 — {focus[\"country_name\"]}')
+print(f'  이전 섹터 사이클: {focus[\"prev_sector_date\"]}')
+print(f'  이전 국가 사이클: {focus[\"prev_country_date\"]}')
 for s in focus['subjects']:
-    print(f'  {s[\"name\"]} | {s.get(\"etf\",\"\")} {s.get(\"ticker\",\"\")}')
+    print(f'  [{s[\"code\"]}] {s[\"name\"]} | {s.get(\"etf\",\"\")} {s.get(\"ticker\",\"\")}')
 
 print()
 print('=== US 섹터 ===')
@@ -84,7 +88,7 @@ print()
 print('=== KR 섹터 ===')
 for s in sv['kr_sectors']:
     mark = ' ★' if s['code'] in focus_codes else ''
-    print(f\"{v(s['composite'])} | {s['name']:10s} {s['etf']:20s} | 1M={s.get('mom_1m','—')} 3M={s.get('mom_3m','—')}%{mark}\")
+    print(f\"{v(s['composite'])} | {s['name']:15s} {s['etf']:30s} | 1M={s.get('mom_1m','—')} 3M={s.get('mom_3m','—')}%{mark}\")
 
 print()
 print('=== 국가 ===')
@@ -104,43 +108,40 @@ print(f'Regime: {sv[\"us_regime\"]} | Cycle: {sv[\"cycle_phase\"]}')
 **대상 날짜({date}) 이후 미래 데이터는 사용하지 않는다.**  
 당일에 국한하지 않고 **최근 1~2주** 트렌드 뉴스를 참조해 포지셔닝 맥락을 설명한다.
 
-> **KR 섹터 검색 원칙**: TIGER ETF는 업종 전체의 **proxy**다. ETF를 직접 검색하는 것이 아니라 해당 업종(반도체·배터리·건설 등)의 기업·정책·수요 뉴스를 검색한다. ETF 수치는 `compute_sector_view()`에서 이미 산출되므로 검색은 **"왜 이 업종인가"** 맥락 파악에 집중한다.
+> **KR 섹터 검색 원칙**: TIGER ETF는 업종 전체의 **proxy**다. ETF를 직접 검색하는 것이 아니라 해당 업종의 기업·정책·수요 뉴스를 검색한다. 수치는 `compute_sector_view()`에서 이미 산출되므로 검색은 **"왜 이 업종인가"** 맥락 파악에 집중한다.
 
-### 오늘의 주제 유형별 검색 전략
+> **대표주 검색 필수**: `SECTOR_REP_STOCKS` / `COUNTRY_REP_STOCKS`에 정의된 대표 기업의 최신 실적·뉴스를 반드시 검색한다. Story 본문에 해당 기업 동향을 포함할 것.
 
-SKILL.md 섹션 0의 **15일 로테이션 사이클**을 먼저 확인한다.  
-오늘의 `type`에 따라 아래 전략으로 **Subject 1 → Subject 2 → Subject 1 → Subject 2 → 비교** 순서로 번갈아 검색한다.
+### 오늘의 3개 주제 검색 전략 (type: sector_country)
 
-#### type: sector_pair (Day 1~6, 9) — US 섹터 + KR 섹터
+매일 **US 섹터 + KR 섹터 + 국가** 3개 주제를 검색한다. 순서: Subject 1(US) → Subject 2(KR) → Subject 3(국가) → 대표주 심층 → 비교/맥락.
 
-| 순서 | 대상 | 검색 내용 |
-|------|------|---------|
-| 1 | Subject 1 (US 섹터) | 최근 1~2주 ETF 성과·흐름 + 핵심 드라이버 |
-| 2 | Subject 2 (KR 섹터) | 최근 1~2주 TIGER ETF 성과 + 국내 업종 뉴스 |
-| 3 | Subject 1 (US 섹터) | 관련 기업 실적·이슈 + 매크로 연결 |
-| 4 | Subject 2 (KR 섹터) | 관련 기업·정책 뉴스 + 글로벌 비교 포인트 |
-| 5 | 비교 | US↔KR 동일 업종 연계·차이 (예: XLB vs 2차전지 소재 체인) |
-| 6 | 전체 맥락 (선택) | 해당 주의 GICS 섹터 로테이션 흐름 |
+| 순서 | 대상 | 검색 내용 | 키워드 예시 |
+|------|------|---------|------------|
+| 1 | Subject 1 (US 섹터) | 최근 1~2주 ETF 성과·흐름 + 핵심 드라이버 | `"XLE energy sector April 2026 ETF performance"` |
+| 2 | Subject 1 (US 섹터) 대표주 | 섹터 대표 기업 최신 실적·뉴스 | `"Exxon Mobil Chevron earnings April 2026"` |
+| 3 | Subject 2 (KR 섹터) | 최근 1~2주 국내 업종 뉴스 + 주요 기업 | `"Korea energy chemicals LG Chem Lotte Chemical 2026"` |
+| 4 | Subject 2 (KR 섹터) 대표주 | KR 섹터 대표 기업 최신 뉴스 | `"LG화학 롯데케미칼 에너지화학 April 2026"` |
+| 5 | Subject 3 (국가) | 주가지수 흐름 + 경제지표 + 정책 | `"China CSI300 Shanghai April 2026 market"` |
+| 6 | Subject 3 (국가) 대표주 | 국가 대표 기업 최신 뉴스 | `"Alibaba Tencent China tech April 2026"` |
+| 7 | US↔KR 섹터 비교 | 글로벌 신호가 한국에 어떻게 연결되는가 | `"energy sector Korea US comparison 2026"` |
+| 8 | 전체 맥락 (선택) | 이번 주 GICS 섹터 로테이션 흐름 | `"GICS sector rotation April 2026 winners"` |
 
-#### type: kr_pair (Day 10~11) — KR 섹터 + KR 섹터
+#### 섹터별 대표주 검색 가이드
 
-| 순서 | 대상 | 검색 내용 |
-|------|------|---------|
-| 1 | Subject 1 (KR 섹터) | 최근 1~2주 흐름 + 핵심 드라이버 |
-| 2 | Subject 2 (KR 섹터) | 최근 1~2주 흐름 + 핵심 드라이버 |
-| 3 | Subject 1 | 관련 기업·정책 뉴스 |
-| 4 | Subject 2 | 관련 기업·정책 뉴스 |
-| 5 | 비교 | 두 KR 섹터의 매크로 국면 대비 상대 강도 |
-
-#### type: country_pair (Day 12~15) — 국가 + 국가
-
-| 순서 | 대상 | 검색 내용 |
-|------|------|---------|
-| 1 | Subject 1 (국가) | 주가지수 흐름 + 경제 지표 뉴스 |
-| 2 | Subject 2 (국가) | 주가지수 흐름 + 경제 지표 뉴스 |
-| 3 | Subject 1 | 정책·환율·FX 리스크 |
-| 4 | Subject 2 | 정책·환율·FX 리스크 |
-| 5 | 비교 | 두 국가의 OW/UW 근거 비교 + 매크로 차이 |
+| US 섹터 | KR 섹터 | 대표주 검색 키워드 |
+|---------|---------|-----------------|
+| XLK (Technology) | TIGER 200 IT | `"NVIDIA Apple Microsoft Samsung SK Hynix LG Electronics 2026"` |
+| XLC (Communication) | TIGER 200 커뮤니케이션서비스 | `"Alphabet Meta SK Telecom KT 2026"` |
+| XLF (Financials) | TIGER 200 금융 | `"JPMorgan Bank of America Shinhan KB Hana 2026"` |
+| XLE (Energy) | TIGER 200 에너지화학 | `"Exxon Chevron LG Chem Lotte Chemical 2026"` |
+| XLV (Health Care) | TIGER 200 헬스케어 | `"UnitedHealth Johnson Celltrion Samsung Biologics 2026"` |
+| XLI (Industrials) | TIGER 200 산업재 | `"Caterpillar Boeing HD Hyundai Doosan 2026"` |
+| XLB (Materials) | TIGER 200 중공업 | `"Freeport Nucor Hanwha Aerospace Hyundai Rotem 2026"` |
+| XLY (Consumer Discr.) | TIGER 200 경기소비재 | `"Amazon Tesla Hyundai Kia consumer 2026"` |
+| XLP (Consumer Staples) | TIGER 200 생활소비비재 | `"Procter Gamble Coca-Cola CJ CheilJedang Orion 2026"` |
+| XLU (Utilities) | TIGER 200 철강소재 | `"NextEra Duke Energy POSCO Hyundai Steel 2026"` |
+| XLRE (Real Estate) | TIGER 200 건설 | `"Simon Property Prologis Hyundai Engineering GS Construction 2026"` |
 
 ---
 
@@ -148,7 +149,7 @@ SKILL.md 섹션 0의 **15일 로테이션 사이클**을 먼저 확인한다.
 
 SKILL.md의 초보자 언어 변환 규칙 및 시간순 서술 원칙을 따른다.
 
-**보고서 전체가 오늘의 2개 주제 중심이다.** 나머지 섹터·국가는 전체 현황 요약 1~2줄로만 축소.  
+**보고서 전체가 오늘의 3개 주제 중심이다.** 나머지 섹터·국가는 전체 현황 요약 1~2줄로만 축소.  
 일간/주간/월간 구분 없이 동일한 형식으로 작성한다.
 
 ### 품질 규칙
@@ -178,30 +179,41 @@ grep "{indicator_code}" history/market_data.csv | grep "^2026" | sort | awk -F',
 
 ```html
 <div class="story-content">
-  <!-- 오늘의 주제 Subject 1 심층 분석 -->
-  <h3 style="color:#F58220;margin-bottom:12px">🎯 {Subject1 이름} 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — {초보자 표현}<br>
-  {최근 1~2주 트렌드를 시간순으로: 배경 → 전개 → 현재 신호 이유}</p>
+  <!-- Subject 1: US 섹터 심층 분석 -->
+  <h3 style="color:#F58220;margin-bottom:12px">🎯 {US섹터명} 심층 분석</h3>
+  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
+  <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {트렌드 배경 → 전개 → 현재 신호 이유}<br><br>
+  <strong>대표주 동향</strong>: {SECTOR_REP_STOCKS 기업 최신 동향 — 실적·뉴스 중심}</p>
 
-  <!-- 오늘의 주제 Subject 2 심층 분석 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🎯 {Subject2 이름} 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — {초보자 표현}<br>
-  {최근 1~2주 트렌드를 시간순으로}</p>
+  <!-- Subject 2: KR 섹터 심층 분석 -->
+  <h3 style="color:#F58220;margin:16px 0 12px">🎯 {KR섹터명} 심층 분석</h3>
+  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
+  <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {국내 업종 트렌드}<br><br>
+  <strong>대표주 동향</strong>: {KR 대표 기업 최신 동향}<br><br>
+  <strong>글로벌 연결</strong>: {US 섹터와의 연결 고리 — 어떻게 연동·차별화되는가}</p>
 
-  <!-- 두 주제 비교 (섹터 페어의 경우) -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🔍 비교 포인트</h3>
-  <p>{두 주제의 공통점·차이점 — 글로벌 vs 국내 신호 비교 등}</p>
+  <!-- Subject 3: 국가 심층 분석 -->
+  <h3 style="color:#F58220;margin:16px 0 12px">🎯 {국가명} 시장 심층 분석</h3>
+  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong><br><br>
+  <strong>최근 1~2주 흐름 (과거 → 현재)</strong>: {주가지수 흐름 + 경제지표 + 정책}<br><br>
+  <strong>대표주 동향</strong>: {COUNTRY_REP_STOCKS 기업 최신 동향}</p>
+
+  <!-- 비교 포인트 (US섹터 ↔ KR섹터 연결 + 국가 맥락) -->
+  <h3 style="color:#F58220;margin:16px 0 12px">🔍 연결 고리: {테마}의 글로벌↔한국↔{국가} 신호</h3>
+  <p>{US 섹터 글로벌 신호 → KR 섹터 연결 방식 + 국가 매크로 배경이 어떻게 얽히는가}</p>
 
   <!-- 전체 현황 요약 -->
   <h3 style="color:#F58220;margin:16px 0 12px">📊 전체 현황 요약</h3>
-  <p>{전체 OW/UW 섹터·국가 1~2줄 요약}</p>
+  <p>{전체 US/KR 섹터 OW/UW 상위 2~3개 + 전체 국가 OW/UW 상위 1~2줄 요약}</p>
 
-  <!-- 핵심 포인트 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">💡 핵심 포인트</h3>
-  <p>{초보자를 위한 핵심 메시지 2~3줄}</p>
+  <!-- 핵심 포인트 3가지 -->
+  <h3 style="color:#F58220;margin:16px 0 12px">💡 핵심 포인트 3가지</h3>
+  <p>① <strong>{US섹터 — 핵심 메시지}</strong>: {초보자 설명 1~2문장}<br><br>
+  ② <strong>{KR섹터 — 핵심 메시지}</strong>: {초보자 설명 1~2문장}<br><br>
+  ③ <strong>{국가 — 핵심 메시지}</strong>: {초보자 설명 1~2문장}</p>
 
   <div style="font-size:11px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:8px">
-    출처: Tavily 뉴스 검색 + 계량 신호 (history/market_data.csv) · {date} ({period}) · Day {focus_day}/15
+    출처: Tavily 뉴스 검색 + 계량 신호 (history/market_data.csv) · {date} ({period}) · 섹터 Day {sector_day}/11 · 국가 Day {country_day}/10
   </div>
 </div>
 ```
@@ -241,15 +253,15 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 
 Story 주입 성공 후 전송. 실패해도 계속.
 
-- `--focus`: Step 1에서 확인한 오늘의 주제 텍스트 (예: `"Day 6/15 — 소재·2차전지"`)
+- `--focus`: 오늘의 주제 텍스트 (예: `"섹터 Day 4/11 — 에너지·화학 | 국가 Day 3/10 — 중국"`)
 - `--ow`: OW 섹터/국가 목록 (Step 2 결과 기반, 없으면 생략)
 - `--uw`: UW 섹터/국가 목록 (없으면 생략)
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
   .venv/bin/python notify_telegram.py {date} --sc-complete \
-    --focus "Day N/15 — 오늘의 주제" \
-    --ow "XLK, 반도체" \
+    --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/10 — 오늘의 국가" \
+    --ow "XLK, TIGER 200 IT, 미국" \
     --uw "XLE"
 ```
 
@@ -258,6 +270,8 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 ## 완료 보고
 
 - 생성된 HTML 경로
+- 섹터 Day N/11 — 테마명 (US ETF + KR ETF)
+- 국가 Day M/10 — 국가명
 - OW 섹터 (US + KR), UW 섹터 (있다면)
 - OW 국가, UW 국가 (있다면)
 - Tavily 검색 건수 + 주요 뉴스 제목 2~3개
