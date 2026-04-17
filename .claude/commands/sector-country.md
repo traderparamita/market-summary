@@ -45,8 +45,8 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate_sector_country.py {date}
 ```
 
-CLI 출력에서 **섹터 Day N/11**, **국가 Day M/10**, **theme**, 3개 subjects를 기록한다.  
-예: `섹터 Day 4/11 — 에너지·화학 (XLE + TIGER 200 에너지화학) | 국가 Day 3/10 — 중국`
+CLI 출력에서 **섹터 Day N/11**, **국가 Day M/11**, **theme**, 3개 subjects를 기록한다.  
+예: `섹터 Day 4/11 — 에너지·화학 (XLE + TIGER 200 에너지화학) | 국가 Day 3/11 — 중국`
 
 실패 시 오류 확인 후 재시도 또는 중단.
 
@@ -72,7 +72,7 @@ def v(c):
 focus_codes = {s['code'] for s in focus['subjects']}
 print(f'=== 오늘의 주제 ===')
 print(f'  섹터 Day {focus[\"sector_day\"]}/11 — {focus[\"theme\"]}')
-print(f'  국가 Day {focus[\"country_day\"]}/10 — {focus[\"country_name\"]}')
+print(f'  국가 Day {focus[\"country_day\"]}/11 — {focus[\"country_name\"]}')
 print(f'  이전 섹터 사이클: {focus[\"prev_sector_date\"]}')
 print(f'  이전 국가 사이클: {focus[\"prev_country_date\"]}')
 for s in focus['subjects']:
@@ -220,7 +220,7 @@ grep "{indicator_code}" history/market_data.csv | grep "^2026" | sort | awk -F',
   <p>{초보자 설명 1~2문장}</p>
 
   <div style="font-size:11px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:8px">
-    출처: Tavily 뉴스 검색 + 계량 신호 (history/market_data.csv) · {date} ({period}) · 섹터 Day {sector_day}/11 · 국가 Day {country_day}/10
+    출처: Tavily 뉴스 검색 + 계량 신호 (history/market_data.csv) · {date} ({period}) · 섹터 Day {sector_day}/11 · 국가 Day {country_day}/11
   </div>
 </div>
 ```
@@ -260,14 +260,14 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 
 Story 주입 성공 후 전송. 실패해도 계속.
 
-- `--focus`: 오늘의 주제 텍스트 (예: `"섹터 Day 4/11 — 에너지·화학 | 국가 Day 3/10 — 중국"`)
+- `--focus`: 오늘의 주제 텍스트 (예: `"섹터 Day 4/11 — 에너지·화학 | 국가 Day 3/11 — 중국"`)
 - `--ow`: OW 섹터/국가 목록 (Step 2 결과 기반, 없으면 생략)
 - `--uw`: UW 섹터/국가 목록 (없으면 생략)
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
   .venv/bin/python notify_telegram.py {date} --sc-complete \
-    --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/10 — 오늘의 국가" \
+    --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/11 — 오늘의 국가" \
     --ow "XLK, TIGER 200 IT, 미국" \
     --uw "XLE"
 ```
@@ -278,7 +278,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 
 - 생성된 HTML 경로
 - 섹터 Day N/11 — 테마명 (US ETF + KR ETF)
-- 국가 Day M/10 — 국가명
+- 국가 Day M/11 — 국가명
 - OW 섹터 (US + KR), UW 섹터 (있다면)
 - OW 국가, UW 국가 (있다면)
 - Tavily 검색 건수 + 주요 뉴스 제목 2~3개

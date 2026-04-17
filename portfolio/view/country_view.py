@@ -431,6 +431,7 @@ def compute_country_view(date: str) -> dict:
         mom_12m = _momentum(eq_px, 252)
 
         # vs ACWI
+        excess_3m = _vs_acwi(eq_px, acwi, 63)
         excess_6m = _vs_acwi(eq_px, acwi, 126)
 
         # FX
@@ -483,6 +484,7 @@ def compute_country_view(date: str) -> dict:
             "mom_3m": round(mom_3m * 100, 2) if not np.isnan(mom_3m) else np.nan,
             "mom_6m": round(mom_6m * 100, 2) if not np.isnan(mom_6m) else np.nan,
             "mom_12m": round(mom_12m * 100, 2) if not np.isnan(mom_12m) else np.nan,
+            "excess_3m": round(excess_3m * 100, 2) if not np.isnan(excess_3m) else np.nan,
             "excess_6m": round(excess_6m * 100, 2) if not np.isnan(excess_6m) else np.nan,
             "fx_score": fx_s,
             "gdp": round(gdp_val, 2) if not np.isnan(gdp_val) else np.nan,

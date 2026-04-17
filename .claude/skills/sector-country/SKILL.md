@@ -33,7 +33,7 @@ type: skill
 | 10 | 유틸리티·철강소재 | XLU (Utilities) | TIGER 200 철강소재 (494840.KS) |
 | 11 | 부동산·건설 | XLRE (Real Estate) | TIGER 200 건설 (139270.KS) |
 
-### 국가 10일 사이클 (섹터와 독립, 기준일: 2026-01-05)
+### 국가 11일 사이클 (섹터와 독립, 기준일: 2026-01-05)
 
 | 국가 Day | 국가 |
 |---------|------|
@@ -45,8 +45,9 @@ type: skill
 | 6 | 🇰🇷 한국 (2회) |
 | 7 | 🇺🇸 미국 (2회) |
 | 8 | 🇨🇳 중국 (2회) |
-| 9 | 🇮🇳 인도 |
-| 10 | 🌍 신흥국(EM) |
+| 9 | 🇬🇧 영국 |
+| 10 | 🇮🇳 인도 |
+| 11 | 🌍 신흥국(EM) |
 
 **오늘의 Day는 `generate_sector_country.py`의 `get_focus(date)` 가 자동 계산한다.**  
 반환 형식: `{ sector_day, country_day, theme, country_name, subjects: [us_sector, kr_sector, country] }`

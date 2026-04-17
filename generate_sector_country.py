@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+import json
 import math
 import sys
 from datetime import date, datetime
@@ -32,6 +33,21 @@ from portfolio.view.country_view import compute_country_view, COUNTRIES
 
 OUTPUT_ROOT = ROOT / "output" / "sector-country"
 HISTORY_CSV = ROOT / "history" / "market_data.csv"
+
+
+def _load_price_series(indicator_code: str, date_str: str, days: int = 60) -> dict:
+    """특정 지표의 최근 N일 가격 시계열 반환."""
+    df = pd.read_csv(HISTORY_CSV, parse_dates=["DATE"])
+    df = df[df["INDICATOR_CODE"] == indicator_code].copy()
+    df = df[df["DATE"] <= date_str].tail(days)
+
+    if df.empty:
+        return {"dates": [], "prices": []}
+
+    return {
+        "dates": df["DATE"].dt.strftime("%Y-%m-%d").tolist(),
+        "prices": df["CLOSE"].fillna(0).round(2).tolist()
+    }
 
 # ── 사이클 기준일 ─────────────────────────────────────────────────────────
 # 섹터: 11일 사이클 / 국가: 10일 독립 사이클
@@ -184,8 +200,8 @@ SECTOR_ROTATION = [
     },
 ]
 
-# ── 국가 10일 로테이션 (섹터와 독립) ──────────────────────────────────────
-# 한국·미국 5일 간격으로 2회 반복
+# ── 국가 11일 로테이션 (섹터와 독립) ──────────────────────────────────────
+# 한국·미국·중국 일부 반복 포함 11개국
 COUNTRY_ROTATION = [
     {"country_day": 1,  "code": "KR", "name": "한국",   "flag": "🇰🇷"},
     {"country_day": 2,  "code": "US", "name": "미국",   "flag": "🇺🇸"},
@@ -195,8 +211,9 @@ COUNTRY_ROTATION = [
     {"country_day": 6,  "code": "KR", "name": "한국",   "flag": "🇰🇷"},
     {"country_day": 7,  "code": "US", "name": "미국",   "flag": "🇺🇸"},
     {"country_day": 8,  "code": "CN", "name": "중국",   "flag": "🇨🇳"},
-    {"country_day": 9,  "code": "IN", "name": "인도",   "flag": "🇮🇳"},
-    {"country_day": 10, "code": "EM", "name": "신흥국", "flag": "🌍"},
+    {"country_day": 9,  "code": "UK", "name": "영국",   "flag": "🇬🇧"},
+    {"country_day": 10, "code": "IN", "name": "인도",   "flag": "🇮🇳"},
+    {"country_day": 11, "code": "EM", "name": "신흥국", "flag": "🌍"},
 ]
 
 
@@ -206,7 +223,7 @@ def get_focus(date_str: str) -> dict:
     반환 형식:
     {
         "sector_day": int,      # 1~11
-        "country_day": int,     # 1~10
+        "country_day": int,     # 1~11
         "theme": str,           # 섹터 테마 (예: "기술·IT")
         "country_name": str,    # 오늘의 국가 이름
         "type": "sector_country",
@@ -305,15 +322,16 @@ def _rep_stocks_html(code: str, is_country: bool = False) -> str:
     return f'<div class="rep-stocks">{chips}</div>'
 
 
-def _prev_cycle_link_html(prev_date: str, label: str) -> str:
-    """이전 사이클 보고서 링크 HTML."""
+def _prev_cycle_link_html(prev_date: str, label: str = "섹터") -> str:
+    """이전 보고서 링크 HTML."""
     if not prev_date:
         return ""
     ym = prev_date[:7]
     url = f"../../daily/{ym}/{prev_date}.html"
+    display = prev_date.replace("-", ".")
     return (
         f'<a href="{url}" class="prev-cycle-link" target="_blank">'
-        f'↩ 이전 사이클 ({prev_date}) {label}'
+        f'↩ 이전 {label} 보고서 ({display})'
         f'</a>'
     )
 
@@ -431,6 +449,20 @@ body {
 .cc-flag { font-size: 24px; }
 .cc-name { font-weight: 700; font-size: 15px; }
 
+/* ── Tabs ── */
+.tab-bar {
+  display: flex; gap: 0; margin-bottom: 28px; border-bottom: 2px solid var(--border);
+}
+.tab-btn {
+  padding: 12px 28px; font-size: 14px; font-weight: 600; color: var(--muted);
+  background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
 .story-section {
   background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 24px;
 }
@@ -445,6 +477,65 @@ body {
 .footer {
   text-align: center; color: var(--muted); font-size: 11px;
   padding: 24px; margin-top: 32px; border-top: 1px solid var(--border);
+}
+
+/* ── Chart Section ── */
+.chart-section { margin: 28px 0 36px; }
+.chart-section-title {
+  font-size: 17px; font-weight: 700; color: var(--navy);
+  margin: 0 0 16px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--orange);
+  display: flex; align-items: center; gap: 8px;
+}
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  min-height: 340px;
+}
+.chart-card .chart-title {
+  font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.chart-box { position: relative; height: 300px; }
+.chart-full { grid-column: 1 / -1; }
+.chart-full .chart-box { height: 240px; }
+
+/* Dispersion gauge */
+.dispersion-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.dispersion-label {
+  font-size: 12px; color: var(--muted); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.dispersion-value {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+}
+.dispersion-bar-wrap {
+  flex: 1; min-width: 240px;
+}
+.dispersion-bar {
+  height: 32px; background: #e2e8f0; border-radius: 6px;
+  position: relative; overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.dispersion-fill {
+  position: absolute; height: 100%; background: linear-gradient(90deg, #dc2626, #f97316, #16a34a);
+  border-radius: 6px; transition: width 0.3s;
+}
+.dispersion-markers {
+  display: flex; justify-content: space-between; margin-top: 4px;
+  font-size: 10px; color: var(--muted);
+}
+
+@media(max-width:768px) {
+  .chart-grid { grid-template-columns: 1fr; }
+  .chart-box { height: 220px; }
+  .chart-full .chart-box { height: 200px; }
 }
 </style>
 """
@@ -478,7 +569,7 @@ def _focus_banner_html(focus: dict, date_str: str) -> str:
     <div class="focus-en">{focus["theme_en"]}</div>
     <div class="focus-chips">{chips_html}</div>
     <div style="font-size:11px;color:#bfdbfe;margin-top:8px">
-      섹터 Day {sector_day}/11 &nbsp;|&nbsp; 국가 Day {country_day}/10
+      섹터 Day {sector_day}/11 &nbsp;|&nbsp; 국가 Day {country_day}/11
     </div>
   </div>
   <div class="focus-day">
@@ -497,7 +588,7 @@ def _sector_card_html(s: dict, is_focus: bool = False, prev_date: str = None) ->
         etf_line += f' ({s["ticker"]})'
 
     rep = _rep_stocks_html(s["code"])
-    prev_link = _prev_cycle_link_html(prev_date, "섹터 보고서") if is_focus and prev_date else ""
+    prev_link = _prev_cycle_link_html(prev_date) if prev_date else ""
 
     return f"""
 <div class="sector-card{focus_cls}">
@@ -520,7 +611,7 @@ def _country_card_html(c: dict, is_focus: bool = False, prev_date: str = None) -
     focus_star = '<span class="focus-star">★ 오늘 주제</span>' if is_focus else ""
 
     rep = _rep_stocks_html(c.get("code", ""), is_country=True)
-    prev_link = _prev_cycle_link_html(prev_date, "국가 보고서") if is_focus and prev_date else ""
+    prev_link = _prev_cycle_link_html(prev_date, label="국가") if prev_date else ""
 
     view_label = {"OW": "▲ 비중확대", "UW": "▼ 비중축소", "N": "→ 중립"}.get(c.get("view"), c.get("view", ""))
     view_color = {"OW": "#16a34a", "UW": "#dc2626", "N": "#d97706"}.get(c.get("view"), "#64748b")
@@ -559,25 +650,81 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     focus_codes = _get_focus_codes(focus)
-    prev_sector_date  = focus.get("prev_sector_date")
     prev_country_date = focus.get("prev_country_date")
 
     banner  = _focus_banner_html(focus, date_str) if period == "daily" else ""
 
-    # 오늘 주제인 섹터에만 이전 사이클 링크 표시
+    # 섹터별 이전 사이클 날짜 계산
+    # 각 섹터의 sector_day를 찾아서, 현재 날짜에서 (현재 sector_day - 해당 sector_day) + 11일 전 날짜를 역산
+    from datetime import timedelta as _td
+    d_today = date.fromisoformat(date_str)
+    elapsed_today = (d_today - REFERENCE_DATE).days
+    cur_sector_idx = elapsed_today % len(SECTOR_ROTATION)  # 0-based
+
+    def _sector_prev_date(sector_code: str) -> str | None:
+        """해당 섹터 코드가 마지막으로 등장한 이전 사이클 날짜 반환."""
+        # SECTOR_ROTATION에서 해당 code의 sector_day(0-based idx) 찾기
+        target_idx = None
+        for i, slot in enumerate(SECTOR_ROTATION):
+            for subj in slot["subjects"]:
+                if subj["code"] == sector_code:
+                    target_idx = i
+                    break
+            if target_idx is not None:
+                break
+        if target_idx is None:
+            return None
+        # 현재 날짜에서 target_idx까지 역산 (영업일 기준)
+        steps_back = (cur_sector_idx - target_idx) % len(SECTOR_ROTATION)
+        if steps_back == 0:
+            steps_back = len(SECTOR_ROTATION)  # 오늘 주제면 한 사이클 전
+        # steps_back 영업일 전 날짜
+        cur = d_today
+        counted = 0
+        while counted < steps_back:
+            cur -= _td(days=1)
+            if cur.weekday() < 5:
+                counted += 1
+        return cur.isoformat()
+
+    cur_country_idx = elapsed_today % len(COUNTRY_ROTATION)
+
+    def _country_prev_date(country_code: str) -> str | None:
+        """해당 국가 코드의 가장 최근 이전 사이클 날짜 반환.
+        같은 국가가 여러 번 등장할 경우 steps_back이 최소인 idx를 선택.
+        """
+        best_steps = None
+        for i, slot in enumerate(COUNTRY_ROTATION):
+            if slot["code"] != country_code:
+                continue
+            steps = (cur_country_idx - i) % len(COUNTRY_ROTATION)
+            if steps == 0:
+                steps = len(COUNTRY_ROTATION)
+            if best_steps is None or steps < best_steps:
+                best_steps = steps
+        if best_steps is None:
+            return None
+        cur = d_today
+        counted = 0
+        while counted < best_steps:
+            cur -= _td(days=1)
+            if cur.weekday() < 5:
+                counted += 1
+        return cur.isoformat()
+
     us_cards = "\n".join(
         _sector_card_html(s, is_focus=(s["code"] in focus_codes),
-                          prev_date=prev_sector_date if s["code"] in focus_codes else None)
+                          prev_date=_sector_prev_date(s["code"]))
         for s in sv["us_sectors"]
     )
     kr_cards = "\n".join(
         _sector_card_html(s, is_focus=(s["code"] in focus_codes),
-                          prev_date=prev_sector_date if s["code"] in focus_codes else None)
+                          prev_date=_sector_prev_date(s["code"]))
         for s in sv["kr_sectors"]
     )
     country_cards = "\n".join(
         _country_card_html(c, is_focus=(c["code"] in focus_codes),
-                           prev_date=prev_country_date if c["code"] in focus_codes else None)
+                           prev_date=_country_prev_date(c["code"]))
         for c in cv["countries"]
     )
 
@@ -587,6 +734,40 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
                       f'<strong>{focus["theme"]} + {focus["country_name"]}</strong> '
                       f'— /sector-country {date_str} 커맨드를 실행하면 심층 분석이 추가됩니다.</p>')
 
+    # ── Chart Data Preparation ──
+    def _safe(v):
+        """NaN/None을 0으로 변환."""
+        return round(v, 2) if v is not None and not (isinstance(v, float) and math.isnan(v)) else 0
+
+    # Sector ranking charts (3M Return 기준)
+    us_sorted = sorted(sv["us_sectors"], key=lambda x: x.get("mom_3m", 0), reverse=True)
+    kr_sorted = sorted(sv["kr_sectors"], key=lambda x: x.get("mom_3m", 0), reverse=True)
+
+    us_rank_labels = json.dumps([s.get("name", "") for s in us_sorted])
+    us_rank_scores = json.dumps([_safe(s.get("mom_3m")) for s in us_sorted])
+    us_rank_colors = json.dumps(["#16a34a" if _safe(s.get("mom_3m")) >= 0 else "#dc2626" for s in us_sorted])
+
+    kr_rank_labels = json.dumps([s.get("name", "") for s in kr_sorted])
+    kr_rank_scores = json.dumps([_safe(s.get("mom_3m")) for s in kr_sorted])
+    kr_rank_colors = json.dumps(["#16a34a" if _safe(s.get("mom_3m")) >= 0 else "#dc2626" for s in kr_sorted])
+
+    # Country scatter (3M Return vs ACWI Excess 기준)
+    country_scatter = json.dumps([
+        {
+            "x": _safe(c.get("mom_3m")),
+            "y": _safe(c.get("excess_3m")),
+            "label": c.get("name", ""),
+            "view": c.get("view", "N"),
+            "r": max(abs(_safe(c.get("mom_3m"))) * 1.2, 5),
+        }
+        for c in cv.get("countries", [])
+    ])
+
+    # Focus 섹터 이름 (차트 제목용 — story inject 시 사용)
+    focus_us_name = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "us_sector"), "")
+    focus_kr_name = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "kr_sector"), "")
+    focus_country_name = focus.get("country_name", "")
+
     return f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -595,6 +776,7 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
 <title>섹터·국가 보고서 {date_str} ({period_label}) — {focus["theme"]}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {_BASE_CSS}
 </head>
 <body>
@@ -610,29 +792,227 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
 
   {banner}
 
-  <div class="story-section" id="story-section">
-    <h2>📰 오늘의 심층 분석 — {focus["theme"]} + {focus["country_name"]}</h2>
-    {STORY_PLACEHOLDER}
-    <div class="story-placeholder" id="story-default">
-      <p>아직 심층 분석이 추가되지 않았습니다.</p>
-      {focus_hint}
-    </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('story')">📰 Story</button>
+    <button class="tab-btn" onclick="switchTab('data')">📊 Data Dashboard</button>
   </div>
 
-  <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
-  <div class="sector-grid">{us_cards}</div>
+  <div id="tab-story" class="tab-panel active">
+    {STORY_PLACEHOLDER}
+    <div class="story-section" id="story-section" style="display:none">
+      <h2>📰 오늘의 심층 분석 — {focus["theme"]} + {focus["country_name"]}</h2>
+      <div class="story-placeholder" id="story-default">
+        <p>아직 심층 분석이 추가되지 않았습니다.</p>
+        {focus_hint}
+      </div>
+    </div>
 
-  <div class="section-title">🇰🇷 한국 섹터 (TIGER 200 GICS 11개)</div>
-  <div class="sector-grid">{kr_cards}</div>
+  </div><!-- /tab-story -->
 
-  <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
-  <div class="country-grid">{country_cards}</div>
+  <div id="tab-data" class="tab-panel">
+
+    <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
+    <div class="chart-card chart-full" style="margin-bottom:12px">
+      <div class="chart-title">US Sector 3M Return Ranking</div>
+      <div class="chart-box">
+        <canvas id="usRankChart2"></canvas>
+      </div>
+    </div>
+    <div class="sector-grid">{us_cards}</div>
+
+    <div class="section-title">🇰🇷 한국 섹터 (TIGER 200 GICS 11개)</div>
+    <div class="chart-card chart-full" style="margin-bottom:12px">
+      <div class="chart-title">KR Sector 3M Return Ranking</div>
+      <div class="chart-box">
+        <canvas id="krRankChart2"></canvas>
+      </div>
+    </div>
+    <div class="sector-grid">{kr_cards}</div>
+
+    <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
+    <div class="chart-card chart-full" style="margin-bottom:12px">
+      <div class="chart-title">Country Positioning (3M Return vs ACWI Excess)</div>
+      <div class="chart-box">
+        <canvas id="countryScatterChart2"></canvas>
+      </div>
+    </div>
+    <div class="country-grid">{country_cards}</div>
+
+  </div><!-- /tab-data -->
 
 </div>
 
 <div class="footer">
   Mirae Asset Securities · 섹터·국가 보고서 · {date_str} ({period_label}) · 데이터: history/market_data.csv
 </div>
+
+<script>
+// Chart.js defaults
+Chart.defaults.color = '#7c8298';
+Chart.defaults.font.family = "'Noto Sans KR', sans-serif";
+Chart.defaults.font.size = 11;
+
+const UP='#16a34a', DN='#dc2626', AC='#F58220', NAVY='#043B72', MU='#94a3b8';
+
+// ── Data 탭 차트 ──
+// US Sector Ranking (Data tab)
+new Chart(document.getElementById('usRankChart2'), {{
+  type: 'bar',
+  data: {{
+    labels: {us_rank_labels},
+    datasets: [{{
+      data: {us_rank_scores},
+      backgroundColor: {us_rank_colors},
+      borderRadius: 4,
+      barPercentage: 0.7
+    }}]
+  }},
+  options: {{
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {{
+      legend: {{ display: false }},
+      tooltip: {{
+        callbacks: {{
+          label: function(ctx) {{
+            return '3M Return: ' + ctx.parsed.x.toFixed(2) + '%';
+          }}
+        }}
+      }}
+    }},
+    scales: {{
+      x: {{
+        grid: {{ color: '#ecedf2' }},
+        ticks: {{ callback: v => v.toFixed(1) + '%' }},
+        title: {{ display: true, text: '3M Return (%)', color: '#7c8298', font: {{ size: 10 }} }}
+      }},
+      y: {{
+        grid: {{ display: false }},
+        ticks: {{ font: {{ weight: '600', size: 11 }} }}
+      }}
+    }}
+  }}
+}});
+
+// KR Sector Ranking (Data tab)
+new Chart(document.getElementById('krRankChart2'), {{
+  type: 'bar',
+  data: {{
+    labels: {kr_rank_labels},
+    datasets: [{{
+      data: {kr_rank_scores},
+      backgroundColor: {kr_rank_colors},
+      borderRadius: 4,
+      barPercentage: 0.7
+    }}]
+  }},
+  options: {{
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {{
+      legend: {{ display: false }},
+      tooltip: {{
+        callbacks: {{
+          label: function(ctx) {{
+            return '3M Return: ' + ctx.parsed.x.toFixed(2) + '%';
+          }}
+        }}
+      }}
+    }},
+    scales: {{
+      x: {{
+        grid: {{ color: '#ecedf2' }},
+        ticks: {{ callback: v => v.toFixed(1) + '%' }},
+        title: {{ display: true, text: '3M Return (%)', color: '#7c8298', font: {{ size: 10 }} }}
+      }},
+      y: {{
+        grid: {{ display: false }},
+        ticks: {{ font: {{ weight: '600', size: 11 }} }}
+      }}
+    }}
+  }}
+}});
+
+// Country Scatter (Data tab)
+const countryData2 = {country_scatter};
+const owData2 = countryData2.filter(d => d.view === 'OW');
+const nData2 = countryData2.filter(d => d.view === 'N');
+const uwData2 = countryData2.filter(d => d.view === 'UW');
+
+new Chart(document.getElementById('countryScatterChart2'), {{
+  type: 'scatter',
+  data: {{
+    datasets: [
+      {{
+        label: 'OW (비중확대)',
+        data: owData2,
+        backgroundColor: UP + 'cc',
+        borderColor: UP,
+        borderWidth: 2,
+        pointRadius: owData2.map(d => d.r)
+      }},
+      {{
+        label: 'N (중립)',
+        data: nData2,
+        backgroundColor: '#d97706cc',
+        borderColor: '#d97706',
+        borderWidth: 2,
+        pointRadius: nData2.map(d => d.r)
+      }},
+      {{
+        label: 'UW (비중축소)',
+        data: uwData2,
+        backgroundColor: DN + 'cc',
+        borderColor: DN,
+        borderWidth: 2,
+        pointRadius: uwData2.map(d => d.r)
+      }}
+    ]
+  }},
+  options: {{
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {{
+      legend: {{
+        position: 'top',
+        labels: {{ boxWidth: 10, padding: 12, font: {{ size: 11 }} }}
+      }},
+      tooltip: {{
+        callbacks: {{
+          label: function(ctx) {{
+            return ctx.raw.label + ' (3M: ' + ctx.raw.x.toFixed(1) + '%, vs ACWI: ' + ctx.raw.y.toFixed(1) + '%)';
+          }}
+        }}
+      }}
+    }},
+    scales: {{
+      x: {{
+        title: {{ display: true, text: '3개월 수익률 (%)', color: '#7c8298' }},
+        grid: {{ color: '#ecedf2' }},
+        ticks: {{ callback: v => v + '%' }}
+      }},
+      y: {{
+        title: {{ display: true, text: 'vs ACWI 초과수익 (%)', color: '#7c8298' }},
+        grid: {{ color: '#ecedf2' }},
+        ticks: {{ callback: v => v + '%' }}
+      }}
+    }}
+  }}
+}});
+
+// ── Tab switching ──
+function switchTab(tab) {{
+  // Update buttons
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Update panels
+  document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}}
+</script>
 </body>
 </html>"""
 
@@ -716,7 +1096,7 @@ def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
     out.write_text(html, encoding="utf-8")
 
     if existing_story:
-        inject_story(str(out), existing_story)
+        inject_story(str(out), existing_story, focus=focus, date_str=date_str)
         _save_story_file(out, existing_story)
 
     _update_index_link(date_str, period, out)
@@ -724,15 +1104,199 @@ def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
     return str(out), focus
 
 
-def inject_story(html_path: str, story_html: str) -> None:
-    """STORY_PLACEHOLDER를 실제 Story HTML로 치환."""
+def _build_inline_chart(canvas_id: str, chart_type: str, labels_json: str,
+                         datasets_json: str, options_json: str) -> str:
+    """인라인 canvas + script 블록 생성 (Data 탭 ID와 충돌 없음)."""
+    return f"""<div class="chart-card" style="margin:16px 0">
+  <div class="chart-box">
+    <canvas id="{canvas_id}"></canvas>
+  </div>
+</div>
+<script>
+(function() {{
+  var ctx = document.getElementById('{canvas_id}');
+  if (!ctx) return;
+  new Chart(ctx, {{
+    type: '{chart_type}',
+    data: {{ labels: {labels_json}, datasets: {datasets_json} }},
+    options: {options_json}
+  }});
+}})();
+</script>"""
+
+
+def _load_story_chart_data(date_str: str, focus: dict) -> dict:
+    """inject_story에서 사용할 차트 데이터를 미리 계산."""
+    import json as _json
+
+    focus_us_code = None
+    focus_kr_code = None
+    focus_country_code = None
+    for s in focus.get("subjects", []):
+        if s.get("type") == "us_sector":
+            focus_us_code = s["code"]
+        elif s.get("type") == "kr_sector":
+            focus_kr_code = s["code"]
+        elif s.get("type") == "country":
+            focus_country_code = s["code"]
+
+    def norm(prices):
+        if not prices or prices[0] == 0:
+            return [100.0] * len(prices)
+        base = prices[0]
+        return [round(p / base * 100, 2) for p in prices]
+
+    # US 섹터 vs S&P500 (normalized)
+    us_series   = _load_price_series(focus_us_code, date_str, 60) if focus_us_code else {"dates": [], "prices": []}
+    sp500_series = _load_price_series("EQ_SP500", date_str, 60)
+    us_norm      = norm(us_series["prices"])
+    sp500_norm   = norm(sp500_series["prices"])
+
+    # KR 섹터 vs KOSPI (normalized)
+    kr_series   = _load_price_series(focus_kr_code, date_str, 60) if focus_kr_code else {"dates": [], "prices": []}
+    kospi_series = _load_price_series("EQ_KOSPI", date_str, 60)
+    kr_norm      = norm(kr_series["prices"])
+    kospi_norm   = norm(kospi_series["prices"])
+
+    # S&P500 원시 가격 (국가 섹션용)
+    sp500_raw = sp500_series["prices"]
+
+    us_name      = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "us_sector"), "")
+    kr_name      = next((s.get("name", "") for s in focus.get("subjects", []) if s.get("type") == "kr_sector"), "")
+
+    return {
+        "us_dates":    _json.dumps(us_series["dates"]),
+        "us_norm":     _json.dumps(us_norm),
+        "sp500_norm":  _json.dumps(sp500_norm),
+        "kr_dates":    _json.dumps(kr_series["dates"]),
+        "kr_norm":     _json.dumps(kr_norm),
+        "kospi_norm":  _json.dumps(kospi_norm),
+        "sp500_dates": _json.dumps(sp500_series["dates"]),
+        "sp500_raw":   _json.dumps([round(p, 2) for p in sp500_raw]),
+        "us_name":     us_name,
+        "kr_name":     kr_name,
+    }
+
+
+def _make_story_charts(cd: dict) -> dict:
+    """h3별 삽입용 차트 HTML 반환."""
+    line_opts = """{
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } },
+               tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1); } } } },
+    scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 9 } } },
+              y: { grid: { color: '#ecedf2' }, ticks: { callback: v => v.toFixed(0) } } }
+  }"""
+
+    raw_opts = """{
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+               tooltip: { callbacks: { label: function(ctx) { return '$' + ctx.parsed.y.toFixed(2); } } } },
+    scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 9 } } },
+              y: { grid: { color: '#ecedf2' }, ticks: { callback: v => '$' + v.toFixed(0) } } }
+  }"""
+
+    us_datasets = (
+        f'[{{"label":"{cd["us_name"]}","data":{cd["us_norm"]},'
+        f'"borderColor":"#F58220","borderWidth":2,"fill":false,"tension":0.1,"pointRadius":0}},'
+        f'{{"label":"S&P500","data":{cd["sp500_norm"]},'
+        f'"borderColor":"#94a3b8","borderWidth":2,"fill":false,"tension":0.1,"pointRadius":0,"borderDash":[5,5]}}]'
+    )
+    kr_datasets = (
+        f'[{{"label":"{cd["kr_name"]}","data":{cd["kr_norm"]},'
+        f'"borderColor":"#043B72","borderWidth":2,"fill":false,"tension":0.1,"pointRadius":0}},'
+        f'{{"label":"KOSPI","data":{cd["kospi_norm"]},'
+        f'"borderColor":"#94a3b8","borderWidth":2,"fill":false,"tension":0.1,"pointRadius":0,"borderDash":[5,5]}}]'
+    )
+    sp500_datasets = (
+        f'[{{"label":"S&P500","data":{cd["sp500_raw"]},'
+        f'"borderColor":"#F58220","backgroundColor":"rgba(245,130,32,0.1)","borderWidth":2,'
+        f'"fill":true,"tension":0.1,"pointRadius":0}}]'
+    )
+
+    return {
+        "us":      _build_inline_chart("sc_us_rel_chart",      "line", cd["us_dates"],    us_datasets,    line_opts),
+        "kr":      _build_inline_chart("sc_kr_rel_chart",      "line", cd["kr_dates"],    kr_datasets,    line_opts),
+        "country": _build_inline_chart("sc_country_raw_chart", "line", cd["sp500_dates"], sp500_datasets, raw_opts),
+    }
+
+
+def inject_story(html_path: str, story_html: str, focus: dict = None, date_str: str = None) -> None:
+    """Story HTML을 STORY_PLACEHOLDER에 주입. h3별로 차트를 인라인 삽입."""
+    import re
     p = Path(html_path)
     content = p.read_text(encoding="utf-8")
-    replaced = content.replace(STORY_PLACEHOLDER, story_html, 1)
-    replaced = replaced.replace(
-        '<div class="story-placeholder" id="story-default">',
-        '<div class="story-placeholder" id="story-default" style="display:none">',
-        1,
+
+    # 차트 데이터 준비 (focus/date 있을 때만)
+    charts = {}
+    if focus and date_str:
+        try:
+            cd = _load_story_chart_data(date_str, focus)
+            charts = _make_story_charts(cd)
+        except Exception:
+            pass
+
+    # story-content 내부 추출 (story-content div와 story-section div의 닫힘 태그 2개를 제외한 나머지)
+    story_match = re.search(r'<div class="story-content">(.*)</div>\s*</div>\s*$', story_html, re.DOTALL)
+    if not story_match:
+        # 파싱 실패 → 차트 없이 그대로 삽입 (div 균형 보정만)
+        opens = story_html.count('<div')
+        closes = story_html.count('</div>')
+        if opens > closes:
+            story_html = story_html.rstrip() + '\n' + '</div>\n' * (opens - closes)
+        replaced = content.replace(STORY_PLACEHOLDER, story_html, 1)
+        replaced = re.sub(
+            r'<div class="story-section"[^>]*?style="display:none"[^>]*>.*?</div>\s*</div>',
+            '', replaced, count=1, flags=re.DOTALL
+        )
+        p.write_text(replaced, encoding="utf-8")
+        return
+
+    story_inner = story_match.group(1)
+
+    # story_inner 내부 div 균형 보정
+    inner_opens = story_inner.count('<div')
+    inner_closes = story_inner.count('</div>')
+    if inner_opens > inner_closes:
+        story_inner = story_inner.rstrip() + '\n' + '</div>\n' * (inner_opens - inner_closes)
+
+    h2_match = re.search(r'<h2[^>]*>(.*?)</h2>', story_html)
+    h2_html = f'<h2>{h2_match.group(1)}</h2>\n' if h2_match else ''
+
+    # h3 단위로 분할 후 재조립
+    sections = re.split(r'(<h3[^>]*>.*?</h3>)', story_inner)
+    rebuilt = '<div class="story-section" id="story-section">\n' + h2_html
+    rebuilt += '<div class="story-content">\n'
+
+    i = 0
+    while i < len(sections):
+        part = sections[i]
+        if not part.startswith('<h3'):
+            rebuilt += part
+            i += 1
+            continue
+
+        # h3 헤더 + 다음 텍스트 내용
+        rebuilt += part + '\n'
+        text = sections[i + 1] if i + 1 < len(sections) else ''
+        rebuilt += text
+
+        # h3 내용으로 차트 결정
+        if ('XLF' in part or '미국 금융' in part) and 'us' in charts:
+            rebuilt += charts['us']
+        elif ('TIGER' in part or '한국 금융' in part) and 'kr' in charts:
+            rebuilt += charts['kr']
+        elif '미국 시장' in part and 'country' in charts:
+            rebuilt += charts['country']
+
+        i += 2  # h3 + 내용 함께 소비
+
+    rebuilt += '</div>\n</div>\n'
+
+    replaced = content.replace(STORY_PLACEHOLDER, rebuilt, 1)
+    replaced = re.sub(
+        r'<div class="story-section"[^>]*?style="display:none"[^>]*>.*?</div>\s*</div>',
+        '', replaced, count=1, flags=re.DOTALL
     )
     p.write_text(replaced, encoding="utf-8")
 
@@ -749,7 +1313,7 @@ if __name__ == "__main__":
     out_path, focus = generate(args.date, args.period)
     print(f"✓ 생성 완료: {out_path}")
     print(f"  섹터 Day {focus['sector_day']}/11: {focus['theme']} — {focus['theme_en']}")
-    print(f"  국가 Day {focus['country_day']}/10: {focus['country_name']}")
+    print(f"  국가 Day {focus['country_day']}/11: {focus['country_name']}")
     for s in focus["subjects"]:
         etf = s.get("etf", "")
         ticker = f" ({s['ticker']})" if s.get("ticker") else ""
