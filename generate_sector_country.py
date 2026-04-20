@@ -1047,11 +1047,13 @@ def _update_sc_index() -> None:
             day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
         except Exception:
             day_name = ""
-        # 섹터 테마·국가명 추출
+        # 섹터 테마·국가명: HTML의 focus-theme에서 직접 추출
         subtitle = ""
         try:
-            f = get_focus(date)
-            subtitle = f" · {f['theme']} · {f['country_name']}"
+            content = Path(path).read_text(encoding="utf-8")
+            m = re.search(r'class="focus-theme">([^<]+)</div>', content)
+            if m:
+                subtitle = f" · {m.group(1).strip()}"
         except Exception:
             pass
         if month not in months:
