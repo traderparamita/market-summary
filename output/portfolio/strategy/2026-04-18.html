@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KR/US Sector Rotation — 2026-04-18</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: #F5F7FA; color: #1A1A2E; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 1.5rem; font-weight: 700; color: #043B72; margin-bottom: 4px; }
+  .sub { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.07); padding: 20px 24px; margin-bottom: 20px; }
+  h2 { font-size: 1.05rem; font-weight: 700; color: #043B72; margin-bottom: 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  th { background: #043B72; color: #fff; padding: 7px 10px; text-align: left; }
+  td { padding: 6px 10px; border-bottom: 1px solid #E9ECEF; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat-box { background: #F8F9FA; border-radius: 8px; padding: 12px 16px; }
+  .stat-label { font-size: 0.78rem; color: #888; margin-bottom: 4px; }
+  .stat-val { font-size: 1.25rem; font-weight: 700; color: #043B72; }
+  .agent-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .agent-chip { background: #EEF2FF; border-radius: 6px; padding: 6px 14px; font-size: 0.83rem; }
+  .agent-chip span { font-weight: 700; color: #043B72; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>🔄 KR/US 섹터 로테이션 모델</h1>
+  <div class="sub">생성일: 2026-04-18 · Multi-Agent (Momentum + Breadth + Relative Strength) · 월간 리밸런싱</div>
+
+  <div class="card">
+    <h2>📊 현재 신호 (최신 월말 기준)</h2>
+    <div class="agent-row">
+      <div class="agent-chip">종합 신호 <span><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></span></div>
+      <div class="agent-chip">Composite Score <span>+0.507</span></div>
+      <div class="agent-chip">KR 모멘텀 <span>+3.7%</span></div>
+      <div class="agent-chip">US 모멘텀 <span>+0.8%</span></div>
+      <div class="agent-chip">KR 확산도 <span>55%</span></div>
+      <div class="agent-chip">US 확산도 <span>55%</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📈 누적 수익률 비교</h2>
+    <canvas id="cumChart" height="80"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>🏆 성과 요약</h2>
+    <table>
+      <thead><tr><th>전략</th><th>총수익률</th><th>연환산</th><th>변동성</th><th>Sharpe</th><th>MDD</th><th>승률</th></tr></thead>
+      <tbody><tr style="font-weight:700;background:#F0F7FF"><td>KR/US Rotation</td><td style="text-align:right">282.1%</td><td style="text-align:right">26.2%</td><td style="text-align:right">25.0%</td><td style="text-align:right">1.05</td><td style="text-align:right">-24.8%</td><td style="text-align:right">64%</td></tr><tr style=""><td>50/50 Blend</td><td style="text-align:right">145.4%</td><td style="text-align:right">16.9%</td><td style="text-align:right">19.0%</td><td style="text-align:right">0.89</td><td style="text-align:right">-27.4%</td><td style="text-align:right">59%</td></tr><tr style=""><td>KOSPI</td><td style="text-align:right">160.3%</td><td style="text-align:right">18.1%</td><td style="text-align:right">26.4%</td><td style="text-align:right">0.68</td><td style="text-align:right">-35.9%</td><td style="text-align:right">55%</td></tr><tr style=""><td>S&P500</td><td style="text-align:right">118.4%</td><td style="text-align:right">14.5%</td><td style="text-align:right">15.7%</td><td style="text-align:right">0.93</td><td style="text-align:right">-24.8%</td><td style="text-align:right">64%</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>📋 최근 12개월 신호</h2>
+      <table>
+        <thead><tr><th>월말</th><th>신호</th><th>Score</th><th>KOSPI</th><th>S&amp;P500</th><th>전략</th></tr></thead>
+        <tbody><tr style="background:#FFF3F3"><td>2026-03-31</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.507</td><td style="text-align:right">+22.6%</td><td style="text-align:right">+9.2%</td><td style="text-align:right;color:#28a745">+22.6%</td></tr><tr style="background:#FFF3F3"><td>2026-02-27</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.827</td><td style="text-align:right">-19.1%</td><td style="text-align:right">-5.1%</td><td style="text-align:right;color:#dc3545">-19.1%</td></tr><tr style="background:#FFF3F3"><td>2026-01-30</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.685</td><td style="text-align:right">+19.5%</td><td style="text-align:right">-0.9%</td><td style="text-align:right;color:#28a745">+19.5%</td></tr><tr style="background:#FFF3F3"><td>2025-12-31</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.806</td><td style="text-align:right">+21.2%</td><td style="text-align:right">+1.4%</td><td style="text-align:right;color:#28a745">+21.2%</td></tr><tr style="background:#FFF3F3"><td>2025-11-28</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.770</td><td style="text-align:right">+7.3%</td><td style="text-align:right">-0.1%</td><td style="text-align:right;color:#28a745">+7.3%</td></tr><tr style="background:#FFF3F3"><td>2025-10-31</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.956</td><td style="text-align:right">-4.4%</td><td style="text-align:right">+0.1%</td><td style="text-align:right;color:#dc3545">-4.4%</td></tr><tr style="background:#FFF3F3"><td>2025-09-30</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.486</td><td style="text-align:right">+19.9%</td><td style="text-align:right">+2.3%</td><td style="text-align:right;color:#28a745">+19.9%</td></tr><tr style="background:#FFF3F3"><td>2025-08-29</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.355</td><td style="text-align:right">+7.5%</td><td style="text-align:right">+3.5%</td><td style="text-align:right;color:#28a745">+7.5%</td></tr><tr style="background:#FFF3F3"><td>2025-07-31</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.893</td><td style="text-align:right">-1.8%</td><td style="text-align:right">+1.9%</td><td style="text-align:right;color:#dc3545">-1.8%</td></tr><tr style="background:#FFF3F3"><td>2025-06-30</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.889</td><td style="text-align:right">+5.7%</td><td style="text-align:right">+2.2%</td><td style="text-align:right;color:#28a745">+5.7%</td></tr><tr style="background:#FFF3F3"><td>2025-05-30</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.514</td><td style="text-align:right">+13.9%</td><td style="text-align:right">+5.0%</td><td style="text-align:right;color:#28a745">+13.9%</td></tr><tr style="background:#FFF3F3"><td>2025-04-30</td><td><span style="background:#E63946;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.82em;font-weight:600">KR</span></td><td style="text-align:right">+0.761</td><td style="text-align:right">+5.5%</td><td style="text-align:right">+6.2%</td><td style="text-align:right;color:#28a745">+5.5%</td></tr></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>📌 신호 분포 (69개월)</h2>
+      <canvas id="sigChart" height="120"></canvas>
+      <div class="stat-grid" style="margin-top:16px">
+        <div class="stat-box"><div class="stat-label">KR 신호</div><div class="stat-val" style="color:#E63946">24</div></div>
+        <div class="stat-box"><div class="stat-label">Neutral</div><div class="stat-val" style="color:#6C757D">1</div></div>
+        <div class="stat-box"><div class="stat-label">US 신호</div><div class="stat-val" style="color:#1D3557">44</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="font-size:0.82rem;color:#888">
+    <strong>모델 설명</strong> ·
+    Momentum Agent (40%): 11개 US/KR 섹터 ETF의 1M+3M+6M 평균 수익률 비교 ·
+    Breadth Agent (30%): MA200 상회 섹터 비율 ·
+    Relative Strength Agent (30%): KOSPI vs S&amp;P500 1M+3M+6M 상대 수익률 ·
+    임계값 ±0.08 · 데이터: history/market_data.csv
+  </div>
+</div>
+
+<script>
+const labels = ["2020-07-31", "2020-08-31", "2020-09-30", "2020-10-30", "2020-11-30", "2020-12-31", "2021-01-29", "2021-02-26", "2021-03-31", "2021-04-30", "2021-05-31", "2021-06-30", "2021-07-30", "2021-08-31", "2021-09-30", "2021-10-29", "2021-11-30", "2021-12-31", "2022-01-31", "2022-02-28", "2022-03-31", "2022-04-29", "2022-05-31", "2022-06-30", "2022-07-29", "2022-08-31", "2022-09-30", "2022-10-31", "2022-11-30", "2022-12-30", "2023-01-31", "2023-02-28", "2023-03-31", "2023-04-28", "2023-05-31", "2023-06-30", "2023-07-31", "2023-08-31", "2023-09-29", "2023-10-31", "2023-11-30", "2023-12-29", "2024-01-31", "2024-02-29", "2024-03-29", "2024-04-30", "2024-05-31", "2024-06-28", "2024-07-31", "2024-08-30", "2024-09-30", "2024-10-31", "2024-11-29", "2024-12-31", "2025-01-31", "2025-02-28", "2025-03-31", "2025-04-30", "2025-05-30", "2025-06-30", "2025-07-31", "2025-08-29", "2025-09-30", "2025-10-31", "2025-11-28", "2025-12-31", "2026-01-30", "2026-02-27", "2026-03-31"];
+const strat = [0.0341, 0.0348, -0.005, 0.1373, 0.2611, 0.2747, 0.2904, 0.3112, 0.364, 0.3715, 0.4113, 0.3709, 0.4107, 0.3436, 0.4364, 0.4245, 0.4866, 0.4084, 0.3642, 0.413, 0.2887, 0.2888, 0.1807, 0.2882, 0.2336, 0.1184, 0.2077, 0.2727, 0.1976, 0.2716, 0.2384, 0.2713, 0.2898, 0.293, 0.2866, 0.3266, 0.3031, 0.2396, 0.2124, 0.3205, 0.3789, 0.4008, 0.4732, 0.5189, 0.4586, 0.5286, 0.5817, 0.5995, 0.636, 0.669, 0.6525, 0.7472, 0.7035, 0.7495, 0.7247, 0.6255, 0.6132, 0.7022, 0.9381, 1.0478, 1.0104, 1.1609, 1.5918, 1.4778, 1.6592, 2.2237, 2.853, 2.1178, 2.8209];
+const blend = [0.0521, 0.0319, -0.0023, 0.1228, 0.2047, 0.2045, 0.2276, 0.2636, 0.3145, 0.3297, 0.3641, 0.3601, 0.3791, 0.3182, 0.3427, 0.3074, 0.3678, 0.2573, 0.2355, 0.271, 0.2007, 0.1987, 0.0696, 0.1455, 0.126, 0.0014, 0.0735, 0.1442, 0.0559, 0.1358, 0.1181, 0.1525, 0.1667, 0.1857, 0.2212, 0.2565, 0.2271, 0.1753, 0.1312, 0.2456, 0.3026, 0.2708, 0.3406, 0.3878, 0.3464, 0.3649, 0.4303, 0.4314, 0.4228, 0.4156, 0.3984, 0.411, 0.3772, 0.4298, 0.4239, 0.3684, 0.384, 0.4647, 0.6025, 0.6651, 0.6658, 0.7576, 0.9527, 0.9109, 0.9805, 1.2042, 1.4099, 1.1185, 1.4543];
+const kospi = [0.0341, 0.0348, -0.005, 0.1373, 0.2611, 0.2747, 0.2904, 0.3112, 0.3482, 0.3722, 0.412, 0.3716, 0.3702, 0.3143, 0.2722, 0.2159, 0.2752, 0.1362, 0.1326, 0.1572, 0.1309, 0.127, -0.0212, 0.0288, 0.0374, -0.0955, -0.0375, 0.0376, -0.0615, 0.0226, 0.0174, 0.0444, 0.0549, 0.0867, 0.0813, 0.11, 0.0779, 0.0394, -0.0158, 0.0954, 0.1472, 0.073, 0.1354, 0.1803, 0.1568, 0.133, 0.2023, 0.1906, 0.1492, 0.1144, 0.0984, 0.0554, 0.0311, 0.082, 0.0886, 0.0664, 0.0989, 0.1595, 0.3202, 0.395, 0.3694, 0.472, 0.7655, 0.6878, 0.8114, 1.1959, 1.6246, 1.1238, 1.6027];
+const sp500 = [0.0701, 0.0282, -0.0003, 0.1071, 0.1482, 0.1355, 0.1651, 0.2145, 0.2781, 0.2852, 0.3143, 0.3442, 0.3832, 0.3173, 0.4084, 0.3967, 0.4576, 0.3809, 0.3375, 0.3854, 0.2635, 0.2636, 0.1576, 0.2631, 0.2095, 0.0965, 0.1842, 0.2479, 0.1742, 0.2468, 0.2143, 0.2569, 0.2752, 0.2784, 0.3611, 0.4035, 0.3786, 0.3115, 0.2826, 0.397, 0.4588, 0.482, 0.5586, 0.6069, 0.5431, 0.6172, 0.6733, 0.6922, 0.7308, 0.7658, 0.7483, 0.8485, 0.8023, 0.8509, 0.8246, 0.7197, 0.7066, 0.8116, 0.9015, 0.9427, 0.9798, 1.0497, 1.0962, 1.099, 1.0979, 1.1267, 1.1082, 1.0009, 1.1839];
+
+new Chart(document.getElementById('cumChart'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      { label: 'KR/US Rotation', data: strat, borderColor: '#F58220', borderWidth:2.5, pointRadius:0, fill:false, tension:0.1 },
+      { label: '50/50 Blend',    data: blend, borderColor: '#6C757D', borderWidth:1.5, borderDash:[4,3], pointRadius:0, fill:false },
+      { label: 'KOSPI',          data: kospi, borderColor: '#E63946', borderWidth:1.5, borderDash:[2,2], pointRadius:0, fill:false },
+      { label: 'S&P500',         data: sp500, borderColor: '#1D3557', borderWidth:1.5, borderDash:[2,2], pointRadius:0, fill:false },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position:'bottom' } },
+    scales: {
+      y: { ticks: { callback: v => (v*100).toFixed(0)+'%' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('sigChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['KR','Neutral','US'],
+    datasets: [{ data: [24,1,44], backgroundColor:['#E63946','#ADB5BD','#1D3557'] }]
+  },
+  options: { plugins: { legend: { position:'bottom' } } }
+});
+</script>
+</body>
+</html>

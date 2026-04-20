@@ -63,7 +63,9 @@ portfolio/
 ├── macro_indicators.yaml # 거시지표 정의 (FRED/ECOS 지표 + 확장 지표 통합)
 ├── backtest.py      # 공통 백테스트 엔진
 ├── universe.yaml    # 자산 유니버스
-└── strategies/      # 전략 YAML
+├── strategies/      # 전략 YAML
+└── strategy/        # 멀티에이전트 전략 모델
+    └── sector_rotation.py  # KR vs US 월간 로테이션 (Momentum+Breadth+RelStrength)
 ```
 
 **CSV 스키마** (영문 대문자, Snowflake MKT100_MARKET_DAILY 와 정렬):
@@ -316,8 +318,26 @@ python -m portfolio.view.allocation_view --date YYYY-MM-DD --html
 - `portfolio/universe.yaml`: 자산 유니버스 정의
 - `portfolio/strategies/`: 전략 YAML 설정
 
-- Portfolio Agent / Price View: `history/market_data.csv` 단일 소스
+- Portfolio Agent / Price View / Sector Rotation: `history/market_data.csv` 단일 소스
 - Macro View: `history/macro_indicators.csv` (FRED + ECOS 수집)
+
+### 3. Sector Rotation Strategy (KR vs US)
+
+멀티에이전트 신호로 한국/미국 시장 중 다음 달 베팅 결정.
+
+**핵심 기능**:
+- Momentum Agent (40%): 11개 KR+US 섹터 ETF 1M/3M/6M 평균 수익률 비교
+- Breadth Agent (30%): MA200 상회 섹터 비율 (KR vs US)
+- Relative Strength Agent (30%): KOSPI vs S&P500 1M/3M/6M 상대 수익률
+- 월간 리밸런싱, 임계값 ±0.08 (KR/Neutral/US)
+- 벤치마크 3개: 50/50 블렌드, KOSPI, S&P500
+
+실행:
+```
+python -m portfolio.strategy.sector_rotation --date 2026-04-20
+```
+
+출력: `output/portfolio/strategy/{date}.html` + `{date}_signals.csv`
 
 ## 관련 설정
 
