@@ -796,7 +796,7 @@ def generate_index():
 </head>
 <body>
   <h1>Market Summary</h1>
-  <p class="sub">Auto-generated market reports · Updated daily before 08:30 KST</p>
+  <p class="sub">AI가 매일 아침 전 세계 시장을 분석해 상담원을 위한 시황 브리핑을 준비합니다.</p>
 
   <div class="main-tabs">
     <button class="main-tab active" onclick="showTab('daily')">Daily</button>
