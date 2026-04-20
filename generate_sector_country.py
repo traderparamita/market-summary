@@ -1044,13 +1044,11 @@ def _update_sc_index() -> None:
             day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
         except Exception:
             day_name = ""
-        # 섹터 Day / 국가 Day 추출
+        # 섹터 테마·국가명 추출
         subtitle = ""
         try:
-            content = Path(path).read_text(encoding="utf-8")
-            m = re.search(r'섹터 Day (\d+)/11.*?국가 Day (\d+)/11', content)
-            if m:
-                subtitle = f" · 섹터 Day {m.group(1)}/11 · 국가 Day {m.group(2)}/11"
+            f = get_focus(date)
+            subtitle = f" · {f['theme']} · {f['country_name']}"
         except Exception:
             pass
         if month not in months:
