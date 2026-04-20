@@ -18,6 +18,7 @@ Usage:
 import argparse
 import json
 import math
+import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -1027,24 +1028,121 @@ def _out_path(date_str: str, period: str) -> Path:
         return OUTPUT_ROOT / "monthly" / f"{_month_label(date_str)}.html"
 
 
+def _update_sc_index() -> None:
+    """output/sector-country/index.html 목록 페이지 생성/갱신."""
+    import glob as _glob
+
+    daily_dir = OUTPUT_ROOT / "daily"
+    months: dict[str, list[tuple[str, str, str]]] = {}
+
+    for path in sorted(_glob.glob(str(daily_dir / "????-??" / "????-??-??.html")), reverse=True):
+        fname = Path(path).name
+        date = fname.replace(".html", "")
+        month = date[:7]
+        try:
+            d = datetime.strptime(date, "%Y-%m-%d")
+            day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
+        except Exception:
+            day_name = ""
+        # 섹터 Day / 국가 Day 추출
+        subtitle = ""
+        try:
+            content = Path(path).read_text(encoding="utf-8")
+            m = re.search(r'섹터 Day (\d+)/11.*?국가 Day (\d+)/11', content)
+            if m:
+                subtitle = f" · 섹터 Day {m.group(1)}/11 · 국가 Day {m.group(2)}/11"
+        except Exception:
+            pass
+        if month not in months:
+            months[month] = []
+        months[month].append((date, day_name, subtitle))
+
+    sorted_months = sorted(months.keys(), reverse=True)
+    latest_month = sorted_months[0] if sorted_months else ""
+
+    month_btns = ""
+    panels = ""
+    for m in sorted_months:
+        active = " active" if m == latest_month else ""
+        label = datetime.strptime(m, "%Y-%m").strftime("%Y %b")
+        month_btns += f'      <button class="month-btn{active}" onclick="showMonth(\'{m}\')">{label}</button>\n'
+        items = ""
+        for date, day, subtitle in months[m]:
+            items += f'          <li><a href="daily/{m}/{date}.html">{date} ({day}){subtitle}</a></li>\n'
+        panels += f'      <div class="month-panel{active}" id="m-{m}"><ul>\n{items}      </ul></div>\n'
+
+    html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector-Country | 섹터·국가 포지셔닝</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+  body {{ font-family:'Spoqa Han Sans Neo','Malgun Gothic',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
+  h1 {{ font-size:28px; font-weight:700; margin-bottom:4px; }}
+  .sub {{ font-size:14px; color:#7c8298; margin-bottom:24px; }}
+  .back {{ font-size:13px; color:#7c8298; text-decoration:none; display:inline-block; margin-bottom:16px; }}
+  .back:hover {{ color:#F58220; }}
+  .month-bar {{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }}
+  .month-btn {{
+    padding:6px 14px; border:1px solid #e0e3ed; border-radius:16px;
+    background:#fff; color:#7c8298; font-size:12px; font-weight:600;
+    cursor:pointer; transition:all .15s; font-family:inherit;
+  }}
+  .month-btn:hover {{ border-color:#F58220; color:#F58220; }}
+  .month-btn.active {{ background:#F58220; color:#fff; border-color:#F58220; }}
+  .month-panel {{ display:none; }}
+  .month-panel.active {{ display:block; }}
+  ul {{ list-style:none; padding:0; }}
+  li {{ margin-bottom:8px; }}
+  li a {{
+    display:block; padding:12px 18px; background:#fff; border:1px solid #e0e3ed;
+    border-radius:10px; text-decoration:none; color:#2d3148; font-size:14px;
+    font-weight:500; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
+    font-family:'JetBrains Mono','Spoqa Han Sans Neo',monospace;
+  }}
+  li a:hover {{ border-color:#F58220; color:#F58220; transform:translateX(4px); }}
+</style>
+</head>
+<body>
+  <a class="back" href="../index.html">← Back</a>
+  <h1>Sector-Country</h1>
+  <p class="sub">섹터·국가 포지셔닝 보고서 · 11일 사이클 · 매 영업일 업데이트</p>
+
+  <div class="month-bar">
+{month_btns}  </div>
+
+{panels}
+  <script>
+  function showMonth(key) {{
+    document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('m-' + key).classList.add('active');
+    event.target.classList.add('active');
+  }}
+  </script>
+</body>
+</html>
+"""
+    idx_path = OUTPUT_ROOT / "index.html"
+    idx_path.write_text(html, encoding="utf-8")
+
+
 def _update_index_link(date_str: str, period: str, out_path: Path) -> None:
-    """output/index.html의 Market Research 카드 링크를 최신 daily 보고서로 갱신."""
+    """output/index.html의 Market Research 카드가 sector-country/index.html을 가리키도록 보장."""
     if period != "daily":
         return
     index_path = ROOT / "output" / "index.html"
     if not index_path.exists():
         return
-
-    # 상대 경로: output/index.html 기준
-    rel = out_path.relative_to(ROOT / "output")
-    new_href = str(rel).replace("\\", "/")
-
     content = index_path.read_text(encoding="utf-8")
-    import re
-    # sector-country/daily/ 로 시작하는 href만 교체
+    # 개별 daily 경로가 남아있으면 index.html로 교체
     updated = re.sub(
         r'href="sector-country/daily/[^"]*"',
-        f'href="{new_href}"',
+        'href="sector-country/index.html"',
         content,
     )
     if updated != content:
@@ -1096,6 +1194,7 @@ def generate(date_str: str, period: str = "daily") -> tuple[str, dict]:
         inject_story(str(out), existing_story, focus=focus, date_str=date_str)
         _save_story_file(out, existing_story)
 
+    _update_sc_index()
     _update_index_link(date_str, period, out)
 
     return str(out), focus
