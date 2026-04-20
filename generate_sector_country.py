@@ -93,7 +93,10 @@ COUNTRY_REP_STOCKS = {
     "CN": [("0700.HK", "Tencent"), ("9988.HK", "Alibaba"), ("3690.HK", "Meituan"), ("1810.HK", "Xiaomi")],
     "EU": [("ASML", "ASML"), ("MC.PA", "LVMH"), ("SAP", "SAP"), ("NESN.SW", "Nestlé")],
     "UK": [("SHEL.L", "Shell"), ("AZN.L", "AstraZeneca"), ("HSBA.L", "HSBC"), ("BP.L", "BP")],
+    "DE": [("SAP", "SAP"), ("SIE.DE", "Siemens"), ("ALV.DE", "Allianz"), ("BAS.DE", "BASF")],
+    "FR": [("MC.PA", "LVMH"), ("OR.PA", "L'Oréal"), ("SAN.PA", "Sanofi"), ("AIR.PA", "Airbus")],
     "IN": [("RELIANCE.NS", "Reliance"), ("TCS.NS", "TCS"), ("INFY.NS", "Infosys"), ("HDFCBANK.NS", "HDFC Bank")],
+    "TW": [("TSM", "TSMC"), ("2330.TW", "台積電"), ("2317.TW", "鴻海"), ("2454.TW", "聯發科")],
     "EM": [("TSM", "TSMC"), ("005930.KS", "삼성전자"), ("BABA", "Alibaba"), ("VALE3.SA", "Vale")],
 }
 
@@ -209,11 +212,11 @@ COUNTRY_ROTATION = [
     {"country_day": 3,  "code": "CN", "name": "중국",   "flag": "🇨🇳"},
     {"country_day": 4,  "code": "JP", "name": "일본",   "flag": "🇯🇵"},
     {"country_day": 5,  "code": "EU", "name": "유럽",   "flag": "🇪🇺"},
-    {"country_day": 6,  "code": "KR", "name": "한국",   "flag": "🇰🇷"},
-    {"country_day": 7,  "code": "US", "name": "미국",   "flag": "🇺🇸"},
-    {"country_day": 8,  "code": "CN", "name": "중국",   "flag": "🇨🇳"},
-    {"country_day": 9,  "code": "UK", "name": "영국",   "flag": "🇬🇧"},
-    {"country_day": 10, "code": "IN", "name": "인도",   "flag": "🇮🇳"},
+    {"country_day": 6,  "code": "UK", "name": "영국",   "flag": "🇬🇧"},
+    {"country_day": 7,  "code": "DE", "name": "독일",   "flag": "🇩🇪"},
+    {"country_day": 8,  "code": "FR", "name": "프랑스", "flag": "🇫🇷"},
+    {"country_day": 9,  "code": "IN", "name": "인도",   "flag": "🇮🇳"},
+    {"country_day": 10, "code": "TW", "name": "대만",   "flag": "🇹🇼"},
     {"country_day": 11, "code": "EM", "name": "신흥국", "flag": "🌍"},
 ]
 

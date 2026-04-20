@@ -103,6 +103,7 @@ TICKERS = {
         "Shanghai": "000001.SS",
         "HSI":      "^HSI",
         "NIFTY50":  "^NSEI",
+        "TWSE":     "^TWII",  # 대만 가권지수
         # MSCI ETF proxies
         "MSCI World": "URTH",  # iShares MSCI World ETF
         "MSCI ACWI":  "ACWI",  # iShares MSCI ACWI ETF
@@ -221,6 +222,7 @@ INDICATOR_CODES = {
     ("equity", "Shanghai"):  "EQ_SHANGHAI",
     ("equity", "HSI"):       "EQ_HSI",
     ("equity", "NIFTY50"):   "EQ_NIFTY50",
+    ("equity", "TWSE"):      "EQ_TWSE",
     ("equity", "MSCI World"): "EQ_MSCI_WORLD",
     ("equity", "MSCI ACWI"):  "EQ_MSCI_ACWI",
     ("equity", "MSCI LATAM"): "EQ_MSCI_LATAM",

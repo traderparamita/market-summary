@@ -99,6 +99,33 @@ COUNTRIES = {
         "macro_cpi": None,
         "fund_type": "해외주식형(이머징)",
     },
+    "DE": {
+        "name": "독일", "flag": "🇩🇪",
+        "eq_code": "EQ_DAX",
+        "fx_code": "FX_EURUSD",
+        "fx_usd_based": False,
+        "macro_gdp": None,
+        "macro_cpi": None,
+        "fund_type": "해외주식형(유럽)",
+    },
+    "FR": {
+        "name": "프랑스", "flag": "🇫🇷",
+        "eq_code": "EQ_CAC40",
+        "fx_code": "FX_EURUSD",
+        "fx_usd_based": False,
+        "macro_gdp": None,
+        "macro_cpi": None,
+        "fund_type": "해외주식형(유럽)",
+    },
+    "TW": {
+        "name": "대만", "flag": "🇹🇼",
+        "eq_code": "EQ_TWSE",
+        "fx_code": None,
+        "fx_usd_based": None,
+        "macro_gdp": None,
+        "macro_cpi": None,
+        "fund_type": "해외주식형(이머징)",
+    },
 }
 
 ACWI_CODE = "EQ_MSCI_ACWI"

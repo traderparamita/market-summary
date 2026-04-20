@@ -330,7 +330,7 @@ python -m portfolio.view.allocation_view --date YYYY-MM-DD --html
 
 `generate_sector_country.py`의 `get_focus(date)` 로 자동 계산. 섹터(11일)·국가(11일) 사이클 모두 **기준일 2026-01-05** 영업일 기준으로 독립 순환.
 
-국가 사이클: KR(1) · US(2) · CN(3) · JP(4) · EU(5) · KR(6) · US(7) · CN(8) · UK(9) · IN(10) · EM(11)
+국가 사이클: KR(1) · US(2) · CN(3) · JP(4) · EU(5) · UK(6) · DE(7) · FR(8) · IN(9) · TW(10) · EM(11)
 
 - 각 국가 차트는 해당 국가의 고유 지수를 표시 (`portfolio/view/country_view.py` `COUNTRIES` dict의 `eq_code` 사용)
 - 이전 보고서 링크 레이블: `↩ 이전 보고서` (날짜·타입 불포함)
