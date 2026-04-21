@@ -22,7 +22,7 @@ from pykrx import stock  # noqa: E402
 
 from portfolio.io import load_csv_dedup, append_save_csv  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent  # market_summary/ (from portfolio/collectors/)
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
 VALUATION_TARGETS: list[tuple[str, str, str]] = [

@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 from portfolio.io import load_csv_dedup, append_save_csv
 
 # Load environment
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # market_summary/ (from portfolio/collectors/)
 load_dotenv(BASE_DIR / ".env")
 
 FRED_API_KEY = os.getenv("FRED_API_KEY")

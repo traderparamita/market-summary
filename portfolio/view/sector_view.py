@@ -92,18 +92,18 @@ CYCLE_DESCRIPTIONS = {
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
-    wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
+    from portfolio.market_source import load_wide_close
     target = pd.Timestamp(date)
+    wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
 
 
 def _latest_macro(date: str) -> str:
     """현재 US 매크로 국면 (2×2 Goldilocks/Reflation/Stagflation/Deflation)."""
-    if not MACRO_CSV.exists():
+    from portfolio.market_source import load_macro_long
+    df = load_macro_long(end=date)
+    if df.empty:
         return "N/A"
-    df = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
     target = pd.Timestamp(date)
     df = df[df["DATE"] <= target]
 
@@ -165,10 +165,9 @@ def _estimate_cycle_phase(date: str, prices: pd.DataFrame) -> str:
 
     # Yield curve from market_data: BD_US_10Y - BD_US_2Y (both are rates)
     curve_slope = 0  # positive = steep, negative = inverted
-    if not MACRO_CSV.exists():
-        macro_df_here = pd.DataFrame()
-    else:
-        macro_df_here = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
+    from portfolio.market_source import load_macro_long
+    macro_df_here = load_macro_long(end=date)
+    if not macro_df_here.empty:
         target = pd.Timestamp(date)
         macro_df_here = macro_df_here[macro_df_here["DATE"] <= target]
 

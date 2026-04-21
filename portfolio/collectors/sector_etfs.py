@@ -19,7 +19,7 @@ import yfinance as yf
 
 from portfolio.io import load_csv_dedup, append_save_csv
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent  # market_summary/ (from portfolio/collectors/)
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
 # ── 수집 대상 ──────────────────────────────────────────────────
