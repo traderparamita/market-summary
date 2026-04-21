@@ -134,18 +134,18 @@ ACWI_CODE = "EQ_MSCI_ACWI"
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
-    wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
+    from portfolio.market_source import load_wide_close
     target = pd.Timestamp(date)
+    wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
 
 
 def _load_macro(date: str) -> pd.DataFrame:
-    if not MACRO_CSV.exists():
-        return pd.DataFrame()
-    df = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
+    from portfolio.market_source import load_macro_long
     target = pd.Timestamp(date)
+    df = load_macro_long(end=date)
+    if df.empty:
+        return pd.DataFrame()
     return df[df["DATE"] <= target].sort_values("DATE")
 
 
@@ -158,19 +158,21 @@ def _latest_macro(macro_df: pd.DataFrame, code: str) -> float:
 
 # ── Signal calculators ───────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, days: int) -> float:
-    """단순 수익률 (소수점)."""
-    if len(px) < days + 5:
+def _momentum(px: pd.Series, months: int) -> float:
+    """달력 기준 수익률 (소수점)."""
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
         return np.nan
-    return float(px.iloc[-1] / px.iloc[-days] - 1)
+    return float(px.iloc[-1] / past.iloc[-1] - 1)
 
 
-def _vs_acwi(px_country: pd.Series, px_acwi: pd.Series, days: int = 126) -> float:
-    """ACWI 대비 초과수익 (6M, ~126 거래일)."""
-    if len(px_country) < days + 5 or len(px_acwi) < days + 5:
+def _vs_acwi(px_country: pd.Series, px_acwi: pd.Series, months: int = 6) -> float:
+    """ACWI 대비 초과수익 (달력 기준)."""
+    country_ret = _momentum(px_country, months)
+    acwi_ret = _momentum(px_acwi, months)
+    if np.isnan(country_ret) or np.isnan(acwi_ret):
         return np.nan
-    country_ret = float(px_country.iloc[-1] / px_country.iloc[-days] - 1)
-    acwi_ret = float(px_acwi.iloc[-1] / px_acwi.iloc[-days] - 1)
     return country_ret - acwi_ret
 
 
@@ -303,8 +305,8 @@ def _value_proxy(eq_px: pd.Series, acwi_px: pd.Series) -> int:
     if len(eq_px) < 260:
         return 0
 
-    mom_3m  = float(eq_px.iloc[-1] / eq_px.iloc[-63]  - 1) if len(eq_px) >= 66  else np.nan
-    mom_12m = float(eq_px.iloc[-1] / eq_px.iloc[-252] - 1) if len(eq_px) >= 255 else np.nan
+    mom_3m  = _momentum(eq_px, 3)
+    mom_12m = _momentum(eq_px, 12)
 
     if np.isnan(mom_3m) or np.isnan(mom_12m):
         return 0
@@ -403,14 +405,17 @@ def _view_label(score: float) -> str:
 
 # ── KRW investor signals ─────────────────────────────────────────────────
 
-def _krw_fx_return(prices: pd.DataFrame, days: int = 126) -> dict:
+def _krw_fx_return(prices: pd.DataFrame, months: int = 6) -> dict:
     """USDKRW 추세 요약 — KRW 투자자의 환헤지 방향."""
     code = "FX_USDKRW"
-    if code not in prices.columns or len(prices[code].dropna()) < days + 5:
+    if code not in prices.columns or prices[code].dropna().empty:
         return {"trend": "N/A", "chg_6m": np.nan, "hedge_rec": "데이터 부족"}
 
     px = prices[code].dropna()
-    chg_6m = float(px.iloc[-1] / px.iloc[-days] - 1) * 100
+    chg_6m_raw = _momentum(px, months)
+    if np.isnan(chg_6m_raw):
+        return {"trend": "N/A", "chg_6m": np.nan, "hedge_rec": "데이터 부족"}
+    chg_6m = chg_6m_raw * 100
     ma20 = float(px.tail(20).mean())
     ma60 = float(px.tail(60).mean())
     last = float(px.iloc[-1])
@@ -453,13 +458,13 @@ def compute_country_view(date: str) -> dict:
         fx_px = prices[fx_c].dropna() if (fx_c and fx_c in prices.columns) else pd.Series(dtype=float)
 
         # Momentum
-        mom_3m = _momentum(eq_px, 63)
-        mom_6m = _momentum(eq_px, 126)
-        mom_12m = _momentum(eq_px, 252)
+        mom_3m = _momentum(eq_px, 3)
+        mom_6m = _momentum(eq_px, 6)
+        mom_12m = _momentum(eq_px, 12)
 
         # vs ACWI
-        excess_3m = _vs_acwi(eq_px, acwi, 63)
-        excess_6m = _vs_acwi(eq_px, acwi, 126)
+        excess_3m = _vs_acwi(eq_px, acwi, 3)
+        excess_6m = _vs_acwi(eq_px, acwi, 6)
 
         # FX
         if fx_c and not fx_px.empty and usd_based is not None:

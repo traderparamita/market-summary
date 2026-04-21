@@ -847,6 +847,39 @@ def generate_index():
 
 
 
+def _run_aux_collectors(target_date: str) -> None:
+    """Auxiliary collectors 일간 실행 (CSV + Snowflake 동시 적재).
+
+    daily market-full 에서 MKT100 이 단일 소스가 되려면 보조 지표들도 매일 수집돼야 한다.
+    각 collector 는 dedup 로직이 있어 중복 호출해도 이미 있는 행은 건너뛴다.
+
+    - collect_sector_etfs: SC_US_*, FA_US_*, SC_KR_* (ETF 기반, yfinance)
+    - collect_krx_sectors: IX_KR_* (KOSPI200 GICS 지수, pykrx)
+    - collect_valuation:   VAL_KR_* (KOSPI PER/PBR/DY, pykrx)
+
+    실패해도 메인 파이프라인은 계속 — 각 collector 는 [AUX] 마커로 결과 표시.
+    """
+    print(f"\n=== Aux collectors (date={target_date}) ===")
+
+    aux_tasks = [
+        ("collect_sector_etfs", "portfolio.collect_sector_etfs", "collect_sector_etfs"),
+        ("collect_krx_sectors", "portfolio.collect_krx_sectors", "collect_krx_sectors"),
+        ("collect_valuation",   "portfolio.collect_valuation",   "collect_valuation"),
+    ]
+
+    for label, module_path, func_name in aux_tasks:
+        try:
+            import importlib
+            mod = importlib.import_module(module_path)
+            func = getattr(mod, func_name)
+            # 각 collector 가 dedup 하므로 start/end 를 target_date 로 좁혀 호출
+            added = func(start=target_date, end=target_date)
+            print(f"[AUX] OK collector={label} rows={added}")
+        except Exception as e:
+            reason = str(e).replace("\n", " ")[:200]
+            print(f"[AUX] FAILED collector={label} reason={reason}")
+
+
 def main(target_date=None, start_date=None):
     """일간 리포트 생성.
 
@@ -864,24 +897,37 @@ def main(target_date=None, start_date=None):
     else:
         print(f"Target date: {target_date}")
 
-    # Step 1: API 에서 원시 데이터 수집 → CSV 에 축적
+    # Step 1a: API 에서 원시 데이터 수집 → CSV 에 축적 (collect_market 핵심 56+ 지표)
     _, history_rows = fetch_data(start_date=start_date, end_date=target_date)
     append_to_history(history_rows)
     print(f"History updated: {HISTORY_CSV}")
 
-    # Step 1b: Snowflake MKT100_MARKET_DAILY dual-write (best-effort)
-    #   - 일간 실행: target_date 한 날짜만 DELETE 후 INSERT.
-    #   - 전체 재수집(--start) 시엔 별도 snowflake_loader.py --truncate 로 벌크 적재.
-    #   - Snowflake 실패해도 CSV 는 이미 저장됐으므로 진행.
-    if history_rows and not start_date:
+    # Step 1b: 보조 수집기 일간 실행 (pykrx KR 섹터 지수 + KOSPI 밸류에이션 + 추가 ETF)
+    #   - 전체 재수집(--start) 시에는 실행 안 함 (별도 백필 권장).
+    #   - 각 collector 내부에서 CSV append + Snowflake upsert 자동 수행.
+    if not start_date:
+        _run_aux_collectors(target_date)
+
+    # Step 1c: Snowflake MKT100 통합 upsert
+    #   - CSV 의 target_date 전체 행을 읽어 한번에 upsert.
+    #   - 어떤 collector 가 CSV 에 추가했든 모두 반영 → CSV ↔ MKT100 무결성 보장.
+    #   - 표준 마커: [SNOWFLAKE] OK date=... rows=N  또는  [SNOWFLAKE] FAILED date=... reason=...
+    if not start_date:
         try:
             import pandas as pd
-            df_hist = pd.DataFrame(history_rows, columns=HISTORY_CSV_COLUMNS)
             from snowflake_loader import upsert_rows
-            upsert_rows(df_hist, target_date=target_date)
-            print(f"Snowflake MKT100_MARKET_DAILY updated for {target_date}")
+            df_full = pd.read_csv(HISTORY_CSV)
+            df_today = df_full[df_full["DATE"].astype(str) == target_date]
+            if df_today.empty:
+                print(f"[SNOWFLAKE] SKIP date={target_date} reason=no-csv-rows-for-date")
+            else:
+                nrows = upsert_rows(df_today.copy(), target_date=target_date)
+                print(f"[SNOWFLAKE] OK date={target_date} rows={nrows}")
         except Exception as e:
-            print(f"[WARN] Snowflake upsert 실패 (CSV 는 저장됨): {e}")
+            reason = str(e).replace("\n", " ")[:300]
+            print(f"[SNOWFLAKE] FAILED date={target_date} reason={reason}")
+    else:
+        print(f"[SNOWFLAKE] SKIP date={target_date} reason=bulk-mode(--start)")
 
     # Step 2: CSV에서 메트릭 계산
     data = build_report_data(target_date)

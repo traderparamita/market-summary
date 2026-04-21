@@ -232,9 +232,13 @@ def build_hmm_features(
     # Otherwise default 0.5
     features["breadth_ma200"] = 0.5  # will be overridden at score time
 
-    # HY spread normalized (if available in prices under CREDIT_HY_SPREAD)
-    hy_code = "CREDIT_HY_SPREAD"
-    if hy_code in prices.columns:
+    # HY spread normalized (canonical: US_HY_SPREAD, legacy alias: CREDIT_HY_SPREAD)
+    hy_code = None
+    for cand in ("US_HY_SPREAD", "CREDIT_HY_SPREAD"):
+        if cand in prices.columns:
+            hy_code = cand
+            break
+    if hy_code:
         features["hy_spread_norm"] = (prices[hy_code] / 5.0).clip(0.5, 5.0)
     else:
         features["hy_spread_norm"] = 1.0

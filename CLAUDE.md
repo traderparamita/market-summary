@@ -36,6 +36,7 @@ history/market_data.csv       # 일별 시계열 (10컬럼 대문자, Snowflake 
 history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
 
 portfolio/
+├── market_source.py # Snowflake MKT100/MKT200 리더 유틸 (CSV fallback) — 모든 reader 의 단일 진입점
 ├── io.py            # CSV 공통 유틸 - load_csv_dedup(), append_save_csv()
 ├── aimvp/           # Portfolio Agent (AIMVP RiskOn 전략)
 │   ├── generate.py      # 백테스트 HTML 생성
@@ -91,7 +92,7 @@ DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
 | Major Stocks | yfinance | — |
 
 - FX/Commodity는 `needs_inv_fix = True`로 항상 FDR → investiny 순 보정 시도
-- 모든 Data Dashboard: `history/market_data.csv`가 단일 소스 (Single Source of Truth)
+- 모든 Data Dashboard 읽기: **Snowflake MKT100_MARKET_DAILY 가 단일 정본** (2026-04-21 전환). `history/market_data.csv` 는 legacy mirror + simulate.py 용 fallback (`SNOWFLAKE_DISABLE=1` 로 강제 전환). 모든 reader 는 `portfolio.market_source.load_long()` / `load_wide_close()` / `load_macro_long()` 경유.
 - Snowflake `MKT100_MARKET_DAILY` 는 CSV 의 미러. `generate.py main()` 이 CSV append 직후 dual-write (해당 일자 DELETE + INSERT, best-effort; Snowflake 실패해도 CSV 는 살아있음)
 - 전체 재수집은 `python snowflake_loader.py --truncate` 로 CSV 통째로 벌크 적재
 - 모든 Market Story: Claude 작성. 주간/월간은 일간 `_story.html`들을 종합
@@ -165,7 +166,7 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
 
 - HTML 보고서는 Data 탭과 Story 탭 2개로 구성. Story가 없으면 placeholder 유지
 - Data 탭의 각 섹션 헤더에 데이터 소스 표시 (src-tag CSS 클래스)
-- `history/market_data.csv`: OHLCV 시계열, 10 대문자 컬럼. git 에 커밋됨. 보고서 재현의 단일 소스
+- `history/market_data.csv`: OHLCV 시계열, 10 대문자 컬럼. git 에 커밋됨. **legacy mirror** — simulate.py 시뮬레이션 (point-in-time cutoff) 에서만 authoritative. 평상시 read 는 Snowflake MKT100 이 우선
 - `.gitignore`: `_data.json`, `data/`, `history/market_data.csv.bak_*`, `.venv/`, `.DS_Store` (macOS 메타데이터) 포함
 - investiny 소스가 주말 날짜 데이터를 반환할 수 있음 → 수집 시 자동 필터링
 - `generate.py` 의 dual-write 는 `--start` 없이 실행한 일간 수집에만 작동. 전체 재수집은 반드시 `snowflake_loader.py --truncate` 로 별도 벌크 적재
@@ -318,7 +319,7 @@ python -m portfolio.view.allocation_view --date YYYY-MM-DD --html
 - `portfolio/universe.yaml`: 자산 유니버스 정의
 - `portfolio/strategies/`: 전략 YAML 설정
 
-- Portfolio Agent / Price View / Sector Rotation: `history/market_data.csv` 단일 소스
+- Portfolio Agent / Price View / Sector Rotation: **Snowflake MKT100** 단일 정본 (via `portfolio.market_source`). 시뮬레이션 모드에서만 CSV
 - Macro View: `history/macro_indicators.csv` (FRED + ECOS 수집)
 
 ### 3. Sector Rotation Strategy (KR vs US)

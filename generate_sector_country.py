@@ -37,14 +37,13 @@ HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
 
 def _load_price_series(indicator_code: str, date_str: str, days: int = 60) -> dict:
-    """특정 지표의 최근 N일 가격 시계열 반환."""
-    df = pd.read_csv(HISTORY_CSV, parse_dates=["DATE"])
-    df = df[df["INDICATOR_CODE"] == indicator_code].copy()
-    df = df[df["DATE"] <= date_str].tail(days)
+    """특정 지표의 최근 N일 가격 시계열 반환 (MKT100 Snowflake, CSV fallback)."""
+    from portfolio.market_source import load_long
 
+    df = load_long(codes=[indicator_code], end=date_str)
     if df.empty:
         return {"dates": [], "prices": []}
-
+    df = df.tail(days)
     return {
         "dates": df["DATE"].dt.strftime("%Y-%m-%d").tolist(),
         "prices": df["CLOSE"].fillna(0).round(2).tolist()

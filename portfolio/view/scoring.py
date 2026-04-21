@@ -27,24 +27,42 @@ def load_universe(path: Path = UNIVERSE_YAML) -> dict:
         return yaml.safe_load(f)
 
 
-def load_prices(csv_path: str | Path = HISTORY_CSV) -> pd.DataFrame:
-    """Load market_data.csv and pivot to wide format (DATE x INDICATOR_CODE -> CLOSE)."""
-    df = pd.read_csv(csv_path, parse_dates=["DATE"])
+def load_prices(csv_path: str | Path | None = None) -> pd.DataFrame:
+    """Load market data from Snowflake MKT100 (CSV fallback) and pivot to wide CLOSE.
+
+    csv_path 인자는 하위호환용 — 전달되면 해당 CSV 를 읽고, 없으면 market_source 가
+    Snowflake 우선으로 조회한다 (SNOWFLAKE_DISABLE=1 시 CSV fallback).
+    """
+    if csv_path is not None and Path(csv_path).exists():
+        df = pd.read_csv(csv_path, parse_dates=["DATE"])
+    else:
+        from portfolio.market_source import load_long
+        df = load_long()
     df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
     wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
     wide = wide.sort_index()
     return wide
 
 
-def _safe_momentum(series: pd.Series, lookback: int, skip: int = 22) -> float:
-    """Momentum = price(t-skip) / price(t-lookback) - 1.
+def _safe_momentum(series: pd.Series, months_back: int, months_skip: int = 1) -> float:
+    """Momentum = price(t - skip_months) / price(t - back_months) - 1.
 
-    skip=0 means use the latest price as the numerator.
+    months_skip=0 means use the latest price as the numerator.
     """
-    if len(series) < lookback:
+    end_date = series.index[-1]
+    if months_skip > 0:
+        skip_target = end_date - pd.DateOffset(months=months_skip)
+        end_slice = series[series.index <= skip_target]
+        if end_slice.empty:
+            return np.nan
+        p_end = float(end_slice.iloc[-1])
+    else:
+        p_end = float(series.iloc[-1])
+    start_target = end_date - pd.DateOffset(months=months_back)
+    start_slice = series[series.index <= start_target]
+    if start_slice.empty:
         return np.nan
-    p_end = series.iloc[-skip] if skip > 0 else series.iloc[-1]
-    p_start = series.iloc[-lookback]
+    p_start = float(start_slice.iloc[-1])
     if p_start <= 0:
         return np.nan
     return float(p_end / p_start - 1)
@@ -154,10 +172,12 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
         returns = series.pct_change().dropna()
 
         # ── Momentum signals ──────────────────────────────────────
-        mom_12_1 = _safe_momentum(series, 252, 22)
-        mom_6_1  = _safe_momentum(series, 126, 22)
-        mom_3_1  = _safe_momentum(series, 66,  22)   # 3-1 month
-        reversal = float(series.iloc[-1] / series.iloc[-22] - 1) if len(series) >= 22 else np.nan
+        mom_12_1 = _safe_momentum(series, 12, 1)
+        mom_6_1  = _safe_momentum(series, 6, 1)
+        mom_3_1  = _safe_momentum(series, 3, 1)
+        _rev_target = series.index[-1] - pd.DateOffset(months=1)
+        _rev_past = series[series.index <= _rev_target]
+        reversal = float(series.iloc[-1] / _rev_past.iloc[-1] - 1) if not _rev_past.empty else np.nan
 
         # Risk-adjusted momentum: mom_12_1 / annualised vol
         vol_12m = float(returns.tail(252).std() * np.sqrt(252)) if len(returns) >= 252 else np.nan
@@ -260,7 +280,10 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
         if len(vix_s) >= 20:
             vix_ma20 = float(vix_s.tail(20).mean())
         if len(vix_s) >= 22:
-            vix_1m_chg = float(vix_s.iloc[-1] / vix_s.iloc[-22] - 1)
+            _vt = vix_s.index[-1] - pd.DateOffset(months=1)
+            _vp = vix_s[vix_s.index <= _vt]
+            if not _vp.empty:
+                vix_1m_chg = float(vix_s.iloc[-1] / _vp.iloc[-1] - 1)
         if not np.isnan(vix_level):
             vix_regime = -1.0 if vix_level > 25 else (1.0 if vix_level < 15 else 0.0)
         if not np.isnan(vix_level) and not np.isnan(vix_ma20):
@@ -289,7 +312,10 @@ def compute_signals(prices: pd.DataFrame, date: str, universe: dict) -> pd.DataF
             dxy_ma200 = float(dxy_s.tail(200).mean())
             dxy_trend = 1.0 if float(dxy_s.iloc[-1]) > dxy_ma200 else -1.0
         if len(dxy_s) >= 66:
-            dxy_3m_chg = float(dxy_s.iloc[-1] / dxy_s.iloc[-66] - 1)
+            _dt = dxy_s.index[-1] - pd.DateOffset(months=3)
+            _dp = dxy_s[dxy_s.index <= _dt]
+            if not _dp.empty:
+                dxy_3m_chg = float(dxy_s.iloc[-1] / _dp.iloc[-1] - 1)
 
     # Market breadth (using all assets in the universe)
     breadth_ma200 = float((df["trend_ma200"] == 1.0).mean())

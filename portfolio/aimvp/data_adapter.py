@@ -12,13 +12,17 @@ HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
 
 def load_monthly_from_csv(csv_path: str | Path | None = None) -> dict[str, pd.Series]:
-    """Load daily prices from CSV, resample to month-end.
+    """Load daily prices from Snowflake MKT100 (CSV fallback), resample to month-end.
 
-    Returns dict with keys "stock", "bond", "cash", "vix" —
-    same interface as riskon's data.fetch_all().
+    함수명에 `from_csv` 가 남아있는 건 하위호환용. 실제로는 Snowflake 를 우선 읽는다.
+    csv_path override 가 들어오면 해당 CSV 를 그대로 읽는다.
     """
-    path = Path(csv_path) if csv_path else HISTORY_CSV
-    df = pd.read_csv(path, parse_dates=["DATE"])
+    if csv_path is not None:
+        path = Path(csv_path)
+        df = pd.read_csv(path, parse_dates=["DATE"])
+    else:
+        from portfolio.market_source import load_long
+        df = load_long()
     df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
     wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
     wide = wide.sort_index()
@@ -26,7 +30,7 @@ def load_monthly_from_csv(csv_path: str | Path | None = None) -> dict[str, pd.Se
     result = {}
     for key, code in [("stock", STOCK_CODE), ("bond", BOND_CODE), ("vix", VIX_CODE)]:
         if code not in wide.columns:
-            raise KeyError(f"{code} not found in market_data.csv")
+            raise KeyError(f"{code} not found in MKT100 / market_data.csv")
         series = wide[code].dropna().resample("ME").last().dropna()
         series.name = key
         result[key] = series

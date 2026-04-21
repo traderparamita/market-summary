@@ -48,19 +48,20 @@ ALL_ALT = {**PRECIOUS_METALS, **ENERGY, **INDUSTRIAL, **REAL_ESTATE}
 # ── Data loader ───────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
-    wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
+    from portfolio.market_source import load_wide_close
     target = pd.Timestamp(date)
+    wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
 
 
 # ── Signal calculators ────────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, days: int) -> float:
-    if len(px) < days + 3:
+def _momentum(px: pd.Series, months: int) -> float:
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
         return np.nan
-    return float(px.iloc[-1] / px.iloc[-days] - 1) * 100
+    return float(px.iloc[-1] / past.iloc[-1] - 1) * 100
 
 
 def _trend_score(px: pd.Series) -> int:
@@ -145,9 +146,9 @@ def _score_asset(code: str, prices: pd.DataFrame) -> dict:
     if px.empty:
         return result
 
-    m1 = round(_momentum(px, 21), 2)
-    m3 = round(_momentum(px, 63), 2)
-    m6 = round(_momentum(px, 126), 2)
+    m1 = round(_momentum(px, 1), 2)
+    m3 = round(_momentum(px, 3), 2)
+    m6 = round(_momentum(px, 6), 2)
     tr = _trend_score(px)
     pc = round(_percentile(px, 252), 1)
     rating, rcolor = _ow_nu_uw(m1, m3, m6, tr, pc)
@@ -178,7 +179,7 @@ def _dxy_regime(px: pd.DataFrame) -> dict:
         return {"label": "N/A", "color": "#94a3b8", "signal": "데이터 없음",
                 "mom_1m": np.nan, "last": np.nan}
     last  = float(dxy.iloc[-1])
-    m1    = _momentum(dxy, 21)
+    m1    = _momentum(dxy, 1)
     tr    = _trend_score(dxy)
 
     # DXY 강세 → 원자재 헤드윈드, DXY 약세 → 테일윈드
@@ -203,7 +204,7 @@ def _real_rate_regime(px: pd.DataFrame) -> dict:
     if tip.empty:
         return {"label": "N/A", "color": "#94a3b8", "signal": "데이터 없음",
                 "mom_1m": np.nan}
-    m1 = _momentum(tip, 21)
+    m1 = _momentum(tip, 1)
     tr = _trend_score(tip)
 
     # TIP 상승(가격 상승) = 실질금리 하락 = 금 우호
@@ -250,8 +251,8 @@ def _copper_signal(px: pd.DataFrame) -> dict:
         return {"label": "경기 신호 없음", "color": "#94a3b8",
                 "mom_1m": np.nan, "mom_3m": np.nan, "trend": 0, "last": np.nan}
     last = float(cop.iloc[-1])
-    m1 = _momentum(cop, 21)
-    m3 = _momentum(cop, 63)
+    m1 = _momentum(cop, 1)
+    m3 = _momentum(cop, 3)
     tr = _trend_score(cop)
 
     if tr >= 1 and (not np.isnan(m3) and m3 > 0):
@@ -274,7 +275,10 @@ def _reit_rate_signal(px: pd.DataFrame) -> dict:
     if "BD_US_10Y" in px.columns:
         r = px["BD_US_10Y"].dropna()
         if len(r) > 21:
-            us10y_m1 = float(r.iloc[-1] - r.iloc[-22])  # bps 변화 (금리는 레벨)
+            t = r.index[-1] - pd.DateOffset(months=1)
+            past = r[r.index <= t]
+            if not past.empty:
+                us10y_m1 = float(r.iloc[-1] - past.iloc[-1])
 
     if "SC_US_REIT" not in px.columns:
         return {"label": "데이터 없음", "color": "#94a3b8", "us10y_change": us10y_m1}

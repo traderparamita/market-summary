@@ -160,6 +160,13 @@ def collect_sector_etfs(
     else:
         print("\n  → 신규 데이터 없음")
 
+    # Snowflake dual-write (best-effort)
+    try:
+        from snowflake_loader import sync_new_rows
+        sync_new_rows(new_rows, source="collect_sector_etfs")
+    except Exception as e:
+        print(f"[SNOWFLAKE] FAILED source=collect_sector_etfs reason={str(e)[:200]}")
+
     return len(new_rows)
 
 

@@ -57,18 +57,18 @@ MACRO_RATES = {
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
-    wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
+    from portfolio.market_source import load_wide_close
     target = pd.Timestamp(date)
+    wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
 
 
 def _load_macro(date: str) -> dict:
     """FRED 금리/스프레드 최근 값."""
-    if not MACRO_CSV.exists():
+    from portfolio.market_source import load_macro_long
+    df = load_macro_long(end=date)
+    if df.empty:
         return {}
-    df = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
     target = pd.Timestamp(date)
     df = df[df["DATE"] <= target]
     result = {}
@@ -82,10 +82,12 @@ def _load_macro(date: str) -> dict:
 
 # ── Signal calculators ────────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, days: int) -> float:
-    if len(px) < days + 3:
+def _momentum(px: pd.Series, months: int) -> float:
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
         return np.nan
-    return float(px.iloc[-1] / px.iloc[-days] - 1) * 100
+    return float(px.iloc[-1] / past.iloc[-1] - 1) * 100
 
 
 def _trend_score(px: pd.Series) -> int:
@@ -204,9 +206,9 @@ def _score_bond_segment(code: str, prices: pd.DataFrame) -> dict:
 
     result["last"] = round(float(px.iloc[-1]), 2)
     result["last_date"] = str(px.index[-1].date())
-    result["mom_1m"] = round(_momentum(px, 21), 2)
-    result["mom_3m"] = round(_momentum(px, 63), 2)
-    result["mom_6m"] = round(_momentum(px, 126), 2)
+    result["mom_1m"] = round(_momentum(px, 1), 2)
+    result["mom_3m"] = round(_momentum(px, 3), 2)
+    result["mom_6m"] = round(_momentum(px, 6), 2)
     result["trend"] = _trend_score(px)
     result["pct_1y"] = round(_percentile(px, 252), 1)
     return result

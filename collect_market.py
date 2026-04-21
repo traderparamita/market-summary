@@ -641,24 +641,23 @@ def fetch_kr_rates(start_date=None, end_date=None):
 
 
 def build_report_data(target_date):
-    """history/market_data.csv 에서 읽어 지표를 계산하여 보고서 데이터 dict 반환.
+    """MKT100_MARKET_DAILY (Snowflake) 에서 읽어 지표를 계산하여 보고서 데이터 dict 반환.
 
-    신규 스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
-    구 스키마(date,category,ticker,close) 도 하위호환으로 읽어들임.
+    스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
+
+    Snowflake 접속 실패 시 market_source 가 자동으로 CSV fallback.
+    simulate.py 는 SNOWFLAKE_DISABLE=1 을 세팅해 CSV 경로 (cutoff 패치) 를 강제한다.
     """
     import pandas as pd
+    from portfolio.market_source import load_long
 
-    df = pd.read_csv(HISTORY_CSV)
-    rename_map = {}
-    for col in df.columns:
-        u = col.upper()
-        if u in ("DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
-                 "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE"):
-            rename_map[col] = u
-    if rename_map:
-        df = df.rename(columns=rename_map)
+    # target_date 기준 과거 2년분만 읽어 충분 (월간/연간 지표 계산용)
+    start_ts = pd.Timestamp(target_date) - pd.DateOffset(years=2)
+    df = load_long(start=start_ts.strftime("%Y-%m-%d"), end=target_date)
 
-    df["DATE"] = pd.to_datetime(df["DATE"])
+    if df.empty:
+        return {}
+
     ref_date = dt.datetime.strptime(target_date, "%Y-%m-%d").date()
     target_ts = pd.Timestamp(target_date)
 

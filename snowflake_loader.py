@@ -168,6 +168,35 @@ def upsert_rows(df: pd.DataFrame, *, target_date: Optional[str] = None) -> int:
         conn.close()
 
 
+def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
+    """Auxiliary collector 공용 헬퍼.
+
+    `new_rows` 는 CSV 컬럼(DATE/INDICATOR_CODE/...) 기반 dict 리스트.
+    upsert_rows 를 호출하고 [SNOWFLAKE] 표준 마커를 출력한다.
+
+    Args:
+        new_rows: CSV 포맷 row dict 리스트
+        source:   호출한 collector 이름 (로그 추적용)
+
+    Returns:
+        적재된 행 수 (실패 시 0)
+    """
+    if not new_rows:
+        print(f"[SNOWFLAKE] SKIP source={source} reason=no-new-rows")
+        return 0
+    try:
+        cols = ["DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
+                "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE"]
+        df = pd.DataFrame(new_rows, columns=cols)
+        n = upsert_rows(df)
+        print(f"[SNOWFLAKE] OK source={source} rows={n}")
+        return n
+    except Exception as e:
+        reason = str(e).replace("\n", " ")[:300]
+        print(f"[SNOWFLAKE] FAILED source={source} reason={reason}")
+        return 0
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="market_data.csv → Snowflake MKT100_MARKET_DAILY")

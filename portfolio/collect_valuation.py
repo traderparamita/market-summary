@@ -117,6 +117,13 @@ def collect_valuation(start: str = "2010-01-01", end: str = "9999-12-31") -> int
     else:
         print("\n  → 신규 데이터 없음")
 
+    # Snowflake dual-write (best-effort)
+    try:
+        from snowflake_loader import sync_new_rows
+        sync_new_rows(new_rows, source="collect_valuation")
+    except Exception as e:
+        print(f"[SNOWFLAKE] FAILED source=collect_valuation reason={str(e)[:200]}")
+
     return len(new_rows)
 
 

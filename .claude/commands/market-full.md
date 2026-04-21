@@ -52,10 +52,31 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 ```
 
 **내부 동작 (참고용 — 별도로 실행하지 않는다)**:
-- `generate.py`가 `collect_market.py`의 `fetch_data()` / `build_report_data()`를 import해서 호출 → CSV 수집 + Snowflake dual-write
-- 이어서 HTML 생성: 일간 보고서 + `update_current_periodic()`으로 주간·월간 HTML도 자동 갱신
+- `generate.py` 파이프라인 (Snowflake 중심으로 재구성됨):
+  - **Step 1a**: `collect_market.fetch_data()` — core 56+ 지표 수집 → CSV append
+  - **Step 1b**: Aux collectors 일간 실행 (`_run_aux_collectors`)
+    - `portfolio.collect_sector_etfs` — SC_US_*, FA_US_*, SC_KR_* (yfinance)
+    - `portfolio.collect_krx_sectors` — IX_KR_* (pykrx KOSPI200 GICS)
+    - `portfolio.collect_valuation` — VAL_KR_* (pykrx KOSPI PER/PBR/DY)
+    - 각 collector 가 CSV append 후 Snowflake 자체 upsert (`[SNOWFLAKE]` 마커)
+  - **Step 1c**: 통합 Snowflake upsert — CSV 의 `target_date` 전체 행을 읽어 MKT100 에 upsert
+  - **Step 2**: `build_report_data()` — **MKT100 (Snowflake)** 에서 읽어 메트릭 계산
+  - HTML 생성 + 주간·월간 자동 갱신
+
+- 데이터 소스: **Snowflake MKT100_MARKET_DAILY 가 단일 정본**. CSV 는 legacy fallback (simulate.py 시뮬레이션 모드에서만 활용, `SNOWFLAKE_DISABLE=1`).
 
 실패 시 오류 로그 확인 후 재시도 또는 사용자에게 보고 후 **즉시 중단**. `collect_market.py`를 별도로 실행하지 않는다.
+
+**Snowflake 적재 결과 확인 (필수)**:
+- 실행 출력에서 `[SNOWFLAKE]` 로 시작하는 줄을 반드시 찾아 기록한다. 보통 여러 줄 출력됨:
+  - `[SNOWFLAKE] OK source=collect_sector_etfs rows=N` (aux 각각)
+  - `[SNOWFLAKE] OK source=collect_krx_sectors rows=N`
+  - `[SNOWFLAKE] OK source=collect_valuation rows=N`
+  - `[SNOWFLAKE] OK date=YYYY-MM-DD rows=N` (Step 1c 통합 upsert, 가장 중요)
+- 완료 보고 Step 1~2 셀에 통합 upsert 행수(`Snowflake N행`)를 표기한다.
+- `[SNOWFLAKE] FAILED` 가 있으면 완료 보고 셀에 `⚠ Snowflake 실패: <reason>` 표기 + 하단 경고 블록.
+- `[AUX] FAILED collector=...` 은 보조 수집 실패 — core 데이터는 영향 없음, 경고 표기만.
+- 이 필드는 **스킵·생략 불가**. `✅ 성공 (N rows)` 같은 모호한 표기만으로는 안 된다.
 
 ### Step 3: 일간 Market Story 작성
 
@@ -209,7 +230,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 ```
 ── 블록 A: Market Summary ──────────────────────
 Step 0:    Telegram 시작    — ✅ 전송 / ⚠ 실패(계속)
-Step 1~2:  Data Dashboard   — ✅ 성공 / ❌ 실패 (이유)
+Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, Snowflake M행) / ⚠ CSV 저장 · Snowflake 실패(<reason>) / ❌ 실패(<reason>)
 Step 3:    일간 Story        — ✅ 성공 / ❌ 실패
 Step 4:    주간 Dashboard    — ✅ 자동 갱신
 Step 5:    주간 Story        — ✅ 성공 / ⏭ 스킵

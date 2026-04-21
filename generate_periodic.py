@@ -24,28 +24,28 @@ HISTORY_CSV = os.path.join(os.path.dirname(__file__), "history", "market_data.cs
 
 
 def load_market_data():
-    """market_data.csv → 중첩 dict 로드.
+    """MKT100 (Snowflake) → 중첩 dict 로드. CSV fallback 지원.
 
-    신규 스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
-    구 스키마(date,category,ticker,close)도 하위호환으로 읽어들임.
+    스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, ...
 
     반환: ({date_str: {category: {ticker: close}}}, 전체 거래일 목록 sorted)
     """
-    data = {}
-    with open(HISTORY_CSV, encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            d = row.get("DATE") or row.get("date")
-            cat = row.get("CATEGORY") or row.get("category")
-            ticker = row.get("TICKER") or row.get("ticker")
-            close_raw = row.get("CLOSE") or row.get("close")
-            if not (d and cat and ticker):
-                continue
-            try:
-                close = float(close_raw)
-            except (ValueError, TypeError):
-                continue
-            data.setdefault(d, {}).setdefault(cat, {})[ticker] = close
+    from portfolio.market_source import load_long
+
+    df = load_long()
+    data: dict = {}
+    for row in df.itertuples(index=False):
+        d = row.DATE.strftime("%Y-%m-%d") if hasattr(row.DATE, "strftime") else str(row.DATE)
+        cat = row.CATEGORY
+        ticker = row.TICKER
+        close = row.CLOSE
+        if not (d and cat and ticker):
+            continue
+        try:
+            close = float(close)
+        except (ValueError, TypeError):
+            continue
+        data.setdefault(d, {}).setdefault(cat, {})[ticker] = close
 
     trading_days = sorted(data.keys())
     return data, trading_days

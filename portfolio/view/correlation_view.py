@@ -65,15 +65,20 @@ def _load_wide(csv_path: Path, as_of_date: str) -> pd.DataFrame:
         DataFrame indexed by DATE with INDICATOR_CODE columns containing CLOSE prices.
         Only rows up to and including as_of_date are returned.
     """
-    if not csv_path.exists():
-        return pd.DataFrame()
-
-    df = pd.read_csv(
-        csv_path,
-        usecols=["DATE", "INDICATOR_CODE", "CLOSE"],
-        parse_dates=["DATE"],
-    )
-    df = df.sort_values("DATE")
+    # csv_path override 가 명시되면 그 파일을 읽고, 아니면 Snowflake 우선 (market_source).
+    if csv_path is not None and Path(csv_path).exists() and str(csv_path) != str(HISTORY_CSV):
+        df = pd.read_csv(
+            csv_path,
+            usecols=["DATE", "INDICATOR_CODE", "CLOSE"],
+            parse_dates=["DATE"],
+        )
+        df = df.sort_values("DATE")
+    else:
+        from portfolio.market_source import load_long
+        df = load_long(end=as_of_date)
+        if df.empty:
+            return pd.DataFrame()
+        df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].sort_values("DATE")
 
     cutoff = pd.Timestamp(as_of_date)
     df = df[df["DATE"] <= cutoff]

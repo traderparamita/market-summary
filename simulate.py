@@ -66,15 +66,25 @@ def run_simulation():
         row_count = sum(1 for _ in open(tmp_csv)) - 1
         print(f"  CSV rows (up to {sim_date}): {row_count}")
 
+        # 1-B) 시뮬레이션 모드: Snowflake 읽기 비활성화 → market_source / build_report_data 가
+        #       패치된 CSV (tmp_csv) 만 읽도록 강제. Snowflake 는 실시간 데이터만 보유.
+        os.environ["SNOWFLAKE_DISABLE"] = "1"
+
         # 2) 모듈 임포트 전에 OUTPUT_DIR과 HISTORY_CSV를 패치
         #    매번 fresh import를 위해 캐시 제거
         for mod_name in list(sys.modules.keys()):
-            if mod_name in ("generate", "generate_periodic", "collect_market"):
+            if mod_name in ("generate", "generate_periodic", "collect_market",
+                            "portfolio.market_source"):
                 del sys.modules[mod_name]
 
         # collect_market: HISTORY_CSV 패치 (수집 로직의 데이터 소스)
         import collect_market
         collect_market.HISTORY_CSV = tmp_csv
+
+        # portfolio.market_source: CSV fallback 시 이 CSV_PATH 를 읽도록 패치
+        import portfolio.market_source as _ms
+        from pathlib import Path as _Path
+        _ms.CSV_PATH = _Path(tmp_csv)
 
         # generate: OUTPUT_DIR 패치 (HTML 출력 경로)
         import generate

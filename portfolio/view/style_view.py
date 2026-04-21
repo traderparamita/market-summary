@@ -59,17 +59,17 @@ VIX_CODE    = "RK_VIX"
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
-    wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
+    from portfolio.market_source import load_wide_close
     target = pd.Timestamp(date)
+    wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
 
 
 def _get_macro(date: str) -> dict:
-    if not MACRO_CSV.exists():
+    from portfolio.market_source import load_macro_long
+    df = load_macro_long(end=date)
+    if df.empty:
         return {}
-    df = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
     target = pd.Timestamp(date)
     df = df[df["DATE"] <= target]
 
@@ -120,10 +120,12 @@ def _get_macro(date: str) -> dict:
 
 # ── Signal calculators ────────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, days: int) -> float:
-    if len(px) < days + 3:
+def _momentum(px: pd.Series, months: int) -> float:
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
         return np.nan
-    return float(px.iloc[-1] / px.iloc[-days] - 1) * 100
+    return float(px.iloc[-1] / past.iloc[-1] - 1) * 100
 
 
 def _trend_score(px: pd.Series) -> int:
@@ -140,10 +142,12 @@ def _trend_score(px: pd.Series) -> int:
     return -1
 
 
-def _relative_mom(px: pd.Series, bench: pd.Series, days: int = 63) -> float:
-    if len(px) < days + 3 or len(bench) < days + 3:
+def _relative_mom(px: pd.Series, bench: pd.Series, months: int = 3) -> float:
+    ret = _momentum(px, months)
+    bench_ret = _momentum(bench, months)
+    if np.isnan(ret) or np.isnan(bench_ret):
         return np.nan
-    return float(px.iloc[-1] / px.iloc[-days] - 1) - float(bench.iloc[-1] / bench.iloc[-days] - 1)
+    return ret - bench_ret
 
 
 def _composite(mom_1m, mom_3m, mom_6m, trend, rel_3m) -> float:
@@ -315,11 +319,11 @@ def _score_style(code: str, prices: pd.DataFrame, bench: pd.Series,
 
     result["last"]      = round(float(px.iloc[-1]), 2)
     result["last_date"] = str(px.index[-1].date())
-    result["mom_1m"]    = round(_momentum(px, 21),  2)
-    result["mom_3m"]    = round(_momentum(px, 63),  2)
-    result["mom_6m"]    = round(_momentum(px, 126), 2)
+    result["mom_1m"]    = round(_momentum(px, 1),  2)
+    result["mom_3m"]    = round(_momentum(px, 3),  2)
+    result["mom_6m"]    = round(_momentum(px, 6), 2)
     result["trend"]     = _trend_score(px)
-    result["rel_3m"]    = round(_relative_mom(px, bench, 63) * 100, 2) if len(bench) >= 66 else np.nan
+    result["rel_3m"]    = round(_relative_mom(px, bench, 3) * 100, 2) if len(bench) >= 66 else np.nan
     # Use regime-conditional weights instead of static
     result["composite"] = _composite_regime(
         result["mom_1m"], result["mom_3m"], result["mom_6m"],
