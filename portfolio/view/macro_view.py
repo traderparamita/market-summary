@@ -32,10 +32,19 @@ HISTORY_CSV = ROOT / "history" / "macro_indicators.csv"
 
 
 def load_macro_data(csv_path: Path = HISTORY_CSV) -> pd.DataFrame:
-    """Load macro indicators CSV."""
-    if not csv_path.exists():
+    """Load macro indicators from Snowflake MKT200 (CSV fallback).
+
+    csv_path override 가 기본값(HISTORY_CSV) 이 아닌 경우에만 CSV 를 읽고,
+    평상시에는 Snowflake 기반 `portfolio.market_source.load_macro_long` 을 사용한다.
+    (이원화 금지 정책, 2026-04-21 전환)
+    """
+    if csv_path is not None and csv_path != HISTORY_CSV and Path(csv_path).exists():
+        df = pd.read_csv(csv_path, parse_dates=["DATE"])
+        return df.sort_values("DATE")
+    from portfolio.market_source import load_macro_long
+    df = load_macro_long()
+    if df.empty:
         return pd.DataFrame()
-    df = pd.read_csv(csv_path, parse_dates=["DATE"])
     return df.sort_values("DATE")
 
 

@@ -94,16 +94,16 @@ K_ICS_EQUITY_LIMIT = 30  # %
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[["DATE", "INDICATOR_CODE", "CLOSE"]].dropna(subset=["CLOSE"])
-    wide = df.pivot_table(index="DATE", columns="INDICATOR_CODE", values="CLOSE")
+    from portfolio.market_source import load_wide_close
+    wide = load_wide_close(end=date)
     return wide[wide.index <= pd.Timestamp(date)].sort_index()
 
 
 def _get_macro_regime(date: str) -> str:
-    if not MACRO_CSV.exists():
+    from portfolio.market_source import load_macro_long
+    df = load_macro_long(end=date)
+    if df.empty:
         return "N/A"
-    df = pd.read_csv(MACRO_CSV, parse_dates=["DATE"])
     df = df[df["DATE"] <= pd.Timestamp(date)]
 
     def _v(code):
@@ -175,8 +175,9 @@ def _get_sector_signals(date: str) -> list:
 
 def _get_krw_signal(date: str) -> dict:
     """USDKRW 추세 기반 환헤지 권고."""
-    df = pd.read_csv(MARKET_CSV, parse_dates=["DATE"])
-    df = df[df["INDICATOR_CODE"] == "FX_USDKRW"][["DATE", "CLOSE"]].dropna()
+    from portfolio.market_source import load_long
+    df = load_long(codes=["FX_USDKRW"], end=date)
+    df = df[["DATE", "CLOSE"]].dropna()
     df = df[df["DATE"] <= pd.Timestamp(date)].sort_values("DATE")
     if len(df) < 60:
         return {"trend": "N/A", "hedge_rec": "중립", "color": "#f39c12"}

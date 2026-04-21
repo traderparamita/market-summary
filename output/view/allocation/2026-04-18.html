@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>배분안 View — 2026-04-18</title>
+<style>
+
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:            #f4f5f9;
+  --card:          #ffffff;
+  --border:        #e0e3ed;
+  --text:          #2d3148;
+  --muted:         #7c8298;
+  --primary:       #F58220;
+  --primary-light: #fff3e6;
+  --navy:          #043B72;
+  --up:            #059669;
+  --down:          #dc2626;
+  --up-bg:         #ecfdf5;
+  --down-bg:       #fef2f2;
+  --neutral-bg:    #f3f4f6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Spoqa Han Sans Neo', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.muted { color: var(--muted); }
+.up    { color: var(--up); }
+.down  { color: var(--down); }
+
+/* ── Navigation ── */
+.ma-nav {
+  background: var(--navy);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(4,59,114,.25);
+}
+.ma-nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 48px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ma-nav-inner::-webkit-scrollbar { display: none; }
+
+.ma-logo {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,.2);
+  margin-right: 16px;
+  letter-spacing: -.2px;
+}
+.ma-logo span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.ma-nav-group {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding: 0 8px 0 4px;
+  white-space: nowrap;
+}
+.ma-nav-link {
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.ma-nav-link:hover {
+  color: #fff;
+  background: rgba(255,255,255,.1);
+}
+.ma-nav-link.current {
+  color: #fff;
+  background: var(--primary);
+  font-weight: 600;
+}
+.ma-nav-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,.15);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+/* ── Page wrapper ── */
+.ma-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+}
+
+/* ── Page header ── */
+.ma-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--primary);
+}
+.ma-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.ma-header .meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.ma-header .date-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+/* ── Card / Section ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #FAAF72);
+  border-radius: 12px 12px 0 0;
+}
+.card h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+/* ── Summary row of cards ── */
+.stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: #f8f9fc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  min-width: 130px;
+  flex: 1;
+}
+.stat-card .label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.stat-card .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-card .sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #f0f3fa; }
+th {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: .4px;
+}
+td {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tbody tr:hover td { background: #fafbff; }
+
+/* ── OW / N / UW badges ── */
+.ow  { background: #dcfce7; color: #15803d; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.ow2 { background: #bbf7d0; color: #15803d; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.neutral-b { background: var(--neutral-bg); color: #6b7280; padding: 2px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+.uw  { background: #fef3c7; color: #d97706; padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+.uw2 { background: var(--down-bg); color: var(--down); padding: 2px 10px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+
+/* ── Regime badges ── */
+.regime-goldilocks { background: #dcfce7; color: #15803d; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-reflation  { background: #fef3c7; color: #d97706; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-stagflation{ background: var(--down-bg); color: var(--down); padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.regime-deflation  { background: #dbeafe; color: #1d4ed8; padding: 3px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+
+/* ── Utility ── */
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f0f1f6; color: var(--muted); font-weight: 500; }
+.section-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+
+/* ── Footer ── */
+.ma-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 24px 0 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+}
+.ma-footer a { color: var(--primary); text-decoration: none; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ma-page { padding: 16px; }
+  .stat-grid { flex-direction: column; }
+}
+
+/* ── Drag selection ── */
+::selection { background: #F58220; color: #fff; }
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="ma-nav">
+  <div class="ma-nav-inner">
+    <a href="../../index.html" class="ma-logo"><span></span>미래에셋생명</a>
+    <span class="ma-nav-group">P1</span>
+    <a href="../price/2026-04-18.html" class="ma-nav-link">가격신호</a>
+    <a href="../macro/2026-04-18.html" class="ma-nav-link">거시지표</a>
+    <a href="../correlation/2026-04-18.html" class="ma-nav-link">상관관계</a>
+    <a href="../regime/2026-04-18.html" class="ma-nav-link">국면해설</a>
+    <div class="ma-nav-sep"></div>
+    <span class="ma-nav-group">P2</span>
+    <a href="../country/2026-04-18.html" class="ma-nav-link">국가</a>
+    <a href="../sector/2026-04-18.html" class="ma-nav-link">섹터</a>
+    <a href="../bond/2026-04-18.html" class="ma-nav-link">채권</a>
+    <a href="../style/2026-04-18.html" class="ma-nav-link">스타일</a>
+    <a href="../alternative/2026-04-18.html" class="ma-nav-link">대체자산</a>
+    <a href="../allocation/2026-04-18.html" class="ma-nav-link current">배분안</a>
+  </div>
+</nav>
+<div class="ma-page">
+<div class="ma-header">
+  <div>
+    <h1>배분안 View</h1>
+    <div class="meta">미래에셋생명 변액보험 펀드 배분 의견</div>
+  </div>
+  <div class="date-badge">2026-04-18</div>
+</div>
+
+<!-- ── 현재 국면 + 환율 배너 ── -->
+<div class="card">
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">현재 매크로 국면</div>
+      <div style="margin-top:6px"><span class="regime-reflation">Reflation</span></div>
+    </div>
+    <div class="stat-card" style="flex:2;min-width:200px">
+      <div class="label">USDKRW 추세 / 환헤지 권고</div>
+      <div style="font-size:14px;font-weight:600;margin-top:4px;color:#f39c12">원화 중립</div>
+      <div class="sub">부분 환헤지 (50%) 권고</div>
+    </div>
+    <div class="stat-card" style="flex:2;min-width:200px;background:var(--up-bg);border-color:var(--up)">
+      <div class="label">K-ICS 주식한도</div>
+      <div class="up" style="font-size:14px;font-weight:600;margin-top:4px">✅ K-ICS 주식한도(30%) 이내</div>
+      <div class="sub">현재 주식 합계: 30% / 한도 30%</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 자산군 요약 ── -->
+<div class="card">
+  <h2>📊 자산군 요약</h2>
+  <div class="stat-grid"><div class="stat-card" style="text-align:center"><div class="label">주식합계</div><div class="value" style="color:#1d4ed8">30%</div></div><div class="stat-card" style="text-align:center"><div class="label">채권합계</div><div class="value" style="color:#059669">33%</div></div><div class="stat-card" style="text-align:center"><div class="label">혼합형</div><div class="value" style="color:#7c3aed">20%</div></div><div class="stat-card" style="text-align:center"><div class="label">대안</div><div class="value" style="color:#d97706">10%</div></div><div class="stat-card" style="text-align:center"><div class="label">현금</div><div class="value" style="color:#6b7280">7%</div></div></div>
+</div>
+
+<div class="grid2">
+  <!-- ── KR 변액보험 배분 ── -->
+  <div class="card">
+    <h2>🇰🇷 KR 변액보험 펀드 배분 (KRW 기준)</h2>
+    <table>
+      <thead><tr>
+        <th>펀드 유형</th>
+        <th style="text-align:right">추천</th>
+        <th>비중</th>
+        <th style="text-align:right">기준</th>
+        <th style="text-align:right">조정</th>
+      </tr></thead>
+      <tbody><tr>
+          <td style="font-size:13px">국내주식형</td>
+          <td style="text-align:right;color:#1d4ed8;font-size:15px;font-weight:700">10%</td>
+          <td><div style="background:#1d4ed8;height:10px;border-radius:3px;width:30px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">8%</td>
+          <td style="text-align:right"><span class="up">+2%p</span></td>
+        </tr><tr>
+          <td style="font-size:13px">해외주식형(미국)</td>
+          <td style="text-align:right;color:#1d4ed8;font-size:15px;font-weight:700">13%</td>
+          <td><div style="background:#1d4ed8;height:10px;border-radius:3px;width:39px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">10%</td>
+          <td style="text-align:right"><span class="up">+3%p</span></td>
+        </tr><tr>
+          <td style="font-size:13px">해외주식형(글로벌)</td>
+          <td style="text-align:right;color:#1d4ed8;font-size:15px;font-weight:700">7%</td>
+          <td><div style="background:#1d4ed8;height:10px;border-radius:3px;width:21px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">7%</td>
+          <td style="text-align:right"><span class="muted">—</span></td>
+        </tr><tr>
+          <td style="font-size:13px">해외주식형(신흥국)</td>
+          <td style="text-align:right;color:#1d4ed8;font-size:15px;font-weight:700">0%</td>
+          <td><div style="background:#1d4ed8;height:10px;border-radius:3px;width:3px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">5%</td>
+          <td style="text-align:right"><span class="down">-5%p</span></td>
+        </tr><tr>
+          <td style="font-size:13px">해외주식형(섹터·테마)</td>
+          <td style="text-align:right;color:#1d4ed8;font-size:15px;font-weight:700">0%</td>
+          <td><div style="background:#1d4ed8;height:10px;border-radius:3px;width:3px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">5%</td>
+          <td style="text-align:right"><span class="down">-5%p</span></td>
+        </tr><tr>
+          <td style="font-size:13px">국내채권형</td>
+          <td style="text-align:right;color:#059669;font-size:15px;font-weight:700">18%</td>
+          <td><div style="background:#059669;height:10px;border-radius:3px;width:54px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">18%</td>
+          <td style="text-align:right"><span class="muted">—</span></td>
+        </tr><tr>
+          <td style="font-size:13px">해외채권형(미국·선진)</td>
+          <td style="text-align:right;color:#059669;font-size:15px;font-weight:700">15%</td>
+          <td><div style="background:#059669;height:10px;border-radius:3px;width:45px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">15%</td>
+          <td style="text-align:right"><span class="muted">—</span></td>
+        </tr><tr>
+          <td style="font-size:13px">혼합형(주식+채권)</td>
+          <td style="text-align:right;color:#7c3aed;font-size:15px;font-weight:700">20%</td>
+          <td><div style="background:#7c3aed;height:10px;border-radius:3px;width:60px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">12%</td>
+          <td style="text-align:right"><span class="up">+8%p</span></td>
+        </tr><tr>
+          <td style="font-size:13px">대안(금·원자재·부동산)</td>
+          <td style="text-align:right;color:#d97706;font-size:15px;font-weight:700">10%</td>
+          <td><div style="background:#d97706;height:10px;border-radius:3px;width:30px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">10%</td>
+          <td style="text-align:right"><span class="muted">—</span></td>
+        </tr><tr>
+          <td style="font-size:13px">현금성(MMF·CD)</td>
+          <td style="text-align:right;color:#6b7280;font-size:15px;font-weight:700">7%</td>
+          <td><div style="background:#6b7280;height:10px;border-radius:3px;width:21px;display:inline-block"></div></td>
+          <td style="text-align:right" class="muted">10%</td>
+          <td style="text-align:right"><span class="down">-3%p</span></td>
+        </tr></tbody>
+    </table>
+    <div class="muted" style="font-size:11px;margin-top:8px">
+      기준 = 국면별 베이스라인 | 조정 = 국가·채권·스타일 신호 반영
+    </div>
+  </div>
+
+  <!-- ── US 참고 배분 ── -->
+  <div class="card">
+    <h2>🇺🇸 US 투자자 참고 배분 (USD 기준)</h2>
+    <table>
+      <thead><tr>
+        <th>자산군</th>
+        <th style="text-align:right">비중</th>
+        <th>바</th>
+      </tr></thead>
+      <tbody><tr>
+          <td style="font-size:13px">미국 주식</td>
+          <td style="text-align:right;color:#1d4ed8;font-size:15px;font-weight:700">30%</td>
+          <td><div style="background:#1d4ed8;height:10px;border-radius:3px;width:90px;display:inline-block"></div></td>
+        </tr><tr>
+          <td style="font-size:13px">선진국 주식(비미국)</td>
+          <td style="text-align:right;color:#2563eb;font-size:15px;font-weight:700">18%</td>
+          <td><div style="background:#2563eb;height:10px;border-radius:3px;width:54px;display:inline-block"></div></td>
+        </tr><tr>
+          <td style="font-size:13px">신흥국 주식</td>
+          <td style="text-align:right;color:#3b82f6;font-size:15px;font-weight:700">10%</td>
+          <td><div style="background:#3b82f6;height:10px;border-radius:3px;width:30px;display:inline-block"></div></td>
+        </tr><tr>
+          <td style="font-size:13px">미국/선진 채권</td>
+          <td style="text-align:right;color:#059669;font-size:15px;font-weight:700">15%</td>
+          <td><div style="background:#059669;height:10px;border-radius:3px;width:45px;display:inline-block"></div></td>
+        </tr><tr>
+          <td style="font-size:13px">신흥국 채권</td>
+          <td style="text-align:right;color:#10b981;font-size:15px;font-weight:700">7%</td>
+          <td><div style="background:#10b981;height:10px;border-radius:3px;width:21px;display:inline-block"></div></td>
+        </tr><tr>
+          <td style="font-size:13px">대안(금·원자재)</td>
+          <td style="text-align:right;color:#d97706;font-size:15px;font-weight:700">12%</td>
+          <td><div style="background:#d97706;height:10px;border-radius:3px;width:36px;display:inline-block"></div></td>
+        </tr><tr>
+          <td style="font-size:13px">현금</td>
+          <td style="text-align:right;color:#6b7280;font-size:15px;font-weight:700">8%</td>
+          <td><div style="background:#6b7280;height:10px;border-radius:3px;width:24px;display:inline-block"></div></td>
+        </tr></tbody>
+    </table>
+    <div class="muted" style="font-size:11px;margin-top:8px">
+      * USD 기준 글로벌 배분 참고 (K-ICS 제약 없음)
+    </div>
+  </div>
+</div>
+
+<!-- ── BL 기대수익률 & 리스크 패리티 ── -->
+
+<div class="card">
+  <h2>🧮 BL 기대수익률 & 리스크 패리티 배분</h2>
+  <div class="grid2">
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:10px">앙상블 기대수익률 (연율, BL 40% + 역사 30% + 매크로 30%)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid #e2e8f0">
+          <th style="text-align:left;padding:6px 8px;color:#64748b">펀드 유형</th>
+          <th style="padding:6px 4px;color:#64748b">BL균형</th>
+          <th style="padding:6px 4px;color:#64748b">역사(3Y)</th>
+          <th style="padding:6px 4px;color:#d97706">매크로조정</th>
+          <th style="padding:6px 4px;color:#1e293b;font-weight:700">앙상블</th>
+        </tr></thead>
+        <tbody><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">국내주식형</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+2.3%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">+1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+573.9%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(미국)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+4.6%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">+1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+1156.4%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(글로벌)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+3.4%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">+1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+862.0%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(신흥국)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+2.0%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">+1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+501.6%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(섹터·테마)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+6.1%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">+1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+1540.3%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#059669;font-weight:600">국내채권형</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+0.7%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">-1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+185.7%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#059669;font-weight:600">해외채권형(미국·선진)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+0.7%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">-1.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+185.6%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#7c3aed;font-weight:600">혼합형(주식+채권)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+4.6%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+1151.6%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#d97706;font-weight:600">대안(금·원자재·부동산)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+1.0%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">+3.0%p</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#059669">+260.5%</td>
+        </tr><tr>
+          <td style="font-size:12px;color:#6b7280;font-weight:600">현금성(MMF·CD)</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">+0.0%</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:12px;color:#d97706">—</td>
+          <td style="text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#dc2626">+0.0%</td>
+        </tr></tbody>
+      </table>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">BL균형: δ=2.5 시장위험프리미엄 | 역사: 3Y 로그수익률 합산</p>
+    </div>
+    <div>
+      <h3 style="font-size:13px;color:var(--muted);margin-bottom:10px">리스크 패리티 vs 신호 기반 배분 (K-ICS ≤30% 제약)</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid #e2e8f0">
+          <th style="text-align:left;padding:6px 8px;color:#64748b">펀드 유형</th>
+          <th style="padding:6px 4px;color:#2563eb;font-weight:700">RP</th>
+          <th style="padding:6px 4px;color:#64748b">신호기반</th>
+          <th style="padding:6px 4px;color:#64748b">차이</th>
+        </tr></thead>
+        <tbody><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">국내주식형</td>
+          <td style="text-align:right;font-weight:700;color:#1d4ed8">7.1%</td>
+          <td style="text-align:right;color:#64748b">10%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-2.9%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(미국)</td>
+          <td style="text-align:right;font-weight:700;color:#1d4ed8">6.4%</td>
+          <td style="text-align:right;color:#64748b">13%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-6.6%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(글로벌)</td>
+          <td style="text-align:right;font-weight:700;color:#1d4ed8">6.3%</td>
+          <td style="text-align:right;color:#64748b">7%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-0.7%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(신흥국)</td>
+          <td style="text-align:right;font-weight:700;color:#1d4ed8">5.3%</td>
+          <td style="text-align:right;color:#64748b">0%</td>
+          <td style="text-align:right"><span style="color:#059669">+5.3%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#1d4ed8;font-weight:600">해외주식형(섹터·테마)</td>
+          <td style="text-align:right;font-weight:700;color:#1d4ed8">4.9%</td>
+          <td style="text-align:right;color:#64748b">0%</td>
+          <td style="text-align:right"><span style="color:#059669">+4.9%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#059669;font-weight:600">국내채권형</td>
+          <td style="text-align:right;font-weight:700;color:#059669">9.2%</td>
+          <td style="text-align:right;color:#64748b">18%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-8.8%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#059669;font-weight:600">해외채권형(미국·선진)</td>
+          <td style="text-align:right;font-weight:700;color:#059669">9.2%</td>
+          <td style="text-align:right;color:#64748b">15%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-5.8%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#7c3aed;font-weight:600">혼합형(주식+채권)</td>
+          <td style="text-align:right;font-weight:700;color:#7c3aed">6.4%</td>
+          <td style="text-align:right;color:#64748b">20%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-13.6%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#d97706;font-weight:600">대안(금·원자재·부동산)</td>
+          <td style="text-align:right;font-weight:700;color:#d97706">7.2%</td>
+          <td style="text-align:right;color:#64748b">10%</td>
+          <td style="text-align:right"><span style="color:#dc2626">-2.8%p</span></td>
+        </tr><tr>
+          <td style="font-size:12px;color:#6b7280;font-weight:600">현금성(MMF·CD)</td>
+          <td style="text-align:right;font-weight:700;color:#6b7280">38.0%</td>
+          <td style="text-align:right;color:#64748b">7%</td>
+          <td style="text-align:right"><span style="color:#059669">+31.0%p</span></td>
+        </tr></tbody>
+      </table>
+      <p style="font-size:11px;color:#94a3b8;margin-top:6px">RP = 동일 위험기여 (Equal Risk Contribution). 양수 = RP가 더 많이 배분.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── 배분 근거 ── -->
+<div class="card">
+  <h2>📋 배분 근거 및 주요 신호</h2>
+  <ul style="list-style:none;padding:0">
+    <li style="margin-bottom:8px;font-size:13px">📊 Reflation 국면 — 성장 회복 + 인플레 상승 → Value/원자재 강세</li><li style="margin-bottom:8px;font-size:13px">🌏 OW 국가: US, KR, JP, CN, UK, EM, FR, TW → 해당 지역 주식형 비중 확대</li><li style="margin-bottom:8px;font-size:13px">⚖️ 바벨 전략 유지 → 단기 CD + 장기 KTB 조합</li><li style="margin-bottom:8px;font-size:13px">💱 환율: 원화 중립 (USDKRW 1467.0)
+   → 부분 환헤지 (50%) 권고</li><li style="margin-bottom:8px;font-size:13px">🎯 우선 스타일: US Growth → 해당 스타일 해외주식형 내 비중 확대</li>
+  </ul>
+</div>
+
+<!-- ── 주의사항 ── -->
+<div style="background:var(--primary-light);border:1px solid var(--primary);border-radius:8px;padding:14px 18px;margin-bottom:20px">
+  <div style="color:var(--primary);font-size:12px;font-weight:700;margin-bottom:6px">⚠️ 주의사항</div>
+  <div style="font-size:12px;line-height:1.6;color:var(--text)">
+    본 배분 의견은 규칙 기반 알고리즘으로 자동 생성되며 투자 권유가 아닙니다.
+    실제 운용 시 K-ICS 규제, ALM 듀레이션 매칭, 유동성 요건, 계약자 리스크 성향 등을 종합 고려하십시오.
+    주식 비중은 K-ICS 규제상 30% 한도를 참고 기준으로 적용하였습니다.
+  </div>
+</div>
+<div class="ma-footer">
+  데이터: FRED · yfinance · ECOS · country/sector/bond/style 통합 | Mirae Asset Life Insurance — Investment View System
+</div>
+</div>
+</body>
+</html>
