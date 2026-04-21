@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>섹터·국가 보고서 2026-04-21 (일간) — 경기소비재</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --orange: #F58220;
+  --navy:   #043B72;
+  --bg:     #f8fafc;
+  --card:   #ffffff;
+  --text:   #1e293b;
+  --muted:  #64748b;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Spoqa Han Sans Neo', 'Noto Sans KR', sans-serif;
+  background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6;
+}
+.header {
+  background: var(--navy); color: #fff; padding: 20px 32px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.header-title { font-size: 20px; font-weight: 700; }
+.header-sub   { font-size: 13px; color: #93c5fd; }
+.badge { padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+.main { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+
+/* 오늘의 주제 배너 */
+.focus-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, #1e40af 100%);
+  color: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.focus-label { font-size: 11px; color: #93c5fd; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.focus-theme { font-size: 22px; font-weight: 800; margin: 4px 0; }
+.focus-en    { font-size: 12px; color: #93c5fd; }
+.focus-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.focus-chip {
+  background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 14px;
+  font-size: 13px; font-weight: 600;
+}
+.focus-day { margin-left: auto; font-size: 11px; color: #93c5fd; text-align: right; }
+
+.section-title {
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  margin: 32px 0 12px; padding-bottom: 6px;
+  border-bottom: 2px solid var(--orange);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.sector-grid   { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.country-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+
+.sector-card, .country-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+  transition: box-shadow 0.2s;
+}
+.sector-card:hover, .country-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+/* 오늘의 주제 하이라이트 */
+.sector-card.focus, .country-card.focus {
+  border: 2px solid var(--orange) !important;
+  background: #fffbf5;
+  box-shadow: 0 0 0 3px rgba(245,130,32,0.12);
+}
+
+/* 대표 주식 칩 */
+.rep-stocks { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.rep-stock  {
+  background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd;
+  border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600;
+}
+
+/* 이전 사이클 링크 */
+.prev-cycle-link {
+  display: inline-block; margin-top: 8px;
+  font-size: 11px; color: #6366f1; text-decoration: none;
+  background: #eef2ff; padding: 3px 8px; border-radius: 4px;
+}
+.prev-cycle-link:hover { background: #e0e7ff; text-decoration: underline; }
+.focus-star {
+  background: var(--orange); color: #fff;
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;
+  margin-left: 4px;
+}
+
+.sc-name { font-weight: 700; font-size: 14px; }
+.sc-etf  { font-size: 11px; color: var(--muted); }
+.sc-metrics { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; margin-top: 6px; }
+.sc-metric  { display: flex; flex-direction: column; }
+.sc-metric .mk { color: var(--muted); font-size: 10px; }
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.tag { background: #f0f9ff; color: #0369a1; border-radius: 4px; padding: 1px 6px; font-size: 10px; }
+
+.cc-flag { font-size: 24px; }
+.cc-name { font-weight: 700; font-size: 15px; }
+
+/* ── Tabs ── */
+.tab-bar {
+  display: flex; gap: 0; margin-bottom: 28px; border-bottom: 2px solid var(--border);
+}
+.tab-btn {
+  padding: 12px 28px; font-size: 14px; font-weight: 600; color: var(--muted);
+  background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.story-section {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 24px;
+}
+.story-section h2 {
+  font-size: 18px; font-weight: 700; color: var(--navy);
+  margin-bottom: 16px; border-bottom: 2px solid var(--orange); padding-bottom: 8px;
+}
+.story-content p { margin: 0 0 12px 0; line-height: 1.75; }
+.story-content h3 { margin-top: 28px; }
+.story-placeholder { color: var(--muted); font-style: italic; text-align: center; padding: 32px; }
+
+.footer {
+  text-align: center; color: var(--muted); font-size: 11px;
+  padding: 24px; margin-top: 32px; border-top: 1px solid var(--border);
+}
+
+/* ── Chart Section ── */
+.chart-section { margin: 28px 0 36px; }
+.chart-section-title {
+  font-size: 17px; font-weight: 700; color: var(--navy);
+  margin: 0 0 16px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--orange);
+  display: flex; align-items: center; gap: 8px;
+}
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  min-height: 340px;
+}
+.chart-card .chart-title {
+  font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.chart-box { position: relative; height: 300px; }
+.chart-full { grid-column: 1 / -1; }
+.chart-full .chart-box { height: 240px; }
+
+/* Dispersion gauge */
+.dispersion-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.dispersion-label {
+  font-size: 12px; color: var(--muted); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.dispersion-value {
+  font-size: 20px; font-weight: 700; color: var(--navy);
+}
+.dispersion-bar-wrap {
+  flex: 1; min-width: 240px;
+}
+.dispersion-bar {
+  height: 32px; background: #e2e8f0; border-radius: 6px;
+  position: relative; overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.dispersion-fill {
+  position: absolute; height: 100%; background: linear-gradient(90deg, #dc2626, #f97316, #16a34a);
+  border-radius: 6px; transition: width 0.3s;
+}
+.dispersion-markers {
+  display: flex; justify-content: space-between; margin-top: 4px;
+  font-size: 10px; color: var(--muted);
+}
+
+@media(max-width:768px) {
+  .chart-grid { grid-template-columns: 1fr; }
+  .chart-box { height: 220px; }
+  .chart-full .chart-box { height: 200px; }
+}
+</style>
+
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="header-title">🌐 섹터·국가 보고서</div>
+    <div class="header-sub">2026-04-21 (일간)</div>
+  </div>
+  <span style="margin-left:auto;font-size:11px;color:#93c5fd">생성: 2026-04-22 06:59</span>
+</div>
+
+<div class="main">
+
+  
+<div class="focus-banner">
+  <div style="flex:1">
+    <div class="focus-label">🎯 오늘의 주제</div>
+    <div class="focus-theme">경기소비재 + 프랑스</div>
+    <div class="focus-en">Consumer Discretionary</div>
+    <div class="focus-chips"><span class="focus-chip">🇺🇸 Consumer Discr. (XLY)</span><span class="focus-chip">🇰🇷 경기소비재 (TIGER 200 경기소비재)</span><span class="focus-chip">🇫🇷 프랑스</span></div>
+    <div style="font-size:11px;color:#bfdbfe;margin-top:8px">
+      섹터 Day 8/11 &nbsp;|&nbsp; 국가 Day 8/11
+    </div>
+  </div>
+  <div class="focus-day">
+    2026-04-21<br>
+    <span style="color:#bfdbfe">Tuesday</span>
+  </div>
+</div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('story')">📰 Story</button>
+    <button class="tab-btn" onclick="switchTab('data')">📊 Data Dashboard</button>
+  </div>
+
+  <div id="tab-story" class="tab-panel active">
+    <div class="story-section" id="story-section" style="display:block">
+      <h2>📰 오늘의 심층 분석 — 경기소비재 + 프랑스</h2>
+
+<div class="story-content">
+
+  <h3 style="color:#F58220;margin-bottom:12px">🎯 XLY (미국 Consumer Discretionary·경기소비재) 심층 분석</h3>
+
+  <p>현재 신호: N — <strong>"지켜보는 섹터"</strong> (1M 강한 반등, 3M/6M은 아직 마이너스)</p>
+
+  <p><strong>최근 2주 흐름 (과거 → 현재)</strong></p>
+  <p>XLY는 4월 초 정전 기대감에 힘입어 급반등했습니다. 3월까지 이란 전쟁발 에너지 충격과 소비 심리 위축으로 3개월 수익률이 -1.81%까지 밀렸지만, 4월 8일 미-이란 정전 합의 이후 소비재 섹터에 강한 매수세가 유입됐습니다. 유가 급락과 함께 소비자 지출 전망이 개선되며 1개월 수익률은 <strong>+10.65%</strong>로 급반등했습니다. 그러나 4월 19일 이란 화물선 나포로 정전이 다시 위기에 처하면서 반등의 지속 가능성이 시험받고 있습니다.</p>
+  <p>XLY의 구조적 특징은 아마존과 테슬라가 ETF 비중의 40% 이상을 차지한다는 점입니다. 이 두 종목의 방향성이 사실상 섹터 전체 수익률을 좌우합니다. 4월 21일 아마존은 앤트로픽에 200억 달러 이상 투자를 공언하며 <strong>+0.66%</strong>로 견조했으나, 테슬라는 <strong>-1.55%</strong>로 약세를 보였습니다. 같은 날 애플(XLY 편입 아님, 기술 섹터)의 CEO 교체 발표(존 터너스, 9월 1일 취임)가 소비 기술 생태계 전반에 불확실성을 더했습니다.</p>
+
+  <p><strong>대표주 동향</strong></p>
+  <p><strong>아마존(AMZN)</strong>은 XLY 최대 비중주로, AI 투자 확대(앤트로픽 200억$ 추가 투자)와 클라우드·이커머스 이중 성장 구조가 섹터 지지력의 핵심입니다. <strong>테슬라(TSLA)</strong>는 글로벌 EV 수요 둔화와 가격 경쟁 격화 속에서 변동성이 큰 상태이며, 정전 파탄 시 에너지 비용 상승이 EV 수요에 추가 부담이 될 수 있습니다. <strong>홈디포(HD)</strong>와 <strong>맥도널드(MCD)</strong>는 소비자 지출 회복의 바로미터로, 유가가 안정되면 실적 전망 개선이 기대됩니다.</p>
+
+  <p><strong>포지셔닝 요약</strong></p>
+  <p>XLY는 1M +10.65%의 강한 단기 반등에도 불구하고, 3M -1.81% · 6M -0.12%로 중기 모멘텀이 아직 마이너스입니다. 정전 만료(4/22)를 앞두고 유가 방향성이 섹터 성과를 결정짓는 변수입니다. 호르무즈 재개방 시 소비 심리 개선으로 추가 상승 여력이 있으나, 봉쇄 지속 시 에너지 비용 재상승으로 소비 위축 우려가 부활합니다. <strong>"지켜보기(N)"</strong> — 정전 결과를 확인한 후 판단해도 늦지 않습니다.</p>
+
+  <h3 style="color:#F58220;margin:28px 0 12px">🎯 TIGER 200 경기소비재 (한국 자동차·소비재) 심층 분석</h3>
+
+  <p>현재 신호: N — <strong>"지켜보는 섹터"</strong> (3M -5.44%로 약세, 6M +10.25%로 장기 양호)</p>
+
+  <p><strong>최근 2주 흐름 (과거 → 현재)</strong></p>
+  <p>TIGER 200 경기소비재(227540.KS)는 현대차·기아·현대모비스가 핵심 구성종목입니다. 이 섹터는 3개월 수익률 -5.44%로 KOSPI 대비 부진한 모습입니다. 이란 전쟁 이후 유가 급등이 자동차 제조 원가(물류비·소재비)를 압박하고, 미국 관세 불확실성이 수출 전망에 그림자를 드리우고 있기 때문입니다.</p>
+  <p>그러나 4월 들어 한국 증시 전반의 랠리와 함께 1개월 +3.92% 반등했습니다. 4월 21일 KOSPI200 경기소비재 지수는 <strong>+2.37%</strong>(2,782.67)로 시장 강세에 동참했습니다. S&amp;P Global은 현대차와 기아의 신용등급을 A-(안정적)로 유지하며, 미국 관세에도 불구하고 조지아·앨라배마 현지 생산 비중 확대가 관세 영향을 완화한다고 평가했습니다.</p>
+  <p>기아는 EV 라인업 확장에 적극적이며, 미국 IRA 보조금 대상 모델을 늘리는 전략이 글로벌 투자자들의 주목을 받고 있습니다. 다만 Fitch는 2026년 글로벌 신차 판매 성장률을 겨우 +0.3%로 전망해 업종 전체의 톱라인 성장에는 한계가 있을 것으로 보입니다.</p>
+
+  <p><strong>대표주 동향</strong></p>
+  <p><strong>현대차(005380.KS)</strong>는 한국 시가총액 2위로, 미국 조지아 메타플랜트의 EV 생산 정상화가 2026년 하반기 매출 개선의 열쇠입니다. <strong>기아(000270.KS)</strong>는 EV6·EV9 라인업으로 IRA 보조금 수혜를 극대화하는 전략을 추진 중이며, 저가 EV 시장에서의 경쟁력이 강점입니다. <strong>현대모비스(012330.KS)</strong>는 전동화 부품(인버터·배터리팩) 공급 확대로 그룹 내 수직 통합 수혜가 기대됩니다.</p>
+
+  <p><strong>포지셔닝 요약</strong></p>
+  <p>1M +3.92%의 반등에도 3M -5.44%의 약세가 아직 해소되지 않았습니다. 6M +10.25%로 장기 방향은 양호하나, 미국 관세 + 유가 불확실성 + 글로벌 신차 판매 둔화라는 3중 역풍이 존재합니다. <strong>"지켜보기(N)"</strong> — 현대차·기아의 미국 현지 생산 확대와 EV 보조금 전략이 관세 리스크를 얼마나 상쇄하는지 2분기 실적에서 확인한 후 판단하기를 권합니다.</p>
+
+  <h3 style="color:#F58220;margin:28px 0 12px">🌍 프랑스 (CAC 40) 심층 분석</h3>
+
+  <p>현재 신호: N — <strong>"지켜보는 국가"</strong> (3M +2.06%, 6M -0.28%)</p>
+
+  <p><strong>최근 2주 흐름 (과거 → 현재)</strong></p>
+  <p>CAC 40은 2월 말 사상 최고치(장중 8,642)를 기록한 후 이란 전쟁 충격으로 3월 13일 7,904까지 급락했습니다. 이후 정전 기대감과 함께 4월 들어 회복세를 보이며 8,200대를 되찾았으나, 4월 21일은 정전 만료 불안에 <strong>-1.14%</strong>(8,236)로 후퇴했습니다.</p>
+  <p>프랑스 증시의 특징은 럭셔리 3사(LVMH·에르메스·케링)가 CAC 40 시가총액의 약 22%를 차지한다는 점입니다. LVMH는 Q1 매출 191억 유로를 기록하며 특히 중국 시장에서 강한 회복세를 보였습니다. LVMH의 YTD 수익률은 <strong>+24.65%</strong>로, 이란 전쟁에도 불구하고 럭셔리 수요의 구조적 회복이 확인되고 있습니다.</p>
+  <p>그러나 에너지 수입 의존도가 높은 프랑스 경제(GDP 성장률 2026년 전망 +0.9%, 국가채무 GDP 대비 118%)에 호르무즈 봉쇄는 직접적 부담입니다. 에르메스(-2.1%)·케링(-1.4%)도 4월 21일 약세를 보였고, 금융주(BNP파리바)도 동반 하락했습니다. ECB 금리 인상 가능성 가격 반영(OAT 10년물 수익률 상승)이 부동산·금융 섹터에 역풍으로 작용하고 있습니다.</p>
+
+  <p><strong>대표주 동향</strong></p>
+  <p><strong>LVMH</strong>는 중국 소비 회복의 최대 수혜주로 Q1 매출 서프라이즈를 기록했으나, 에너지 비용 상승과 유로 강세가 마진 압박 요인입니다. <strong>에르메스</strong>는 최고급 럭셔리 포지션 덕에 경기 둔화 방어력이 강하지만 밸류에이션 프리미엄이 높은 상태입니다. <strong>사노피</strong>는 헬스케어 방어주로서 에너지 충격에 상대적 강세를 보이고 있습니다. <strong>에어버스</strong>는 산업재·방산 수요 확대의 수혜주이나, 공급망 병목이 여전히 납기 리스크로 남아 있습니다. 애널리스트들은 CAC 40의 연말 목표를 8,500~8,600으로 제시하며 럭셔리·산업재 섹터가 견인 역할을 할 것으로 예상합니다.</p>
+
+  <p><strong>포지셔닝 요약</strong></p>
+  <p>프랑스는 3M +2.06%로 소폭 양, 6M -0.28%로 거의 보합입니다. 럭셔리 대장주(LVMH)의 중국 회복과 에어버스의 방산 수요가 긍정적이나, 에너지 수입 비용 불안 + ECB 금리 경로 불확실성이 상쇄 요인입니다. <strong>"지켜보기(N)"</strong> — 정전 결과와 에너지 비용 방향이 프랑스 증시의 다음 모멘텀을 결정합니다. 럭셔리 섹터에 관심이 있다면 개별 종목(LVMH·에르메스) 접근이 프랑스 지수 전체 투자보다 효율적일 수 있습니다.</p>
+
+</div>
+
+    </div>
+  </div><!-- /tab-story -->
+
+  <div id="tab-data" class="tab-panel">
+
+    <div class="section-title">🇺🇸 미국 섹터 (SPDR GICS 11개)</div>
+    <div class="chart-card chart-full" style="margin-bottom:12px">
+      <div class="chart-title">US Sector 3M Return Ranking</div>
+      <div class="chart-box">
+        <canvas id="usRankChart2"></canvas>
+      </div>
+    </div>
+    <div class="sector-grid">
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Technology</span>
+  </div>
+  <div class="sc-etf">XLK</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+14.48%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+7.70%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+7.59%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">NVIDIA</span><span class="rep-stock">Apple</span><span class="rep-stock">Microsoft</span><span class="rep-stock">Broadcom</span></div>
+  <a href="../../daily/2026-04/2026-04-10.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Industrials</span>
+  </div>
+  <div class="sc-etf">XLI</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+6.34%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+3.34%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+11.38%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">GE Aerospace</span><span class="rep-stock">Caterpillar</span><span class="rep-stock">RTX</span><span class="rep-stock">Honeywell</span></div>
+  <a href="../../daily/2026-04/2026-04-17.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Materials</span>
+  </div>
+  <div class="sc-etf">XLB</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+10.69%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+5.61%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+18.00%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Linde</span><span class="rep-stock">Air Products</span><span class="rep-stock">Freeport-McMoRan</span><span class="rep-stock">Newmont</span></div>
+  <a href="../../daily/2026-04/2026-04-20.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Real Estate</span>
+  </div>
+  <div class="sc-etf">XLRE</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+8.58%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+6.07%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+5.21%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Prologis</span><span class="rep-stock">American Tower</span><span class="rep-stock">Equinix</span></div>
+  <a href="../../daily/2026-04/2026-04-09.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Utilities</span>
+  </div>
+  <div class="sc-etf">XLU</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+1.38%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+5.22%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+0.66%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">NextEra Energy</span><span class="rep-stock">Southern Co</span><span class="rep-stock">Duke Energy</span></div>
+  <a href="../../daily/2026-04/2026-04-08.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Communication</span>
+  </div>
+  <div class="sc-etf">XLC</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+4.73%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+2.53%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+1.08%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Alphabet</span><span class="rep-stock">Meta</span><span class="rep-stock">Netflix</span><span class="rep-stock">Disney</span></div>
+  <a href="../../daily/2026-04/2026-04-13.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Energy</span>
+  </div>
+  <div class="sc-etf">XLE</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-5.18%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+15.35%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+30.84%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">ExxonMobil</span><span class="rep-stock">Chevron</span><span class="rep-stock">ConocoPhillips</span><span class="rep-stock">Schlumberger</span></div>
+  <a href="../../daily/2026-04/2026-04-15.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Financials</span>
+  </div>
+  <div class="sc-etf">XLF</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+7.11%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-1.67%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+0.04%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">JPMorgan</span><span class="rep-stock">Bank of America</span><span class="rep-stock">Visa</span><span class="rep-stock">Morgan Stanley</span></div>
+  <a href="../../daily/2026-04/2026-04-14.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Health Care</span>
+  </div>
+  <div class="sc-etf">XLV</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+0.82%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-7.42%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+1.39%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">UnitedHealth</span><span class="rep-stock">Eli Lilly</span><span class="rep-stock">J&J</span><span class="rep-stock">Pfizer</span></div>
+  <a href="../../daily/2026-04/2026-04-16.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Consumer Staples</span>
+  </div>
+  <div class="sc-etf">XLP</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+1.24%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-0.17%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+4.63%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">P&G</span><span class="rep-stock">Coca-Cola</span><span class="rep-stock">PepsiCo</span><span class="rep-stock">Walmart</span></div>
+  <a href="../../daily/2026-04/2026-04-07.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card focus">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">Consumer Discr.</span><span class="focus-star">★ 오늘 주제</span>
+  </div>
+  <div class="sc-etf">XLY</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+10.65%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-1.81%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-0.12%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Amazon</span><span class="rep-stock">Tesla</span><span class="rep-stock">Home Depot</span><span class="rep-stock">McDonald's</span></div>
+  <a href="../../daily/2026-04/2026-04-06.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div></div>
+
+    <div class="section-title">🇰🇷 한국 섹터 (TIGER 200 GICS 11개)</div>
+    <div class="chart-card chart-full" style="margin-bottom:12px">
+      <div class="chart-title">KR Sector 3M Return Ranking</div>
+      <div class="chart-box">
+        <canvas id="krRankChart2"></canvas>
+      </div>
+    </div>
+    <div class="sector-grid">
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">헬스케어</span>
+  </div>
+  <div class="sc-etf">TIGER 200 헬스케어</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+19.48%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+36.95%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+52.18%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">셀트리온</span><span class="rep-stock">삼성바이오로직스</span><span class="rep-stock">한미약품</span></div>
+  <a href="../../daily/2026-04/2026-04-16.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">건설</span>
+  </div>
+  <div class="sc-etf">TIGER 200 건설</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+3.73%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+28.15%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+41.12%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">현대건설</span><span class="rep-stock">대우건설</span><span class="rep-stock">하이트진로건설</span></div>
+  <a href="../../daily/2026-04/2026-04-09.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">금융</span>
+  </div>
+  <div class="sc-etf">TIGER 200 금융</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+3.30%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+2.99%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+1.89%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">신한지주</span><span class="rep-stock">KB금융</span><span class="rep-stock">하나금융지주</span></div>
+  <a href="../../daily/2026-04/2026-04-14.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">산업재</span>
+  </div>
+  <div class="sc-etf">TIGER 200 산업재</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+3.66%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+4.47%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+18.94%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">한화오션</span><span class="rep-stock">HD현대중공업</span><span class="rep-stock">삼성중공업</span></div>
+  <a href="../../daily/2026-04/2026-04-17.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">생활소비재</span>
+  </div>
+  <div class="sc-etf">TIGER 200 생활소비재</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+9.44%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+23.64%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+49.98%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">CJ제일제당</span><span class="rep-stock">오리온</span><span class="rep-stock">농심</span></div>
+  <a href="../../daily/2026-04/2026-04-07.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">에너지화학</span>
+  </div>
+  <div class="sc-etf">TIGER 200 에너지화학</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+4.81%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+3.58%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+1.29%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">LG화학</span><span class="rep-stock">롯데케미칼</span><span class="rep-stock">SK이노베이션</span></div>
+  <a href="../../daily/2026-04/2026-04-15.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">커뮤니케이션서비스</span>
+  </div>
+  <div class="sc-etf">TIGER 200 커뮤니케이션서비스</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+4.56%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+11.33%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+7.94%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">SK텔레콤</span><span class="rep-stock">KT</span><span class="rep-stock">LG유플러스</span></div>
+  <a href="../../daily/2026-04/2026-04-13.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">IT</span>
+  </div>
+  <div class="sc-etf">TIGER 200 IT</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+16.10%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+23.86%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+27.75%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">삼성전자</span><span class="rep-stock">SK하이닉스</span><span class="rep-stock">LG전자</span></div>
+  <a href="../../daily/2026-04/2026-04-10.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card focus">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">경기소비재</span><span class="focus-star">★ 오늘 주제</span>
+  </div>
+  <div class="sc-etf">TIGER 200 경기소비재</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+3.92%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-5.44%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+10.25%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">현대차</span><span class="rep-stock">기아</span><span class="rep-stock">현대모비스</span></div>
+  <a href="../../daily/2026-04/2026-04-06.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">철강소재</span>
+  </div>
+  <div class="sc-etf">TIGER 200 철강소재</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#dc2626;font-weight:600">-6.34%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-2.73%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+17.40%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">POSCO홀딩스</span><span class="rep-stock">현대제철</span><span class="rep-stock">OCI홀딩스</span></div>
+  <a href="../../daily/2026-04/2026-04-08.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="sector-card">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+    <span class="sc-name">중공업</span>
+  </div>
+  <div class="sc-etf">TIGER 200 중공업</div>
+  <div class="sc-metrics" style="margin-top:8px">
+    <div class="sc-metric"><span class="mk">1개월</span><span style="color:#16a34a;font-weight:600">+3.31%</span></div>
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-1.04%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-0.63%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">포스코인터내셔널</span><span class="rep-stock">한화에어로스페이스</span><span class="rep-stock">현대로템</span></div>
+  <a href="../../daily/2026-04/2026-04-20.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div></div>
+
+    <div class="section-title">🌍 국가별 투자 의견 (8개국)</div>
+    <div class="chart-card chart-full" style="margin-bottom:12px">
+      <div class="chart-title">Country Positioning (3M Return vs ACWI Excess)</div>
+      <div class="chart-box">
+        <canvas id="countryScatterChart2"></canvas>
+      </div>
+    </div>
+    <div class="country-grid">
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇺🇸</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">미국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(미국)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+2.74%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+4.88%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Apple</span><span class="rep-stock">Microsoft</span><span class="rep-stock">NVIDIA</span><span class="rep-stock">Amazon</span></div>
+  <a href="../../daily/2026-04/2026-04-15.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇰🇷</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">한국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">국내주식형</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+30.11%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+67.07%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">삼성전자</span><span class="rep-stock">SK하이닉스</span><span class="rep-stock">현대차</span><span class="rep-stock">LG화학</span></div>
+  <a href="../../daily/2026-04/2026-04-14.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇯🇵</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">일본</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(일본)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+12.46%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+20.34%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Toyota</span><span class="rep-stock">Sony</span><span class="rep-stock">SoftBank</span><span class="rep-stock">Keyence</span></div>
+  <a href="../../daily/2026-04/2026-04-17.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇨🇳</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">중국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(중국)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-0.77%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+4.31%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Tencent</span><span class="rep-stock">Alibaba</span><span class="rep-stock">Meituan</span><span class="rep-stock">Xiaomi</span></div>
+  <a href="../../daily/2026-04/2026-04-16.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇪🇺</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">유럽</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(유럽)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#d97706">→ 중립</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+0.81%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+4.28%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">ASML</span><span class="rep-stock">LVMH</span><span class="rep-stock">SAP</span><span class="rep-stock">Nestlé</span></div>
+  <a href="../../daily/2026-04/2026-04-07.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇬🇧</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">영국</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(선진국)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+3.55%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+11.36%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Shell</span><span class="rep-stock">AstraZeneca</span><span class="rep-stock">HSBC</span><span class="rep-stock">BP</span></div>
+  <a href="../../daily/2026-04/2026-04-08.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇮🇳</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">인도</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(이머징)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#dc2626">▼ 비중축소</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-2.31%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-4.99%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">Reliance</span><span class="rep-stock">TCS</span><span class="rep-stock">Infosys</span><span class="rep-stock">HDFC Bank</span></div>
+  <a href="../../daily/2026-03/2026-03-31.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🌍</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">신흥국(EM)</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(이머징)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+9.90%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+35.05%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">TSMC</span><span class="rep-stock">삼성전자</span><span class="rep-stock">Alibaba</span><span class="rep-stock">Vale</span></div>
+  <a href="../../daily/2026-04/2026-04-13.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇩🇪</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">독일</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(유럽)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#dc2626">▼ 비중축소</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#dc2626;font-weight:600">-1.18%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-0.24%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">SAP</span><span class="rep-stock">Siemens</span><span class="rep-stock">Allianz</span><span class="rep-stock">BASF</span></div>
+  <a href="../../daily/2026-04/2026-04-20.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card focus">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇫🇷</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">프랑스</span><span class="focus-star">★ 오늘 주제</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(유럽)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#d97706">→ 중립</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+2.06%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#dc2626;font-weight:600">-0.28%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">LVMH</span><span class="rep-stock">L'Oréal</span><span class="rep-stock">Sanofi</span><span class="rep-stock">Airbus</span></div>
+  <a href="../../daily/2026-04/2026-04-10.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div>
+
+<div class="country-card">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="cc-flag">🇹🇼</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:4px">
+        <span class="cc-name">대만</span>
+      </div>
+      <div style="font-size:11px;color:#64748b">해외주식형(이머징)</div>
+    </div>
+    <span style="font-weight:700;font-size:12px;color:#16a34a">▲ 비중확대</span>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span class="mk">3개월</span><span style="color:#16a34a;font-weight:600">+16.37%</span></div>
+    <div class="sc-metric"><span class="mk">6개월</span><span style="color:#16a34a;font-weight:600">+33.48%</span></div>
+  </div>
+  <div class="rep-stocks"><span class="rep-stock">TSMC</span><span class="rep-stock">台積電</span><span class="rep-stock">鴻海</span><span class="rep-stock">聯發科</span></div>
+  <a href="../../daily/2026-04/2026-04-01.html" class="prev-cycle-link" target="_blank">↩ 이전 보고서</a>
+</div></div>
+
+  </div><!-- /tab-data -->
+
+</div>
+
+<div class="footer">
+  Mirae Asset Securities · 섹터·국가 보고서 · 2026-04-21 (일간) · 데이터: history/market_data.csv
+</div>
+
+<script>
+// Chart.js defaults
+Chart.defaults.color = '#7c8298';
+Chart.defaults.font.family = "'Noto Sans KR', sans-serif";
+Chart.defaults.font.size = 11;
+
+const UP='#16a34a', DN='#dc2626', AC='#F58220', NAVY='#043B72', MU='#94a3b8';
+
+// ── Data 탭 차트 ──
+// US Sector Ranking (Data tab)
+new Chart(document.getElementById('usRankChart2'), {
+  type: 'bar',
+  data: {
+    labels: ["Energy", "Technology", "Real Estate", "Materials", "Utilities", "Industrials", "Communication", "Consumer Staples", "Financials", "Consumer Discr.", "Health Care"],
+    datasets: [{
+      data: [15.35, 7.7, 6.07, 5.61, 5.22, 3.34, 2.53, -0.17, -1.67, -1.81, -7.42],
+      backgroundColor: ["#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#dc2626", "#dc2626", "#dc2626", "#dc2626"],
+      borderRadius: 4,
+      barPercentage: 0.7
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            return '3M Return: ' + ctx.parsed.x.toFixed(2) + '%';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: '#ecedf2' },
+        ticks: { callback: v => v.toFixed(1) + '%' },
+        title: { display: true, text: '3M Return (%)', color: '#7c8298', font: { size: 10 } }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { font: { weight: '600', size: 11 } }
+      }
+    }
+  }
+});
+
+// KR Sector Ranking (Data tab)
+new Chart(document.getElementById('krRankChart2'), {
+  type: 'bar',
+  data: {
+    labels: ["\ud5ec\uc2a4\ucf00\uc5b4", "\uac74\uc124", "IT", "\uc0dd\ud65c\uc18c\ube44\uc7ac", "\ucee4\ubba4\ub2c8\ucf00\uc774\uc158\uc11c\ube44\uc2a4", "\uc0b0\uc5c5\uc7ac", "\uc5d0\ub108\uc9c0\ud654\ud559", "\uae08\uc735", "\uc911\uacf5\uc5c5", "\ucca0\uac15\uc18c\uc7ac", "\uacbd\uae30\uc18c\ube44\uc7ac"],
+    datasets: [{
+      data: [36.95, 28.15, 23.86, 23.64, 11.33, 4.47, 3.58, 2.99, -1.04, -2.73, -5.44],
+      backgroundColor: ["#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#16a34a", "#dc2626", "#dc2626", "#dc2626"],
+      borderRadius: 4,
+      barPercentage: 0.7
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            return '3M Return: ' + ctx.parsed.x.toFixed(2) + '%';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: '#ecedf2' },
+        ticks: { callback: v => v.toFixed(1) + '%' },
+        title: { display: true, text: '3M Return (%)', color: '#7c8298', font: { size: 10 } }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { font: { weight: '600', size: 11 } }
+      }
+    }
+  }
+});
+
+// Country Scatter (Data tab)
+const countryData2 = [{"x": 2.74, "y": -0.54, "label": "\ubbf8\uad6d", "view": "OW", "r": 5}, {"x": 30.11, "y": 26.83, "label": "\ud55c\uad6d", "view": "OW", "r": 36.132}, {"x": 12.46, "y": 9.17, "label": "\uc77c\ubcf8", "view": "OW", "r": 14.952}, {"x": -0.77, "y": -4.06, "label": "\uc911\uad6d", "view": "OW", "r": 5}, {"x": 0.81, "y": -2.48, "label": "\uc720\ub7fd", "view": "N", "r": 5}, {"x": 3.55, "y": 0.27, "label": "\uc601\uad6d", "view": "OW", "r": 5}, {"x": -2.31, "y": -5.59, "label": "\uc778\ub3c4", "view": "UW", "r": 5}, {"x": 9.9, "y": 6.61, "label": "\uc2e0\ud765\uad6d(EM)", "view": "OW", "r": 11.88}, {"x": -1.18, "y": -4.47, "label": "\ub3c5\uc77c", "view": "UW", "r": 5}, {"x": 2.06, "y": -1.22, "label": "\ud504\ub791\uc2a4", "view": "N", "r": 5}, {"x": 16.37, "y": 13.08, "label": "\ub300\ub9cc", "view": "OW", "r": 19.644000000000002}];
+const owData2 = countryData2.filter(d => d.view === 'OW');
+const nData2 = countryData2.filter(d => d.view === 'N');
+const uwData2 = countryData2.filter(d => d.view === 'UW');
+
+new Chart(document.getElementById('countryScatterChart2'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'OW (비중확대)',
+        data: owData2,
+        backgroundColor: UP + 'cc',
+        borderColor: UP,
+        borderWidth: 2,
+        pointRadius: owData2.map(d => d.r)
+      },
+      {
+        label: 'N (중립)',
+        data: nData2,
+        backgroundColor: '#d97706cc',
+        borderColor: '#d97706',
+        borderWidth: 2,
+        pointRadius: nData2.map(d => d.r)
+      },
+      {
+        label: 'UW (비중축소)',
+        data: uwData2,
+        backgroundColor: DN + 'cc',
+        borderColor: DN,
+        borderWidth: 2,
+        pointRadius: uwData2.map(d => d.r)
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { boxWidth: 10, padding: 12, font: { size: 11 } }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            return ctx.raw.label + ' (3M: ' + ctx.raw.x.toFixed(1) + '%, vs ACWI: ' + ctx.raw.y.toFixed(1) + '%)';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: '3개월 수익률 (%)', color: '#7c8298' },
+        grid: { color: '#ecedf2' },
+        ticks: { callback: v => v + '%' }
+      },
+      y: {
+        title: { display: true, text: 'vs ACWI 초과수익 (%)', color: '#7c8298' },
+        grid: { color: '#ecedf2' },
+        ticks: { callback: v => v + '%' }
+      }
+    }
+  }
+});
+
+// ── Tab switching ──
+function switchTab(tab) {
+  // Update buttons
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Update panels
+  document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+</body>
+</html>
