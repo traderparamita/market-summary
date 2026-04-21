@@ -168,30 +168,56 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 
 주간/월간 Story는 **마지막 영업일에만** 작성되므로, 일간 Story 안에 WTD(Week-to-Date)·MTD(Month-to-Date) 한 단락씩을 포함해 주 중간에도 누적 흐름을 볼 수 있게 한다.
 
-**데이터 소스**: `_data.json`의 각 자산 `weekly`, `monthly` 필드 (이미 누적 수익률 계산되어 있음)
+**데이터 소스**: ⚠ `_data.json`의 `weekly` 필드는 **롤링 7일** 기준이라 WTD 와 다릅니다. **직접 계산해야** 합니다.
+
+**WTD(Week-to-Date) 계산 규칙**:
+- 기준선: **ISO 주의 전주 마지막 영업일 종가** (보통 전주 금요일)
+- WTD = `(target_date 종가 / 전주 금요일 종가 - 1) × 100`
+- 예: W17 화요일(4/21) 보고서 → 기준선 = 4/17 금요일 종가
+- 직접 `history/market_data.csv` 에서 두 날짜 종가를 추출해 계산
+
+```python
+# 예시 스니펫 (Python)
+import pandas as pd
+df = pd.read_csv('history/market_data.csv')
+df['DATE'] = pd.to_datetime(df['DATE'])
+# 전주 금요일 찾기: target_date 의 ISO 주 1일(월) 의 전일(= 전주 일요일) 이전의 가장 가까운 영업일
+# 간단히: target_date 의 weekday() + 3 을 빼면 바로 전주 금요일
+import datetime as dt
+t = dt.date(2026, 4, 21)                       # target = 화요일
+prev_fri = t - dt.timedelta(days=t.weekday() + 3)  # → 4/17 금
+fri_close = df[(df['INDICATOR_CODE']=='EQ_KOSPI') & (df['DATE']==str(prev_fri))]['CLOSE'].values[0]
+tue_close = df[(df['INDICATOR_CODE']=='EQ_KOSPI') & (df['DATE']==str(t))]['CLOSE'].values[0]
+wtd = (tue_close/fri_close - 1) * 100
+```
+
+**MTD(Month-to-Date) 계산 규칙**:
+- 기준선: **전월 마지막 영업일 종가**
+- MTD = `(target_date 종가 / 전월 마지막 영업일 종가 - 1) × 100`
+- `_data.json` 의 `monthly` 필드도 롤링 30일 기준일 수 있어 직접 계산 권장
 
 **작성 형식** (예시):
 
 ```html
-<h3>주간 누적 (W15, 3/5 영업일 경과)</h3>
+<h3>주간 누적 (W15 · 3/5 영업일 경과 · 전주 금요일 종가 기준)</h3>
 <ul>
-  <li>핵심 지수: KOSPI +1.8%, S&amp;P500 −0.6%, NASDAQ −1.2%, DXY +0.4%</li>
-  <li>이번 주 흐름: 월요일 중국 PMI 쇼크 이후 미국·유럽 약세 지속, 한국·일본은 반등 우위</li>
+  <li>핵심 지수 (Fri 4/17 → Wed 4/22): KOSPI +2.5%, S&amp;P500 −0.6%, NASDAQ −1.2%, DXY +0.4%</li>
+  <li>이번 주 흐름: (시간순 사실 나열, 사후적 프레이밍 금지)</li>
 </ul>
 
-<h3>월간 누적 (4월, 7/20 영업일 경과)</h3>
+<h3>월간 누적 (4월 · 7/22 영업일 경과 · 3월 말 종가 기준)</h3>
 <ul>
   <li>핵심 지수: KOSPI +3.2%, S&amp;P500 +0.4%, Gold +2.1%, WTI −5.8%</li>
-  <li>월초 이후 테마: 관세 불확실성 완화 기대 + 한국 반도체 실적 모멘텀 유입</li>
+  <li>월초 이후 테마: (시간순 서술)</li>
 </ul>
 ```
 
 **규칙**:
-- **경과 영업일 수 표기 필수**: "3/5 영업일 경과", "7/20 영업일 경과" 같이 중간본임을 명시. 독자가 완결본으로 오해하지 않도록.
-- **수치는 `_data.json`에서**: 직접 계산 말고 각 자산의 `weekly`/`monthly` 필드 그대로 사용
+- **경과 영업일 수 표기 필수**: "3/5 영업일 경과" + **기준선 명시**("전주 금요일 종가 기준")
+- **수치는 직접 계산**: `_data.json` 의 `weekly`/`monthly` 필드는 WTD/MTD 와 다른 롤링 값. 신뢰 금지.
 - **테마 한 줄**: 일간 Narrative와 중복 피하며 주/월 전체 관점에서 한 문장 압축
-- **Forward looking 금지는 동일하게 적용**: 오늘 이후 이벤트 참조 금지
-- **마지막 영업일의 일간 Story**: 이 단락을 작성하되 "마지막 영업일"임을 표기 (예: "W15, 5/5 영업일 경과 — 주간 마감"). 별도 주간 Story가 같은 날 작성되므로 이 단락은 간결하게 유지.
+- **Forward looking 금지**: 오늘 이후 이벤트 참조 금지
+- **마지막 영업일의 일간 Story**: "W15, 5/5 영업일 경과 — 주간 마감" 표기. 주간 Story 가 같은 날 작성되므로 이 단락은 간결하게.
 
 **작성 중 자가 검증**:
 - 각 문장의 인과관계가 시간순인가?
@@ -221,11 +247,70 @@ Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 
 
 **과거 사고 사례 (2026-04-08)**: `_inject_existing_story('.../2026-04-08.html', story_html)`을 외부에서 호출해 960줄 daily HTML이 345줄 fragment로 덮어써진 사고 발생. 복구를 위해 generate.py 재실행 + placeholder 치환이 필요했음.
 
-### 주입 후 검증 필수
+### 주입 후 검증 필수 — 보고서 작성 끝에 항상 실행
+
+#### (1) 구조 검증
 - `{date}.html`이 `<!DOCTYPE html>`, `tab-story`, `tab-data`, `<style>` 블록을 모두 포함하는지 확인
 - `{date}_story.html` 파일이 생성/갱신되었는지 확인
 - 두 파일의 Story 내용이 동일한지(동기화) 확인
-- 라인 수 감이 안 잡히면 이전 영업일 `{prev_date}.html`과 라인 수를 비교 (수백 줄 차이가 나면 의심)
+- 이전 영업일 `{prev_date}.html` 과 라인 수 비교 (수백 줄 차이 시 의심)
+
+#### (2) 필수 섹션 체크 — 모든 섹션이 Story 에 있어야 한다
+- [ ] `<div class="story-hero">` — Story Hero (헤드라인 + 세션별 내러티브)
+- [ ] `<div class="causal-chain">` — Causal Chain (원인 → 결과 체인)
+- [ ] `<div class="session-grid">` — Session Grid (아시아/유럽/미국 3카드)
+- [ ] `<div class="cross-asset">` + `<div class="af-map">` — **Cross-Asset Flow Map (자산 간 연결)**
+- [ ] `<div class="insight-grid">` — Insight Grid (4개 교육 카드)
+- [ ] `<div class="risk-section">` + `<ul class="risk-items">` — Risk Section
+- [ ] WTD/MTD 블록 (grid 2-pane, `<h3>` + `<ul>`)
+
+> 실제 검증 스니펫:
+> ```bash
+> .venv/bin/python -c "
+> import re
+> html = open('output/summary/YYYY-MM/YYYY-MM-DD.html').read()
+> required = ['story-hero','causal-chain','session-grid','cross-asset','af-map','insight-grid','risk-section','risk-items']
+> missing = [c for c in required if f'class=\"{c}' not in html and f'class=\"... {c}' not in html]
+> print('missing:', missing if missing else 'none ✓')
+> "
+> ```
+
+#### (3) CSS 클래스 검증 — Story 에서 쓰는 클래스가 `<style>` 에 정의돼 있는가
+
+**이것은 매번 필수**. 과거 사례(2026-04-21): Claude 가 임의로 `key-insights`, `insight-title`, `risk-cards`, `risk-card high/medium/low` 같은 **존재하지 않는 클래스**를 써서 CSS 가 적용 안 된 채 발행됨.
+
+**허용된 Story 전용 클래스 화이트리스트** (이외는 금지):
+```
+story-hero, story-text
+causal-chain, cause-node, cause-arrow, node-label, node-title, node-detail, node-impact (up|down|flat)
+session-grid, session-block (asia|europe|us), session-header, session-icon, session-name, session-time,
+  session-verdict (verdict-up|verdict-down|verdict-flat), session-events, ev-time, session-kpi, s-kpi, s-kpi-label, s-kpi-value
+cross-asset, sub, af-map, af-node, af-arrow, af-node-title, af-node-value, af-node-chg (up|down), arr, lbl
+insight-grid, insight-card, badge, metric-row, metric-item, metric-label, metric-value (up|down)
+risk-section, risk-items, risk-item, risk-tag (high|med|low)
+hl-up, hl-down, hl-warn, hl-accent
+```
+
+**커스텀 클래스 도입 금지**. 새 클래스가 정말 필요하면 먼저 `<style>` 블록에 정의 추가 후 사용.
+
+> 실제 검증 스니펫:
+> ```bash
+> .venv/bin/python -c "
+> import re
+> html = open('output/summary/YYYY-MM/YYYY-MM-DD.html').read()
+> css_block = re.search(r'<style>(.*?)</style>', html, re.DOTALL).group(1)
+> story_block = re.search(r'id=\"tab-story\"(.*?)</div><!-- /tab-story', html, re.DOTALL).group(1)
+> used = set(re.findall(r'class=\"([^\"]+)\"', story_block))
+> used_classes = set(c for cs in used for c in cs.split())
+> defined = set(re.findall(r'\.([a-z][a-z0-9_-]*)', css_block))
+> undefined = [c for c in sorted(used_classes) if c not in defined]
+> print('undefined:', undefined if undefined else 'none ✓')
+> "
+> ```
+
+#### (4) WTD/MTD 수치 일치 검증
+- `history/market_data.csv` 에서 전주 금요일 종가 + 오늘 종가 두 값을 뽑아 직접 계산
+- Story 에 쓴 수치와 일치하는지 확인 (소수점 2자리 허용 오차)
 
 ---
 
