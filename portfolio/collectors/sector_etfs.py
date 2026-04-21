@@ -4,8 +4,8 @@
 중복 행은 자동으로 건너뜀.
 
 Usage:
-    python -m portfolio.collect_sector_etfs --start 2010-01-01
-    python -m portfolio.collect_sector_etfs --kr-only   # KR 섹터만
+    python -m portfolio.collectors.sector_etfs --start 2010-01-01
+    python -m portfolio.collectors.sector_etfs --kr-only   # KR 섹터만
 """
 
 from __future__ import annotations

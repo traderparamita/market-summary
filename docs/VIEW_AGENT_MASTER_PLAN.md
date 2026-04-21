@@ -74,7 +74,7 @@ model = hmm.GaussianHMM(n_components=3, covariance_type='full', n_iter=100)
 ### 1.4 데이터 수집 확장 (`portfolio/macro_indicators.yaml`에 통합 완료)
 
 > `collect_extended.py`는 삭제되었고 모든 지표는 `macro_indicators.yaml`에 흡수됨.
-> `python -m portfolio.collect_macro` 단일 명령으로 수집.
+> `python -m portfolio.collectors.macro` 단일 명령으로 수집.
 
 | 데이터 | 소스 | INDICATOR_CODE | 활용 뷰 |
 |--------|------|----------------|---------|

@@ -59,14 +59,19 @@ portfolio/
 │   ├── bond_view.py        # [P2] 채권 커브·크레딧·ALM 포지셔닝
 │   ├── style_view.py       # [P2] 팩터 로테이션 (Growth/Value/Quality/Momentum/LowVol)
 │   └── allocation_view.py  # [P2] 변액보험 펀드 배분안 (K-ICS 체크, KR+US 2-패널)
-├── collect_macro.py     # 거시지표 수집 (FRED/ECOS) — macro_indicators.yaml 정의 기반
-├── collect_sector_etfs.py # 섹터/스타일/채권 ETF 72개 이력 수집 (yfinance)
+├── collectors/      # 보조 수집기 서브패키지 (python -m portfolio.collectors.<name>)
+│   ├── macro.py        # 거시지표 수집 (FRED/ECOS) — macro_indicators.yaml 정의 기반
+│   ├── sector_etfs.py  # 섹터/스타일/채권 ETF 72개 이력 수집 (yfinance)
+│   ├── krx_sectors.py  # KOSPI200 GICS 지수 (pykrx, IX_KR_*)
+│   └── valuation.py    # KOSPI PER/PBR/DY (pykrx, VAL_KR_*)
 ├── macro_indicators.yaml # 거시지표 정의 (FRED/ECOS 지표 + 확장 지표 통합)
 ├── backtest.py      # 공통 백테스트 엔진
 ├── universe.yaml    # 자산 유니버스
 ├── strategies/      # 전략 YAML
 └── strategy/        # 멀티에이전트 전략 모델
-    └── sector_rotation.py  # KR vs US 월간 로테이션 (Momentum+Breadth+RelStrength)
+    ├── sector_rotation.py  # KR vs US 월간 로테이션 (Momentum+Breadth+RelStrength)
+    ├── sector_sync_plot.py # KR vs US GICS 섹터 동조화 시각화 (matplotlib)
+    └── sector_sync_viz.py  # KR vs US GICS 섹터 동조화 시각화 (rolling corr)
 ```
 
 **CSV 스키마** (영문 대문자, Snowflake MKT100_MARKET_DAILY 와 정렬):
@@ -244,7 +249,7 @@ python -m portfolio.view.price_view --date 2026-04-09 --html
 실행:
 ```
 # 데이터 수집 (FRED + ECOS API)
-python -m portfolio.collect_macro --start 2010-01-01
+python -m portfolio.collectors.macro --start 2010-01-01
 
 # HTML 생성
 python -m portfolio.view.macro_view --date 2026-04-09 --html

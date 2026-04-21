@@ -99,7 +99,7 @@ python -m portfolio.aimvp.backfill --snowflake  # 장기 백필
   - 🇮🇳 IN (4): GDP, CPI, 실업률, 중앙은행 금리
   - 🌍 Global (2): VIX, DXY
 
-- ✅ `portfolio/collect_macro.py` — FRED + ECOS API 수집기
+- ✅ `portfolio/collectors/macro.py` — FRED + ECOS API 수집기
 - ✅ `history/macro_indicators.csv` — 2020-01-01 ~ 2026-04-13 (14,206행)
 
 #### 4개 진단 뷰
@@ -327,7 +327,7 @@ python -m portfolio.view.allocation_view --date 2026-04-09 --html
 **목표**: 매크로 view 정확도 + 이벤트 대응 능력
 
 **완료**
-- ✅ `portfolio/collect_macro.py` — FRED + ECOS (37개 지표)
+- ✅ `portfolio/collectors/macro.py` — FRED + ECOS (37개 지표)
 - ✅ `M2SL` — US M2 Money Supply YoY
 - ✅ `WALCL` — Fed Balance Sheet YoY
 

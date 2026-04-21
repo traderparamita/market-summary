@@ -862,9 +862,9 @@ def _run_aux_collectors(target_date: str) -> None:
     print(f"\n=== Aux collectors (date={target_date}) ===")
 
     aux_tasks = [
-        ("collect_sector_etfs", "portfolio.collect_sector_etfs", "collect_sector_etfs"),
-        ("collect_krx_sectors", "portfolio.collect_krx_sectors", "collect_krx_sectors"),
-        ("collect_valuation",   "portfolio.collect_valuation",   "collect_valuation"),
+        ("sector_etfs", "portfolio.collectors.sector_etfs", "collect_sector_etfs"),
+        ("krx_sectors", "portfolio.collectors.krx_sectors", "collect_krx_sectors"),
+        ("valuation",   "portfolio.collectors.valuation",   "collect_valuation"),
     ]
 
     for label, module_path, func_name in aux_tasks:

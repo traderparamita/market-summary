@@ -6,8 +6,8 @@ ETF(2015~2022 상장)보다 훨씬 긴 2010년 이력을 확보한다.
 KRX_ID / KRX_PW 환경변수 필요 (.env에 설정).
 
 Usage:
-    python -m portfolio.collect_krx_sectors --start 2010-01-01
-    python -m portfolio.collect_krx_sectors --start 2010-01-01 --traditional  # 전통 업종(2000~)
+    python -m portfolio.collectors.krx_sectors --start 2010-01-01
+    python -m portfolio.collectors.krx_sectors --start 2010-01-01 --traditional  # 전통 업종(2000~)
 """
 
 from __future__ import annotations

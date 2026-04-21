@@ -4,8 +4,8 @@ Fetches macro economic indicators from FRED and ECOS APIs,
 appends to history/macro_indicators.csv.
 
 Usage:
-    python -m portfolio.collect_macro --start 2010-01-01
-    python -m portfolio.collect_macro --start 2010-01-01 --snowflake  # Also upload to Snowflake
+    python -m portfolio.collectors.macro --start 2010-01-01
+    python -m portfolio.collectors.macro --start 2010-01-01 --snowflake  # Also upload to Snowflake
 """
 
 import argparse

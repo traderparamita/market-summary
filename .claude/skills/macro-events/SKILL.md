@@ -59,7 +59,7 @@
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary
-.venv/bin/python -m portfolio.collect_macro
+.venv/bin/python -m portfolio.collectors.macro
 ```
 
 수집 확인: 출력 결과에서 각 지표의 날짜 범위가 최신인지 확인.
