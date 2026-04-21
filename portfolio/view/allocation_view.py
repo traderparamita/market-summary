@@ -180,10 +180,12 @@ def _get_krw_signal(date: str) -> dict:
     df = df[df["DATE"] <= pd.Timestamp(date)].sort_values("DATE")
     if len(df) < 60:
         return {"trend": "N/A", "hedge_rec": "중립", "color": "#f39c12"}
-    px = df["CLOSE"]
+    px = df.set_index("DATE")["CLOSE"]
     last = float(px.iloc[-1])
     ma60 = float(px.tail(60).mean())
-    chg_3m = float(px.iloc[-1] / px.iloc[-63] - 1) * 100 if len(px) >= 66 else np.nan
+    target_3m = px.index[-1] - pd.DateOffset(months=3)
+    past_3m = px[px.index <= target_3m]
+    chg_3m = float(px.iloc[-1] / past_3m.iloc[-1] - 1) * 100 if not past_3m.empty else np.nan
 
     if last > ma60 and (np.isnan(chg_3m) or chg_3m > 1):
         trend = "원화 약세 (달러 강세)"

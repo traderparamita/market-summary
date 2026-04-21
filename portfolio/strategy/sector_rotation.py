@@ -1,14 +1,11 @@
 """
 KR vs US Sector Rotation — Multi-Agent Signal Model
-Monthly rebalancing. Five parallel agents → weighted ensemble → KR/US/Neutral signal.
+Monthly rebalancing. Three parallel agents → weighted ensemble → KR/US/Neutral signal.
 
 Agents (price-based):
-  1. MomentumAgent    (30%) — 1M/3M/6M sector ETF return scores
-  2. BreadthAgent     (15%) — % sectors above MA200
-  3. RelStrengthAgent (15%) — KOSPI vs S&P500 relative strength (1M/3M/6M)
-Agents (fundamental/risk):
-  4. RiskAgent        (15%) — VIX regime, HY spread trend, yield curve
-  5. MacroRegimeAgent (25%) — GDP/CPI/policy rate differential (KR vs US)
+  1. MomentumAgent    (40%) — 1M/3M/6M sector ETF return scores
+  2. BreadthAgent     (30%) — % sectors above MA200
+  3. RelStrengthAgent (30%) — KOSPI vs S&P500 relative strength (1M/3M/6M)
 
 Signal: KR_score - US_score → KR / Neutral / US
 Benchmarks: 50/50 blend, KOSPI-only, S&P500-only
@@ -93,12 +90,16 @@ def month_ends(pivot: pd.DataFrame) -> pd.DatetimeIndex:
 # Agent 1: Momentum
 # ──────────────────────────────────────────────
 
-def momentum_score(px: pd.Series, lookback_days: int) -> float:
-    """Return over lookback window, or NaN if insufficient data."""
-    if len(px) < lookback_days + 1:
+def momentum_score(px: pd.Series, months: int) -> float:
+    """Return over calendar month lookback window, or NaN if insufficient data."""
+    if px.empty:
         return float("nan")
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
+        return float("nan")
+    start = past.iloc[-1]
     end = px.iloc[-1]
-    start = px.iloc[-(lookback_days + 1)]
     if start == 0 or pd.isna(start) or pd.isna(end):
         return float("nan")
     return end / start - 1.0
@@ -117,9 +118,9 @@ def momentum_agent(pivot: pd.DataFrame, sectors: list[str], as_of: pd.Timestamp)
         px = data[code].dropna()
         if len(px) < 2:
             continue
-        m1 = momentum_score(px, 21)
-        m3 = momentum_score(px, 63)
-        m6 = momentum_score(px, 126)
+        m1 = momentum_score(px, 1)
+        m3 = momentum_score(px, 3)
+        m6 = momentum_score(px, 6)
         vals = [v for v in [m1, m3, m6] if not math.isnan(v)]
         if vals:
             scores.append(sum(vals) / len(vals))
@@ -168,11 +169,14 @@ def rel_strength_agent(pivot: pd.DataFrame, as_of: pd.Timestamp) -> float:
     kr = kr.loc[common]
     us = us.loc[common]
     scores = []
-    for lb in [21, 63, 126]:
-        if len(kr) < lb + 1:
+    for m in [1, 3, 6]:
+        target = kr.index[-1] - pd.DateOffset(months=m)
+        kr_past = kr[kr.index <= target]
+        us_past = us[us.index <= target]
+        if kr_past.empty or us_past.empty:
             continue
-        kr_ret = kr.iloc[-1] / kr.iloc[-(lb + 1)] - 1
-        us_ret = us.iloc[-1] / us.iloc[-(lb + 1)] - 1
+        kr_ret = kr.iloc[-1] / kr_past.iloc[-1] - 1
+        us_ret = us.iloc[-1] / us_past.iloc[-1] - 1
         scores.append(kr_ret - us_ret)
     return float(np.nanmean(scores)) if scores else float("nan")
 

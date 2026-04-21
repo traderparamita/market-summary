@@ -242,10 +242,12 @@ def _momentum_dispersion(sectors: list) -> dict:
 
 # ── Signal calculators ───────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, days: int) -> float:
-    if len(px) < days + 3:
+def _momentum(px: pd.Series, months: int) -> float:
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
         return np.nan
-    return float(px.iloc[-1] / px.iloc[-days] - 1)
+    return float(px.iloc[-1] / past.iloc[-1] - 1)
 
 
 def _trend_score(px: pd.Series) -> int:
@@ -269,12 +271,12 @@ def _trend_score(px: pd.Series) -> int:
         return -1
 
 
-def _relative_mom(px: pd.Series, px_bench: pd.Series, days: int = 63) -> float:
+def _relative_mom(px: pd.Series, px_bench: pd.Series, months: int = 3) -> float:
     """vs 벤치마크 초과수익."""
-    if len(px) < days + 3 or len(px_bench) < days + 3:
+    ret = _momentum(px, months)
+    bench = _momentum(px_bench, months)
+    if np.isnan(ret) or np.isnan(bench):
         return np.nan
-    ret = float(px.iloc[-1] / px.iloc[-days] - 1)
-    bench = float(px_bench.iloc[-1] / px_bench.iloc[-days] - 1)
     return ret - bench
 
 
@@ -300,11 +302,11 @@ def _score_sector(code: str, prices: pd.DataFrame, bench: pd.Series) -> dict:
     if len(px) < 30:
         return None
 
-    mom_1m = _momentum(px, 21)
-    mom_3m = _momentum(px, 63)
-    mom_6m = _momentum(px, 126)
+    mom_1m = _momentum(px, 1)
+    mom_3m = _momentum(px, 3)
+    mom_6m = _momentum(px, 6)
     trend = _trend_score(px)
-    rel_3m = _relative_mom(px, bench, 63) if not bench.empty else np.nan
+    rel_3m = _relative_mom(px, bench, 3) if not bench.empty else np.nan
     comp = _composite_score(mom_1m, mom_3m, mom_6m, trend, rel_3m)
 
     last = float(px.iloc[-1])
