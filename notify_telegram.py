@@ -16,8 +16,9 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).parent
 load_dotenv(ROOT / ".env")
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+BOT_TOKEN     = os.getenv("TELEGRAM_BOT_TOKEN", "")
+CHAT_ID       = os.getenv("TELEGRAM_CHAT_ID", "")
+ANTHILLIA_ID  = os.getenv("ANTHILLIA_CHAT_ID", "")  # LL 두 개. 빈 값이면 이중 발송 안 함
 GITHUB_PAGES = "https://traderparamita.github.io/market-summary"
 
 
@@ -135,23 +136,28 @@ def send(message: str) -> bool:
         print("⚠ TELEGRAM_BOT_TOKEN 또는 TELEGRAM_CHAT_ID 미설정 — 전송 스킵")
         return False
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown",
-        "disable_web_page_preview": True,
-    }
-    try:
-        resp = requests.post(url, json=payload, timeout=10)
-        if resp.status_code == 200:
-            print("✓ Telegram 전송 완료")
-            return True
-        else:
-            print(f"✗ Telegram 전송 실패: {resp.status_code} {resp.text}")
-            return False
-    except Exception as e:
-        print(f"✗ Telegram 전송 오류: {e}")
-        return False
+    # 개인 채팅 + Anthillia 그룹 동시 발송 (ANTHILLIA_CHAT_ID 설정 시)
+    chat_ids = [CHAT_ID]
+    if ANTHILLIA_ID and ANTHILLIA_ID != CHAT_ID:
+        chat_ids.append(ANTHILLIA_ID)
+    success = True
+    for cid in chat_ids:
+        try:
+            resp = requests.post(url, json={
+                "chat_id": cid,
+                "text": message,
+                "parse_mode": "Markdown",
+                "disable_web_page_preview": True,
+            }, timeout=10)
+            if resp.status_code == 200:
+                print(f"✓ Telegram 전송 완료 ({cid})")
+            else:
+                print(f"✗ Telegram 전송 실패 ({cid}): {resp.status_code} {resp.text}")
+                success = False
+        except Exception as e:
+            print(f"✗ Telegram 전송 오류 ({cid}): {e}")
+            success = False
+    return success
 
 
 def build_start_message(date_str: str, label: str = "") -> str:

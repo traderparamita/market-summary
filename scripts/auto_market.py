@@ -34,8 +34,9 @@ LOG_DIR.mkdir(exist_ok=True)
 
 load_dotenv(ROOT / ".env")
 
-TELEGRAM_TOKEN   = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+TELEGRAM_TOKEN     = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
+ANTHILLIA_CHAT_ID  = os.getenv("ANTHILLIA_CHAT_ID", "")  # LL 두 개. 빈 값이면 이중 발송 안 함
 GITHUB_PAGES     = "https://traderparamita.github.io/market-summary"
 
 KST = ZoneInfo("Asia/Seoul")
@@ -209,6 +210,11 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
 
     print("\n[2/2] Telegram 알림 발송 ...")
 
+    # 발송 대상: 개인 채팅 + Anthillia 그룹 (ANTHILLIA_CHAT_ID 설정 시)
+    chat_ids = [TELEGRAM_CHAT_ID]
+    if ANTHILLIA_CHAT_ID and ANTHILLIA_CHAT_ID != TELEGRAM_CHAT_ID:
+        chat_ids.append(ANTHILLIA_CHAT_ID)
+
     yyyy_mm    = date_str[:7]
     report_url = f"{GITHUB_PAGES}/summary/{yyyy_mm}/{date_str}.html"
     now_kst    = datetime.now(KST).strftime("%H:%M KST")
@@ -241,25 +247,28 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
 
     text = "\n".join(lines)
     url  = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    try:
-        resp = requests.post(
-            url,
-            json={
-                "chat_id":                  TELEGRAM_CHAT_ID,
-                "text":                     text,
-                "parse_mode":               "HTML",
-                "disable_web_page_preview": False,
-            },
-            timeout=10,
-        )
-        if resp.ok:
-            print("  → 발송 완료")
-            return True
-        print(f"  [ERROR] Telegram {resp.status_code}: {resp.text[:200]}")
-        return False
-    except Exception as e:
-        print(f"  [ERROR] Telegram 전송 실패: {e}")
-        return False
+    success = True
+    for cid in chat_ids:
+        try:
+            resp = requests.post(
+                url,
+                json={
+                    "chat_id":                  cid,
+                    "text":                     text,
+                    "parse_mode":               "HTML",
+                    "disable_web_page_preview": False,
+                },
+                timeout=10,
+            )
+            if resp.ok:
+                print(f"  → 발송 완료 ({cid})")
+            else:
+                print(f"  [ERROR] Telegram {resp.status_code} ({cid}): {resp.text[:200]}")
+                success = False
+        except Exception as e:
+            print(f"  [ERROR] Telegram 전송 실패 ({cid}): {e}")
+            success = False
+    return success
 
 
 # ─────────────────────────────────────────────────────────────
