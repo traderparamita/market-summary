@@ -53,10 +53,10 @@ jobs:
           # generator (favicon/OG image). compileall above already
           # covers its syntax; skip importing to keep runtime deps lean.
 
-      - name: Smoke-test generate.py constants
+      - name: Smoke-test collect_market constants
         run: |
           python -c "
-          from generate import INDICATOR_CODES, TICKERS, HISTORY_CSV_COLUMNS
+          from collect_market import INDICATOR_CODES, TICKERS, HISTORY_CSV_COLUMNS
 
           # INDICATOR_CODES must cover every (category, ticker) pair that
           # TICKERS iterates, except the ones we intentionally skip
