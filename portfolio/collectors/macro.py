@@ -28,7 +28,7 @@ load_dotenv(BASE_DIR / ".env")
 FRED_API_KEY = os.getenv("FRED_API_KEY")
 ECOS_API_KEY = os.getenv("ECOS_API_KEY")
 
-MACRO_YAML = Path(__file__).resolve().parent / "macro_indicators.yaml"
+MACRO_YAML = Path(__file__).resolve().parent.parent / "macro_indicators.yaml"  # portfolio/macro_indicators.yaml
 HISTORY_CSV = BASE_DIR / "history" / "macro_indicators.csv"
 
 CSV_COLUMNS = ["DATE", "INDICATOR_CODE", "CATEGORY", "REGION", "VALUE", "UNIT", "SOURCE"]
@@ -246,9 +246,15 @@ def main():
     n = append_save_csv(HISTORY_CSV, existing, new_df)
     print(f"CSV updated: {len(existing) + n} total rows")
 
-    # Snowflake upload (TODO)
-    if args.snowflake:
-        print("\nSnowflake upload not yet implemented")
+    # MKT200_MACRO_DAILY upsert (자동 — 다른 collector 와 일관)
+    try:
+        import sys as _sys
+        from pathlib import Path as _Path
+        _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent.parent))
+        from snowflake_loader import sync_macro_rows
+        sync_macro_rows(new_df.to_dict("records"), source="collect_macro")
+    except Exception as e:
+        print(f"[SNOWFLAKE] FAILED source=collect_macro reason={str(e)[:200]}")
 
     # Verify
     verify = pd.read_csv(HISTORY_CSV)

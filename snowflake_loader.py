@@ -168,6 +168,71 @@ def upsert_rows(df: pd.DataFrame, *, target_date: Optional[str] = None) -> int:
         conn.close()
 
 
+def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
+    """macro_indicators CSV rows → MKT200_MACRO_DAILY upsert.
+
+    `new_rows` 는 CSV 컬럼 (DATE/INDICATOR_CODE/CATEGORY/REGION/VALUE/UNIT/SOURCE) 기반.
+    MKT200 스키마의 주기/소스_시리즈 는 MKT001 마스터에서 lookup 해 보강한다.
+    (DATE, INDICATOR_CODE) 기준 delete+insert.
+
+    표준 마커: [SNOWFLAKE] OK source=... rows=N  또는 FAILED/SKIP.
+
+    Args:
+        new_rows: CSV 포맷 row dict 리스트
+        source:   호출한 collector 이름 (로그 추적용)
+
+    Returns:
+        적재된 행 수 (실패 시 0)
+    """
+    if not new_rows:
+        print(f"[SNOWFLAKE] SKIP source={source} reason=no-new-rows")
+        return 0
+    try:
+        df = pd.DataFrame(new_rows)
+        # 컬럼명 한글 치환
+        df = df.rename(columns={
+            "DATE": "일자", "INDICATOR_CODE": "지표코드", "CATEGORY": "카테고리",
+            "REGION": "지역", "VALUE": "값", "UNIT": "단위", "SOURCE": "소스",
+        })
+        df["일자"] = pd.to_datetime(df["일자"]).dt.date
+        df["값"] = pd.to_numeric(df["값"], errors="coerce").round(4)
+
+        conn = get_connection()
+        try:
+            cur = conn.cursor()
+            # MKT001 마스터에서 주기/소스_시리즈 lookup
+            cur.execute('SELECT "지표코드", "주기", "소스_시리즈" FROM FDE_DB.PUBLIC.MKT001_MACRO_INDICATOR')
+            master = {r[0]: (r[1], r[2]) for r in cur.fetchall()}
+            df["주기"] = df["지표코드"].map(lambda c: master.get(c, (None, None))[0])
+            df["소스_시리즈"] = df["지표코드"].map(lambda c: master.get(c, (None, None))[1])
+
+            cols = ["일자", "지표코드", "카테고리", "지역", "값", "단위",
+                    "주기", "소스", "소스_시리즈"]
+            df = df[cols].reset_index(drop=True)
+
+            # (일자, 지표코드) 단위 DELETE 후 INSERT
+            keys = df[["일자", "지표코드"]].drop_duplicates()
+            if len(keys):
+                placeholders = ", ".join(f"(TO_DATE('{r.일자}'), '{r.지표코드}')" for r in keys.itertuples())
+                cur.execute(f'''
+                  DELETE FROM FDE_DB.PUBLIC.MKT200_MACRO_DAILY
+                  WHERE ("일자", "지표코드") IN ({placeholders})
+                ''')
+
+            success, nchunks, nrows, _ = write_pandas(
+                conn, df, "MKT200_MACRO_DAILY",
+                quote_identifiers=True, chunk_size=10000,
+            )
+            print(f"[SNOWFLAKE] OK source={source} rows={nrows}")
+            return nrows
+        finally:
+            conn.close()
+    except Exception as e:
+        reason = str(e).replace("\n", " ")[:300]
+        print(f"[SNOWFLAKE] FAILED source={source} reason={reason}")
+        return 0
+
+
 def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
     """Auxiliary collector 공용 헬퍼.
 
