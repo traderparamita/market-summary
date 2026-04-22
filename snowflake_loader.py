@@ -171,13 +171,23 @@ def upsert_rows(df: pd.DataFrame, *, target_date: Optional[str] = None) -> int:
         print("[loader] no rows to upsert")
         return 0
 
+    # 지표코드 교집합 — 사고 방지: df 에 없는 코드는 건드리지 않는다
+    # (과거 사고: target_date 없이 호출해 `일자 IN (...)` 만 DELETE 하면
+    #  해당 날짜의 다른 카테고리 코드까지 일괄 삭제됐음 — 2026-04-22)
+    codes_to_delete = sorted(set(df["지표코드"].astype(str).tolist()))
+
     conn = get_connection()
     try:
         cur = conn.cursor()
-        if dates_to_delete:
-            placeholders = ", ".join(f"'{d}'" for d in dates_to_delete)
-            cur.execute(f'DELETE FROM {TABLE} WHERE "일자" IN ({placeholders})')
-            print(f"[loader] DELETE rows for {len(dates_to_delete)} date(s)")
+        if dates_to_delete and codes_to_delete:
+            d_ph = ", ".join(f"'{d}'" for d in dates_to_delete)
+            c_ph = ", ".join(f"'{c}'" for c in codes_to_delete)
+            cur.execute(
+                f'DELETE FROM {TABLE} '
+                f'WHERE "일자" IN ({d_ph}) AND "지표코드" IN ({c_ph})'
+            )
+            print(f"[loader] DELETE (일자 × 지표코드) 교집합: "
+                  f"{len(dates_to_delete)}일 × {len(codes_to_delete)}코드")
 
         success, nchunks, nrows, _ = write_pandas(
             conn, df, TABLE,
