@@ -140,6 +140,8 @@ output/
 │       └── YYYY-MM/
 │           ├── YYYY-MM-DD.html       # Data + Story 탭 (섹터 Day N/11 · 국가 Day M/11)
 │           └── YYYY-MM-DD_story.html
+├── fund/                        # Fund Analysis — S3 기반 다운로드 페이지
+│   └── index.html              # pre-signed URL 목록 (원본은 S3, git 비추적)
 ├── portfolio/                   # Portfolio Agent
 │   └── aimvp/
 │       └── YYYY-MM-DD.html     # 백테스트 리포트
@@ -166,6 +168,8 @@ GitHub Pages로 자동 배포 (main 브랜치 push 시 `output/` 폴더)
   - `ECOS_API_KEY` — 한국은행 ECOS API
   - `FRED_API_KEY` — 미국 FRED API (거시지표)
   - `SNOWFLAKE_ACCOUNT` / `SNOWFLAKE_USER` / `SNOWFLAKE_PASSWORD` / `SNOWFLAKE_DATABASE` / `SNOWFLAKE_SCHEMA` / `SNOWFLAKE_WAREHOUSE` — Snowflake dual-write
+  - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` / `S3_BUCKET_NAME` — Fund S3 버킷 (비공개)
+  - `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` / `ANTHILLIA_CHAT_ID` (LL 두 개) — 알림 이중 발송
 
 ## 주의사항
 
@@ -344,6 +348,36 @@ python -m portfolio.strategy.sector_rotation --date 2026-04-20
 ```
 
 출력: `output/portfolio/strategy/{date}.html` + `{date}_signals.csv`
+
+## Fund Analysis (S3 기반 다운로드 페이지)
+
+펀드 리서치 HTML 문서를 **비공개 S3 버킷**에서 직접 내려받게 하는 메인 인덱스 카드 #3.
+
+- **S3 저장소** (비공개 유지, 콘솔로만 업로드):
+  - Bucket: `mai-life-fund-documents-533370893966-ap-northeast-2-an`
+  - Prefix: `malife_var_dashboard/fund_reports/github/`
+  - Region: `ap-northeast-2`
+  - Block Public Access 4개 모두 True (해제 금지 — Mirae Asset 보안 정책)
+- **접근 방식**: Pre-signed URL (GetObject 서명, **7일 만료**)
+  - 보기용: 그대로 브라우저 오픈
+  - 다운로드용: `ResponseContentDisposition=attachment` 로 강제 다운로드
+- **한글 파일명 대응**: S3 헤더 ISO-8859-1 제약 → RFC 5987 (`filename*=UTF-8''<percent-encoded>`) + ASCII fallback (`fund_report_YYYYMMDD.ext`) 병기
+
+### 재생성
+
+```
+.venv/bin/python scripts/generate_fund_index.py
+```
+
+- S3 prefix 스캔 → 각 파일별 pre-signed URL 발급 → `output/fund/index.html` 재생성
+- **주 1회 이상 수동 실행** (URL 7일 만료). 만료 후엔 브라우저에서 403 반환.
+- `/market-full` 워크플로우에 포함 **안 함** (의도적 분리 — 운영자가 주 단위로 직접 돌림).
+
+### 파일 흐름
+
+- 원본 HTML 은 S3 에만. `output/fund/*` 는 `.gitignore` 로 git 비추적 (`!output/fund/index.html` 예외).
+- `output/fund/index.html` 자체는 git 에 커밋 (pre-signed URL 박힘).
+- 주의: index.html 이 git 에 올라가면 URL 이 7일간 **세계 공개**됨. 원본 자료가 외부 유출 불가 수준이면 이 방식 재검토 필요.
 
 ## 관련 설정
 

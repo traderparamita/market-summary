@@ -15,6 +15,7 @@ import os
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
+from urllib.parse import quote
 
 import boto3
 from dotenv import load_dotenv
@@ -71,12 +72,25 @@ def scan_s3() -> list[dict]:
             Params={"Bucket": S3_BUCKET, "Key": key},
             ExpiresIn=expires,
         )
+        # S3 Content-Disposition 헤더는 ISO-8859-1 제약. 한글 파일명은
+        # RFC 5987 (filename*=UTF-8''<percent-encoded>) 로 전달해야 한다.
+        filename_encoded = quote(filename.encode("utf-8"))
+        # ASCII fallback 파일명 (브라우저가 RFC 5987 미지원 시 사용)
+        fallback_ascii = DATE_RE.search(filename)
+        fallback_name = (
+            f"fund_report_{fallback_ascii.group(1)}.{filename.rsplit('.', 1)[-1]}"
+            if fallback_ascii and "." in filename
+            else "fund_report"
+        )
         dl_url = s3.generate_presigned_url(
             "get_object",
             Params={
                 "Bucket": S3_BUCKET,
                 "Key": key,
-                "ResponseContentDisposition": f'attachment; filename="{filename}"',
+                "ResponseContentDisposition": (
+                    f"attachment; filename=\"{fallback_name}\"; "
+                    f"filename*=UTF-8''{filename_encoded}"
+                ),
             },
             ExpiresIn=expires,
         )
