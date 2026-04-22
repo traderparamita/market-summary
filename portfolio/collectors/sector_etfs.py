@@ -165,7 +165,11 @@ def collect_sector_etfs(
         from snowflake_loader import sync_new_rows
         sync_new_rows(new_rows, source="collect_sector_etfs")
     except Exception as e:
-        print(f"[SNOWFLAKE] FAILED source=collect_sector_etfs reason={str(e)[:200]}")
+        try:
+            from snowflake_loader import _alert_failure
+            _alert_failure(source="collect_sector_etfs", reason=str(e)[:200])
+        except Exception:
+            print(f"[SNOWFLAKE] FAILED source=collect_sector_etfs reason={str(e)[:200]}")
 
     return len(new_rows)
 

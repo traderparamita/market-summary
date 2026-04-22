@@ -254,7 +254,12 @@ def main():
         from snowflake_loader import sync_macro_rows
         sync_macro_rows(new_df.to_dict("records"), source="collect_macro")
     except Exception as e:
-        print(f"[SNOWFLAKE] FAILED source=collect_macro reason={str(e)[:200]}")
+        try:
+            from snowflake_loader import _alert_failure
+            _alert_failure(source="collect_macro", reason=str(e)[:200],
+                           table="MKT200_MACRO_DAILY")
+        except Exception:
+            print(f"[SNOWFLAKE] FAILED source=collect_macro reason={str(e)[:200]}")
 
     # Verify
     verify = pd.read_csv(HISTORY_CSV)

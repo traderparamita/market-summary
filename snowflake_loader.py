@@ -55,6 +55,28 @@ def get_connection():
     )
 
 
+def _alert_failure(*, source: str, reason: str, table: str = "") -> None:
+    """Snowflake write 실패 시 [SNOWFLAKE] FAILED 마커 + Telegram 알림 동시 발송.
+
+    조용한 실패를 제거하기 위해 best-effort 실패도 운영자에게 즉시 통지.
+    Telegram 설정 없거나 실패하면 마커만 찍고 조용히 패스.
+    """
+    tbl = f"[{table}] " if table else ""
+    print(f"[SNOWFLAKE] FAILED source={source} reason={reason}")
+    try:
+        # 순환 import 회피: 지연 로딩
+        from notify_telegram import send
+        send(
+            f"⚠ *Snowflake write 실패*\n"
+            f"source: `{source}`\n"
+            f"{'table: `' + table + '`' + chr(10) if table else ''}"
+            f"reason: `{reason[:300]}`"
+        )
+    except Exception:
+        # 알림 실패는 조용히 흡수 (원 에러 감추지 않음)
+        pass
+
+
 def _csv_to_df(csv_path: str) -> pd.DataFrame:
     """CSV 를 읽어 Snowflake 컬럼명으로 rename 한 DataFrame 반환."""
     df = pd.read_csv(csv_path)
@@ -229,7 +251,7 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
             conn.close()
     except Exception as e:
         reason = str(e).replace("\n", " ")[:300]
-        print(f"[SNOWFLAKE] FAILED source={source} reason={reason}")
+        _alert_failure(source=source, reason=reason, table="MKT200_MACRO_DAILY")
         return 0
 
 
@@ -258,7 +280,7 @@ def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
         return n
     except Exception as e:
         reason = str(e).replace("\n", " ")[:300]
-        print(f"[SNOWFLAKE] FAILED source={source} reason={reason}")
+        _alert_failure(source=source, reason=reason, table="MKT100_MARKET_DAILY")
         return 0
 
 

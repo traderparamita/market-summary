@@ -925,7 +925,13 @@ def main(target_date=None, start_date=None):
                 print(f"[SNOWFLAKE] OK date={target_date} rows={nrows}")
         except Exception as e:
             reason = str(e).replace("\n", " ")[:300]
-            print(f"[SNOWFLAKE] FAILED date={target_date} reason={reason}")
+            try:
+                from snowflake_loader import _alert_failure
+                _alert_failure(source=f"generate.py-step1c-{target_date}",
+                               reason=reason, table="MKT100_MARKET_DAILY")
+            except Exception:
+                # _alert_failure 자체도 안되면 최소한 마커는 남김
+                print(f"[SNOWFLAKE] FAILED date={target_date} reason={reason}")
     else:
         print(f"[SNOWFLAKE] SKIP date={target_date} reason=bulk-mode(--start)")
 

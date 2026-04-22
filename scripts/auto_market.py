@@ -295,6 +295,23 @@ def main() -> None:
     if not ok:
         metrics = load_metrics(date_str)
         send_telegram(date_str, metrics, ok)
+        return
+
+    # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
+    # CSV ↔ MKT100/MKT200 일치 여부 자동 검증. 불일치 시 Telegram 알림.
+    print("\n[3/3] Snowflake drift 검증 ...")
+    try:
+        drift_result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "verify_snowflake_drift.py"), date_str],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=120,
+        )
+        print(drift_result.stdout[-2000:])
+        if drift_result.returncode == 0:
+            print("  → 일치 확인")
+        else:
+            print(f"  [WARN] drift 감지 (exit {drift_result.returncode}) — Telegram 알림 발송됨")
+    except Exception as e:
+        print(f"  [WARN] drift 검증 자체 실패: {e}")
 
 
 if __name__ == "__main__":
