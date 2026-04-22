@@ -133,11 +133,8 @@ def render_html(rows: list[dict]) -> str:
 
     expires_note = (
         f"""<div class="notice">
-      <strong>⏱ 링크 만료 안내</strong> — 다운로드 URL 은 보안을 위해
-      <strong>{expires_at.strftime("%Y-%m-%d %H:%M")}</strong> 까지 유효합니다
-      (발급: {generated.strftime("%Y-%m-%d %H:%M")}, {URL_EXPIRES_DAYS}일).
-      만료 후엔 이 페이지를 새로고침해도 갱신되지 않으며,
-      <code>scripts/generate_fund_index.py</code> 를 재실행해 새 URL 을 발급해야 합니다.
+      <strong>⏱</strong> 다운로드 링크 유효기간 <strong>{URL_EXPIRES_DAYS}일</strong>
+      &middot; 만료 시 페이지 재생성 필요 (~{expires_at.strftime("%m-%d")})
     </div>"""
     )
 
