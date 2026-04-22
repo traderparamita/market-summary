@@ -167,12 +167,19 @@ class Config:
     tau: float = 0.02             # 임계값 (log-return diff)
     min_pairs: int = 3            # 최소 유효 페어 (작으면 skip)
     cost_bps: int = COST_BPS
+    # 통화 기준 — KR 투자자 관점에서 US 투자 시 FX 처리
+    #   "local"        : 각 시장 로컬 통화 기준 (기본, USD 투자자 관점 근사)
+    #   "krw_unhedged" : KR 투자자 환오픈 — US 수익 = (1+SP500_USD)×(1+USDKRW변화)-1
+    #   "krw_hedged"   : KR 투자자 환헤지 — US 수익 = SP500_USD - 월별 헤지비용
+    base_currency: str = "local"
+    hedge_cost_annual: float = 0.018  # 연 1.8% (≈ US-KR 금리차 평균), krw_hedged 시만 사용
 
 
 def run_backtest(cfg: Config, pivot: pd.DataFrame) -> pd.DataFrame:
     pairs = cfg.pairs or SECTOR_PAIRS_5
-    FX_SCALE_TO_RS = 0.02        # FX tilt (∈ [-1,1]) → RS 스케일 (log-return diff ~ ±0.02) 로 변환
+    FX_SCALE_TO_RS = 0.02
     cost = cfg.cost_bps / 10_000
+    monthly_hedge_cost = cfg.hedge_cost_annual / 12  # 월별 차감
 
     month_ends = pivot.resample("BME").last().index
     records: list[dict] = []
@@ -194,12 +201,27 @@ def run_backtest(cfg: Config, pivot: pd.DataFrame) -> pd.DataFrame:
         elif agg < -cfg.tau:
             signal = "US"
         else:
-            signal = prev_state  # hysteresis
+            signal = prev_state
 
-        kr_ret = next_month_return(pivot, me, KOSPI_CODE)
-        us_ret = next_month_return(pivot, me, SP500_CODE)
-        if kr_ret is None or us_ret is None:
+        kr_ret_local = next_month_return(pivot, me, KOSPI_CODE)
+        us_ret_local = next_month_return(pivot, me, SP500_CODE)
+        if kr_ret_local is None or us_ret_local is None:
             continue
+
+        # ── 통화 기준 변환 ─────────────────────────────
+        # KOSPI 는 KRW-denominated → base_currency 와 무관하게 동일
+        kr_ret = kr_ret_local
+        fx_ret = next_month_return(pivot, me, FX_USDKRW)  # 양수 = KRW 약세 = US ETF 환익
+
+        if cfg.base_currency == "krw_unhedged":
+            if fx_ret is None:
+                continue
+            us_ret = (1 + us_ret_local) * (1 + fx_ret) - 1
+        elif cfg.base_currency == "krw_hedged":
+            us_ret = us_ret_local - monthly_hedge_cost
+        else:  # "local"
+            us_ret = us_ret_local
+
         blend_ret = 0.5 * kr_ret + 0.5 * us_ret
 
         if signal == "KR":
