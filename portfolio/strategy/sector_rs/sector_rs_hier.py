@@ -36,7 +36,7 @@ import numpy as np
 import pandas as pd
 
 from portfolio.market_source import load_wide_close
-from portfolio.strategy.sector_rs_sync import (
+from portfolio.strategy.sector_rs.sector_rs_sync import (
     SECTOR_PAIRS, LOOKBACK_MONTHS, BACKTEST_START, COST_BPS,
     KOSPI_CODE, SP500_CODE,
     _log_return, next_month_return, perf, _badge, _C, _LIGHT,

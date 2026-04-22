@@ -38,7 +38,7 @@ import numpy as np
 import pandas as pd
 
 from portfolio.market_source import load_wide_close, load_macro_long, load_long
-from portfolio.strategy.sector_rs_sync import (
+from portfolio.strategy.sector_rs.sector_rs_sync import (
     SECTOR_PAIRS, LOOKBACK_MONTHS, BACKTEST_START, COST_BPS,
     KOSPI_CODE, SP500_CODE,
     _log_return, next_month_return, perf, _badge, _C, _LIGHT,
@@ -726,7 +726,7 @@ def main() -> None:
 
     # Mean-RS (sync) reference
     try:
-        from portfolio.strategy.sector_rs_sync import run_backtest as sync_bt
+        from portfolio.strategy.sector_rs.sector_rs_sync import run_backtest as sync_bt
         sync_df = sync_bt(pivot)
         mean_rs_ser = sync_df["mean_strategy"] if not sync_df.empty else None
         if mean_rs_ser is not None:

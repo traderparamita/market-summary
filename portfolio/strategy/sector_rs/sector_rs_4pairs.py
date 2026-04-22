@@ -18,8 +18,8 @@ from __future__ import annotations
 from pathlib import Path
 
 # 1) Monkey-patch SECTOR_PAIRS BEFORE 하위 로직 호출
-import portfolio.strategy.sector_rs_sync as _sync
-import portfolio.strategy.sector_rs_fx as _fx
+import portfolio.strategy.sector_rs.sector_rs_sync as _sync
+import portfolio.strategy.sector_rs.sector_rs_fx as _fx
 
 PAIRS_4 = [
     ("IX_KR_IT",      "SC_US_TECH",    "IT / Tech"),
