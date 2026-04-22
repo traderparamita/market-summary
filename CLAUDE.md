@@ -363,15 +363,30 @@ python -m portfolio.strategy.sector_rotation --date 2026-04-20
   - 다운로드용: `ResponseContentDisposition=attachment` 로 강제 다운로드
 - **한글 파일명 대응**: S3 헤더 ISO-8859-1 제약 → RFC 5987 (`filename*=UTF-8''<percent-encoded>`) + ASCII fallback (`fund_report_YYYYMMDD.ext`) 병기
 
-### 재생성
+### 재생성 — 상위 프로젝트 업로드 시 자동 호출 (권장)
+
+S3 업로드 책임은 상위 프로젝트 `malife_var_dashboard` 에 있음.
+`scripts/upload_share_reports.py` 가 업로드 성공 후 **post-upload hook** 으로
+이 레포의 `generate_fund_index.py` 를 subprocess 호출 → git commit + push → Telegram 알림.
+
+- **상위 스크립트 경로**: `/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/malife_var_dashboard/scripts/upload_share_reports.py`
+- **경로 설정**: 상위 `.env` 의 `MARKET_SUMMARY_ROOT=...` 환경변수로 이 레포 위치 지정 (기본값 하드코딩 fallback)
+- **알림**: 상위 `.env` 의 `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` / `ANTHILLIA_CHAT_ID` 기반 이중 발송
+  - ✅ 업로드 + 인덱스 갱신 완료: 파일 목록 + Fund 페이지 링크
+  - ⚠ 업로드 성공 + 인덱스 갱신 실패: 에러 + 수동 재실행 안내
+- hook 은 실패해도 S3 업로드 자체엔 영향 없음 (격리됨)
+- 업로드 시점마다 URL 7일 full 윈도우 확보 → 주간 cron 불필요
+
+### 수동 재생성 (fallback)
+
+상위 프로젝트 실행 없이 URL만 갱신이 필요할 때:
 
 ```
 .venv/bin/python scripts/generate_fund_index.py
 ```
 
 - S3 prefix 스캔 → 각 파일별 pre-signed URL 발급 → `output/fund/index.html` 재생성
-- **주 1회 이상 수동 실행** (URL 7일 만료). 만료 후엔 브라우저에서 403 반환.
-- `/market-full` 워크플로우에 포함 **안 함** (의도적 분리 — 운영자가 주 단위로 직접 돌림).
+- `/market-full` 워크플로우에 포함 **안 함** (의도적 분리)
 
 ### 파일 흐름
 
