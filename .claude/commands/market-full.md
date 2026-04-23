@@ -199,10 +199,20 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 
 ### Step 12: Git Commit + Push — Sector-Country
 
-`output/sector-country/`를 스테이징 후 커밋·푸시.
+**반드시 디렉터리 전체를 스테이징한다.** 개별 파일만 `git add` 하면 `output/sector-country/index.html` (Step 10에서 `_update_sc_index()` 가 갱신) 이 누락되어 목록 페이지가 다음 날 보고서로 업데이트되지 않는다.
 
-- 커밋 메시지: `feat: YYYY-MM-DD sector-country — 섹터 Day N/11 · 국가 Day M/11`
-- `git push origin main`
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  git add output/sector-country/ && \
+  git status --short output/sector-country/ && \
+  git commit -m "feat: $ARGUMENTS sector-country — 섹터 Day N/11 · 국가 Day M/11
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>" && \
+  git push origin main
+```
+
+- 커밋 전 `git status --short` 출력에 `output/sector-country/index.html` 이 포함되는지 반드시 확인
+- 커밋 메시지 N/M 은 Step 10 결과에서 얻은 실제 일자 대입
 
 실패 시 즉시 중단하고 사용자에게 상태 보고.
 
