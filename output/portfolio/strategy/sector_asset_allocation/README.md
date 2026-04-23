@@ -3,17 +3,18 @@
 **한국과 미국에 어떻게 비중 배분을 해야 할까?** — 섹터와 환율 데이터로 답을 찾아가는 여정
 
 **백테스트 기간**: 2011-04-01 ~ 현재 (179 개월)
-**운영 구조** (이중 시그널):
-- **MAIN** (6M-only): CAGR **+18.40%** / Sharpe **0.97** / MDD **−24.8%** · Walk-forward OOS Sharpe 1.09
-- **ALERT** (Champion [1,3,6]): CAGR +16.53% / Sharpe 0.86 · 단기 조정 감지용
+**최종 결과** (단일 시그널, 6M-only lookback 단독):
+- CAGR **+18.40%** / Sharpe **0.97** / MDD **−24.8%**
+- Walk-forward OOS Sharpe 1.09 (Train 1.02, Decay +0.07)
 
-**후속 검증 (§4.9 ~ §4.12)**:
+**후속 검증 (§4.9 ~ §4.13)**:
 - FX 시나리오: KRW 환오픈 우선 권장
-- Walk-forward OOS: 과적합 없음
-- Parameter Sensitivity: 88% 견고
-- Rolling OOS: 6M-only 우위 확인
+- Walk-forward OOS: 과적합 없음 확인
+- Parameter Sensitivity: 88% 견고 (lookback 6M-only 발견)
+- Rolling OOS: 연도별 승률 우위 확인
+- ALERT 시그널 탐색: 63개 변형 모두 MAIN 단독 개선 실패 → 이중 시그널 구조 폐기
 
-**현재 단계**: Paper Trading (3-6개월 실시간 병행 관찰)
+**현재 단계**: Paper Trading (3-6개월 실시간 검증)
 
 ---
 
@@ -236,35 +237,48 @@ Phase 2 베이스 구성 (B = C = 4쌍) + FX 가중 sweep:
 
 ---
 
-## 5. 현재 운영 구조 (이중 시그널)
+## 5. 현재 운영 구조 (단일 시그널)
 
-> **업데이트**: Phase 1-4 에서 확정한 단일 챔피언이 §4.9~§4.12 후속 검증을 거쳐 **이중 시그널** (MAIN + ALERT) 구조로 발전. 정식 운영 스펙은 [FORMAL_REPORT](FORMAL_REPORT.pdf) 참조.
+> **업데이트 경위**: Phase 1-4 에서 확정한 단일 챔피언 (1+3+6M 평균 lookback) 이
+> §4.9~§4.12 후속 검증에서 **6M-only lookback** 이 더 우수함을 확인.
+> §4.13 에서 "ALERT 이중 시그널" 구조를 63개 변형으로 체계적 탐색했으나
+> MAIN 단독 대비 개선 없음 확인 → **단일 시그널 (MAIN 6M-only) 최종 채택**.
+> 정식 운영 스펙은 [FORMAL_REPORT](FORMAL_REPORT.pdf) 참조.
 
-### 이중 시그널 개요
+### 운영 모델 — MAIN (6M-only)
 
-| 역할 | 모델 | Lookback | Full Sharpe | OOS Sharpe | 용도 |
-|---|---|---|---:|---:|---|
-| **MAIN** | 6M-only | [6] | **0.97** | **1.09** | 방향 결정, 포지션 크기 |
-| **ALERT** | Champion [1,3,6] | [1, 3, 6] | 0.86 | 1.02 | 단기 조정 감지 (2018 Q4 같은) |
-
-**공통 파라미터** (변경 없음):
-- 4 경제축 섹터 페어 (IT / FIN / ENERGY / STAPLES)
-- USDKRW 3M 모멘텀 30% 가중
-- 월말 리밸런싱, 임계 ±0.02, 30 bp 거래비용
-
-### 신호 일치/불일치 처리
-
-| 상태 | 권고 포지션 |
+| 항목 | 값 |
 |---|---|
-| MAIN·ALERT 둘 다 KR | KOSPI 100% (full) |
-| MAIN·ALERT 둘 다 US | S&P500 100% (full) |
-| 불일치 (MAIN=KR, ALERT=US 등) | 부분 전환 (50/50) — 단기 조정 가능성 주시 |
-| MAIN Neutral | 50/50 Blend 유지 |
+| Lookback | **6개월 단일** |
+| 섹터 페어 | IT · FIN · ENERGY · STAPLES (4 경제축) |
+| FX 오버레이 | USDKRW 3M 모멘텀, 30% 가중 |
+| 임계값 | ±0.02 (log-return diff) |
+| 리밸런싱 | 월말 |
+| 거래비용 | 30 bp one-way |
+| **Full Sharpe** | **0.97** (181개월) |
+| **OOS Sharpe** | **1.09** (Walk-forward §4.10) |
+| 회전율 | 연 0.5회 |
 
-**시그널 일치율**: 94% (174개월 중 164개월)
-**전환 빈도**: MAIN 연 0.5회, ALERT 연 0.7회
+### 시그널 판정
 
-### 기존 단일 챔피언 (아래 §5 원본, 참고용)
+| MAIN agg | 포지션 |
+|---|---|
+| > +0.02 | KOSPI 100% (또는 70/30 틸팅) |
+| < −0.02 | S&P500 100% (또는 70/30 틸팅) |
+| 임계값 내 | 50/50 Blend 유지 (직전 상태) |
+
+### ALERT 이중 시그널 탐색 결과 (§4.13, 참고용)
+
+| 시도한 접근 | 결과 |
+|---|---|
+| Champion [1,3,6] 을 ALERT 로 사용 | 일치율 94%, 조합 Sharpe 0.95 (MAIN 0.97 하회) |
+| 다른 섹터 조합 × 단기 lookback 63 변형 sweep | 전 후보 조합 Sharpe < MAIN 단독 |
+| 불일치 월 적중률 | 30-45% (random 50% 미만) |
+| → 결론 | **ALERT 시그널 가치 없음 → 단일 시그널 운영** |
+
+단기 조정 대응은 향후 **별도 리스크 관리 레이어** (VIX trigger, MDD stop 등) 로 처리 예정.
+
+### 기존 단일 챔피언 (Phase 1-4 확정 버전, 참고용)
 
 **이름**: **Sector 4-pair RS + FX 30%** (Phase 1-4 확정 버전)
 

@@ -118,9 +118,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 <h1 id="sector-based-asset-allocation-research">Sector-based Asset Allocation Research</h1>
 <p><strong>한국과 미국에 어떻게 비중 배분을 해야 할까?</strong> — 섹터와 환율 데이터로 답을 찾아가는 여정</p>
-<p><strong>백테스트 기간</strong>: 2011-04-01 ~ 현재 (179 개월) <strong>운영 구조</strong> (이중 시그널): - <strong>MAIN</strong> (6M-only): CAGR <strong>+18.40%</strong> / Sharpe <strong>0.97</strong> / MDD <strong>−24.8%</strong> · Walk-forward OOS Sharpe 1.09 - <strong>ALERT</strong> (Champion [1,3,6]): CAGR +16.53% / Sharpe 0.86 · 단기 조정 감지용</p>
-<p><strong>후속 검증 (§4.9 ~ §4.12)</strong>: - FX 시나리오: KRW 환오픈 우선 권장 - Walk-forward OOS: 과적합 없음 - Parameter Sensitivity: 88% 견고 - Rolling OOS: 6M-only 우위 확인</p>
-<p><strong>현재 단계</strong>: Paper Trading (3-6개월 실시간 병행 관찰)</p>
+<p><strong>백테스트 기간</strong>: 2011-04-01 ~ 현재 (179 개월) <strong>최종 결과</strong> (단일 시그널, 6M-only lookback 단독): - CAGR <strong>+18.40%</strong> / Sharpe <strong>0.97</strong> / MDD <strong>−24.8%</strong> - Walk-forward OOS Sharpe 1.09 (Train 1.02, Decay +0.07)</p>
+<p><strong>후속 검증 (§4.9 ~ §4.13)</strong>: - FX 시나리오: KRW 환오픈 우선 권장 - Walk-forward OOS: 과적합 없음 확인 - Parameter Sensitivity: 88% 견고 (lookback 6M-only 발견) - Rolling OOS: 연도별 승률 우위 확인 - ALERT 시그널 탐색: 63개 변형 모두 MAIN 단독 개선 실패 → 이중 시그널 구조 폐기</p>
+<p><strong>현재 단계</strong>: Paper Trading (3-6개월 실시간 검증)</p>
 <hr />
 <h2 id="질문">1. 질문</h2>
 <blockquote>
@@ -483,71 +483,109 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>상위 4개가 <strong>tie</strong> — B/C 는 같은 4쌍이므로 필연적 동일. USDKRW/DXY 30% 에서도 동일.</p>
 <p><a href="outputs/phase4_champion.html">outputs/phase4_champion.html</a> | <a href="outputs/final_champion_signals.csv">outputs/final_champion_signals.csv</a></p>
 <hr />
-<h2 id="현재-운영-구조-이중-시그널">5. 현재 운영 구조 (이중 시그널)</h2>
+<h2 id="현재-운영-구조-단일-시그널">5. 현재 운영 구조 (단일 시그널)</h2>
 <blockquote>
-<p><strong>업데이트</strong>: Phase 1-4 에서 확정한 단일 챔피언이 §4.9~§4.12 후속 검증을 거쳐 <strong>이중 시그널</strong> (MAIN + ALERT) 구조로 발전. 정식 운영 스펙은 <a href="FORMAL_REPORT.pdf">FORMAL_REPORT</a> 참조.</p>
+<p><strong>업데이트 경위</strong>: Phase 1-4 에서 확정한 단일 챔피언 (1+3+6M 평균 lookback) 이 §4.9~§4.12 후속 검증에서 <strong>6M-only lookback</strong> 이 더 우수함을 확인. §4.13 에서 “ALERT 이중 시그널” 구조를 63개 변형으로 체계적 탐색했으나 MAIN 단독 대비 개선 없음 확인 → <strong>단일 시그널 (MAIN 6M-only) 최종 채택</strong>. 정식 운영 스펙은 <a href="FORMAL_REPORT.pdf">FORMAL_REPORT</a> 참조.</p>
 </blockquote>
-<h3 id="이중-시그널-개요">이중 시그널 개요</h3>
+<h3 id="운영-모델-main-6m-only">운영 모델 — MAIN (6M-only)</h3>
 <table>
 <thead>
 <tr class="header">
-<th>역할</th>
-<th>모델</th>
-<th>Lookback</th>
-<th style="text-align: right;">Full Sharpe</th>
-<th style="text-align: right;">OOS Sharpe</th>
-<th>용도</th>
+<th>항목</th>
+<th>값</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>MAIN</strong></td>
-<td>6M-only</td>
-<td>[6]</td>
-<td style="text-align: right;"><strong>0.97</strong></td>
-<td style="text-align: right;"><strong>1.09</strong></td>
-<td>방향 결정, 포지션 크기</td>
+<td>Lookback</td>
+<td><strong>6개월 단일</strong></td>
 </tr>
 <tr class="even">
-<td><strong>ALERT</strong></td>
-<td>Champion [1,3,6]</td>
-<td>[1, 3, 6]</td>
-<td style="text-align: right;">0.86</td>
-<td style="text-align: right;">1.02</td>
-<td>단기 조정 감지 (2018 Q4 같은)</td>
+<td>섹터 페어</td>
+<td>IT · FIN · ENERGY · STAPLES (4 경제축)</td>
+</tr>
+<tr class="odd">
+<td>FX 오버레이</td>
+<td>USDKRW 3M 모멘텀, 30% 가중</td>
+</tr>
+<tr class="even">
+<td>임계값</td>
+<td>±0.02 (log-return diff)</td>
+</tr>
+<tr class="odd">
+<td>리밸런싱</td>
+<td>월말</td>
+</tr>
+<tr class="even">
+<td>거래비용</td>
+<td>30 bp one-way</td>
+</tr>
+<tr class="odd">
+<td><strong>Full Sharpe</strong></td>
+<td><strong>0.97</strong> (181개월)</td>
+</tr>
+<tr class="even">
+<td><strong>OOS Sharpe</strong></td>
+<td><strong>1.09</strong> (Walk-forward §4.10)</td>
+</tr>
+<tr class="odd">
+<td>회전율</td>
+<td>연 0.5회</td>
 </tr>
 </tbody>
 </table>
-<p><strong>공통 파라미터</strong> (변경 없음): - 4 경제축 섹터 페어 (IT / FIN / ENERGY / STAPLES) - USDKRW 3M 모멘텀 30% 가중 - 월말 리밸런싱, 임계 ±0.02, 30 bp 거래비용</p>
-<h3 id="신호-일치불일치-처리">신호 일치/불일치 처리</h3>
+<h3 id="시그널-판정">시그널 판정</h3>
 <table>
 <thead>
 <tr class="header">
-<th>상태</th>
-<th>권고 포지션</th>
+<th>MAIN agg</th>
+<th>포지션</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>MAIN·ALERT 둘 다 KR</td>
-<td>KOSPI 100% (full)</td>
+<td>&gt; +0.02</td>
+<td>KOSPI 100% (또는 70/30 틸팅)</td>
 </tr>
 <tr class="even">
-<td>MAIN·ALERT 둘 다 US</td>
-<td>S&amp;P500 100% (full)</td>
+<td>&lt; −0.02</td>
+<td>S&amp;P500 100% (또는 70/30 틸팅)</td>
 </tr>
 <tr class="odd">
-<td>불일치 (MAIN=KR, ALERT=US 등)</td>
-<td>부분 전환 (50/50) — 단기 조정 가능성 주시</td>
-</tr>
-<tr class="even">
-<td>MAIN Neutral</td>
-<td>50/50 Blend 유지</td>
+<td>임계값 내</td>
+<td>50/50 Blend 유지 (직전 상태)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>시그널 일치율</strong>: 94% (174개월 중 164개월) <strong>전환 빈도</strong>: MAIN 연 0.5회, ALERT 연 0.7회</p>
-<h3 id="기존-단일-챔피언-아래-5-원본-참고용">기존 단일 챔피언 (아래 §5 원본, 참고용)</h3>
+<h3 id="alert-이중-시그널-탐색-결과-4.13-참고용">ALERT 이중 시그널 탐색 결과 (§4.13, 참고용)</h3>
+<table>
+<thead>
+<tr class="header">
+<th>시도한 접근</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Champion [1,3,6] 을 ALERT 로 사용</td>
+<td>일치율 94%, 조합 Sharpe 0.95 (MAIN 0.97 하회)</td>
+</tr>
+<tr class="even">
+<td>다른 섹터 조합 × 단기 lookback 63 변형 sweep</td>
+<td>전 후보 조합 Sharpe &lt; MAIN 단독</td>
+</tr>
+<tr class="odd">
+<td>불일치 월 적중률</td>
+<td>30-45% (random 50% 미만)</td>
+</tr>
+<tr class="even">
+<td>→ 결론</td>
+<td><strong>ALERT 시그널 가치 없음 → 단일 시그널 운영</strong></td>
+</tr>
+</tbody>
+</table>
+<p>단기 조정 대응은 향후 <strong>별도 리스크 관리 레이어</strong> (VIX trigger, MDD stop 등) 로 처리 예정.</p>
+<h3 id="기존-단일-챔피언-phase-1-4-확정-버전-참고용">기존 단일 챔피언 (Phase 1-4 확정 버전, 참고용)</h3>
 <p><strong>이름</strong>: <strong>Sector 4-pair RS + FX 30%</strong> (Phase 1-4 확정 버전)</p>
 <p><strong>구성</strong>: - <strong>신호 입력</strong>: 4 경제축 섹터 페어 (IT / FIN / ENERGY / STAPLES) - <strong>FX 오버레이</strong>: USDKRW 3M 모멘텀, 30% 가중 - <strong>리밸런싱</strong>: 월말 - <strong>출력</strong>: KOSPI 100% / S&amp;P500 100% / 50-50 Neutral</p>
 <h3 id="월별-의사결정-프로세스">월별 의사결정 프로세스</h3>
