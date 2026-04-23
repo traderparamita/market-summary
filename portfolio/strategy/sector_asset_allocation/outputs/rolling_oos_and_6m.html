@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><title>Rolling OOS & 6M Comparison</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, sans-serif; background: #F7F8FA; color: #1F2937;
+         padding: 24px; max-width: 1280px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+  .subtitle { color: #6B7280; font-size: 0.85rem; margin-bottom: 24px; }
+  h2 { font-size: 1rem; color: #111827; margin: 28px 0 10px; padding-left: 10px; border-left: 3px solid #F58220; }
+  table { width: 100%; background: #fff; border-collapse: collapse; font-size: 0.85rem;
+          border-radius: 8px; overflow: hidden; border: 1px solid #E5E7EB; margin: 12px 0; }
+  th { background: #F3F4F6; padding: 9px 10px; text-align: left; font-weight: 600; color: #374151; }
+  td { padding: 8px 10px; border-bottom: 1px solid #F3F4F6; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .canvas-wrap { background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #E5E7EB; }
+  .verdict { background: #fff; border-left: 5px solid #F58220; padding: 16px 22px; border-radius: 8px; margin: 18px 0; }
+  .verdict h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+  .verdict p { margin: 4px 0; font-size: 0.88rem; }
+  .hero { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+  .hero-card { background: #fff; padding: 14px; border-radius: 10px; border: 1px solid #E5E7EB; }
+  .hero-label { font-size: 0.72rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em; }
+  .hero-value { font-size: 1.4rem; font-weight: 800; margin-top: 4px; }
+</style></head><body>
+
+<h1>Rolling OOS & 6M-only 챔피언 승격 검토</h1>
+<div class="subtitle">연도별 Expanding Window OOS (2016-2026) + 시그널 일치율 + 위기 구간 비교</div>
+
+<div class="verdict">
+  <h3>⚠ 최종 판단: 조건부 승격 가능</h3>
+  <p>[완료] 연도 승률 6M-only 우위: 3/4 (총 수익 +76.4%p)</p><p>[완료] 시그널 일치율 높음 (94%) → 스위치 리스크 낮음</p><p>[!] 위기 구간 6M 0/4 — 하락장 방어력 우려</p>
+</div>
+
+<div class="hero">
+  <div class="hero-card">
+    <div class="hero-label">누적 수익 (2016-)</div>
+    <div class="hero-value" style="color:#1D3557">Ch +570.0%</div>
+    <div class="hero-value" style="color:#F58220">6M +646.4%</div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-label">연 승률</div>
+    <div class="hero-value">6M 3 / Ch 1</div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-label">시그널 일치율</div>
+    <div class="hero-value">94%</div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-label">연간 전환</div>
+    <div class="hero-value" style="font-size:1rem">Ch 9 / 6M 7</div>
+  </div>
+</div>
+
+<h2>Part 1 — 연도별 Rolling OOS 성과</h2>
+<table>
+  <thead><tr>
+    <th>Year</th><th>#월</th>
+    <th>Champion Return</th><th>Ch Sharpe</th>
+    <th>6M-only Return</th><th>6M Sharpe</th>
+    <th>차이</th><th>승자</th>
+  </tr></thead><tbody><tr style='background:#FEF3C7'><td>2016</td><td class='num'>12</td><td class='num'>+12.39%</td><td class='num'>+1.87</td><td class='num'>+15.15%</td><td class='num'>+2.39</td><td class='num' style='font-weight:700;color:#F58220'>+2.75%</td><td style='text-align:center'>6M</td></tr><tr style='background:'><td>2017</td><td class='num'>12</td><td class='num'>+18.39%</td><td class='num'>+2.22</td><td class='num'>+18.39%</td><td class='num'>+2.22</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr><tr style='background:#DBEAFE'><td>2018</td><td class='num'>12</td><td class='num'>-0.67%</td><td class='num'>-0.04</td><td class='num'>-2.05%</td><td class='num'>-0.12</td><td class='num' style='font-weight:700;color:#1D3557'>-1.38%</td><td style='text-align:center'>Champion</td></tr><tr style='background:#FEF3C7'><td>2019</td><td class='num'>12</td><td class='num'>+8.92%</td><td class='num'>+0.74</td><td class='num'>+17.93%</td><td class='num'>+1.54</td><td class='num' style='font-weight:700;color:#F58220'>+9.00%</td><td style='text-align:center'>6M</td></tr><tr style='background:'><td>2020</td><td class='num'>12</td><td class='num'>+34.18%</td><td class='num'>+1.23</td><td class='num'>+34.18%</td><td class='num'>+1.23</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr><tr style='background:#FEF3C7'><td>2021</td><td class='num'>12</td><td class='num'>+13.92%</td><td class='num'>+1.16</td><td class='num'>+16.03%</td><td class='num'>+1.33</td><td class='num' style='font-weight:700;color:#F58220'>+2.11%</td><td style='text-align:center'>6M</td></tr><tr style='background:'><td>2022</td><td class='num'>12</td><td class='num'>-9.71%</td><td class='num'>-0.41</td><td class='num'>-9.71%</td><td class='num'>-0.41</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr><tr style='background:'><td>2023</td><td class='num'>12</td><td class='num'>+18.86%</td><td class='num'>+1.35</td><td class='num'>+18.86%</td><td class='num'>+1.35</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr><tr style='background:'><td>2024</td><td class='num'>12</td><td class='num'>+24.89%</td><td class='num'>+2.37</td><td class='num'>+24.89%</td><td class='num'>+2.37</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr><tr style='background:'><td>2025</td><td class='num'>12</td><td class='num'>+84.87%</td><td class='num'>+2.72</td><td class='num'>+84.87%</td><td class='num'>+2.72</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr><tr style='background:'><td>2026</td><td class='num'>3</td><td class='num'>+22.86%</td><td class='num'>+1.07</td><td class='num'>+22.86%</td><td class='num'>+1.07</td><td class='num' style='font-weight:700;color:#1D3557'>+0.00%</td><td style='text-align:center'>TIE</td></tr></tbody>
+</table>
+
+<h2>연도별 수익률 비교 차트</h2>
+<div class="canvas-wrap"><canvas id="yearlyBar" style="max-height:300px"></canvas></div>
+
+<h2>누적 수익 (2016-01 ~ 현재)</h2>
+<div class="canvas-wrap"><canvas id="cum" style="max-height:380px"></canvas></div>
+
+<h2>Part 2 — 위기 구간 비교</h2>
+<table>
+  <thead><tr><th>이벤트</th><th>기간</th><th>#월</th><th>Champion</th><th>6M-only</th><th>승자</th></tr></thead>
+  <tbody><tr style='background:'><td>COVID-19</td><td>2020-02-01 ~ 2020-04-30</td><td class='num'>3</td><td class='num'>+3.7%</td><td class='num'>+3.7%</td><td style='text-align:center'>TIE</td></tr><tr style='background:'><td>2022 인플레</td><td>2022-01-01 ~ 2022-10-31</td><td class='num'>10</td><td class='num'>-9.6%</td><td class='num'>-9.6%</td><td style='text-align:center'>TIE</td></tr><tr style='background:#DBEAFE'><td>2018 Q4 조정</td><td>2018-10-01 ~ 2018-12-31</td><td class='num'>3</td><td class='num'>+1.1%</td><td class='num'>-0.3%</td><td style='text-align:center'>Champion</td></tr><tr style='background:'><td>2015 하락장</td><td>2015-07-01 ~ 2015-12-31</td><td class='num'>6</td><td class='num'>-3.7%</td><td class='num'>-3.7%</td><td style='text-align:center'>TIE</td></tr></tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+<script>
+  new Chart(document.getElementById('yearlyBar'), {
+    type: 'bar',
+    data: {
+      labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"],
+      datasets: [
+        { label: 'Champion [1,3,6]', data: [12.39, 18.39, -0.67, 8.92, 34.18, 13.92, -9.71, 18.86, 24.89, 84.87, 22.86],
+           backgroundColor: '#1D3557' },
+        { label: '6M-only', data: [15.15, 18.39, -2.05, 17.93, 34.18, 16.03, -9.71, 18.86, 24.89, 84.87, 22.86],
+           backgroundColor: '#F58220' },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' } },
+                scales: { y: { title: { display: true, text: 'Return (%)' } } } }
+  });
+
+  new Chart(document.getElementById('cum'), {
+    type: 'line',
+    data: { labels: ["2016-01-29", "2016-02-29", "2016-03-31", "2016-04-29", "2016-05-31", "2016-06-30", "2016-07-29", "2016-08-31", "2016-09-30", "2016-10-31", "2016-11-30", "2016-12-30", "2017-01-31", "2017-02-28", "2017-03-31", "2017-04-28", "2017-05-31", "2017-06-30", "2017-07-31", "2017-08-31", "2017-09-29", "2017-10-31", "2017-11-30", "2017-12-29", "2018-01-31", "2018-02-28", "2018-03-30", "2018-04-30", "2018-05-31", "2018-06-29", "2018-07-31", "2018-08-31", "2018-09-28", "2018-10-31", "2018-11-30", "2018-12-31", "2019-01-31", "2019-02-28", "2019-03-29", "2019-04-30", "2019-05-31", "2019-06-28", "2019-07-31", "2019-08-30", "2019-09-30", "2019-10-31", "2019-11-29", "2019-12-31", "2020-01-31", "2020-02-28", "2020-03-31", "2020-04-30", "2020-05-29", "2020-06-30", "2020-07-31", "2020-08-31", "2020-09-30", "2020-10-30", "2020-11-30", "2020-12-31", "2021-01-29", "2021-02-26", "2021-03-31", "2021-04-30", "2021-05-31", "2021-06-30", "2021-07-30", "2021-08-31", "2021-09-30", "2021-10-29", "2021-11-30", "2021-12-31", "2022-01-31", "2022-02-28", "2022-03-31", "2022-04-29", "2022-05-31", "2022-06-30", "2022-07-29", "2022-08-31", "2022-09-30", "2022-10-31", "2022-11-30", "2022-12-30", "2023-01-31", "2023-02-28", "2023-03-31", "2023-04-28", "2023-05-31", "2023-06-30", "2023-07-31", "2023-08-31", "2023-09-29", "2023-10-31", "2023-11-30", "2023-12-29", "2024-01-31", "2024-02-29", "2024-03-29", "2024-04-30", "2024-05-31", "2024-06-28", "2024-07-31", "2024-08-30", "2024-09-30", "2024-10-31", "2024-11-29", "2024-12-31", "2025-01-31", "2025-02-28", "2025-03-31", "2025-04-30", "2025-05-30", "2025-06-30", "2025-07-31", "2025-08-29", "2025-09-30", "2025-10-31", "2025-11-28", "2025-12-31", "2026-01-30", "2026-02-27", "2026-03-31"], datasets: [
+      { label: '6M-only', data: [0.0024, 0.0438, 0.0435, 0.0595, 0.0604, 0.0982, 0.0968, 0.0955, 0.0743, 0.111, 0.1312, 0.1515, 0.1943, 0.1938, 0.2047, 0.2187, 0.238, 0.2437, 0.2233, 0.2395, 0.3063, 0.282, 0.2907, 0.3633, 0.3102, 0.275, 0.3076, 0.3359, 0.3423, 0.3906, 0.4327, 0.4389, 0.339, 0.363, 0.2379, 0.3353, 0.375, 0.3996, 0.4546, 0.3589, 0.4525, 0.4715, 0.4449, 0.4697, 0.4997, 0.5507, 0.5904, 0.5747, 0.4422, 0.2618, 0.3967, 0.4956, 0.5536, 0.6576, 0.7141, 0.7153, 0.6492, 0.8851, 1.0904, 1.1129, 1.1389, 1.1734, 1.2347, 1.2744, 1.3404, 1.3865, 1.4557, 1.3388, 1.5004, 1.4797, 1.5878, 1.4517, 1.3747, 1.4597, 1.2432, 1.2435, 1.0552, 1.2425, 1.1474, 0.9468, 1.1024, 1.2155, 1.0848, 1.2136, 1.1558, 1.2315, 1.2641, 1.2698, 1.4166, 1.4918, 1.4477, 1.3285, 1.2772, 1.4804, 1.59, 1.6312, 1.7672, 1.853, 1.7397, 1.8712, 1.9709, 2.0044, 2.0729, 2.135, 2.104, 2.2818, 2.1998, 2.2862, 2.2395, 2.0532, 2.03, 2.2164, 2.6525, 2.8593, 2.7886, 3.0724, 3.8844, 3.6695, 4.0113, 5.0752, 6.2611, 4.8757, 6.4639],
+         borderColor: '#F58220', borderWidth: 2.5, backgroundColor: 'transparent', tension: 0.15 },
+      { label: 'Champion [1,3,6]', data: [0.0024, 0.0438, 0.0429, 0.0372, 0.0351, 0.0719, 0.0706, 0.0693, 0.0486, 0.0844, 0.1042, 0.1239, 0.1658, 0.1653, 0.1759, 0.1895, 0.2084, 0.214, 0.1941, 0.2099, 0.2751, 0.2514, 0.2599, 0.3307, 0.2789, 0.2445, 0.2764, 0.3039, 0.3102, 0.3574, 0.3985, 0.4045, 0.307, 0.3304, 0.2083, 0.3217, 0.3161, 0.2833, 0.3299, 0.2424, 0.328, 0.3454, 0.321, 0.3437, 0.3711, 0.4178, 0.4541, 0.4397, 0.3186, 0.1536, 0.277, 0.3674, 0.4204, 0.5154, 0.5671, 0.5682, 0.5078, 0.7235, 0.9112, 0.9318, 0.9556, 0.987, 1.0431, 1.0482, 1.0947, 1.1422, 1.2043, 1.0994, 1.2445, 1.2259, 1.3229, 1.2007, 1.1316, 1.2079, 1.0136, 1.0138, 0.8449, 1.0129, 0.9276, 0.7476, 0.8872, 0.9887, 0.8714, 0.987, 0.9352, 1.0031, 1.0323, 1.0374, 1.1692, 1.2367, 1.1971, 1.0901, 1.0441, 1.2265, 1.3249, 1.3619, 1.484, 1.561, 1.4593, 1.5773, 1.6668, 1.6969, 1.7584, 1.8141, 1.7863, 1.9459, 1.8723, 1.9498, 1.9079, 1.7407, 1.7199, 1.8872, 2.2787, 2.4642, 2.4008, 2.6556, 3.3845, 3.1916, 3.4984, 4.4534, 5.5179, 4.2743, 5.6999],
+         borderColor: '#1D3557', borderWidth: 1.8, backgroundColor: 'transparent', tension: 0.15 },
+      { label: '50/50 Blend', data: [-0.0009, 0.0528, 0.0537, 0.059, 0.056, 0.087, 0.0914, 0.0931, 0.073, 0.0847, 0.1063, 0.1276, 0.1551, 0.1738, 0.1914, 0.2367, 0.2514, 0.2664, 0.2563, 0.2767, 0.3253, 0.3315, 0.3356, 0.3965, 0.3314, 0.3187, 0.3543, 0.344, 0.3203, 0.3354, 0.3635, 0.3724, 0.233, 0.2644, 0.1896, 0.294, 0.3104, 0.3058, 0.3508, 0.2567, 0.3274, 0.3031, 0.273, 0.3147, 0.3347, 0.3589, 0.412, 0.3867, 0.2852, 0.1297, 0.2635, 0.3369, 0.3751, 0.459, 0.535, 0.5055, 0.4557, 0.6381, 0.7577, 0.7573, 0.7911, 0.8436, 0.9179, 0.9401, 0.9902, 0.9844, 1.0122, 0.9232, 0.959, 0.9075, 0.9956, 0.8344, 0.8026, 0.8544, 0.7518, 0.7488, 0.5605, 0.6713, 0.6429, 0.461, 0.5662, 0.6694, 0.5405, 0.6571, 0.6313, 0.6815, 0.7022, 0.73, 0.7817, 0.8332, 0.7903, 0.7147, 0.6504, 0.8173, 0.9005, 0.8542, 0.956, 1.0248, 0.9645, 0.9914, 1.0868, 1.0884, 1.0759, 1.0653, 1.0403, 1.0587, 1.0093, 1.086, 1.0775, 0.9965, 1.0192, 1.1369, 1.338, 1.4294, 1.4304, 1.5643, 1.849, 1.788, 1.8895, 2.216, 2.516, 2.091, 2.6529],
+         borderColor: '#6B7280', borderWidth: 1, borderDash: [5,4], backgroundColor: 'transparent' },
+    ]},
+    options: { responsive: true, plugins: { legend: { position: 'top' } },
+                scales: { y: { ticks: { callback: v => (v*100).toFixed(0)+'%' } },
+                          x: { ticks: { maxTicksLimit: 12 } } } }
+  });
+</script>
+</body></html>
