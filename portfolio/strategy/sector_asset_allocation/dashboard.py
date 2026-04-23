@@ -446,7 +446,7 @@ def main() -> None:
   <a href="#perf">성과</a>
   <a href="#recent">최근 12개월</a>
   <a href="sector_asset_allocation/FORMAL_REPORT.pdf">📄 정식 보고서 (PDF)</a>
-  <a href="sector_asset_allocation/README.md">📒 Research Notes</a>
+  <a href="sector_asset_allocation/README.html">📒 Research Notes</a>
   <a href="../index.html">← Portfolio 홈</a>
 </div>
 

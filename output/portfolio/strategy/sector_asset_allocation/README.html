@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Sector Asset Allocation — Research Notes</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <style>
+  body { font-family: -apple-system, 'Apple SD Gothic Neo', 'Pretendard', sans-serif;
+         max-width: 900px; margin: 0 auto; padding: 32px 24px 64px;
+         color: #1F2937; background: #FAFBFC; line-height: 1.7; font-size: 15px; }
+  h1 { font-size: 1.8rem; font-weight: 800; border-bottom: 3px solid #F58220;
+       padding-bottom: 12px; margin-bottom: 24px; color: #043B72; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 32px 0 14px; color: #043B72;
+       border-left: 4px solid #F58220; padding-left: 12px; }
+  h3 { font-size: 1.05rem; font-weight: 700; margin: 20px 0 10px; color: #374151; }
+  h4 { font-size: 0.95rem; font-weight: 700; margin: 14px 0 6px; color: #4B5563; }
+  table { border-collapse: collapse; margin: 14px 0; width: 100%; background: #fff;
+          border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; font-size: 0.9rem; }
+  th { background: #F3F4F6; padding: 10px 12px; text-align: left; font-weight: 600;
+       color: #374151; border-bottom: 1px solid #E5E7EB; }
+  td { padding: 9px 12px; border-bottom: 1px solid #F9FAFB; }
+  tr:last-child td { border-bottom: none; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 0.85em;
+         background: #F3F4F6; padding: 2px 6px; border-radius: 3px; color: #DC2626; }
+  pre { background: #1F2937; color: #F3F4F6; padding: 14px 18px; border-radius: 8px;
+        overflow-x: auto; font-size: 0.83rem; line-height: 1.5; }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  blockquote { border-left: 4px solid #F58220; padding: 6px 16px; margin: 14px 0;
+               background: #FFF7ED; color: #7C2D12; border-radius: 0 6px 6px 0; }
+  a { color: #F58220; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  strong, b { font-weight: 700; color: #111827; }
+  ul, ol { padding-left: 24px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  hr { border: none; border-top: 1px solid #E5E7EB; margin: 32px 0; }
+  .nav-top { padding: 10px 16px; background: #fff; border: 1px solid #E5E7EB;
+             border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; }
+  .nav-top a { margin-right: 14px; }
+  </style>
+</head>
+<body>
+<div class="nav-top"><a href="../sector_asset_allocation.html">← 시그널 대시보드</a><a href="FORMAL_REPORT.pdf">📄 정식 보고서 (PDF)</a><a href="README.md">📝 raw .md</a><a href="../../index.html">Portfolio 홈</a></div>
+<header id="title-block-header">
+<h1 class="title">Sector Asset Allocation — Research Notes</h1>
+</header>
+<h1 id="sector-based-asset-allocation-research">Sector-based Asset Allocation Research</h1>
+<p><strong>한국과 미국에 어떻게 비중 배분을 해야 할까?</strong> — 섹터와 환율 데이터로 답을 찾아가는 여정</p>
+<p><strong>백테스트 기간</strong>: 2011-04-01 ~ 현재 (179 개월) <strong>운영 구조</strong> (이중 시그널): - <strong>MAIN</strong> (6M-only): CAGR <strong>+18.40%</strong> / Sharpe <strong>0.97</strong> / MDD <strong>−24.8%</strong> · Walk-forward OOS Sharpe 1.09 - <strong>ALERT</strong> (Champion [1,3,6]): CAGR +16.53% / Sharpe 0.86 · 단기 조정 감지용</p>
+<p><strong>후속 검증 (§4.9 ~ §4.12)</strong>: - FX 시나리오: KRW 환오픈 우선 권장 - Walk-forward OOS: 과적합 없음 - Parameter Sensitivity: 88% 견고 - Rolling OOS: 6M-only 우위 확인</p>
+<p><strong>현재 단계</strong>: Paper Trading (3-6개월 실시간 병행 관찰)</p>
+<hr />
+<h2 id="질문">1. 질문</h2>
+<blockquote>
+<p><strong>“매달 KOSPI(한국)와 S&amp;P500(미국) 중 어디에 투자해야 더 나은 성과를 얻을까?”</strong></p>
+</blockquote>
+<p>일상에서 투자자가 마주치는 실제 질문입니다. 답변 방식:</p>
+<ul>
+<li><strong>감에 의존</strong>: 뉴스·애널리스트 의견 → 일관성 없음, 감정 개입</li>
+<li><strong>고정 비율 (50/50)</strong>: 단순하지만 시장 상황 무시</li>
+<li><strong>데이터 기반 규칙</strong>: 이 프로젝트의 접근</li>
+</ul>
+<p>목표: <strong>매달 객관적인 데이터 시그널로 국가 비중 결정</strong></p>
+<hr />
+<h2 id="데이터">2. 데이터</h2>
+<h3 id="왜-대표-지수만-보면-부족한가">왜 대표 지수만 보면 부족한가?</h3>
+<p>KOSPI vs S&amp;P500 직접 비교는 <strong>1차원 신호</strong> 하나:</p>
+<pre><code>지난 3M KOSPI 수익률 vs 지난 3M S&amp;P500 수익률</code></pre>
+<p>이 방식의 한계: - 시장 전체 평균만 보므로 <strong>구조적 차이 반영 못 함</strong> - 예: “KR IT 가 강하지만 KR 금융은 약함” 같은 세부 정보 손실 - 환율 movement 무시</p>
+<h3 id="세분화된-접근">세분화된 접근</h3>
+<p><strong>A. 미국 GICS 섹터 지수</strong> — SPDR Select Sector ETFs - 1998년 이후 지속, OHLCV 완전 - 11개 섹터 (TECH, FIN, HEALTH, INDU, ENERGY, DISCR, STAPLES, MATL, UTIL, COMM, REIT)</p>
+<p><strong>B. 한국 GICS 섹터 지수</strong> — KRX 공식 KOSPI 200 섹터 지수 - <strong>2011-04-01 공식 발표</strong> (5개 섹터: IT/FIN/ENERGY/DISCR/STAPLES + 건설/중공업/철강 = 8개) - 2015-07-13 추가 (산업재, 헬스케어) - 2018-10-22 추가 (커뮤니케이션서비스, GICS 2018 개편 반영)</p>
+<p><strong>중요</strong>: pre-publication 구간은 KRX 가 현재 구성종목으로 back-calculate 한 값 → 실시간 시그널 아님. <strong>이 프로젝트는 2011-04-01 이후 5쌍만 사용해 이 편향 제거</strong>.</p>
+<p><strong>C. 환율 데이터</strong> - USDKRW: 직접 KR↔US 환율 (Korean won vs US dollar) - DXY: 광의 달러 지수 (USD vs 6개 통화 가중)</p>
+<h3 id="데이터-페어-최종-사용">데이터 페어 (최종 사용)</h3>
+<table>
+<thead>
+<tr class="header">
+<th>페어</th>
+<th>KR (KOSPI 200)</th>
+<th>US (SPDR)</th>
+<th>KRX 발표일</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IT</td>
+<td>정보기술</td>
+<td>TECH (XLK)</td>
+<td>2011-04-01</td>
+</tr>
+<tr class="even">
+<td>FIN</td>
+<td>금융</td>
+<td>FIN (XLF)</td>
+<td>2011-04-01</td>
+</tr>
+<tr class="odd">
+<td>ENERGY</td>
+<td>에너지/화학</td>
+<td>ENERGY (XLE)</td>
+<td>2011-04-01</td>
+</tr>
+<tr class="even">
+<td>DISCR</td>
+<td>경기소비재</td>
+<td>DISCR (XLY)</td>
+<td>2011-04-01</td>
+</tr>
+<tr class="odd">
+<td>STAPLES</td>
+<td>생활소비재</td>
+<td>STAPLES (XLP)</td>
+<td>2011-04-01</td>
+</tr>
+</tbody>
+</table>
+<p>→ <strong>2011-04-01 부터 5쌍 모두 실시간 가용</strong></p>
+<hr />
+<h2 id="방법론">3. 방법론</h2>
+<h3 id="설계-철학">설계 철학</h3>
+<blockquote>
+<p>“<strong>복잡성은 정당화되어야 한다</strong>”. 단순한 규칙부터 시작해 점진 개선.</p>
+</blockquote>
+<h3 id="phase-1-벤치마크-수립">Phase 1: 벤치마크 수립</h3>
+<p><strong>이길 대상</strong>: 1. <strong>50/50 Blend</strong> — 매달 50:50 리밸런싱 (passive diversification) 2. <strong>KOSPI only</strong> — 한국 단독 3. <strong>S&amp;P500 only</strong> — 미국 단독</p>
+<p>새 전략은 <strong>Sharpe 기준으로 이 셋보다 우수</strong>해야 함.</p>
+<h3 id="phase-2-섹터-구성-선택-3-가지">Phase 2: 섹터 구성 선택 (3 가지)</h3>
+<p>5쌍 풀(IT/FIN/ENERGY/DISCR/STAPLES) 에서 <strong>어떻게 신호 추출할 것인가?</strong></p>
+<h4 id="a.-전체-5쌍-사용-maximum-information">A. 전체 5쌍 사용 (maximum information)</h4>
+<ul>
+<li>5쌍 평균 RS 를 신호로</li>
+<li><strong>가정</strong>: “정보 많을수록 좋다”</li>
+<li><strong>리스크</strong>: 상관 높은 섹터가 중복 계산, 노이즈 추가</li>
+</ul>
+<h4 id="b.-상관관계-최소화-4쌍-통계적-선택">B. 상관관계 최소화 4쌍 (통계적 선택)</h4>
+<ul>
+<li>C(5,4) = 5 조합 중 내부 상관 평균이 최저인 조합 자동 선택</li>
+<li><strong>로직</strong>: 서로 독립적인 4개가 5개 혼합보다 깔끔할 수 있음</li>
+</ul>
+<h4 id="c.-경제축-4쌍-도메인-지식">C. 경제축 4쌍 (도메인 지식)</h4>
+<ul>
+<li><strong>IT</strong>: 성장 / Duration (금리 민감 장기 자산)</li>
+<li><strong>FIN</strong>: 가치 / Curve (예대마진, 크레딧)</li>
+<li><strong>ENERGY</strong>: 인플레 / Commodity (원자재 가격)</li>
+<li><strong>STAPLES</strong>: 방어 / 저베타 (경기 방어)</li>
+<li>DISCR 는 IT 와 상관 높으므로 제외</li>
+<li><strong>로직</strong>: 4개의 직교 경제 레짐을 커버</li>
+</ul>
+<h3 id="phase-3-환율-오버레이">Phase 3: 환율 오버레이</h3>
+<p>섹터 신호에 FX 를 얹으면 도움될까?</p>
+<p><strong>가설</strong>: KR vs US 투자 의사결정에서 <strong>환율은 1차 채널</strong>. - USDKRW 상승 = KRW 약세 = KR 수출주 이익 증가 → KR 매수 편향 - USDKRW 하락 = KRW 강세 = KR 수출주 타격 → US 매수 편향</p>
+<p><strong>실험</strong>: - FX 소스: {USDKRW, DXY} - FX 가중: {0%, 20%, 30%, 50%} - 기본 섹터 신호 + FX 신호 가중 평균</p>
+<h3 id="phase-4-최종-조합-sweep">Phase 4: 최종 조합 Sweep</h3>
+<ul>
+<li>섹터 구성 3개 × FX 가중 4개 × FX 소스 2개 = <strong>24 조합</strong></li>
+<li>Sharpe 최고 조합을 챔피언으로 확정</li>
+</ul>
+<h3 id="백테스트-규칙-모든-phase-공통">백테스트 규칙 (모든 Phase 공통)</h3>
+<ul>
+<li>기간: <strong>2011-04-01 ~ 현재 (179개월)</strong></li>
+<li>리밸런싱: <strong>월말 (Business Month End)</strong></li>
+<li>거래비용: <strong>30 bps one-way</strong> (전환 시 적용)</li>
+<li>포지션: {KOSPI 100%, S&amp;P500 100%, 50/50 Neutral} 중 하나</li>
+<li>임계값: ±0.02 (log-return diff scale)</li>
+<li>Hysteresis: 임계값 내일 때 이전 상태 유지 (churn 억제)</li>
+</ul>
+<hr />
+<h2 id="실험-결과">4. 실험 결과</h2>
+<h3 id="phase-1-벤치마크">Phase 1: 벤치마크</h3>
+<table>
+<thead>
+<tr class="header">
+<th>전략</th>
+<th style="text-align: right;">CAGR</th>
+<th style="text-align: right;">Sharpe</th>
+<th style="text-align: right;">MDD</th>
+<th style="text-align: right;">Win%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>50/50 Blend</td>
+<td style="text-align: right;">+10.13%</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">−27.4%</td>
+<td style="text-align: right;">61%</td>
+</tr>
+<tr class="even">
+<td>KOSPI</td>
+<td style="text-align: right;">+7.77%</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">−35.9%</td>
+<td style="text-align: right;">55%</td>
+</tr>
+<tr class="odd">
+<td><strong>S&amp;P500</strong></td>
+<td style="text-align: right;"><strong>+11.90%</strong></td>
+<td style="text-align: right;"><strong>0.83</strong></td>
+<td style="text-align: right;"><strong>−24.8%</strong></td>
+<td style="text-align: right;">66%</td>
+</tr>
+</tbody>
+</table>
+<p>→ <strong>넘어야 할 기준선: S&amp;P500 의 Sharpe 0.83 / MDD −24.8%</strong></p>
+<p><a href="outputs/phase1_benchmarks.html">outputs/phase1_benchmarks.html</a></p>
+<h3 id="phase-2-섹터-구성-실험">Phase 2: 섹터 구성 실험</h3>
+<p><strong>상관 매트릭스</strong> (5쌍 RS 3M 내부 상관):</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: right;">IT</th>
+<th style="text-align: right;">FIN</th>
+<th style="text-align: right;">ENERGY</th>
+<th style="text-align: right;">DISCR</th>
+<th style="text-align: right;">STAPLES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IT</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">+0.47</td>
+<td style="text-align: right;">+0.13</td>
+<td style="text-align: right;"><strong>+0.76</strong></td>
+<td style="text-align: right;">+0.34</td>
+</tr>
+<tr class="even">
+<td>FIN</td>
+<td style="text-align: right;">+0.47</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">+0.14</td>
+<td style="text-align: right;">+0.53</td>
+<td style="text-align: right;">+0.51</td>
+</tr>
+<tr class="odd">
+<td>ENERGY</td>
+<td style="text-align: right;">+0.13</td>
+<td style="text-align: right;">+0.14</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">+0.09</td>
+<td style="text-align: right;">+0.23</td>
+</tr>
+<tr class="even">
+<td>DISCR</td>
+<td style="text-align: right;"><strong>+0.76</strong></td>
+<td style="text-align: right;">+0.53</td>
+<td style="text-align: right;">+0.09</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">+0.34</td>
+</tr>
+<tr class="odd">
+<td>STAPLES</td>
+<td style="text-align: right;">+0.34</td>
+<td style="text-align: right;">+0.51</td>
+<td style="text-align: right;">+0.23</td>
+<td style="text-align: right;">+0.34</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table>
+<p>관찰: - <strong>IT–DISCR +0.76</strong> ⚠ — 거의 같은 신호 (성장주 덩어리) - <strong>IT–ENERGY +0.13</strong>, <strong>FIN–ENERGY +0.14</strong> → 진짜 직교 - DISCR 이 “여분 섹터” 역할</p>
+<p><strong>성과 비교</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>구성</th>
+<th style="text-align: right;">CAGR</th>
+<th style="text-align: right;">Sharpe</th>
+<th style="text-align: right;">MDD</th>
+<th style="text-align: right;">Win%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A. 전체 5쌍</td>
+<td style="text-align: right;">+13.34%</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">−32.0%</td>
+<td style="text-align: right;">58%</td>
+</tr>
+<tr class="even">
+<td><strong>B. 상관최소 4쌍</strong></td>
+<td style="text-align: right;"><strong>+15.21%</strong></td>
+<td style="text-align: right;"><strong>0.80</strong></td>
+<td style="text-align: right;"><strong>−24.8%</strong></td>
+<td style="text-align: right;">62%</td>
+</tr>
+<tr class="odd">
+<td><strong>C. 경제축 4쌍</strong></td>
+<td style="text-align: right;"><strong>+15.21%</strong></td>
+<td style="text-align: right;"><strong>0.80</strong></td>
+<td style="text-align: right;"><strong>−24.8%</strong></td>
+<td style="text-align: right;">62%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>🎯 핵심 발견 #1</strong>: B 와 C 가 <strong>완전히 같은 4쌍</strong>을 선택 - <strong>통계적 선택(B)</strong>: 상관 최소 = <strong>IT+FIN+ENERGY+STAPLES</strong> - <strong>경제적 선택(C)</strong>: 경제축 = <strong>IT+FIN+ENERGY+STAPLES</strong> - → <strong>데이터가 도메인 지식을 확인</strong>. DISCR 제거의 정당성 확보.</p>
+<p><strong>🎯 핵심 발견 #2</strong>: 4쌍 축소가 5쌍보다 strictly better - CAGR +1.87%p (13.34 → 15.21) - Sharpe +0.11 (0.69 → 0.80) - <strong>MDD +7.2pp 개선</strong> (−32.0% → −24.8%) - → “정보가 많을수록 좋다” 가설 <strong>틀림</strong>. 상관 높은 섹터 제거가 핵심.</p>
+<p><a href="outputs/phase2_sector_selection.html">outputs/phase2_sector_selection.html</a></p>
+<h3 id="phase-3-fx-overlay">Phase 3: FX Overlay</h3>
+<p>Phase 2 베이스 구성 (B = C = 4쌍) + FX 가중 sweep:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Config</th>
+<th style="text-align: right;">CAGR</th>
+<th style="text-align: right;">Sharpe</th>
+<th style="text-align: right;">MDD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>FX 0% (베이스)</td>
+<td style="text-align: right;">+15.21%</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="even">
+<td>USDKRW 20%</td>
+<td style="text-align: right;">+16.10%</td>
+<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="odd">
+<td>DXY 20%</td>
+<td style="text-align: right;">+16.10%</td>
+<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="even">
+<td><strong>USDKRW 30%</strong> 🏆</td>
+<td style="text-align: right;"><strong>+16.49%</strong></td>
+<td style="text-align: right;"><strong>0.87</strong></td>
+<td style="text-align: right;"><strong>−24.8%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>DXY 30%</strong> 🏆</td>
+<td style="text-align: right;"><strong>+16.49%</strong></td>
+<td style="text-align: right;"><strong>0.87</strong></td>
+<td style="text-align: right;"><strong>−24.8%</strong></td>
+</tr>
+<tr class="even">
+<td>USDKRW 50%</td>
+<td style="text-align: right;">+16.23%</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="odd">
+<td>DXY 50%</td>
+<td style="text-align: right;">+15.74%</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>🎯 핵심 발견 #3</strong>: FX 30% 가 sweet spot - 20%: 약함 (+0.04 Sharpe) - 30%: 최적 (+0.07 Sharpe) - 50%: 과함 (USDKRW +0.05, DXY +0.02)</p>
+<p><strong>🎯 핵심 발견 #4</strong>: 30% 가중에서는 USDKRW ≈ DXY - 낮은 가중에서 FX 종류 덜 중요 — “있다/없다” 가 핵심 - 50% 에서만 USDKRW(0.85) &gt; DXY(0.82) 차이 확연</p>
+<p><a href="outputs/phase3_fx_overlay.html">outputs/phase3_fx_overlay.html</a></p>
+<h3 id="phase-4-최종-챔피언">Phase 4: 최종 챔피언</h3>
+<p><strong>24 조합 sweep</strong> 중 Sharpe 상위 5:</p>
+<table>
+<thead>
+<tr class="header">
+<th>순위</th>
+<th>Config</th>
+<th style="text-align: right;">CAGR</th>
+<th style="text-align: right;">Sharpe</th>
+<th style="text-align: right;">MDD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>🏆 1</td>
+<td><strong>B + USDKRW 30%</strong></td>
+<td style="text-align: right;"><strong>+16.49%</strong></td>
+<td style="text-align: right;"><strong>0.87</strong></td>
+<td style="text-align: right;"><strong>−24.8%</strong></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>B + DXY 30%</td>
+<td style="text-align: right;">+16.49%</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>C + USDKRW 30%</td>
+<td style="text-align: right;">+16.49%</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>C + DXY 30%</td>
+<td style="text-align: right;">+16.49%</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>B + USDKRW 50%</td>
+<td style="text-align: right;">+16.23%</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">−24.8%</td>
+</tr>
+</tbody>
+</table>
+<p>상위 4개가 <strong>tie</strong> — B/C 는 같은 4쌍이므로 필연적 동일. USDKRW/DXY 30% 에서도 동일.</p>
+<p><a href="outputs/phase4_champion.html">outputs/phase4_champion.html</a> | <a href="outputs/final_champion_signals.csv">outputs/final_champion_signals.csv</a></p>
+<hr />
+<h2 id="최종-챔피언-상세">5. 최종 챔피언 상세</h2>
+<h3 id="전략-정의">전략 정의</h3>
+<p><strong>이름</strong>: <strong>Sector 4-pair RS + FX 30%</strong></p>
+<p><strong>구성</strong>: - <strong>신호 입력</strong>: 4 경제축 섹터 페어 (IT / FIN / ENERGY / STAPLES) - <strong>FX 오버레이</strong>: USDKRW 3M 모멘텀, 30% 가중 - <strong>리밸런싱</strong>: 월말 - <strong>출력</strong>: KOSPI 100% / S&amp;P500 100% / 50-50 Neutral</p>
+<h3 id="월별-의사결정-프로세스">월별 의사결정 프로세스</h3>
+<pre><code>매월 말:
+  1. 4개 섹터 페어에서 각각 RS (1/3/6M 로그수익 차 평균) 계산
+     RS_i = avg(log(KR_i/past_KR_i) - log(US_i/past_US_i) for each lookback)
+
+  2. 평균 RS = mean(RS_IT, RS_FIN, RS_ENERGY, RS_STAPLES)
+
+  3. USDKRW 3M 수익률 → tanh(r/0.03) → fx_tilt ∈ [-1, +1]
+
+  4. 합성: agg = 0.7 × mean_RS + 0.3 × fx_tilt × 0.02
+
+  5. 판정 (임계 ±0.02):
+     agg &gt; +0.02 → 🇰🇷 KOSPI 100%
+     agg &lt; -0.02 → 🇺🇸 S&amp;P500 100%
+     그 외 → 이전 상태 유지 (hysteresis)</code></pre>
+<h3 id="벤치마크-대비-이점">벤치마크 대비 이점</h3>
+<table>
+<thead>
+<tr class="header">
+<th>지표</th>
+<th style="text-align: right;">챔피언</th>
+<th style="text-align: right;">S&amp;P500</th>
+<th style="text-align: right;">50/50</th>
+<th style="text-align: right;">KOSPI</th>
+<th style="text-align: right;">챔피언 vs S&amp;P500</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CAGR</td>
+<td style="text-align: right;"><strong>+16.49%</strong></td>
+<td style="text-align: right;">+11.90%</td>
+<td style="text-align: right;">+10.13%</td>
+<td style="text-align: right;">+7.77%</td>
+<td style="text-align: right;"><strong>+4.59%p</strong></td>
+</tr>
+<tr class="even">
+<td>Sharpe</td>
+<td style="text-align: right;"><strong>0.87</strong></td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;"><strong>+0.04</strong></td>
+</tr>
+<tr class="odd">
+<td>MDD</td>
+<td style="text-align: right;">−24.8%</td>
+<td style="text-align: right;">−24.8%</td>
+<td style="text-align: right;">−27.4%</td>
+<td style="text-align: right;">−35.9%</td>
+<td style="text-align: right;">동일</td>
+</tr>
+<tr class="even">
+<td>Win Rate</td>
+<td style="text-align: right;">64%</td>
+<td style="text-align: right;">66%</td>
+<td style="text-align: right;">61%</td>
+<td style="text-align: right;">55%</td>
+<td style="text-align: right;">−2pp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>요약</strong>: MDD 같은 수준에서 CAGR +4.59%p 초과, Sharpe 도 앞섬.</p>
+<hr />
+<h2 id="사고-과정의-교훈">6. 사고 과정의 교훈</h2>
+<h3 id="교훈-1-정보-많다고-항상-좋은-건-아님">🎯 교훈 1: 정보 많다고 항상 좋은 건 아님</h3>
+<ul>
+<li>5쌍 (전체) &lt; 4쌍 (축소): CAGR 1.87%p, Sharpe 0.11, MDD 7.2pp 차이</li>
+<li><strong>원인</strong>: IT-DISCR 상관 0.76 → DISCR 가 IT 신호를 복제·증폭. 쏠림 유발</li>
+<li><strong>교훈</strong>: <strong>상관 높은 feature 는 제거하는 게 낫다</strong> (ML 기본 원리 재확인)</li>
+</ul>
+<h3 id="교훈-2-데이터와-도메인-지식이-만나다">🎯 교훈 2: 데이터와 도메인 지식이 만나다</h3>
+<ul>
+<li>통계적 최소 상관 (B) 결과 = 경제축 이론 (C) 결과</li>
+<li>둘 다 <strong>IT + FIN + ENERGY + STAPLES</strong> 선택</li>
+<li><strong>교훈</strong>: 데이터 과학과 도메인 지식이 수렴하면 <strong>결과 신뢰도 ↑</strong></li>
+</ul>
+<h3 id="교훈-3-fx-는-1차-채널">🎯 교훈 3: FX 는 1차 채널</h3>
+<ul>
+<li>Mean-RS 만 → Sharpe 0.80</li>
+<li><ul>
+<li>FX 30% → Sharpe 0.87 (+0.07)</li>
+</ul></li>
+<li><strong>원인</strong>: KR vs US PnL 에서 환율이 <strong>가장 직접적 변수</strong>
+<ul>
+<li>KR 주식 +5% but KRW -3% = USD 기준 +2% 만 벌음</li>
+<li>FX 를 무시하면 “경제적으로 틀린 계산”</li>
+</ul></li>
+<li><strong>교훈</strong>: <strong>직교 정보만이 진짜 알파</strong> (이전 실패 실험들 — Vol/Volume/Macro 2차효과들은 2차적)</li>
+</ul>
+<h3 id="교훈-4-단순성의-미학">🎯 교훈 4: 단순성의 미학</h3>
+<ul>
+<li>5 Agent Hierarchical? 실패 (Sharpe 0.74)</li>
+<li>페어별 VIX overlay? 실패</li>
+<li>Cross-sectional dispersion/leadership? 실패</li>
+<li><strong>성공한 유일한 구조</strong>: <strong>“상관 낮은 4쌍 평균 + FX”</strong> — 매우 단순</li>
+</ul>
+<h3 id="교훈-5-데이터-출시일-확인은-필수">🎯 교훈 5: 데이터 출시일 확인은 필수</h3>
+<ul>
+<li>KRX 섹터 지수 공식 발표일 조회 → pre-publication 구간 back-fill 확인</li>
+<li>2011-04 이전 데이터는 “당시 실시간 참조 불가” → in-sample bias</li>
+<li><strong>교훈</strong>: 백테스트 기간은 <strong>실제 데이터 생산 가능했던 구간으로 제한</strong></li>
+</ul>
+<hr />
+<h2 id="한계와-주의">7. 한계와 주의</h2>
+<h3 id="통계적-취약점">통계적 취약점</h3>
+<ol type="1">
+<li><strong>OOS 검증 미완</strong> — 2011-04 이후 전 구간이 in-sample optimization</li>
+<li><strong>Walk-forward 부재</strong> — “2011-2018 optimize + 2019-2026 test” 미실시</li>
+<li><strong>위기 샘플 부족</strong> — 2020-03 COVID 하나. 2008/70년대 미포함</li>
+</ol>
+<h3 id="경제적-우려">경제적 우려</h3>
+<ol start="4" type="1">
+<li><strong>MDD −24.8% 여전히 고통</strong> — 일반 투자자 견디는 선 −15~−20%</li>
+<li><strong>비용 가정 낙관적</strong> — 현실은 40-60 bps 가능 (ETF 스왑 + FX 스프레드)</li>
+<li><strong>100% 집중 투자</strong> — 중간 단계(70/30 등) 없음</li>
+</ol>
+<h3 id="방법론적-한계">방법론적 한계</h3>
+<ol start="7" type="1">
+<li><strong>섹터 구성종목 현재 기준 역산</strong> — KRX 가 지수 rebalance 시 편출된 종목은 과거에도 없음 (survivorship bias)</li>
+<li><strong>월말 리밸런싱만 테스트</strong> — 주간/2주 주기 대안 미탐색</li>
+<li><strong>5쌍 pool 자체가 선택</strong> — HEALTH/INDU/COMM (다른 시기 출시) 은 배제</li>
+</ol>
+<h3 id="향후-검증-과제">향후 검증 과제</h3>
+<ol type="1">
+<li><strong>Walk-forward OOS</strong> — 명확한 시계열 분리</li>
+<li><strong>2019-01 이후 clean period</strong> — 모든 섹터 real-time publish 후 기간</li>
+<li><strong>위기 시 행동 분석</strong> — 2020-03 전후 세부 PnL</li>
+<li><strong>다른 resample frequency</strong> — 주간/2주 리밸런싱</li>
+<li><strong>부분 전환 (70/30, 80/20)</strong> — 100% 집중 완화</li>
+<li><strong>4쌍 외 다른 조합</strong> — KOSDAQ 150 섹터, 글로벌 섹터 ETF 등</li>
+</ol>
+<hr />
+<h2 id="코드-구조">8. 코드 구조</h2>
+<pre><code>portfolio/strategy/sector_asset_allocation/
+├── __init__.py       # 패키지 엔트리
+├── core.py           # 공통 로직 (데이터·RS·FX·백테스트·성과)
+├── experiment.py     # 4 Phase 순차 실행 + HTML 생성
+├── README.md         # 이 보고서
+└── outputs/          # 결과물
+    ├── phase1_benchmarks.html      # Phase 1: 벤치마크
+    ├── phase2_sector_selection.html # Phase 2: 섹터 구성 비교
+    ├── phase3_fx_overlay.html       # Phase 3: FX 가중 sweep
+    ├── phase4_champion.html         # Phase 4: 최종 24 조합
+    └── final_champion_signals.csv   # 챔피언 월별 시그널</code></pre>
+<h3 id="재실행">재실행</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># 전체 실험 재실행 (5초 내 완료)</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="ex">.venv/bin/python</span> -m portfolio.strategy.sector_asset_allocation.experiment</a></code></pre></div>
+<h3 id="특정-config-만-테스트">특정 Config 만 테스트</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" title="1"><span class="im">from</span> portfolio.strategy.sector_asset_allocation.core <span class="im">import</span> (</a>
+<a class="sourceLine" id="cb5-2" title="2">    Config, load_all_data, run_backtest, perf, SECTOR_PAIRS_ECO4,</a>
+<a class="sourceLine" id="cb5-3" title="3">)</a>
+<a class="sourceLine" id="cb5-4" title="4"></a>
+<a class="sourceLine" id="cb5-5" title="5">pivot <span class="op">=</span> load_all_data()</a>
+<a class="sourceLine" id="cb5-6" title="6">cfg <span class="op">=</span> Config(</a>
+<a class="sourceLine" id="cb5-7" title="7">    name<span class="op">=</span><span class="st">&quot;MyTest&quot;</span>,</a>
+<a class="sourceLine" id="cb5-8" title="8">    pairs<span class="op">=</span>SECTOR_PAIRS_ECO4,</a>
+<a class="sourceLine" id="cb5-9" title="9">    w_rs<span class="op">=</span><span class="fl">0.7</span>, w_fx<span class="op">=</span><span class="fl">0.3</span>, fx_source<span class="op">=</span><span class="st">&quot;usdkrw&quot;</span>,</a>
+<a class="sourceLine" id="cb5-10" title="10">    tau<span class="op">=</span><span class="fl">0.02</span>,</a>
+<a class="sourceLine" id="cb5-11" title="11">)</a>
+<a class="sourceLine" id="cb5-12" title="12">bt <span class="op">=</span> run_backtest(cfg, pivot)</a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="bu">print</span>(perf(bt[<span class="st">&quot;strategy_return&quot;</span>], <span class="st">&quot;MyTest&quot;</span>))</a></code></pre></div>
+<hr />
+<h2 id="주요-숫자-요약">9. 주요 숫자 요약</h2>
+<table>
+<thead>
+<tr class="header">
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>백테스트 기간</td>
+<td>2011-04-01 ~ 2026-04-21 (179 개월)</td>
+</tr>
+<tr class="even">
+<td>섹터 페어 수</td>
+<td><strong>4개</strong> (IT, FIN, ENERGY, STAPLES)</td>
+</tr>
+<tr class="odd">
+<td>룩백</td>
+<td>1M / 3M / 6M 로그수익 차 평균</td>
+</tr>
+<tr class="even">
+<td>FX 지표</td>
+<td>USDKRW 3M 모멘텀</td>
+</tr>
+<tr class="odd">
+<td>FX 가중</td>
+<td><strong>30%</strong> (RS 70%)</td>
+</tr>
+<tr class="even">
+<td>임계값</td>
+<td>±0.02</td>
+</tr>
+<tr class="odd">
+<td>거래비용</td>
+<td>30 bps one-way</td>
+</tr>
+<tr class="even">
+<td><strong>챔피언 CAGR</strong></td>
+<td><strong>+16.49%</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>챔피언 Sharpe</strong></td>
+<td><strong>0.87</strong></td>
+</tr>
+<tr class="even">
+<td><strong>챔피언 MDD</strong></td>
+<td><strong>−24.8%</strong></td>
+</tr>
+<tr class="odd">
+<td>vs S&amp;P500 CAGR</td>
+<td><strong>+4.59%p 우위</strong></td>
+</tr>
+<tr class="even">
+<td>vs S&amp;P500 Sharpe</td>
+<td><strong>+0.04 우위</strong></td>
+</tr>
+<tr class="odd">
+<td>vs S&amp;P500 MDD</td>
+<td>동일</td>
+</tr>
+<tr class="even">
+<td>Win Rate</td>
+<td>64%</td>
+</tr>
+<tr class="odd">
+<td>총 거래 횟수 (전환)</td>
+<td>(CSV 확인)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="결론">10. 결론</h2>
+<p><strong>단순성 + 직교 정보 = 알파</strong>.</p>
+<ol type="1">
+<li><strong>섹터 데이터는 유용하지만 전체가 아닌 선별이 중요</strong>
+<ul>
+<li>5쌍 → 4쌍 (상관 0.5 이상 페어 제거) 이 1.87%p CAGR 개선</li>
+</ul></li>
+<li><strong>환율은 1차 알파 소스</strong>
+<ul>
+<li>단순 RS 에 USDKRW 30% 가중 추가로 Sharpe 0.80 → 0.87</li>
+</ul></li>
+<li><strong>도메인 지식과 통계는 수렴</strong>
+<ul>
+<li>상관 최소 조합 = 경제축 이론 모두 <strong>IT+FIN+ENERGY+STAPLES</strong> 선택</li>
+</ul></li>
+<li><strong>복잡한 구조는 해로웠음</strong>
+<ul>
+<li>Hierarchical, Meta-weighting, Cross-sectional filter 모두 실패한 실험</li>
+</ul></li>
+</ol>
+<p><strong>최종 권고</strong>: 이 전략은 <strong>벤치마크 대비 실질적 알파</strong> 를 보이며, <strong>실행도 단순</strong>. 다만 OOS 검증 필요 (Phase 5 제안: walk-forward).</p>
+<hr />
+<p><strong>작성</strong>: 2026-04-22 <strong>저자</strong>: lifesailor (with Claude Code / Claude Opus 4.7) <strong>저장소</strong>: <a href="https://github.com/traderparamita/market-summary">github.com/traderparamita/market-summary</a></p>
+</body>
+</html>
