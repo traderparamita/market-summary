@@ -88,6 +88,18 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 3. Story 작성 (훅이 forward-looking·세션 간 참조 등 자동 검증)
 4. `output/summary/YYYY-MM/YYYY-MM-DD.html`의 Story 탭에 주입 + `_story.html` 저장
 
+### Step 3-B: 일간 CS Story 작성
+
+Step 3 완료 **직후** `market-summary` 스킬의 **"CS Story 작성 절차"** 섹션 규칙으로 CS 버전을 작성한다.
+
+핵심:
+1. 방금 저장한 `YYYY-MM-DD_story.html` Read
+2. 수치(퍼센트·가격·거래량·시가총액)를 맥락 어휘로 치환. 종목·이벤트·날짜는 유지.
+3. 의사결정 권유 톤 금지 (설명·관찰만).
+4. `YYYY-MM-DD.html` 의 `<div id="tab-cs">` ~ `</div><!-- /tab-cs -->` 블록을 Edit + `YYYY-MM-DD_cs.html` 동기화.
+
+실패 시 경고 후 계속 진행 (Step 4 중단 없음). CS 는 Story 탭과 독립된 고객용 트랙이므로 빠져도 Market Summary 배포는 가능.
+
 ### Step 4: 주간 Data Dashboard
 
 Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 실행 불필요. `output/summary/weekly/` 해당 주 파일이 존재하는지만 확인.
@@ -242,6 +254,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 Step 0:    Telegram 시작    — ✅ 전송 / ⚠ 실패(계속)
 Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, Snowflake M행) / ⚠ CSV 저장 · Snowflake 실패(<reason>) / ❌ 실패(<reason>)
 Step 3:    일간 Story        — ✅ 성공 / ❌ 실패
+Step 3-B:  일간 CS Story     — ✅ 성공 / ⚠ 실패(계속)
 Step 4:    주간 Dashboard    — ✅ 자동 갱신
 Step 5:    주간 Story        — ✅ 성공 / ⏭ 스킵
 Step 5.5:  매크로 수집       — ✅ 성공 / ⏭ 스킵 / ⚠ 실패(계속)
