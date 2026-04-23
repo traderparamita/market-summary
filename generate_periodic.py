@@ -493,8 +493,8 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 </div>
 
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('story')">{period_label} Story</button>
-  <button class="tab-btn" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('story')">{period_label} Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
   <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
 </div>
@@ -612,11 +612,11 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 <!-- MACRO_EVENTS_PLACEHOLDER -->
 </div><!-- /tab-macro -->
 
-<div id="tab-story" class="tab-panel active">
+<div id="tab-story" class="tab-panel">
 <!-- STORY_CONTENT_PLACEHOLDER -->
 </div><!-- /tab-story -->
 
-<div id="tab-cs" class="tab-panel">
+<div id="tab-cs" class="tab-panel active">
 <!-- CS_STORY_PLACEHOLDER -->
 </div><!-- /tab-cs -->
 

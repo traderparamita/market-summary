@@ -359,8 +359,8 @@ body{{
 
 <!-- ══ TABS ══ -->
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('story')">Market Story</button>
-  <button class="tab-btn" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
 </div>
 
@@ -552,14 +552,14 @@ body{{
 </div><!-- /tab-data -->
 
 <!-- ══════ TAB 2: STORY ══════ -->
-<div id="tab-story" class="tab-panel active">
+<div id="tab-story" class="tab-panel">
 
 <!-- STORY_CONTENT_PLACEHOLDER -->
 
 </div><!-- /tab-story -->
 
 <!-- ══════ TAB 3: CS STORY ══════ -->
-<div id="tab-cs" class="tab-panel">
+<div id="tab-cs" class="tab-panel active">
 
 <!-- CS_STORY_PLACEHOLDER -->
 
