@@ -3,7 +3,17 @@
 **한국과 미국에 어떻게 비중 배분을 해야 할까?** — 섹터와 환율 데이터로 답을 찾아가는 여정
 
 **백테스트 기간**: 2011-04-01 ~ 현재 (179 개월)
-**최종 결과**: CAGR **+16.49%** / Sharpe **0.87** / MDD **−24.8%**
+**운영 구조** (이중 시그널):
+- **MAIN** (6M-only): CAGR **+18.40%** / Sharpe **0.97** / MDD **−24.8%** · Walk-forward OOS Sharpe 1.09
+- **ALERT** (Champion [1,3,6]): CAGR +16.53% / Sharpe 0.86 · 단기 조정 감지용
+
+**후속 검증 (§4.9 ~ §4.12)**:
+- FX 시나리오: KRW 환오픈 우선 권장
+- Walk-forward OOS: 과적합 없음
+- Parameter Sensitivity: 88% 견고
+- Rolling OOS: 6M-only 우위 확인
+
+**현재 단계**: Paper Trading (3-6개월 실시간 병행 관찰)
 
 ---
 
