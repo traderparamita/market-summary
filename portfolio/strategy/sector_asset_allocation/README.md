@@ -373,14 +373,33 @@ Phase 2 베이스 구성 (B = C = 4쌍) + FX 가중 sweep:
 8. **월말 리밸런싱만 테스트** — 주간/2주 주기 대안 미탐색
 9. **5쌍 pool 자체가 선택** — HEALTH/INDU/COMM (다른 시기 출시) 은 배제
 
-### 향후 검증 과제
+### 검증 과제 진행 현황
 
-1. **Walk-forward OOS** — 명확한 시계열 분리
-2. **2019-01 이후 clean period** — 모든 섹터 real-time publish 후 기간
-3. **위기 시 행동 분석** — 2020-03 전후 세부 PnL
-4. **다른 resample frequency** — 주간/2주 리밸런싱
-5. **부분 전환 (70/30, 80/20)** — 100% 집중 완화
-6. **4쌍 외 다른 조합** — KOSDAQ 150 섹터, 글로벌 섹터 ETF 등
+**완료된 검증** ([완료]):
+
+| # | 과제 | 결과 | 참조 |
+|---|---|---|---|
+| 1 | **Walk-forward OOS** | Test Sharpe 1.09 > Train 1.02, Decay +0.07 | §4.10 · [walk_forward.html](walk_forward.html) |
+| 2 | **Parameter Sensitivity** | 40 변형 중 88% 견고, 6M-only 발견 | §4.11 · [parameter_sensitivity.html](parameter_sensitivity.html) |
+| 3 | **Rolling OOS (연도별)** | 6M 3승 / Ch 1승, 일치율 94% | §4.12 · [rolling_oos_and_6m.html](rolling_oos_and_6m.html) |
+| 4 | **ALERT 시그널 탐색** | 63 변형 모두 MAIN 단독 대비 개선 없음 → 폐기 | §4.13 · [alert_explorer.html](alert_explorer.html) |
+| 5 | **FX 시나리오 (환오픈/환헤지)** | KRW 환오픈 권장 | §4.9 · [phase5_fx_scenarios.html](outputs/phase5_fx_scenarios.html) |
+| 6 | **KRX 공식 출시일 재검증 (2011-04 이후)** | Back-fill bias 제거 완료 | §2.5 |
+
+**남은 과제**:
+
+| # | 과제 | 우선순위 | 비고 |
+|---|---|---|---|
+| 1 | **Paper Trading 3-6개월** | 🔴 즉시 | 실시간 시그널 vs 실제 ETF NAV |
+| 2 | **위기 시 행동 세부 분석** | 🟡 중간 | 2020-03 분기 PnL, MDD 경험 |
+| 3 | **주간/2주 리밸런싱 비교** | 🟡 중간 | resample frequency 민감도 |
+| 4 | **부분 전환 (70/30, 80/20) 백테스트** | 🟡 중간 | §6.2 제안 실증 |
+| 5 | **4쌍 외 조합** (KOSDAQ 150, 글로벌 ETF) | 🟢 장기 | 전략 확장 |
+| 6 | **Bootstrap Sharpe CI 개선** | 🟢 장기 | Block bootstrap 으로 자기상관 반영 |
+| 7 | **Factor 회귀 (FF3+MOM)** | 🟢 장기 | 알파 vs 베타 분해 |
+| 8 | **VIX overlay** (단기 조정 대응) | 🟡 중간 | ALERT 대체 방안 |
+
+**2018-11 이후 clean period** 재검증은 Walk-forward (§4.10) 가 **2019-01 이후 88개월 Test 구간** 으로 포괄하므로 사실상 완료.
 
 ---
 

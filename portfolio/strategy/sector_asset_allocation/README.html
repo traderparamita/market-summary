@@ -711,15 +711,124 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><strong>월말 리밸런싱만 테스트</strong> — 주간/2주 주기 대안 미탐색</li>
 <li><strong>5쌍 pool 자체가 선택</strong> — HEALTH/INDU/COMM (다른 시기 출시) 은 배제</li>
 </ol>
-<h3 id="향후-검증-과제">향후 검증 과제</h3>
-<ol type="1">
-<li><strong>Walk-forward OOS</strong> — 명확한 시계열 분리</li>
-<li><strong>2019-01 이후 clean period</strong> — 모든 섹터 real-time publish 후 기간</li>
-<li><strong>위기 시 행동 분석</strong> — 2020-03 전후 세부 PnL</li>
-<li><strong>다른 resample frequency</strong> — 주간/2주 리밸런싱</li>
-<li><strong>부분 전환 (70/30, 80/20)</strong> — 100% 집중 완화</li>
-<li><strong>4쌍 외 다른 조합</strong> — KOSDAQ 150 섹터, 글로벌 섹터 ETF 등</li>
-</ol>
+<h3 id="검증-과제-진행-현황">검증 과제 진행 현황</h3>
+<p><strong>완료된 검증</strong> ([완료]):</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>과제</th>
+<th>결과</th>
+<th>참조</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><strong>Walk-forward OOS</strong></td>
+<td>Test Sharpe 1.09 &gt; Train 1.02, Decay +0.07</td>
+<td>§4.10 · <a href="walk_forward.html">walk_forward.html</a></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><strong>Parameter Sensitivity</strong></td>
+<td>40 변형 중 88% 견고, 6M-only 발견</td>
+<td>§4.11 · <a href="parameter_sensitivity.html">parameter_sensitivity.html</a></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><strong>Rolling OOS (연도별)</strong></td>
+<td>6M 3승 / Ch 1승, 일치율 94%</td>
+<td>§4.12 · <a href="rolling_oos_and_6m.html">rolling_oos_and_6m.html</a></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong>ALERT 시그널 탐색</strong></td>
+<td>63 변형 모두 MAIN 단독 대비 개선 없음 → 폐기</td>
+<td>§4.13 · <a href="alert_explorer.html">alert_explorer.html</a></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><strong>FX 시나리오 (환오픈/환헤지)</strong></td>
+<td>KRW 환오픈 권장</td>
+<td>§4.9 · <a href="outputs/phase5_fx_scenarios.html">phase5_fx_scenarios.html</a></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td><strong>KRX 공식 출시일 재검증 (2011-04 이후)</strong></td>
+<td>Back-fill bias 제거 완료</td>
+<td>§2.5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>남은 과제</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>과제</th>
+<th>우선순위</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><strong>Paper Trading 3-6개월</strong></td>
+<td>🔴 즉시</td>
+<td>실시간 시그널 vs 실제 ETF NAV</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><strong>위기 시 행동 세부 분석</strong></td>
+<td>🟡 중간</td>
+<td>2020-03 분기 PnL, MDD 경험</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><strong>주간/2주 리밸런싱 비교</strong></td>
+<td>🟡 중간</td>
+<td>resample frequency 민감도</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong>부분 전환 (70/30, 80/20) 백테스트</strong></td>
+<td>🟡 중간</td>
+<td>§6.2 제안 실증</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><strong>4쌍 외 조합</strong> (KOSDAQ 150, 글로벌 ETF)</td>
+<td>🟢 장기</td>
+<td>전략 확장</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td><strong>Bootstrap Sharpe CI 개선</strong></td>
+<td>🟢 장기</td>
+<td>Block bootstrap 으로 자기상관 반영</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td><strong>Factor 회귀 (FF3+MOM)</strong></td>
+<td>🟢 장기</td>
+<td>알파 vs 베타 분해</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td><strong>VIX overlay</strong> (단기 조정 대응)</td>
+<td>🟡 중간</td>
+<td>ALERT 대체 방안</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2018-11 이후 clean period</strong> 재검증은 Walk-forward (§4.10) 가 <strong>2019-01 이후 88개월 Test 구간</strong> 으로 포괄하므로 사실상 완료.</p>
 <hr />
 <h2 id="코드-구조">8. 코드 구조</h2>
 <pre><code>portfolio/strategy/sector_asset_allocation/
