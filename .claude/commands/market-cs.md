@@ -47,25 +47,52 @@ SKILL.md "CS Story 작성 절차" Step 2·3 의 규칙을 적용:
 **유지**: 종목명·지수명·ETF·이벤트·정책·날짜·요일·심리 앵커(정수 이정표만)  
 **톤**: 고객에게 설명하는 관찰·서술 톤. 의사결정 권유 금지.
 
-기존 `<div class="story-section">` 전체 구조는 단순 서술 형태로 재구성해도 무방 (수치 앵커가 빠지면 원본의 KPI 카드가 무의미해지므로). HTML 골격 예:
+HTML 골격은 **cs-hero + cs-section 블록 조합** 을 사용한다. Market Story 탭의 `.story-hero` / `.story-text` 와 시각적으로 구분되는 오렌지 계열 박스. CSS 는 `<style>` 인라인으로 tab-cs 블록 안에 포함시킨다 (HTML 헤드 CSS 변경 없이 과거 보고서에도 포터블 적용 가능).
 
 ```html
-<div class="story-section">
-  <h2>CS Story — {date} {요일}</h2>
-  <div class="story-content">
-    <p>{하루 전체 흐름을 한 문단으로 요약 — 아시아 → 유럽 → 미국 순서, 수치 없이}</p>
+<style>
+  .cs-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}
+  .cs-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+  .cs-hero .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .cs-text{font-size:16px;color:#2d3148;line-height:1.9}
+  .cs-text p{margin-bottom:14px}
+  .cs-text p:last-child{margin-bottom:0}
+  .cs-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .cs-section h3{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}
+  .cs-section p{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+  .cs-section p:last-child{margin-bottom:0}
+  .cs-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+</style>
 
-    <h3>{주요 테마 1}</h3>
-    <p>{맥락·배경·의미 — 숫자 대신 방향·강도 어휘}</p>
-
-    <h3>{주요 테마 2}</h3>
-    <p>{...}</p>
-
-    <h3>이번 주/달 관점에서는</h3>
-    <p>{WTD/MTD 맥락 서술 — "주간 기준으로도 상승 흐름이 이어지고 있습니다" 같이}</p>
+<div class="cs-hero">
+  <h2>CS Story — 고객 설명용</h2>
+  <div class="cs-subtitle">{date} ({요일}) · 수치 대신 맥락·흐름 중심</div>
+  <div class="cs-text">
+    <p>{아시아 세션 흐름 — 수치 없이}</p>
+    <p>{유럽 세션 흐름}</p>
+    <p>{미국 세션 흐름}</p>
   </div>
 </div>
+
+<div class="cs-section">
+  <h3>{주요 테마 1 — 국기 이모지 + 제목}</h3>
+  <p>{맥락·배경·의미 — 숫자 대신 방향·강도 어휘}</p>
+</div>
+
+<div class="cs-section">
+  <h3>{주요 테마 2}</h3>
+  <p>{...}</p>
+</div>
+
+<div class="cs-section">
+  <h3>📅 이번 주·이번 달 관점</h3>
+  <p>{WTD/MTD 맥락 서술 — "주간 기준으로도 상승 흐름이 이어지고 있습니다"}</p>
+  <p class="cs-footer">CS Story 는 Market Story 를 수치 대신 맥락·흐름 중심으로 재구성한 고객 설명용 버전입니다. 구체적 수치는 Market Story / Data Dashboard 탭을 참고하세요.</p>
+</div>
 ```
+
+- `var(--accent)` / `var(--border)` / `var(--card)` / `var(--muted)` 는 Market Summary HTML 의 `:root` 에서 이미 선언돼 있어 그대로 참조 가능.
+- h2·h3 구조는 생략해도 되지만, Hero 박스 1개 + Section 박스 N개 조합이 기본.
 
 원본 Story 와 사실관계·시간순·세션 간 규칙은 동일하게 유지. 의심스러운 사실(예: 미래 참조)이 원본에 있으면 CS 에서 임의로 바로잡지 말고 사용자에게 보고.
 
