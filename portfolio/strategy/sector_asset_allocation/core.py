@@ -167,6 +167,7 @@ class Config:
     tau: float = 0.02             # 임계값 (log-return diff)
     min_pairs: int = 3            # 최소 유효 페어 (작으면 skip)
     cost_bps: int = COST_BPS
+    lookbacks: list[int] | None = None  # None → LOOKBACK_MONTHS ([1,3,6])
     # 통화 기준 — KR 투자자 관점에서 US 투자 시 FX 처리
     #   "local"        : 각 시장 로컬 통화 기준 (기본, USD 투자자 관점 근사)
     #   "krw_unhedged" : KR 투자자 환오픈 — US 수익 = (1+SP500_USD)×(1+USDKRW변화)-1
@@ -177,9 +178,10 @@ class Config:
 
 def run_backtest(cfg: Config, pivot: pd.DataFrame) -> pd.DataFrame:
     pairs = cfg.pairs or SECTOR_PAIRS_5
+    lookbacks = cfg.lookbacks or LOOKBACK_MONTHS
     FX_SCALE_TO_RS = 0.02
     cost = cfg.cost_bps / 10_000
-    monthly_hedge_cost = cfg.hedge_cost_annual / 12  # 월별 차감
+    monthly_hedge_cost = cfg.hedge_cost_annual / 12
 
     month_ends = pivot.resample("BME").last().index
     records: list[dict] = []
@@ -187,7 +189,7 @@ def run_backtest(cfg: Config, pivot: pd.DataFrame) -> pd.DataFrame:
     prev_state: str = "Neutral"
 
     for me in month_ends[:-1]:
-        rs_list = compute_rs_list(pivot, pairs, me)
+        rs_list = compute_rs_list(pivot, pairs, me, lookbacks=lookbacks)
         if len(rs_list) < cfg.min_pairs:
             continue
 
