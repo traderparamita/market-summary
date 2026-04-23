@@ -360,6 +360,7 @@ body{{
 <!-- ══ TABS ══ -->
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('story')">Market Story</button>
+  <button class="tab-btn" onclick="switchTab('cs')">CS Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
 </div>
 
@@ -556,6 +557,13 @@ body{{
 <!-- STORY_CONTENT_PLACEHOLDER -->
 
 </div><!-- /tab-story -->
+
+<!-- ══════ TAB 3: CS STORY ══════ -->
+<div id="tab-cs" class="tab-panel">
+
+<!-- CS_STORY_PLACEHOLDER -->
+
+</div><!-- /tab-cs -->
 
 <div class="footer">Daily Market Summary | yfinance auto-generated | {report_date}</div>
 
@@ -1023,62 +1031,68 @@ def update_current_periodic(target_date):
         print(f"[WARN] Periodic update failed: {e}")
 
 
+_TAB_SPECS = [
+    ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
+    ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
+]
+
+
 def _inject_existing_story(path, new_html):
-    """기존 파일에 Story가 있으면 새 HTML의 placeholder에 주입 + Story를 별도 파일로 저장"""
+    """기존 파일의 Story/CS 탭 내용을 새 HTML placeholder에 주입 + sibling 파일 저장."""
     import re
-    old_story = ""
     if os.path.exists(path):
         with open(path) as f:
             old_content = f.read()
-        # tab-story 내용 추출 (class="tab-panel" 또는 "tab-panel active" 모두 허용)
-        m = re.search(
-            r'<div id="tab-story" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
-            old_content, re.DOTALL
-        )
-        if m:
-            story_content = m.group(1).strip()
-            if story_content and "STORY_CONTENT_PLACEHOLDER" not in story_content:
-                old_story = story_content
-    # path 본문에 스토리가 없으면 sibling `_story.html` 에서 복원 시도
-    if not old_story:
-        base, ext = os.path.splitext(path)
-        sibling = f"{base}_story{ext}"
-        if os.path.exists(sibling):
-            with open(sibling) as f:
-                sib_story = f.read().strip()
-            if sib_story and "STORY_CONTENT_PLACEHOLDER" not in sib_story:
-                old_story = sib_story
+    else:
+        old_content = ""
 
-    if old_story:
-        new_html = new_html.replace("<!-- STORY_CONTENT_PLACEHOLDER -->", old_story)
+    for tab, placeholder, suffix in _TAB_SPECS:
+        preserved = ""
+        if old_content:
+            m = re.search(
+                rf'<div id="tab-{tab}" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
+                old_content, re.DOTALL,
+            )
+            if m:
+                content = m.group(1).strip()
+                if content and placeholder not in content:
+                    preserved = content
+        # sibling 파일에서 복원
+        if not preserved:
+            base, ext = os.path.splitext(path)
+            sibling = f"{base}{suffix}{ext}"
+            if os.path.exists(sibling):
+                with open(sibling) as f:
+                    sib = f.read().strip()
+                if sib and placeholder not in sib:
+                    preserved = sib
+        if preserved:
+            new_html = new_html.replace(f"<!-- {placeholder} -->", preserved)
 
     with open(path, "w") as f:
         f.write(new_html)
 
-    # Story를 별도 파일로 저장
     _save_story_file(path, new_html)
 
 
 def _save_story_file(html_path, html_content):
-    """HTML에서 Story 콘텐츠를 추출하여 _story.html 파일로 저장"""
+    """Story/CS 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
     import re
-    m = re.search(
-        r'<div id="tab-story" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
-        html_content, re.DOTALL
-    )
-    if not m:
-        return
-    story = m.group(1).strip()
-    if not story or "STORY_CONTENT_PLACEHOLDER" in story:
-        return
-
-    # _story.html 경로 생성: YYYY-MM-DD.html → YYYY-MM-DD_story.html
     base, ext = os.path.splitext(html_path)
-    story_path = f"{base}_story{ext}"
-
-    with open(story_path, "w") as f:
-        f.write(story)
-    print(f"  Story saved: {os.path.basename(story_path)}")
+    for tab, placeholder, suffix in _TAB_SPECS:
+        m = re.search(
+            rf'<div id="tab-{tab}" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
+            html_content, re.DOTALL,
+        )
+        if not m:
+            continue
+        content = m.group(1).strip()
+        if not content or placeholder in content:
+            continue
+        target = f"{base}{suffix}{ext}"
+        with open(target, "w") as f:
+            f.write(content)
+        print(f"  Tab saved: {os.path.basename(target)}")
 
 
 if __name__ == "__main__":

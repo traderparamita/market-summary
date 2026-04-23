@@ -494,6 +494,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('story')">{period_label} Story</button>
+  <button class="tab-btn" onclick="switchTab('cs')">CS Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
   <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
 </div>
@@ -615,6 +616,10 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 <!-- STORY_CONTENT_PLACEHOLDER -->
 </div><!-- /tab-story -->
 
+<div id="tab-cs" class="tab-panel">
+<!-- CS_STORY_PLACEHOLDER -->
+</div><!-- /tab-cs -->
+
 <div class="footer">{title} | Auto-generated</div>
 
 <script>
@@ -673,46 +678,58 @@ new Chart(document.getElementById('cmChart'),{{
     return html
 
 
+_PERIODIC_TAB_SPECS = [
+    ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
+    ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
+]
+
+
 def _save_story_file(html_path, html_content):
-    """HTML에서 Story 콘텐츠를 추출하여 _story.html 파일로 저장"""
-    m = re.search(
-        r'<div id="tab-story" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
-        html_content, re.DOTALL)
-    if not m:
-        return
-    story = m.group(1).strip()
-    if not story or "STORY_CONTENT_PLACEHOLDER" in story:
-        return
+    """Story/CS 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
     base, ext = os.path.splitext(html_path)
-    story_path = f"{base}_story{ext}"
-    with open(story_path, "w") as f:
-        f.write(story)
-    print(f"  Story saved: {os.path.basename(story_path)}")
+    for tab, placeholder, suffix in _PERIODIC_TAB_SPECS:
+        m = re.search(
+            rf'<div id="tab-{tab}" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
+            html_content, re.DOTALL,
+        )
+        if not m:
+            continue
+        content = m.group(1).strip()
+        if not content or placeholder in content:
+            continue
+        target = f"{base}{suffix}{ext}"
+        with open(target, "w") as f:
+            f.write(content)
+        print(f"  Tab saved: {os.path.basename(target)}")
 
 
 def _inject_existing_story(path, new_html):
-    """기존 파일에 Story가 있으면 새 HTML의 placeholder에 주입 + _story.html 저장"""
-    old_story = ""
-    if os.path.exists(path):
-        with open(path) as f:
-            old_content = f.read()
+    """기존 파일의 Story/CS 탭을 새 HTML placeholder에 주입."""
+    if not os.path.exists(path):
+        return new_html
+    with open(path) as f:
+        old_content = f.read()
+
+    for tab, placeholder, suffix in _PERIODIC_TAB_SPECS:
+        preserved = ""
         m = re.search(
-            r'<div id="tab-story" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-story -->',
-            old_content, re.DOTALL)
+            rf'<div id="tab-{tab}" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
+            old_content, re.DOTALL,
+        )
         if m:
             candidate = m.group(1).strip()
-            if candidate and "STORY_CONTENT_PLACEHOLDER" not in candidate:
-                old_story = candidate
-        if not old_story:
+            if candidate and placeholder not in candidate:
+                preserved = candidate
+        if not preserved:
             base, ext = os.path.splitext(path)
-            sib_path = f"{base}_story{ext}"
+            sib_path = f"{base}{suffix}{ext}"
             if os.path.exists(sib_path):
                 with open(sib_path) as f:
-                    sib_story = f.read().strip()
-                if sib_story and "STORY_CONTENT_PLACEHOLDER" not in sib_story:
-                    old_story = sib_story
-    if old_story:
-        new_html = new_html.replace("<!-- STORY_CONTENT_PLACEHOLDER -->", old_story)
+                    sib = f.read().strip()
+                if sib and placeholder not in sib:
+                    preserved = sib
+        if preserved:
+            new_html = new_html.replace(f"<!-- {placeholder} -->", preserved)
     return new_html
 
 
