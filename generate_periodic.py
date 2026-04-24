@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3.12
 """
-Weekly & Monthly Market Summary Report Generator
-- history/market_data.csv 기준으로 주간/월간 HTML 보고서 생성
+Weekly / Monthly / Quarterly Market Summary Report Generator
+- Snowflake MKT100 (CSV fallback) 기준으로 주간·월간·분기 HTML 보고서 생성
 """
 
 import json
@@ -62,6 +62,22 @@ def get_week_ranges(trading_days, year=2026):
         key = (iso[0], iso[1])
         weeks.setdefault(key, []).append(d_str)
     return weeks
+
+
+def get_quarter_ranges(trading_days, year=2026):
+    """분기(캘린더 기준) 범위 반환. {(year, quarter): [date_str, ...]}
+
+    Q1=Jan-Mar, Q2=Apr-Jun, Q3=Jul-Sep, Q4=Oct-Dec.
+    """
+    quarters: dict = {}
+    for d_str in trading_days:
+        d = dt.date.fromisoformat(d_str)
+        if d.year != year:
+            continue
+        quarter = (d.month - 1) // 3 + 1
+        key = (d.year, quarter)
+        quarters.setdefault(key, []).append(d_str)
+    return quarters
 
 
 def aggregate_period(market_data, trading_days, date_list):
@@ -296,7 +312,9 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
     elif vix_val >= 15: vix_label, vix_color = "Normal", "#7c8298"
     else: vix_label, vix_color = "Complacent", "#0d9b6a"
 
-    period_dir = "weekly" if period_label.lower() == "weekly" else "monthly"
+    period_dir = {"weekly": "weekly", "monthly": "monthly", "quarterly": "quarterly"}.get(
+        period_label.lower(), "monthly"
+    )
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -853,16 +871,69 @@ def generate_monthly_reports(year=2026):
     return count
 
 
+def generate_quarterly_reports(year=2026, only_quarter=None):
+    """분기 보고서 생성 (Snowflake MKT100 → CSV fallback).
+
+    only_quarter: 1~4 지정 시 해당 분기만 생성. None 이면 전체 분기.
+    """
+    market_data, trading_days = load_market_data()
+    quarters = get_quarter_ranges(trading_days, year)
+
+    quarterly_dir = os.path.join(OUTPUT_DIR, "quarterly")
+    os.makedirs(quarterly_dir, exist_ok=True)
+
+    count = 0
+    for (iso_year, quarter), dates in sorted(quarters.items()):
+        if only_quarter is not None and quarter != only_quarter:
+            continue
+        agg = aggregate_period(market_data, trading_days, dates)
+        if not agg:
+            continue
+
+        first = agg["first"]
+        last = agg["last"]
+        n_days = len(agg["dates"])
+        q_label = f"Q{quarter}"
+        title = f"Quarterly Summary | {year} {q_label}"
+        subtitle = f"{first} ~ {last} ({n_days} trading days)"
+        filename = f"{year}-Q{quarter}.html"
+
+        html = generate_periodic_html(agg, title, subtitle, "Quarterly", filename)
+        path = os.path.join(quarterly_dir, filename)
+        _inject_existing_macro(path, html)
+        count += 1
+        print(f"  [QUARTERLY] {filename}: {first} ~ {last}")
+
+    print(f"Total: {count} quarterly reports")
+    return count
+
+
 if __name__ == "__main__":
-    import sys
-    year = int(sys.argv[1]) if len(sys.argv) > 1 else 2026
+    import argparse
 
-    print("=== Weekly Reports ===")
-    generate_weekly_reports(year)
+    parser = argparse.ArgumentParser(description="Periodic Market Summary generator")
+    parser.add_argument("year", nargs="?", type=int, default=2026,
+                        help="대상 연도 (기본 2026)")
+    parser.add_argument("--only", choices=["weekly", "monthly", "quarterly", "all"],
+                        default="all", help="생성 범위 (기본 all)")
+    parser.add_argument("--quarter", type=int, choices=[1, 2, 3, 4], default=None,
+                        help="분기 한정 (--only quarterly 와 함께 사용)")
+    parser.add_argument("--skip-index", action="store_true",
+                        help="generate_index 갱신 스킵")
+    args = parser.parse_args()
 
-    print("\n=== Monthly Reports ===")
-    generate_monthly_reports(year)
+    if args.only in ("all", "weekly"):
+        print("=== Weekly Reports ===")
+        generate_weekly_reports(args.year)
 
-    # index 갱신
-    generate_index()
+    if args.only in ("all", "monthly"):
+        print("\n=== Monthly Reports ===")
+        generate_monthly_reports(args.year)
+
+    if args.only in ("all", "quarterly"):
+        print("\n=== Quarterly Reports ===")
+        generate_quarterly_reports(args.year, only_quarter=args.quarter)
+
+    if not args.skip_index:
+        generate_index()
     print("\nDone!")
