@@ -197,6 +197,7 @@ body{
 <!-- ══ TABS ══ -->
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
   <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
 </div>
@@ -329,10 +330,10 @@ body{
           <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,21.2 4.2,17.3 8.4,13.4 12.6,18.2 16.8,23.0 21.1,19.6 25.3,19.3 29.5,16.8 33.7,15.2 37.9,6.7 42.1,8.8 46.3,6.2 50.5,8.2 54.7,4.4 58.9,4.7 63.2,3.2 67.4,3.1 71.6,1.0 75.8,2.9 80.0,4.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.9" r="2.5" fill="#0d9b6a"/></svg></td>
           <td class="heat-cell" style="background:#fde8e8;color:#b91c1c">-0.84%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.10%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.66%</td><td class="heat-cell" style="background:#f8b4b4;color:#7f1d1d">-7.55%</td>
         </tr><tr>
-          <td class="name-cell">TWSE <span style="font-size:10px;color:var(--warn);font-weight:400;">(Holiday)</span></td>
-          <td class="close-cell">36,959</td>
-          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.6 4.2,18.9 8.4,19.4 12.6,16.0 16.8,16.4 21.1,17.4 25.3,19.8 29.5,23.0 33.7,17.1 37.9,19.5 42.1,16.9 46.3,10.6 50.5,10.2 54.7,8.0 58.9,7.8 63.2,4.4 67.4,2.7 71.6,1.0 75.8,2.3 80.0,1.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.7" r="2.5" fill="#0d9b6a"/></svg></td>
-          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+4.23%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+9.23%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+25.93%</td>
+          <td class="name-cell">TWSE</td>
+          <td class="close-cell">37,714</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,16.9 4.2,17.2 8.4,18.0 12.6,20.2 16.8,23.0 21.1,17.8 25.3,20.0 29.5,17.6 33.7,12.1 37.9,11.8 42.1,9.8 46.3,9.7 50.5,6.7 54.7,5.1 58.9,3.7 63.2,4.8 67.4,4.3 71.6,2.0 75.8,1.0 80.0,1.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.6" r="2.5" fill="#0d9b6a"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">-0.43%</td><td class="heat-cell" style="background:#d4edda;color:#065f46">+1.57%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+12.43%</td><td class="heat-cell" style="background:#c6f6d5;color:#065f46">+28.50%</td>
         </tr></tbody></table></div>
 <div class="heatmap-section">
 <h2>MSCI Equity <span class="badge">4</span> <span class="src-tag">yfinance (ETF proxy)</span></h2>
@@ -995,6 +996,120 @@ body{
 
 </div><!-- /tab-cs -->
 
+<!-- ══════ TAB 4: PM STORY ══════ -->
+<div id="tab-pm" class="tab-panel">
+
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#0d9b6a;font-weight:600}
+  .pm-section .pm-dn{color:#d9304f;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026-04-23 (목) · 지역·자산군별 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> KOSPI <span class="pm-num">6,475.81</span> <span class="pm-up">+0.90%</span> 사흘 연속 ATH (Q1 GDP <span class="pm-up">+1.7%</span> q/q 서프라이즈) vs. S&amp;P500 <span class="pm-num">7,108.40</span> <span class="pm-dn">−0.41%</span> 장중 ATH 후 되밀림 (소프트웨어 실적 쇼크 + 유가 <span class="pm-up">+3~4%</span>).</p>
+    <p><strong>Key drivers:</strong> 한국 GDP +1.7% q/q (컨센서스 +0.9% 2배, 5년반래 최고); IBM −8% / ServiceNow −18% 실적 쇼크; 이란 유조선 3척 나포 → 호르무즈 리스크 재점화.</p>
+    <p><strong>Watch:</strong> 익주 META·MSFT·AMZN 실적(소프트웨어 내러티브 시험대); 유가 $110 라인(인플레 재가속 트리거); KOSPI MTD +28% 속도의 차익 실현 압력.</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">6,475.81</span> <span class="pm-up">+0.90%</span> · WTD <span class="pm-up">+4.01%</span> · MTD <span class="pm-up">+16.60%</span> · YTD <span class="pm-up">+50.26%</span> (사흘 연속 ATH)</li>
+      <li>KOSDAQ <span class="pm-num">1,174.31</span> <span class="pm-dn">−0.58%</span> · YTD <span class="pm-up">+24.19%</span> — 대형주 선호로 차별화</li>
+      <li>주도주: 삼성전자 <span class="pm-up">+3.22%</span> (YTD <span class="pm-up">+74.71%</span>), 두산에너빌리티 <span class="pm-up">+5.69%</span>; SK하이닉스 <span class="pm-dn">−0.08%</span>, LG에너지솔루션 <span class="pm-dn">−3.82%</span> 이익 실현</li>
+      <li>섹터(KOSPI200): 중공업 <span class="pm-up">+2.68%</span>, 건설 <span class="pm-up">+2.53%</span>, 에너지/화학 <span class="pm-up">+1.53%</span> — 올드이코노미 강세</li>
+      <li>USD/KRW <span class="pm-num">1,480.51</span> <span class="pm-dn">+0.06%</span> · MTD <span class="pm-up">−1.05%</span> (원화 강세 전환); KR 3Y <span class="pm-num">3.458%</span> <span class="pm-up">+9bp</span>, KR 10Y <span class="pm-num">3.652%</span> <span class="pm-up">+9bp</span></li>
+    </ul>
+    <div class="pm-note">GDP 서프라이즈 → 경상수지 개선 → 외국인 유입 선순환. MTD +28% 속도는 역사적 극단 (차익 실현 리스크 상존).</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>🇰🇷 Q1 GDP <span class="pm-up">+1.7%</span> q/q (컨센서스 +0.9%의 2배) — 수출 <span class="pm-up">+5.1%</span>(반도체), 설비투자 <span class="pm-up">+4.8%</span>; 민간소비 +0.5% (K자형)</li>
+      <li>🇯🇵 4월 제조업 PMI 4년래 최고 확장 · 🇩🇪 2026 성장 전망 <span class="pm-dn">0.5%</span>로 반토막 하향 · 🇬🇧 PMI 인플레 압력 급증</li>
+      <li>원자재: WTI <span class="pm-num">$95.85</span> <span class="pm-up">+3.11%</span> (WTD <span class="pm-up">+14.31%</span>), Brent <span class="pm-num">$105.95</span> <span class="pm-up">+4.14%</span> — 이란 유조선 나포 여파</li>
+      <li>Gold <span class="pm-num">$4,708.60</span> <span class="pm-dn">−1.04%</span>, Silver <span class="pm-dn">−2.84%</span> — 유가↑ & 실질금리↑ 구도에서 귀금속 역상관</li>
+      <li>DXY <span class="pm-num">98.77</span> <span class="pm-up">+0.19%</span>, MTD <span class="pm-dn">−0.67%</span>; Copper <span class="pm-dn">−0.90%</span>, Nat Gas <span class="pm-dn">−3.97%</span></li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>Nikkei225 <span class="pm-num">59,140</span> <span class="pm-dn">−0.75%</span> · MTD <span class="pm-up">+13.18%</span> — 장중 60,013 ATH 터치 후 차익 실현 반락</li>
+      <li>Shanghai <span class="pm-num">4,093</span> <span class="pm-dn">−0.32%</span>, HSI <span class="pm-num">25,915</span> <span class="pm-dn">−0.95%</span>, TWSE <span class="pm-num">37,714</span> <span class="pm-dn">−0.43%</span> (YTD <span class="pm-up">+28.50%</span>)</li>
+      <li>NIFTY50 <span class="pm-num">24,173</span> <span class="pm-dn">−0.84%</span> · YTD <span class="pm-dn">−7.55%</span> — 인도 약세 지속</li>
+      <li>중국 빅테크 약세: Alibaba <span class="pm-dn">−0.84%</span>(WTD <span class="pm-dn">−3.98%</span>), Tencent <span class="pm-dn">−1.75%</span>(WTD <span class="pm-dn">−4.22%</span>), Meituan <span class="pm-dn">−1.36%</span></li>
+      <li>USD/JPY <span class="pm-num">159.69</span> <span class="pm-up">+0.18%</span>, USD/CNY <span class="pm-num">6.826</span>, USD/INR <span class="pm-num">94.09</span> <span class="pm-up">+0.33%</span></li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&amp;P500 <span class="pm-num">7,108.40</span> <span class="pm-dn">−0.41%</span> · WTD <span class="pm-up">+0.95%</span> · MTD <span class="pm-up">+8.01%</span> · YTD <span class="pm-up">+3.64%</span> — 장중 ATH 후 반락</li>
+      <li>NASDAQ <span class="pm-num">24,438</span> <span class="pm-dn">−0.89%</span> · MTD <span class="pm-up">+11.35%</span>; Russell2K <span class="pm-num">2,775</span> <span class="pm-dn">−0.37%</span> · MTD <span class="pm-up">+11.26%</span></li>
+      <li>실적 쇼크: IBM <span class="pm-dn">−8%</span>대, ServiceNow <span class="pm-dn">−18%</span> (4/22 장 마감 후 발표) → 소프트웨어 섹터 전반 매도</li>
+      <li>빅테크: MSFT <span class="pm-dn">−3.97%</span>, META <span class="pm-dn">−2.31%</span>, TSLA <span class="pm-dn">−3.56%</span>, Palantir <span class="pm-dn">−7.24%</span>, NVDA <span class="pm-dn">−1.41%</span>; AAPL <span class="pm-up">+0.10%</span> 방어</li>
+      <li>VIX <span class="pm-num">19.31</span> <span class="pm-up">+2.06%</span> · WTD <span class="pm-up">+7.64%</span> — 변동성 재부상 초입 (MTD 여전히 <span class="pm-up">−26.16%</span>)</li>
+    </ul>
+    <div class="pm-note">AI 수혜가 반도체(NVDA/TSMC)에는 확인되나 엔터프라이즈 SW(IBM/NOW)에는 밀림 — 테크 내 차별화 심화.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50 <span class="pm-num">5,894.73</span> <span class="pm-dn">−0.19%</span>, DAX <span class="pm-num">24,155</span> <span class="pm-dn">−0.16%</span>, FTSE100 <span class="pm-num">10,457</span> <span class="pm-dn">−0.19%</span></li>
+      <li>CAC40 <span class="pm-num">8,227.32</span> <span class="pm-up">+0.87%</span> 단독 플러스 — 로레알 <span class="pm-up">+9%</span>(2008년 11월 이후 최대 일간 상승), 노키아 <span class="pm-up">+6.4%</span></li>
+      <li>독일 정부 2026 GDP 전망 <span class="pm-dn">0.5%</span>로 반토막 하향; 영국 4월 PMI 인플레 압력 급증 신호</li>
+      <li>EUR/USD <span class="pm-num">1.169</span> <span class="pm-dn">−0.17%</span> · WTD <span class="pm-dn">−0.76%</span>; GBP/USD <span class="pm-num">1.347</span> <span class="pm-dn">−0.30%</span></li>
+      <li>MSCI EMEA <span class="pm-dn">−2.88%</span> · WTD <span class="pm-dn">−4.14%</span> — 유럽·중동 리스크 프리미엄 재확대</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.595%</span> (0bp), US 10Y <span class="pm-num">4.323%</span> <span class="pm-up">+3bp</span>, US 30Y <span class="pm-num">4.918%</span> <span class="pm-up">+2bp</span></li>
+      <li>10Y-2Y <span class="pm-num">+73bp</span> (vs. 전일 +70bp) — 약한 <strong>베어 스티프닝</strong> (장기물 중심 매도)</li>
+      <li>KR: CD91D <span class="pm-num">2.83%</span>(WTD <span class="pm-up">+1bp</span>), 3Y <span class="pm-num">3.458%</span> <span class="pm-up">+9bp</span>, 10Y <span class="pm-num">3.652%</span> <span class="pm-up">+9bp</span> — GDP 서프라이즈 반영한 금리 상승</li>
+      <li>듀레이션 약세: TLT <span class="pm-num">$86.55</span> <span class="pm-dn">−0.22%</span>, IEI <span class="pm-dn">−0.12%</span>, AGG <span class="pm-dn">−0.16%</span></li>
+      <li>크레딧: LQD <span class="pm-dn">−0.27%</span>, HYG <span class="pm-dn">−0.16%</span>, EMB <span class="pm-dn">−0.47%</span> — IG/HY 스프레드 완만한 확대, EM 채권 상대 약세</li>
+    </ul>
+    <div class="pm-note">유가 급등 + GDP 서프라이즈가 글로벌 인플레 기대 재자극 → 단기물 앵커에 장기물만 매도 반응한 불완전 베어 스티프닝.</div>
+  </div>
+
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 상세 내러티브는 Market Story, 고객 설명은 CS Story 탭을 참고하세요.
+</div>
+
+</div><!-- /tab-pm -->
+
 <div class="footer">Daily Market Summary | yfinance auto-generated | 2026-04-23</div>
 
 <script>
@@ -1016,7 +1131,7 @@ function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
 // Equity bar
 new Chart(document.getElementById('eqChart'),{
   type:'bar',
-  data:{labels:["KOSPI", "CAC40", "TWSE", "DAX", "FTSE100", "STOXX50", "Shanghai", "Russell2K", "S&P500", "MSCI World", "KOSDAQ", "MSCI ACWI", "Nikkei225", "NIFTY50", "NASDAQ", "HSI", "MSCI LATAM", "MSCI EMEA"],datasets:[{data:[0.9, 0.87, 0.0, -0.16, -0.19, -0.19, -0.32, -0.37, -0.41, -0.56, -0.58, -0.61, -0.75, -0.84, -0.89, -0.95, -1.18, -2.88],backgroundColor:bc([0.9, 0.87, 0.0, -0.16, -0.19, -0.19, -0.32, -0.37, -0.41, -0.56, -0.58, -0.61, -0.75, -0.84, -0.89, -0.95, -1.18, -2.88]),borderRadius:4,barPercentage:.6}]},
+  data:{labels:["KOSPI", "CAC40", "DAX", "FTSE100", "STOXX50", "Shanghai", "Russell2K", "S&P500", "TWSE", "MSCI World", "KOSDAQ", "MSCI ACWI", "Nikkei225", "NIFTY50", "NASDAQ", "HSI", "MSCI LATAM", "MSCI EMEA"],datasets:[{data:[0.9, 0.87, -0.16, -0.19, -0.19, -0.32, -0.37, -0.41, -0.43, -0.56, -0.58, -0.61, -0.75, -0.84, -0.89, -0.95, -1.18, -2.88],backgroundColor:bc([0.9, 0.87, -0.16, -0.19, -0.19, -0.32, -0.37, -0.41, -0.43, -0.56, -0.58, -0.61, -0.75, -0.84, -0.89, -0.95, -1.18, -2.88]),borderRadius:4,barPercentage:.6}]},
   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600',size:11}}}}}
 });
 
@@ -1032,7 +1147,7 @@ new Chart(document.getElementById('scatterChart'),{
   type:'scatter',
   data:{
     datasets:[
-      {label:'Equity',data:[{"x": -0.43, "y": 0.87, "label": "CAC40", "cat": "equity"}, {"x": 0.0, "y": -0.16, "label": "DAX", "cat": "equity"}, {"x": -1.26, "y": -0.19, "label": "FTSE100", "cat": "equity"}, {"x": -1.82, "y": -0.95, "label": "HSI", "cat": "equity"}, {"x": 0.98, "y": -0.58, "label": "KOSDAQ", "cat": "equity"}, {"x": 4.01, "y": 0.9, "label": "KOSPI", "cat": "equity"}, {"x": 0.24, "y": -0.61, "label": "MSCI ACWI", "cat": "equity"}, {"x": -4.14, "y": -2.88, "label": "MSCI EMEA", "cat": "equity"}, {"x": -2.98, "y": -1.18, "label": "MSCI LATAM", "cat": "equity"}, {"x": 0.23, "y": -0.56, "label": "MSCI World", "cat": "equity"}, {"x": 1.39, "y": -0.89, "label": "NASDAQ", "cat": "equity"}, {"x": -0.1, "y": -0.84, "label": "NIFTY50", "cat": "equity"}, {"x": -0.64, "y": -0.75, "label": "Nikkei225", "cat": "equity"}, {"x": 2.04, "y": -0.37, "label": "Russell2K", "cat": "equity"}, {"x": 0.95, "y": -0.41, "label": "S&P500", "cat": "equity"}, {"x": -0.65, "y": -0.19, "label": "STOXX50", "cat": "equity"}, {"x": 0.93, "y": -0.32, "label": "Shanghai", "cat": "equity"}, {"x": 4.23, "y": 0.0, "label": "TWSE", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'Equity',data:[{"x": -0.43, "y": 0.87, "label": "CAC40", "cat": "equity"}, {"x": 0.0, "y": -0.16, "label": "DAX", "cat": "equity"}, {"x": -1.26, "y": -0.19, "label": "FTSE100", "cat": "equity"}, {"x": -1.82, "y": -0.95, "label": "HSI", "cat": "equity"}, {"x": 0.98, "y": -0.58, "label": "KOSDAQ", "cat": "equity"}, {"x": 4.01, "y": 0.9, "label": "KOSPI", "cat": "equity"}, {"x": 0.24, "y": -0.61, "label": "MSCI ACWI", "cat": "equity"}, {"x": -4.14, "y": -2.88, "label": "MSCI EMEA", "cat": "equity"}, {"x": -2.98, "y": -1.18, "label": "MSCI LATAM", "cat": "equity"}, {"x": 0.23, "y": -0.56, "label": "MSCI World", "cat": "equity"}, {"x": 1.39, "y": -0.89, "label": "NASDAQ", "cat": "equity"}, {"x": -0.1, "y": -0.84, "label": "NIFTY50", "cat": "equity"}, {"x": -0.64, "y": -0.75, "label": "Nikkei225", "cat": "equity"}, {"x": 2.04, "y": -0.37, "label": "Russell2K", "cat": "equity"}, {"x": 0.95, "y": -0.41, "label": "S&P500", "cat": "equity"}, {"x": -0.65, "y": -0.19, "label": "STOXX50", "cat": "equity"}, {"x": 0.93, "y": -0.32, "label": "Shanghai", "cat": "equity"}, {"x": 1.57, "y": -0.43, "label": "TWSE", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
       {label:'Stocks',data:[{"x": -3.98, "y": -0.84, "label": "Alibaba", "cat": "stocks"}, {"x": 0.85, "y": -0.13, "label": "Alphabet", "cat": "stocks"}, {"x": 2.15, "y": -0.11, "label": "Amazon", "cat": "stocks"}, {"x": 3.81, "y": 0.1, "label": "Apple", "cat": "stocks"}, {"x": 5.39, "y": -0.64, "label": "Broadcom", "cat": "stocks"}, {"x": -2.62, "y": -2.31, "label": "META", "cat": "stocks"}, {"x": -6.37, "y": -1.36, "label": "Meituan", "cat": "stocks"}, {"x": -1.07, "y": -3.97, "label": "Microsoft", "cat": "stocks"}, {"x": 0.65, "y": -1.41, "label": "NVIDIA", "cat": "stocks"}, {"x": -0.83, "y": -7.24, "label": "Palantir", "cat": "stocks"}, {"x": 3.22, "y": 3.22, "label": "Samsung", "cat": "stocks"}, {"x": 5.31, "y": -1.23, "label": "TSMC", "cat": "stocks"}, {"x": -4.22, "y": -1.75, "label": "Tencent", "cat": "stocks"}, {"x": -3.9, "y": -3.56, "label": "Tesla", "cat": "stocks"}],backgroundColor:'#043B72aa',pointRadius:6},
       {label:'Commodity',data:[{"x": 7.74, "y": 4.14, "label": "Brent", "cat": "commodity"}, {"x": 0.76, "y": -0.9, "label": "Copper", "cat": "commodity"}, {"x": -2.13, "y": -1.04, "label": "Gold", "cat": "commodity"}, {"x": -1.25, "y": -3.97, "label": "Nat Gas", "cat": "commodity"}, {"x": -3.8, "y": -2.84, "label": "Silver", "cat": "commodity"}, {"x": 1.23, "y": 3.11, "label": "WTI", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
     ]

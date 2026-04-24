@@ -494,6 +494,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
   <button class="tab-btn" onclick="switchTab('story')">{period_label} Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
   <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
@@ -620,6 +621,10 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 <!-- CS_STORY_PLACEHOLDER -->
 </div><!-- /tab-cs -->
 
+<div id="tab-pm" class="tab-panel">
+<!-- PM_STORY_PLACEHOLDER -->
+</div><!-- /tab-pm -->
+
 <div class="footer">{title} | Auto-generated</div>
 
 <script>
@@ -681,11 +686,12 @@ new Chart(document.getElementById('cmChart'),{{
 _PERIODIC_TAB_SPECS = [
     ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
     ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
+    ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
 ]
 
 
 def _save_story_file(html_path, html_content):
-    """Story/CS 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
+    """Story/CS/PM 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
     base, ext = os.path.splitext(html_path)
     for tab, placeholder, suffix in _PERIODIC_TAB_SPECS:
         m = re.search(
@@ -704,7 +710,7 @@ def _save_story_file(html_path, html_content):
 
 
 def _inject_existing_story(path, new_html):
-    """기존 파일의 Story/CS 탭을 새 HTML placeholder에 주입."""
+    """기존 파일의 Story/CS/PM 탭을 새 HTML placeholder에 주입."""
     if not os.path.exists(path):
         return new_html
     with open(path) as f:

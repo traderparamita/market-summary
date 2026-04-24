@@ -360,6 +360,7 @@ body{{
 <!-- ══ TABS ══ -->
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
   <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
 </div>
@@ -564,6 +565,13 @@ body{{
 <!-- CS_STORY_PLACEHOLDER -->
 
 </div><!-- /tab-cs -->
+
+<!-- ══════ TAB 4: PM STORY ══════ -->
+<div id="tab-pm" class="tab-panel">
+
+<!-- PM_STORY_PLACEHOLDER -->
+
+</div><!-- /tab-pm -->
 
 <div class="footer">Daily Market Summary | yfinance auto-generated | {report_date}</div>
 
@@ -1034,11 +1042,12 @@ def update_current_periodic(target_date):
 _TAB_SPECS = [
     ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
     ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
+    ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
 ]
 
 
 def _inject_existing_story(path, new_html):
-    """기존 파일의 Story/CS 탭 내용을 새 HTML placeholder에 주입 + sibling 파일 저장."""
+    """기존 파일의 Story/CS/PM 탭 내용을 새 HTML placeholder에 주입 + sibling 파일 저장."""
     import re
     if os.path.exists(path):
         with open(path) as f:
@@ -1076,7 +1085,7 @@ def _inject_existing_story(path, new_html):
 
 
 def _save_story_file(html_path, html_content):
-    """Story/CS 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
+    """Story/CS/PM 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
     import re
     base, ext = os.path.splitext(html_path)
     for tab, placeholder, suffix in _TAB_SPECS:

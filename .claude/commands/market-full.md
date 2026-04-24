@@ -98,7 +98,20 @@ Step 3 완료 **직후** `market-summary` 스킬의 **"CS Story 작성 절차"**
 3. 의사결정 권유 톤 금지 (설명·관찰만).
 4. `YYYY-MM-DD.html` 의 `<div id="tab-cs">` ~ `</div><!-- /tab-cs -->` 블록을 Edit + `YYYY-MM-DD_cs.html` 동기화.
 
-실패 시 경고 후 계속 진행 (Step 4 중단 없음). CS 는 Story 탭과 독립된 고객용 트랙이므로 빠져도 Market Summary 배포는 가능.
+실패 시 경고 후 계속 진행 (Step 3-C / Step 4 중단 없음). CS 는 Story 탭과 독립된 고객용 트랙이므로 빠져도 Market Summary 배포는 가능.
+
+### Step 3-C: 일간 PM Story 작성
+
+Step 3 완료 **후** `market-summary` 스킬의 **"PM Story 작성 절차"** 섹션 규칙으로 PM 버전을 작성한다. (Step 3-B 와 독립 — CS 실패해도 PM 은 시도)
+
+핵심:
+1. `YYYY-MM-DD_story.html` + `YYYY-MM-DD_data.json` Read
+2. 6개 고정 섹션(🇰🇷 한국 · 🌐 매크로 · 🌏 아시아 및 중국 · 🇺🇸 미국 · 🇪🇺 유럽 · 💵 채권) 으로 재편집
+3. 각 섹션 3~5 불릿, 종가·변동률·WTD/MTD/YTD·bp·FX 레벨 등 수치 적극 포함
+4. 원본 Story 의 사실관계·시간순·세션 규칙 그대로 유지. 매수/매도 직접 권유 금지.
+5. `YYYY-MM-DD.html` 의 `<div id="tab-pm">` ~ `</div><!-- /tab-pm -->` 블록을 Edit + `YYYY-MM-DD_pm.html` 동기화.
+
+실패 시 경고 후 계속 진행 (Step 4 중단 없음). PM 은 Story / CS 와 독립된 매니저용 트랙.
 
 ### Step 4: 주간 Data Dashboard
 
@@ -255,6 +268,7 @@ Step 0:    Telegram 시작    — ✅ 전송 / ⚠ 실패(계속)
 Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, Snowflake M행) / ⚠ CSV 저장 · Snowflake 실패(<reason>) / ❌ 실패(<reason>)
 Step 3:    일간 Story        — ✅ 성공 / ❌ 실패
 Step 3-B:  일간 CS Story     — ✅ 성공 / ⚠ 실패(계속)
+Step 3-C:  일간 PM Story     — ✅ 성공 / ⚠ 실패(계속)
 Step 4:    주간 Dashboard    — ✅ 자동 갱신
 Step 5:    주간 Story        — ✅ 성공 / ⏭ 스킵
 Step 5.5:  매크로 수집       — ✅ 성공 / ⏭ 스킵 / ⚠ 실패(계속)
