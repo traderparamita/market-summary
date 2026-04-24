@@ -737,10 +737,12 @@ def generate_index():
         weekly_panels += f'      <div class="sub-panel{active}" id="weekly-{m}"><ul>\n{items}      </ul></div>\n'
 
     # ── 월간 보고서 수집 ──
+    SIBLING_SUFFIXES = ("_story.html", "_pm.html", "_cs.html", "_macro.html")
+
     monthly_items = ""
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "monthly", "*.html")), reverse=True):
         fname = os.path.basename(path)
-        if fname.endswith("_story.html"):
+        if fname.endswith(SIBLING_SUFFIXES):
             continue
         label = fname.replace(".html", "")
         try:
@@ -749,6 +751,14 @@ def generate_index():
         except:
             pass
         monthly_items += f'      <li><a href="monthly/{fname}">{label}</a></li>\n'
+
+    quarterly_items = ""
+    for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "quarterly", "*.html")), reverse=True):
+        fname = os.path.basename(path)
+        if fname.endswith(SIBLING_SUFFIXES):
+            continue
+        label = fname.replace(".html", "")  # e.g. 2026-Q1
+        quarterly_items += f'      <li><a href="quarterly/{fname}">{label}</a></li>\n'
 
     index_html = f"""<!DOCTYPE html>
 <html lang="ko">
@@ -818,6 +828,7 @@ def generate_index():
     <button class="main-tab active" onclick="showTab('daily')">Daily</button>
     <button class="main-tab" onclick="showTab('weekly')">Weekly</button>
     <button class="main-tab" onclick="showTab('monthly')">Monthly</button>
+    <button class="main-tab" onclick="showTab('quarterly')">Quarterly</button>
   </div>
 
   <div id="tab-daily" class="tab-content active">
@@ -835,6 +846,12 @@ def generate_index():
   <div id="tab-monthly" class="tab-content">
     <ul>
 {monthly_items if monthly_items else '      <li style="color:#7c8298;font-style:italic">No monthly reports yet.</li>'}
+    </ul>
+  </div>
+
+  <div id="tab-quarterly" class="tab-content">
+    <ul>
+{quarterly_items if quarterly_items else '      <li style="color:#7c8298;font-style:italic">No quarterly reports yet.</li>'}
     </ul>
   </div>
 

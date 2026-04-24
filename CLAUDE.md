@@ -26,7 +26,7 @@ Market Story 작성 규칙·절차는 **`market-summary` 스킬**에 있다 (Sto
 ```
 collect_market.py         # 시장 데이터 수집 전용 - TICKERS/INDICATOR_CODES + fetch_data/build_report_data
 generate.py               # HTML 보고서 생성 전용 - collect_market에서 수집 함수 import + Snowflake dual-write
-generate_periodic.py      # 주간/월간 집계 보고서 생성
+generate_periodic.py      # 주간/월간/분기 집계 보고서 생성 (`--only {weekly|monthly|quarterly} --quarter N`)
 generate_sector_country.py # 섹터·국가 초보자 보고서 생성 (11일 사이클, /sector-country 커맨드)
 snowflake_loader.py       # CSV ↔ Snowflake MKT100_MARKET_DAILY 적재 유틸 (bulk / upsert)
 simulate.py               # 과거 날짜 시뮬레이션
@@ -123,18 +123,23 @@ DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
 ```
 output/
 ├── index.html                   # 메인 허브 (Summary + Portfolio + View)
-├── summary/                     # Market Summary 일/주/월간 보고서
-│   ├── index.html              # Summary 인덱스
+├── summary/                     # Market Summary 일/주/월/분기 보고서
+│   ├── index.html              # Summary 인덱스 (Daily/Weekly/Monthly/Quarterly 4개 탭)
 │   ├── YYYY-MM/
-│   │   ├── YYYY-MM-DD.html     # 일일 보고서 (Data + Story 탭)
+│   │   ├── YYYY-MM-DD.html     # 일일 보고서 (Data + Market/CS/PM Story 탭)
 │   │   ├── YYYY-MM-DD_story.html
+│   │   ├── YYYY-MM-DD_cs.html
+│   │   ├── YYYY-MM-DD_pm.html
 │   │   └── YYYY-MM-DD_data.json
 │   ├── weekly/
 │   │   ├── YYYY-WNN.html
-│   │   └── YYYY-WNN_story.html
-│   └── monthly/
-│       ├── YYYY-MM.html
-│       └── YYYY-MM_story.html
+│   │   └── YYYY-WNN_{story,cs,pm,macro}.html
+│   ├── monthly/
+│   │   ├── YYYY-MM.html
+│   │   └── YYYY-MM_{story,cs,pm,macro}.html
+│   └── quarterly/
+│       ├── YYYY-QN.html         # 분기 보고서 (Data/Market/CS/PM/Macro 탭)
+│       └── YYYY-QN_{story,pm,macro}.html
 ├── sector-country/              # 섹터·국가 초보자 포지셔닝 보고서 (11일 사이클)
 │   └── daily/
 │       └── YYYY-MM/

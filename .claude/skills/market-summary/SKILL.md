@@ -361,6 +361,36 @@ hl-up, hl-down, hl-warn, hl-accent
 
 ---
 
+## 분기 Story 작성 절차
+
+분기(Quarterly) Story는 **월간 3개를 종합한 상위 서사**. 월간 절차의 확장판으로, 기간만 3개월로 확대.
+
+### Step 1: 해당 분기 월간 Story 수집
+
+- 3개월치 `output/summary/monthly/YYYY-MM_story.html` Read (분기 = 캘린더 기준 3개월: Q1=1~3월, Q2=4~6월 …)
+- 3개월치 `_pm.html`, `_macro.html` 도 필요 시 참조 (사실·수치 정합)
+
+### Step 2: 분기 관점 종합
+
+- 분기 전체 테마 도출 ("1~2월 X 주도 → 3월 Y 반전" 같은 월별 리듬)
+- 월별 흐름 요약 (3개월을 한 화면에): 각 월의 대표 이벤트 2~3개씩
+- 분기 누적 수익률 (QoQ), 최대 낙폭, 분기 내 ATH/ATL, 자산 분화
+- 분기 핵심 이벤트 맥락화 (FOMC 2~3회, 주요 고용 발표 3회, CPI 3회, 지정학 이벤트)
+- **주의**: 분기 말 관점에서 분기 초를 설명할 때도 당시 시점에서 알 수 없던 정보 금지
+
+### Step 3: HTML 주입
+
+- 대상: `output/summary/quarterly/YYYY-QN.html` (파일명 `2026-Q1.html` 형식)
+- 분기 보고서가 없으면 `.venv/bin/python generate_periodic.py {year} --only quarterly --quarter N` 선행
+- 주입 방식은 일간·주간·월간과 동일 — sibling 파일(`_story.html`, `_pm.html`, `_macro.html`) 저장 후 `generate_periodic.py` 재실행하면 `_inject_existing_*()` 가 자동 주입
+
+### 데이터 소스
+
+- **Snowflake MKT100 / MKT200 단일 정본** (via `portfolio.market_source.load_long` / `load_macro_long`). CSV (`history/market_data.csv`, `history/macro_indicators.csv`) 는 legacy fallback
+- 분기 매크로 데이터 백필이 필요하면 `.venv/bin/python -m portfolio.collectors.macro --start YYYY-MM-DD` 으로 FRED + ECOS 재수집 → MKT200 upsert
+
+---
+
 ## CS Story 작성 절차
 
 CS(Customer Success) 관점 스토리는 **기존 Market Story를 재작성** 하여 수치를 최대한 제거하고 맥락·흐름 위주로 서술한다. 일반 Story가 투자 의사결정용이라면 CS Story 는 고객에게 시장 상황을 "이야기로" 전달하는 용도다.
