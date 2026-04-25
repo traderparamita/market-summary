@@ -136,10 +136,10 @@ output/
 │   │   └── YYYY-WNN_{story,cs,pm,macro}.html
 │   ├── monthly/
 │   │   ├── YYYY-MM.html
-│   │   └── YYYY-MM_{story,cs,pm,macro}.html
+│   │   └── YYYY-MM_{story,cs,pm,macro}.html  # _pm = 회고 6섹션 + Outlook (시나리오·Watch·리스크·포지셔닝)
 │   └── quarterly/
 │       ├── YYYY-QN.html         # 분기 보고서 (Data/Market/CS/PM/Macro 탭)
-│       └── YYYY-QN_{story,pm,macro}.html
+│       └── YYYY-QN_{story,pm,macro}.html     # _pm = 회고 + 다음 분기 Outlook (분기 테마 후보 포함)
 ├── sector-country/              # 섹터·국가 초보자 포지셔닝 보고서 (11일 사이클)
 │   └── daily/
 │       └── YYYY-MM/
