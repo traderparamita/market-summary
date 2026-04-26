@@ -31,6 +31,9 @@ scripts/
 ├── collect_weekly.py                 # 주간 수집 러너 (일 19:30 KST)
 ├── collect_securities_reports.py     # 미래에셋증권 상세분석 보고서 → S3
 ├── collect_prism_reports.py          # MVP PRISM 보고서 → S3 (증분 스캔)
+├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
+├── generate_securities_index.py      # output/securities/index.html
+├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
 ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
 └── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
 

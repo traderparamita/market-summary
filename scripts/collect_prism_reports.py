@@ -254,6 +254,13 @@ def main() -> None:
     print(f"다음 스캔 시작: {max_hit_page}")
 
     if not args.dry_run and uploaded > 0:
+        try:
+            from generate_prism_index import main as regen_index
+            print("\n인덱스 페이지 재생성...")
+            regen_index()
+        except Exception as e:
+            print(f"  WARN: 인덱스 재생성 실패: {e}")
+
         send_telegram(
             f"📚 <b>MVP PRISM 보고서 수집 완료</b>\n"
             f"업로드: {uploaded}건 / 스킵: {skipped}건 / 실패: {failed}건"
