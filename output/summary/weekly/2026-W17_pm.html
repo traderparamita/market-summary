@@ -1,0 +1,226 @@
+<style>
+  .pm-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:16px;font-weight:700;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+  .pm-section ul{margin:0;padding-left:20px;font-size:14px;color:#2d3148;line-height:1.85}
+  .pm-section li{margin-bottom:4px}
+  .pm-header{background:linear-gradient(135deg,#f0f4ff,#e8edf8);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:20px 28px;margin-bottom:20px}
+  .pm-header h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .pm-header .pm-sub{font-size:12px;color:var(--muted)}
+  .outlook-header{background:linear-gradient(135deg,#eef6ff,#dceeff);border:1px solid #b8d4f0;border-left:4px solid #043B72;border-radius:12px;padding:18px 24px;margin:28px 0 16px}
+  .outlook-header h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+  .outlook-header .ol-sub{font-size:12px;color:var(--muted)}
+  .scenario-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+  .scenario-card{border-radius:10px;padding:18px 20px;border:1px solid var(--border)}
+  .scenario-card.bull{background:rgba(13,155,106,0.05);border-color:rgba(13,155,106,0.25)}
+  .scenario-card.base{background:rgba(4,59,114,0.05);border-color:rgba(4,59,114,0.25)}
+  .scenario-card.bear{background:rgba(217,48,79,0.05);border-color:rgba(217,48,79,0.25)}
+  .sc-title{font-size:13px;font-weight:700;margin-bottom:6px}
+  .sc-title.bull{color:var(--up)}
+  .sc-title.base{color:#043B72}
+  .sc-title.bear{color:var(--down)}
+  .sc-prob{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .sc-body{font-size:13px;color:#2d3148;line-height:1.7}
+  .watch-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+  .watch-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+  .watch-card h4{font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:8px}
+  .watch-card ul{margin:0;padding-left:16px;font-size:12px;color:#2d3148;line-height:1.7}
+  .pos-box{background:#f7f8fc;border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-bottom:16px}
+  .pos-box h4{font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:10px}
+  .pos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .pos-item{text-align:center}
+  .pos-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+  .pos-val{font-size:13px;font-weight:700}
+  .pos-val.ow{color:var(--up)}
+  .pos-val.uw{color:var(--down)}
+  .pos-val.n{color:#6b7280}
+  .risk-ol{background:rgba(217,48,79,0.04);border:1px solid rgba(217,48,79,0.15);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+  .risk-ol h4{font-size:13px;font-weight:700;color:var(--down);margin-bottom:8px}
+  .risk-ol ul{margin:0;padding-left:16px;font-size:13px;color:#2d3148;line-height:1.75}
+</style>
+
+<div class="pm-header">
+  <h2>PM Story + Outlook — 주간 포트폴리오 매니저 브리프</h2>
+  <div class="pm-sub">2026-W17 (2026-04-21 ~ 2026-04-24) · 5/5 영업일 · 수치·수익률 중심 의사결정 브리프 + W18 Outlook</div>
+</div>
+
+<!-- ── 회고 PM Story ── -->
+
+<div class="pm-section">
+  <h3>🇰🇷 한국</h3>
+  <ul>
+    <li><strong>KOSPI</strong> W17 종가 6,475.63 (<span style="color:var(--up)">WTD +4.58%</span>, MTD +28.17%, YTD +50.26%) — 월(6,388→+2.72%)·화(6,418→+0.46%)·수(6,476→+0.90%) 3연 ATH, 금 보합. 장중 고점 수 6,557.76(4/23)</li>
+    <li><strong>KOSDAQ</strong> 1,203.84 (<span style="color:var(--up)">WTD +2.89%</span>, MTD +14.39%) — 금 +2.51%로 대형주 차익실현 수급을 흡수. 바이오·중소형 아웃퍼폼</li>
+    <li><strong>섹터 WTD (KOSPI200 기준)</strong>: 반도체 <span style="color:var(--up)">+4.46%</span> · 헬스케어 +4.25% · 산업재 +2.44% · 은행 +1.89% // 건설 <span style="color:var(--down)">−1.53%</span> · 철강 −7.19% 하위. 중공업 일간 +4.42%(금)</li>
+    <li><strong>외국인 수급</strong>: W17 누적 외국인 순매수 5.79조원 — 반도체 수출 +183%(YoY) + Q1 GDP +1.7%(컨센 두 배) 펀더멘탈 확인에 집중 유입</li>
+    <li><strong>삼성전자</strong> 219,500원 (금 −2.23%, WTD 소폭 하락) — TSMC 시장점유율 우려 반영. SK하이닉스는 월 +5.19% 주도 후 주간 보합 소화</li>
+    <li><strong>USD/KRW</strong> 1,476.67 (WTD +0.65%=원화 약세, MTD −2.00%=원화 강세 유지). 유가 하락→달러 약세 연동으로 금 −0.26%</li>
+    <li><strong>KR 금리</strong>: 3Y 3.496% (WTD +12.50bp), 10Y 3.683% (WTD +10.30bp) — GDP 서프라이즈 이후 조기 인하 기대 후퇴. 금리 상승 압력 지속</li>
+    <li><strong>밸류에이션</strong>: KOSPI PER 26.83배, PBR 2.07배, DY 0.85% — YTD +50% 반영한 역사적 프리미엄 구간. 2025년 말 PER(약 12배) 대비 2배 이상 확장</li>
+  </ul>
+</div>
+
+<div class="pm-section">
+  <h3>🌐 매크로</h3>
+  <ul>
+    <li><strong>국제유가</strong>: Brent WTD +9.68% ($99.13 마감), WTI WTD +12.58% ($94.40) — 이란 호르무즈 나포(화) + 컨테이너선 공격(수)으로 수 최고 Brent $105.95까지 급등. 금 OPEC+ 증산 기대 + 이란 외교 채널 재개에 −6.44% 급락</li>
+    <li><strong>달러·금리</strong>: DXY 98.51 (WTD +0.42%). US 10Y 4.31% (WTD +6.40bp), US 2Y 3.593% (WTD −0.70bp). 2s10s 스프레드 71.7bp — 유가 급등 → 인플레 우려 → 장기 금리 상승 경로</li>
+    <li><strong>VIX</strong> 18.71 (WTD +7.04%) — 유가 불확실성과 SW 실적 쇼크로 주간 기준 상승. 금 빅테크 서프라이즈 후 18선으로 안정. W18 FOMC 앞두고 18~20 레인지 주목</li>
+    <li><strong>Gold</strong> $4,740.90 (WTD −2.84%) — 유가 급등 → 실질금리 상승 경로가 금 압박. 인플레 헤지보다 성장 둔화 헤지 성격이 약화된 한 주</li>
+    <li><strong>W17 경제지표</strong>: KR Q1 GDP +1.7% (컨센 +0.9%), KR 반도체 수출 4/1~20 YoY +183%. US PCE·GDP는 W18 발표 예정</li>
+    <li><strong>실적 시즌 핵심</strong>: IBM −8%·ServiceNow −18% (SW 쇼크, 수) vs Amazon EPS $2.43(E $1.94)·Meta EPS $7.21(E $6.76)·Alphabet EPS $2.81(E $2.36) 서프라이즈 (목요일 밤)</li>
+  </ul>
+</div>
+
+<div class="pm-section">
+  <h3>🌏 아시아 및 중국</h3>
+  <ul>
+    <li><strong>TWSE</strong> 38,932 (<span style="color:var(--up)">WTD +5.78%</span>, MTD +22.73%, YTD +34.42%) — W17 아시아 최강 수익률. 금 TSMC +5.17% 주도, NVIDIA 데이터센터 추가 수주 기대가 반도체 체인 전반 견인</li>
+    <li><strong>Nikkei225</strong> 59,716 (<span style="color:var(--up)">WTD +2.12%</span>, MTD +16.94%) — BOJ 정책 불변 기조. USD/JPY 159.33 (WTD +0.44%) 엔 약세 유지</li>
+    <li><strong>HSI</strong> 25,978 (WTD −0.70%) — 미중 무역 불확실성 지속. 알리바바·텐센트 혼조. Shanghai Composite 4,080 (WTD −0.69%)</li>
+    <li><strong>USD/CNY</strong> 6.836 (WTD +0.26%) — 위안화 관리 기조 유지. 미중 무역 불확실성 속 환율 안정 정책</li>
+    <li><strong>NIFTY50</strong> 23,898 (WTD −1.87%) — 유가 급등발 인플레 우려 + USD/INR 94.11 약세(WTD +1.14%)로 아시아 내 유일한 의미 있는 언더퍼폼</li>
+    <li><strong>아시아 분화</strong>: 반도체 수출국(KR·TW)은 AI 수요 직접 수혜로 강세. 에너지 수입 의존 신흥국(인도)은 유가 충격. 중국은 지정학 불확실성으로 중립</li>
+  </ul>
+</div>
+
+<div class="pm-section">
+  <h3>🇺🇸 미국</h3>
+  <ul>
+    <li><strong>S&amp;P500</strong> 7,165.08 (<span style="color:var(--up)">WTD +0.55%</span>, MTD +9.75%, YTD +4.67%). <strong>NASDAQ</strong> 24,836.60 (<span style="color:var(--up)">WTD +1.50%</span>, MTD +15.03%, YTD +6.86%). <strong>Russell2K</strong> WTD +0.36%</li>
+    <li><strong>일별 리듬</strong>: 월 −0.63% (유가급등 공포) → 화 +1.05% (정전연장 ATH) → 수 −0.41% (SW쇼크+$106) → 금 +0.80% (빅테크 서프라이즈). 최대 변동일 화요일</li>
+    <li><strong>섹터 WTD 1위·꼴찌</strong>: Tech <span style="color:var(--up)">+3.80%</span> · Energy +3.36% // Health <span style="color:var(--down)">−3.10%</span> · Comm −2.99% · Fin −1.93%. 에너지는 유가 상승 수혜, 헬스케어는 실적 부진</li>
+    <li><strong>빅테크 EPS</strong>: Amazon $2.43 vs $1.94E (+25.3% beat) · Meta $7.21 vs $6.76E (+6.7% beat) · Alphabet $2.81 vs $2.36E (+19.1% beat) · Microsoft +2.13% · NVIDIA +4.32%</li>
+    <li><strong>채권 ETF</strong>: TLT WTD −0.41% · AGG −0.26% · HYG −0.21% · LQD −0.40% · TIPS +0.29%. 유가 상승에도 TIPS만 플러스 — 인플레 기대 유지</li>
+    <li><strong>FOMC 포워드</strong>: 선물 시장 5월 동결 가격 반영. 파월 기자회견 톤(매파·비둘기)이 W18 최대 변수</li>
+  </ul>
+</div>
+
+<div class="pm-section">
+  <h3>🇪🇺 유럽</h3>
+  <ul>
+    <li><strong>지수 WTD</strong>: CAC40 8,158 (<span style="color:var(--down)">WTD −3.17%</span>) · FTSE100 10,379 (−2.70%) · DAX 24,129 (−2.32%) · STOXX50 5,883 (−2.88%) — 유럽 전 지수 주간 하락. 아시아와 8.9%p 분화</li>
+    <li><strong>하락 요인</strong>: ① 이란 지정학 유가 급등 (에너지 수입 의존) ② 독일 2026년 GDP 전망 1.0%→0.5% 하향 ③ 금요일 유가 급락에도 에너지 섹터 매도(에너지 기업 수익성 악화 우려)</li>
+    <li><strong>예외</strong>: CAC40 로레알 +9%(수 발표, 2년래 최고 분기 성장) 효과로 수요일만 CAC 단독 플러스. 명품·소비재 섹터 차별화</li>
+    <li><strong>EUR/USD</strong> 1.173 (WTD −0.26%). GBP/USD 1.347 (WTD −0.37%). 유로·파운드 대비 달러 소폭 강세</li>
+    <li><strong>ECB 포워드</strong>: 6월 25bp 인하 컨센서스 유지. 유가 하락 → 유럽 인플레 완화 → ECB 인하 여력 증가. W18 ECB 발언 주목</li>
+  </ul>
+</div>
+
+<div class="pm-section">
+  <h3>💵 채권</h3>
+  <ul>
+    <li><strong>미국 국채</strong>: US 10Y 4.31% (WTD +6.40bp) · US 2Y 3.593% (WTD −0.70bp) · US 30Y 4.916% (WTD +3.10bp). 2s10s 71.7bp — 유가급등 → 장기 인플레 우려로 10Y 선행 상승. 2Y는 금리 동결 기대에 소폭 하락</li>
+    <li><strong>한국 국채</strong>: KR 10Y 3.683% (WTD +10.30bp) · KR 3Y 3.496% (WTD +12.50bp) — GDP +1.7% 서프라이즈 이후 한은 조기 인하 기대 후퇴. 주간 기준 KR 금리 상승폭이 US 대비 컸음</li>
+    <li><strong>채권 ETF</strong>: TLT 86.71 (WTD −0.41%) · AGG 99.59 (−0.26%) · IEI (WTD −0.28%) — 전반적 채권 약세. 금리 상방 압력 확인</li>
+    <li><strong>크레딧</strong>: HYG 80.48 (WTD −0.21%) · LQD 109.60 (−0.40%) · EMB (WTD −0.49%) — HY 스프레드 안정적, IG·EM 소폭 언더퍼폼. 신용위험 확대 신호는 미미</li>
+    <li><strong>인플레 연동</strong>: TIPS 111.80 (WTD +0.29%) — 유가 하락에도 인플레 기대 유지. 브레이크이븐 인플레이션 레이트 소폭 상승</li>
+    <li><strong>포지셔닝 시사점</strong>: 유가 $94~99 고레벨 + 고용 호조 시나리오에서 US 10Y 4.50% 테스트 가능. 금리 상방 리스크 감안 시 Duration 축소 유지 권고</li>
+  </ul>
+</div>
+
+<!-- ── W18 Outlook ── -->
+
+<div class="outlook-header">
+  <h2>W18 Outlook — 다음 주 시나리오 & 포지셔닝</h2>
+  <div class="ol-sub">기준 시점: 2026-04-24 장 마감 후 · 대상 기간: 2026-04-28 ~ 2026-05-02</div>
+</div>
+
+<div class="scenario-grid">
+  <div class="scenario-card bull">
+    <div class="sc-title bull">🟢 Bull — FOMC 비둘기 + 유가 안정</div>
+    <div class="sc-prob">확률 25%</div>
+    <div class="sc-body">
+      파월이 "인플레 우려는 일시적, 데이터 의존 유지"로 비둘기 톤 유지. 비농업 고용 호조(+20만 이상)여도 임금 상승 둔화로 Fed Put 기대 살아남. 유가 Brent $95 이하 안착. KOSPI 6,600 돌파 시도, NASDAQ 25,200, 기술·반도체 추가 상승. USD/KRW 1,460 방향.
+    </div>
+  </div>
+  <div class="scenario-card base">
+    <div class="sc-title base">⚪ Base — 동결 확인 + 유가 레인지</div>
+    <div class="sc-prob">확률 55%</div>
+    <div class="sc-body">
+      FOMC 5월 동결 확인, 파월 "데이터 의존·유가 모니터링" 중립 톤. NFP +15~20만, 임금 소폭 상승. 유가 Brent $95~105 레인지. KOSPI 6,300~6,550 레인지 소화, S&amp;P500 7,000~7,200. 빅테크 실적 서프라이즈 모멘텀이 상방 지지.
+    </div>
+  </div>
+  <div class="scenario-card bear">
+    <div class="sc-title bear">🔴 Bear — 파월 매파 + 유가 재급등</div>
+    <div class="sc-prob">확률 20%</div>
+    <div class="sc-body">
+      파월이 "유가 발 인플레 재가속 우려, 금리 인하 경로 재검토"로 매파 전환. NFP +25만 이상 + 임금 상승 동반. 유가 Brent $105 재돌파. US 10Y 4.50% 테스트 → 기술주 밸류에이션 압박. KOSPI 6,100 이탈 시 PER 압박 심화. EUR/USD 1.15 하향.
+    </div>
+  </div>
+</div>
+
+<div class="watch-grid">
+  <div class="watch-card">
+    <h4>🇰🇷 한국 Watch</h4>
+    <ul>
+      <li><strong>이벤트</strong>: 4/29 산업생산·소매판매, 4/30 경상수지, 5/1 근로자의 날(한국 휴장)</li>
+      <li><strong>Watch point</strong>: KOSPI PER 26.8배 밸류에이션 부담. 외국인 수급 지속 여부(5/1 휴장 전후 포지션 정리 리스크)</li>
+      <li><strong>If-Then</strong>: 외국인 누적 매도 전환 → 6,300 이탈 시 추가 조정 가능성. 반도체 수출 5월 초순 데이터 확인 필수</li>
+    </ul>
+  </div>
+  <div class="watch-card">
+    <h4>🌐 매크로 Watch</h4>
+    <ul>
+      <li><strong>이벤트</strong>: 4/28 US PCE·Personal Income, 4/29~30 FOMC, 5/1 비농업 고용(NFP)</li>
+      <li><strong>Watch point</strong>: PCE 인플레 레벨(유가 반영 여부), FOMC 성명문 "유가" 언급 횟수, NFP + 임금 동시 조합</li>
+      <li><strong>If-Then</strong>: PCE &gt; 2.5% + NFP &gt; 25만 → 10Y 4.50% 돌파 → Duration 축소 강화. Brent &gt; $105 재돌파 → 리스크오프 전환</li>
+    </ul>
+  </div>
+  <div class="watch-card">
+    <h4>🌏 아시아 Watch</h4>
+    <ul>
+      <li><strong>이벤트</strong>: 4/30 BOJ 결정회의 + 전망보고서, 4/30 중국 PMI(제조업·서비스)</li>
+      <li><strong>Watch point</strong>: BOJ 금리 동결 예상이나 엔화 추가 약세(JPY 160+) 시 긴급 개입 가능성. 중국 PMI 제조업 50 하회 시 EM 매도 압력</li>
+      <li><strong>If-Then</strong>: BOJ 개입 신호 → USD/JPY 156 이하 → 닛케이 단기 급락. 중국 PMI 호조 → HSI 반등·EM 통화 강세</li>
+    </ul>
+  </div>
+  <div class="watch-card">
+    <h4>🇺🇸 미국 실적 Watch</h4>
+    <ul>
+      <li><strong>이벤트</strong>: 4/28 주간 Apple·AMD 실적 예정, 5/1 이후 추가 대형 실적</li>
+      <li><strong>Watch point</strong>: Apple 아이폰·서비스 부문 가이던스(관세·중국 판매), AMD AI 가속기 수주 현황</li>
+      <li><strong>If-Then</strong>: Apple 가이던스 하향 → 소비재 섹터 동반 하락. AMD AI 수주 서프라이즈 → 반도체 체인 추가 랠리(KR·TW 동반 강세)</li>
+    </ul>
+  </div>
+  <div class="watch-card">
+    <h4>🇪🇺 유럽 Watch</h4>
+    <ul>
+      <li><strong>이벤트</strong>: 4/30 유로존 Q1 GDP 속보, 4/30 유로존 CPI(4월 잠정)</li>
+      <li><strong>Watch point</strong>: 유로존 GDP가 독일 하향(0.5%)으로 인해 컨센 하회 가능. CPI 유가 반영 여부</li>
+      <li><strong>If-Then</strong>: GDP 미스 + CPI 하락 → ECB 6월 인하 확신 강화 → EUR/USD 1.18 방향. 유로존 GDP 서프라이즈 → DAX 부분 회복</li>
+    </ul>
+  </div>
+  <div class="watch-card">
+    <h4>🛢️ 원자재·지정학 Watch</h4>
+    <ul>
+      <li><strong>이벤트</strong>: 5/2 OPEC+ 장관급 회의(증산 여부 결정), 이란 외교 협상 동향</li>
+      <li><strong>Watch point</strong>: OPEC+ 증산 확정 여부(금요일 급락이 선반영인지 확인 필요). 호르무즈 추가 사건 리스크</li>
+      <li><strong>If-Then</strong>: OPEC+ 증산 확정 → Brent $90 하향 → 인플레 우려 완화 → 비둘기 시나리오 강화. 호르무즈 추가 사건 → Brent $108+ → Bear 시나리오 직행</li>
+    </ul>
+  </div>
+</div>
+
+<div class="risk-ol">
+  <h4>⚠ W18 통합 리스크 3가지</h4>
+  <ul>
+    <li><strong>[HIGH] FOMC 매파 전환</strong>: 유가 $94~99 + 고용 호조 조합에서 파월이 "인플레 우려 재부상" 언급 시 US 10Y 4.50% 돌파, 기술주 밸류에이션 압박. KOSPI PER 26.8배가 이 시나리오에서 가장 취약</li>
+    <li><strong>[HIGH] 이란 호르무즈 재발</strong>: 금요일 유가 급락이 OPEC+ 합의 미확정 + 혁명수비대 패턴 구조적 지속이라는 점에서 일시적일 수 있음. Brent $105 재돌파 시 인플레→금리→성장주 매도 사이클 재가동</li>
+    <li><strong>[MED] KOSPI 차익실현 집중</strong>: YTD +50%, PER 26.8배 진입. 5/1 한국 근로자의 날 휴장 전후 외국인 포지션 정리 집중 리스크. 6,200 이탈 시 지지선 확인 필요</li>
+  </ul>
+</div>
+
+<div class="pos-box">
+  <h4>📊 W18 Base 시나리오 하 포지셔닝 시사점</h4>
+  <div class="pos-grid">
+    <div class="pos-item"><div class="pos-label">한국 주식</div><div class="pos-val ow">OW</div></div>
+    <div class="pos-item"><div class="pos-label">대만 주식</div><div class="pos-val ow">OW</div></div>
+    <div class="pos-item"><div class="pos-label">미국 기술</div><div class="pos-val ow">OW</div></div>
+    <div class="pos-item"><div class="pos-label">유럽 주식</div><div class="pos-val uw">UW</div></div>
+    <div class="pos-item"><div class="pos-label">미국 장기채</div><div class="pos-val uw">UW</div></div>
+    <div class="pos-item"><div class="pos-label">미국 단기채</div><div class="pos-val n">N</div></div>
+    <div class="pos-item"><div class="pos-label">Gold</div><div class="pos-val n">N</div></div>
+    <div class="pos-item"><div class="pos-label">원유</div><div class="pos-val n">N →UW</div></div>
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin-top:12px;">OW=비중확대 / N=중립 / UW=비중축소. 이 표는 방향성 참고용이며 매수·매도 직접 권유가 아닙니다.</div>
+</div>
+</div><!-- /tab-pm -->
