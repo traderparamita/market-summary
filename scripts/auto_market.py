@@ -327,5 +327,6 @@ def main() -> None:
         print(f"  [WARN] drift 검증 자체 실패: {e}")
 
 
+
 if __name__ == "__main__":
     main()
