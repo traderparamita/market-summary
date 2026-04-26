@@ -236,23 +236,37 @@ def main():
         print(f"    Fetched {before} rows, {len(df)} new")
         all_new.append(df)
 
-    if not all_new:
+    # CSV 업데이트
+    new_dfs = [d for d in all_new if not d.empty]
+    if new_dfs:
+        new_df = pd.concat(new_dfs, ignore_index=True)
+        print(f"\nTotal new rows: {len(new_df)}")
+        n = append_save_csv(HISTORY_CSV, existing, new_df)
+        print(f"CSV updated: {len(existing) + n} total rows")
+    else:
+        new_df = pd.DataFrame(columns=CSV_COLUMNS)
         print("\nNo new data to add.")
-        return
 
-    new_df = pd.concat(all_new, ignore_index=True)
-    print(f"\nTotal new rows: {len(new_df)}")
-
-    n = append_save_csv(HISTORY_CSV, existing, new_df)
-    print(f"CSV updated: {len(existing) + n} total rows")
-
-    # MKT200_MACRO_DAILY upsert (자동 — 다른 collector 와 일관)
+    # MKT200_MACRO_DAILY upsert — new rows 없어도 최신 날짜 데이터는 항상 적재
     try:
         import sys as _sys
         from pathlib import Path as _Path
         _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent.parent))
         from snowflake_loader import sync_macro_rows
-        sync_macro_rows(new_df.to_dict("records"), source="collect_macro")
+
+        if not new_df.empty:
+            # 새 데이터가 있으면 그것만 upsert
+            rows_to_sync = new_df.to_dict("records")
+            print(f"[SNOWFLAKE] Upserting {len(rows_to_sync)} new rows ...")
+        else:
+            # new rows 없으면 CSV에서 최신 날짜 행을 upsert (항상 Snowflake 동기화)
+            full_csv = pd.read_csv(HISTORY_CSV)
+            latest_date = full_csv["DATE"].max()
+            latest_rows = full_csv[full_csv["DATE"] == latest_date]
+            rows_to_sync = latest_rows.to_dict("records")
+            print(f"[SNOWFLAKE] No new rows — syncing latest date {latest_date} ({len(rows_to_sync)} rows) ...")
+
+        sync_macro_rows(rows_to_sync, source="collect_macro")
     except Exception as e:
         try:
             from snowflake_loader import _alert_failure
