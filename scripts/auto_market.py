@@ -1,6 +1,6 @@
 """scripts/auto_market.py — 일일 시장 보고서 완전 자동화
 
-매일 06:50 KST macOS launchd가 이 스크립트를 실행한다.
+일 18:50 + 화~금 06:50 KST macOS launchd가 이 스크립트를 실행한다.
 
   claude --dangerously-skip-permissions -p "/market-full DATE"
 
@@ -66,20 +66,33 @@ KEY_METRICS = [
 # 1. 날짜 유틸
 # ─────────────────────────────────────────────────────────────
 
-def prev_business_day() -> str:
-    """06:50 KST 실행 시점 기준 전 영업일 = 보고서 대상 날짜.
+def _is_kr_holiday(d: date) -> bool:
+    import holidays
+    return d in holidays.KR(years=d.year)
 
-    실행일(스크립트 구동일)과 보고서 날짜는 다르다:
-      월요일 06:50 실행 → 금요일 보고서
-      화~금  06:50 실행 → 전날 보고서
+
+def _prev_biz(d: date) -> date:
+    """d 직전 영업일 (주말 + 한국 공휴일 건너뜀)."""
+    d -= timedelta(days=1)
+    while d.weekday() >= 5 or _is_kr_holiday(d):
+        d -= timedelta(days=1)
+    return d
+
+
+def prev_business_day() -> str:
+    """실행 시점 기준 전 영업일 = 보고서 대상 날짜.
+
+    일요일 18:50 실행 → 직전 영업일 (보통 금요일, 공휴일이면 그 전)
+    화~금  06:50 실행 → 직전 영업일 (보통 전날, 공휴일이면 그 전)
     """
     today = datetime.now(KST).date()
-    days_back = 3 if today.weekday() == 0 else 1  # 월=금요일, 그 외=전날
-    return (today - timedelta(days=days_back)).isoformat()
+    return _prev_biz(today).isoformat()
 
 
-def is_weekend() -> bool:
-    return datetime.now(KST).date().weekday() >= 5
+def should_skip() -> bool:
+    """월요일·토요일은 스킵 (일요일이 금요일 보고서 담당)."""
+    wd = datetime.now(KST).date().weekday()
+    return wd in (0, 5)  # 0=월, 5=토
 
 
 # ─────────────────────────────────────────────────────────────
@@ -279,8 +292,8 @@ def main() -> None:
     if len(sys.argv) > 1:
         date_str = sys.argv[1]          # 수동 지정 (테스트용)
     else:
-        if is_weekend():
-            print("주말입니다. 실행을 건너뜁니다.")
+        if should_skip():
+            print("월요일/토요일입니다. 실행을 건너뜁니다.")
             return
         date_str = prev_business_day()  # 전 영업일 자동 계산
 
