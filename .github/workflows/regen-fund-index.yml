@@ -1,4 +1,4 @@
-name: Regenerate Fund Index
+name: Regenerate Fund & Securities Index
 
 # Pre-signed URL은 7일 만료. 업로드 시점 + 매일 한 번 자동 재생성하여
 # 사용자 index.html 이 항상 신선한 URL을 갖도록 한다.
@@ -34,22 +34,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install boto3 python-dotenv
 
-      - name: Regenerate output/fund/index.html
+      - name: Regenerate index pages
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ap-northeast-2
         run: |
           python scripts/generate_fund_index.py
+          python scripts/generate_securities_index.py
 
       - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet output/fund/index.html; then
+          git add output/fund/index.html output/securities/index.html
+          if git diff --cached --quiet; then
             echo "No changes — skip commit."
           else
-            git add output/fund/index.html
             git commit -m "chore: fund index auto-regen ($(date -u +'%Y-%m-%d %H:%MZ'))"
             git push origin HEAD
           fi

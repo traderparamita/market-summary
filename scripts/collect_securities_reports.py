@@ -313,6 +313,14 @@ def main() -> None:
     print(f"  실패: {failed}건")
 
     if not args.dry_run and uploaded > 0:
+        # 인덱스 페이지 재생성
+        try:
+            from generate_securities_index import main as regen_index
+            print("\n[4/4] 인덱스 페이지 재생성...")
+            regen_index()
+        except Exception as e:
+            print(f"  WARN: 인덱스 재생성 실패: {e}")
+
         week_label = f"{start.strftime('%m/%d')}~{end.strftime('%m/%d')}"
         msg = (
             f"<b>미래에셋증권 보고서 수집 완료</b>\n"
