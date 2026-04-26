@@ -23,6 +23,7 @@ generate_periodic.py      # 주간/월간/분기 집계 (--only {weekly|monthly|
 generate_sector_country.py # 섹터·국가 보고서 (11일 사이클)
 snowflake_loader.py       # CSV ↔ Snowflake 적재 유틸
 simulate.py               # 과거 날짜 시뮬레이션
+scripts/collect_securities_reports.py  # 미래에셋증권 상세분석 보고서 S3 주간 수집
 history/market_data.csv       # 일별 시계열 (10컬럼 대문자)
 history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
 
@@ -64,11 +65,20 @@ portfolio/
 `generate_sector_country.py`의 `get_focus(date)` 로 자동 계산. 기준일 2026-01-05, 영업일 기준 독립 순환.
 국가: KR(1)·US(2)·CN(3)·JP(4)·EU(5)·UK(6)·DE(7)·FR(8)·IN(9)·TW(10)·EM(11)
 
+## 증권사 보고서 수집
+
+`scripts/collect_securities_reports.py` — 미래에셋증권 상세분석(categoryId=1521) 게시판 스크래핑.
+- 매주 일요일 19:30 KST launchd 자동 실행 (직전 영업주 월~금 수집)
+- S3: `s3://mai-life-fund-documents-.../anthillia/miraeasset-securities/YYYY-MM/`
+- attachmentId 기반 중복 방지, 완료 시 Telegram 알림
+- 수동: `.venv/bin/python scripts/collect_securities_reports.py --week-of YYYY-MM-DD`
+
 ## 관련 설정
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅
 - `.claude/skills/`: `market-summary`, `sector-country` 스킬
 - `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/sector-country`
+- `scripts/com.lifesailor.securities-reports.plist`: 증권 보고서 수집 launchd 스케줄
 
 ## 상세 문서
 
