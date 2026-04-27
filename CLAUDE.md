@@ -88,15 +88,26 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - PRISM 보고서: `prism/<카테고리>/YYYY/MM/` (증분 스캔, `logs/prism_last_page.txt` 추적)
 - 수동: `--week-of YYYY-MM-DD` (증권), `--full` (PRISM 전체 재스캔)
 
+## 보고서 수치 자동 검증
+
+`/market-full` Step 7.7 + Stop 훅이 turn 종료 시마다 호출. Story 본문의 종가·등락률·bp 변화를 `history/market_data.csv` ground truth와 자동 대조 → 위반 발견 시 commit 차단 + Telegram 알림.
+
+```bash
+.venv/bin/python scripts/verify_report_numbers.py --auto --telegram
+```
+
+상세: [docs/verify-numbers.md](docs/verify-numbers.md)
+
 ## 관련 설정
 
-- `.claude/settings.json`: Story 시간 정확성 검증 훅
+- `.claude/settings.json`: Story 시간 정확성 검증 훅 + Stop 훅 (수치 자동 검증)
 - `.claude/skills/`: `market-summary`, `sector-country` 스킬
 - `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/sector-country`
 
 ## 상세 문서
 
 - [docs/data-sources.md](docs/data-sources.md) — 수집 대상·소스·CSV 스키마·Snowflake 연동
+- [docs/verify-numbers.md](docs/verify-numbers.md) — 보고서 수치 자동 검증 (패턴·가드·운영 가이드)
 - [docs/fund-analysis.md](docs/fund-analysis.md) — Fund S3 저장소·pre-signed URL·재생성
 - Portfolio Agent / View Agent / Sector Rotation 문서는 [market-strategy](file:///Users/lifesailor/Desktop/kosmos/ai/investment/market-strategy) 리포로 이전
 - [docs/output-structure.md](docs/output-structure.md) — output/ 디렉터리 트리·보고서 탭 구성
