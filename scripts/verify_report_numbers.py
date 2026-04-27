@@ -238,6 +238,37 @@ MD_TABLE_3COL = re.compile(
     re.MULTILINE,
 )
 
+# 단락 경계 — HL_SPAN 윈도우를 다른 단락에서 차단
+# (heading 태그 </h1>~</h6>는 제외 — 헤더의 "WTD" 같은 라벨이 그 섹션의 컨텍스트를 제공해야 하므로)
+PARA_BOUNDARIES = ('<br><br>', '<br /><br />', '<br/><br/>', '</p>', '</li>', '</div>')
+
+# 일간 컨텍스트 시그널 — "4/8(수)" 같이 일자+한글요일 명시. 매칭되면 그 span은 일간 등락으로 간주 → 검증 스킵
+DAILY_HINT_PATTERN = re.compile(r'\d{1,2}/\d{1,2}\s*\([월화수목금토일]\)')
+
+
+def _trim_window_to_paragraph(text: str, span_start: int, span_end: int,
+                               max_back: int = 400, max_forward: int = 80) -> str:
+    """span 직전·직후 가장 가까운 단락 경계까지 윈도우를 자른다."""
+    win_start = max(0, span_start - max_back)
+    seg_back = text[win_start:span_start]
+    last_b = -1
+    for b in PARA_BOUNDARIES:
+        idx = seg_back.rfind(b)
+        if idx > last_b:
+            last_b = idx + len(b)
+    if last_b > 0:
+        win_start = win_start + last_b
+
+    win_end = min(len(text), span_end + max_forward)
+    seg_fwd = text[span_end:win_end]
+    first_b = len(seg_fwd)
+    for b in PARA_BOUNDARIES:
+        idx = seg_fwd.find(b)
+        if 0 <= idx < first_b:
+            first_b = idx
+    win_end = span_end + first_b
+    return text[win_start:win_end]
+
 
 # ── 검증 본체 ────────────────────────────────────────────────────
 def _check_pct(
@@ -424,9 +455,14 @@ def verify(file_path: Path, prices) -> list[Violation]:
 
     for m in HL_SPAN_PATTERN.finditer(text):
         asset, val, unit = m.group(1), m.group(2), m.group(3)
-        window = text[max(0, m.start() - 300): m.end() + 40]
+        # 단락 경계로 자른 윈도우 — 다른 단락의 키워드가 들어오지 않도록
+        window = _trim_window_to_paragraph(text, m.start(), m.end())
 
-        # 명시 period 키워드 (가장 가까운 것 우선)
+        # 일간 컨텍스트 시그널 ("4/8(수)" 같은 일자+요일) — 일간 등락 인용으로 보고 검증 스킵
+        if DAILY_HINT_PATTERN.search(window):
+            continue
+
+        # 명시 period 키워드 (잘린 단락 안에서)
         period = None
         for p, hints in PERIOD_HINTS.items():
             if p not in periods:
