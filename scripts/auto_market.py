@@ -312,7 +312,7 @@ def main() -> None:
 
     # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
     # CSV ↔ MKT100/MKT200 일치 여부 자동 검증. 불일치 시 Telegram 알림.
-    print("\n[3/3] Snowflake drift 검증 ...")
+    print("\n[3/4] Snowflake drift 검증 ...")
     try:
         drift_result = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "verify_snowflake_drift.py"), date_str],
@@ -325,6 +325,40 @@ def main() -> None:
             print(f"  [WARN] drift 감지 (exit {drift_result.returncode}) — Telegram 알림 발송됨")
     except Exception as e:
         print(f"  [WARN] drift 검증 자체 실패: {e}")
+
+    # ── AI Board 카드뉴스 자동 생성 (일요일 weekly 런 한정) ──────────────
+    # market-summary 가 W## HTML 을 막 끝낸 직후, 이를 입력으로
+    # 미래에셋생명 AI Board 카드뉴스 + 게시글을 생성·푸시.
+    # 일요일에만 실행 (월~금 daily 런은 weekly 보고서가 안 만들어지므로 스킵).
+    print("\n[4/4] AI Board 카드뉴스 생성 ...")
+    today_wd = datetime.now(KST).date().weekday()  # 0=월 ... 6=일
+    if today_wd != 6:
+        print(f"  → 스킵 (일요일만 실행, 오늘 weekday={today_wd})")
+    else:
+        cardnews_sh = Path(
+            "/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/"
+            "malife_ai_board/scripts/run_weekly_cardnews.sh"
+        )
+        if not cardnews_sh.exists():
+            print(f"  [skip] wrapper 없음: {cardnews_sh}")
+        else:
+            try:
+                cn = subprocess.run(
+                    ["/bin/zsh", str(cardnews_sh), "chained"],
+                    timeout=2400,  # 40분 (claude 카드 생성 + 검수 + 커밋)
+                    capture_output=True, text=True,
+                )
+                print(cn.stdout[-2000:])
+                if cn.stderr:
+                    print("[STDERR]", cn.stderr[-500:])
+                if cn.returncode == 0:
+                    print("  → 카드뉴스 발행 완료")
+                else:
+                    print(f"  [WARN] 카드뉴스 실패 (exit {cn.returncode})")
+            except subprocess.TimeoutExpired:
+                print("  [WARN] 카드뉴스 타임아웃 (40분 초과)")
+            except Exception as e:
+                print(f"  [WARN] 카드뉴스 호출 실패: {e}")
 
 
 
