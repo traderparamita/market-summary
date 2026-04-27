@@ -505,6 +505,35 @@ def format_human(violations: list[Violation], n_files: int) -> str:
     return "\n".join(lines)
 
 
+def _send_telegram(violations: list[Violation], n_files: int) -> None:
+    """위반 발견 시 Telegram 알림. notify_telegram.send() 재사용."""
+    try:
+        sys.path.insert(0, str(ROOT))
+        from notify_telegram import send as tg_send  # type: ignore
+    except ImportError:
+        print("[verify] ! notify_telegram 모듈 import 실패 — Telegram 발송 스킵")
+        return
+
+    n_show = min(len(violations), 10)
+    lines = [
+        f"🚨 *보고서 수치 검증 위반 {len(violations)}건* (대상 {n_files}개 파일)",
+        "",
+    ]
+    for v in violations[:n_show]:
+        fname = Path(v.file).name
+        lines.append(f"`{fname}` :: *{v.asset} {v.period}*")
+        lines.append(f"  보고서 `{v.reported}`  →  실제 `{v.expected}`  (차이 `{v.diff}`)")
+    if len(violations) > n_show:
+        lines.append(f"\n_... 외 {len(violations) - n_show}건_")
+    lines.append("")
+    lines.append("→ Story 또는 보고서를 ground truth(`history/market_data.csv`)에 맞춰 수정 필요.")
+    msg = "\n".join(lines)
+    try:
+        tg_send(msg)
+    except Exception as e:
+        print(f"[verify] ! Telegram 발송 실패: {e}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("files", nargs="*", type=Path)
@@ -512,6 +541,8 @@ def main() -> int:
                     help="git diff 기반 변경 파일 자동 감지")
     ap.add_argument("--json", action="store_true",
                     help="JSON 출력 (hooks/CI 용)")
+    ap.add_argument("--telegram", action="store_true",
+                    help="위반 발견 시 Telegram 알림 발송 (notify_telegram.send 재사용)")
     args = ap.parse_args()
 
     files = list(args.files)
@@ -547,6 +578,9 @@ def main() -> int:
         ))
     else:
         print(format_human(all_v, len(files)))
+
+    if all_v and args.telegram:
+        _send_telegram(all_v, len(files))
 
     return 1 if all_v else 0
 

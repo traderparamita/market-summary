@@ -241,7 +241,7 @@ Step 1~7.6에서 작성·갱신된 일간/주간/월간 보고서의 종가·등
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
-  .venv/bin/python scripts/verify_report_numbers.py --auto
+  .venv/bin/python scripts/verify_report_numbers.py --auto --telegram
 ```
 
 **검증 항목** (Phase 1):
