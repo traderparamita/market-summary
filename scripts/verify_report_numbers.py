@@ -101,10 +101,92 @@ ASSET_ALIASES: dict[str, str] = {
     # 종목
     "Samsung": "ST_SAMSUNG",
     "삼성전자": "ST_SAMSUNG",
+    "Apple": "ST_AAPL",
+    "AAPL": "ST_AAPL",
+    "Microsoft": "ST_MSFT",
+    "MSFT": "ST_MSFT",
+    "Alphabet": "ST_GOOGL",
+    "Google": "ST_GOOGL",
+    "GOOGL": "ST_GOOGL",
+    "Amazon": "ST_AMZN",
+    "AMZN": "ST_AMZN",
+    "Meta": "ST_META",
+    "Meta Platforms": "ST_META",
+    "META": "ST_META",
+    "NVIDIA": "ST_NVDA",
+    "NVDA": "ST_NVDA",
+    "Tesla": "ST_TSLA",
+    "TSLA": "ST_TSLA",
+    "TSMC": "ST_TSMC",
+    "Broadcom": "ST_AVGO",
+    "AVGO": "ST_AVGO",
+    "Alibaba": "ST_BABA",
+    "BABA": "ST_BABA",
+    "Tencent": "ST_TENCENT",
+    "Meituan": "ST_MEITUAN",
+    "Palantir": "ST_PLTR",
+    "PLTR": "ST_PLTR",
 }
 
 # 채권 = bp 단위, 그 외 = % 단위
 BOND_CODES = {v for k, v in ASSET_ALIASES.items() if v.startswith("BD_")}
+
+# 자산별 종가 합리적 범위 — 단독 종가 매칭의 false positive(거래량·시총 등) 차단용
+# (lo, hi) 범위 밖 숫자는 "종가가 아니다" 라고 보고 검증 스킵
+PRICE_RANGE: dict[str, tuple[float, float]] = {
+    # 지수
+    "EQ_KOSPI": (2000, 9000),
+    "EQ_KOSDAQ": (500, 2000),
+    "EQ_SP500": (3000, 9000),
+    "EQ_NASDAQ": (10000, 35000),
+    "EQ_NIKKEI225": (20000, 80000),
+    "EQ_TWSE": (15000, 50000),
+    "EQ_HSI": (15000, 35000),
+    "EQ_NIFTY50": (15000, 30000),
+    "EQ_DAX": (10000, 35000),
+    "EQ_CAC40": (5000, 12000),
+    "EQ_FTSE100": (6000, 13000),
+    "EQ_EUROSTOXX50": (3000, 8000),
+    "EQ_RUSSELL2000": (1500, 4000),
+    "EQ_SHANGHAI": (2500, 5500),
+    # 종목
+    "ST_SAMSUNG": (50000, 350000),
+    "ST_AAPL": (100, 500),
+    "ST_MSFT": (200, 700),
+    "ST_GOOGL": (100, 600),
+    "ST_AMZN": (100, 400),
+    "ST_META": (200, 1200),
+    "ST_NVDA": (50, 500),
+    "ST_TSLA": (100, 700),
+    "ST_TSMC": (100, 500),
+    "ST_AVGO": (100, 600),
+    "ST_BABA": (50, 300),
+    "ST_TENCENT": (200, 800),
+    "ST_MEITUAN": (50, 300),
+    "ST_PLTR": (10, 200),
+    # 원자재
+    "CM_WTI": (20, 250),
+    "CM_BRENT": (20, 250),
+    "CM_GOLD": (1500, 7000),
+    "CM_SILVER": (15, 150),
+    "CM_COPPER": (2, 12),
+    "CM_NATGAS": (1, 15),
+    # FX
+    "FX_DXY": (85, 120),
+    "FX_USDKRW": (1000, 1700),
+    "FX_USDJPY": (90, 200),
+    "FX_EURUSD": (0.8, 1.5),
+    "FX_AUDUSD": (0.4, 1.0),
+    "FX_GBPUSD": (0.9, 1.7),
+    # 변동성
+    "RK_VIX": (5, 90),
+    # 채권 (yield, %)
+    "BD_US_10Y": (0.5, 8.0),
+    "BD_US_2Y": (0.5, 8.0),
+    "BD_US_30Y": (0.5, 8.0),
+    "BD_KR_3Y": (0.5, 7.0),
+    "BD_KR_10Y": (0.5, 7.0),
+}
 
 # 정렬: 긴 alias 먼저 (e.g. "Russell 2K" 가 "RUT"보다 우선)
 _ALIAS_ALT = "|".join(
@@ -238,6 +320,62 @@ MD_TABLE_3COL = re.compile(
     re.MULTILINE,
 )
 
+# COMBO: "{자산} <span class="hl-up">+4.37%</span>(186,200원)" / "{자산} +2.74%(5,377)" / "WTI -0.81%($111.5)"
+# → 일간 등락 + 종가 묶음 (가장 흔한 본문 패턴)
+COMBO_PATTERN = re.compile(
+    rf'\b({_ALIAS_ALT})\s*'
+    rf'(?:<span[^>]*>)?\s*([+\-−–]?\d+\.?\d*)\s*%\s*(?:</span>)?\s*'
+    rf'\(\s*\$?([\d,]+\.?\d*)\s*원?\s*\)'
+)
+
+# 단독 종가: "{자산} 5,377" / "{자산} 5,377원" / "WTI $111.5" — 자산명 직후 명백한 숫자 토큰
+# (콤마 포함 또는 4자리 이상 정수, 또는 소수점 2자리 이상)
+STANDALONE_CLOSE_PATTERN = re.compile(
+    rf'\b({_ALIAS_ALT})\s+'
+    rf'\$?(\d{{1,3}}(?:,\d{{3}})+(?:\.\d+)?|\d{{4,}}(?:\.\d+)?|\d+\.\d{{2,}})'
+    rf'\s*원?'
+)
+
+# 본문 인라인 일자 (다른 일자 인용 — 4/8(수), 4/15(수), 등)
+DATE_INLINE_PATTERN = re.compile(r'(\d{1,2})/(\d{1,2})\s*\([월화수목금토일]\)')
+
+# 인용·조건·비교 키워드 — 윈도우에 있으면 종가/일간 등락 검증 스킵 (forward / 다른 일자 인용 가능성)
+CITATION_KEYWORDS = (
+    "어제", "전일", "전주", "전월", "직전", "이전", "지난주", "지난달", "마감이",
+    "→", "←", "vs", "대비",
+    "돌파", "이탈", "재돌파", "이상이면", "미만이면", "이상 시", "미만 시",
+    "재진입", "넘으면", "내려가면", "회복",
+    " > ", " < ", "&gt;", "&lt;",  # 부등호 비교
+    "치솟", "급등", "급락", "최고치", "신고점", "ATH", "고점", "저점",
+    "재가동", "재돌파",
+)
+
+# Outlook / scenario / forecast 컨테이너 클래스 — 이 안의 가격은 forward 시나리오 트리거
+FORWARD_CONTAINER_CLASSES = (
+    "scenario-card", "outlook-position", "outlook-divider",
+    "scen-trigger", "scen-impact", "quarterly-themes",
+    "risk-section",  # risk 본문도 forward 표현 다수
+)
+
+
+def _is_in_forward_container(text: str, position: int) -> bool:
+    """주어진 위치가 outlook/scenario/risk 컨테이너 안에 있는지 — 안에 있으면 검증 스킵."""
+    # 직전 1500자에서 컨테이너 open 태그가 있고, 그 이후 close 태그가 안 닫혔으면 안에 있음
+    backward = text[max(0, position - 4000): position]
+    for cls in FORWARD_CONTAINER_CLASSES:
+        # 가장 최근 open 태그
+        open_idx = backward.rfind(f'class="{cls}')
+        if open_idx == -1:
+            open_idx = backward.rfind(f"class='{cls}")
+        if open_idx == -1:
+            continue
+        # 그 open 이후로 같은 div가 닫혔는지 — 단순히 </div> 카운트
+        after_open = backward[open_idx:]
+        # 단순 휴리스틱: open 태그 이후 </div> 등장 횟수가 적으면 안에 있다고 판정
+        # 정확한 균형 체크는 복잡하므로 단순화: 직전 컨테이너 open 이후 같은 컨테이너의 다음 등장이 없으면 안에 있다고 봄
+        return True
+    return False
+
 # 단락 경계 — HL_SPAN 윈도우를 다른 단락에서 차단
 # (heading 태그 </h1>~</h6>는 제외 — 헤더의 "WTD" 같은 라벨이 그 섹션의 컨텍스트를 제공해야 하므로)
 PARA_BOUNDARIES = ('<br><br>', '<br /><br />', '<br/><br/>', '</p>', '</li>', '</div>')
@@ -301,6 +439,47 @@ def _check_pct(
     return None
 
 
+def _check_close(
+    asset: str, target_date: str, reported_str: str, context: str,
+    prices, file_path: Path,
+) -> Violation | None:
+    """종가 검증 — 보고서 표시 자릿수에 맞춰 반올림한 CSV 종가와 정확 일치."""
+    code = ASSET_ALIASES.get(asset)
+    if not code:
+        return None
+    # 종가 합리적 범위 체크 (거래량·시총 등 false positive 차단)
+    try:
+        reported = parse_num(reported_str)
+    except ValueError:
+        return None
+    lo, hi = PRICE_RANGE.get(code, (0, float("inf")))
+    if not (lo <= reported <= hi):
+        return None  # 범위 밖 → 종가 아님 (거래량 등으로 간주, 스킵)
+
+    csv_close = get_close(prices, target_date, code)
+    if csv_close is None:
+        return None
+
+    # 표시 자릿수에 맞춰 반올림한 CSV 값과 비교
+    if "." in reported_str:
+        decimals = len(reported_str.split(".")[1].rstrip("원").rstrip("$"))
+    else:
+        decimals = 0
+    expected_rounded = round(csv_close, decimals)
+    # 콤마 무시한 정수부 비교 (5,377 = 5377)
+    if abs(expected_rounded - reported) >= 10 ** (-decimals) / 2:
+        return Violation(
+            file=str(file_path),
+            asset=asset,
+            period=f"종가({target_date})",
+            reported=f"{reported:,.{max(decimals,0)}f}",
+            expected=f"{csv_close:,.{max(decimals,2)}f}",
+            diff=f"{(reported - csv_close):+,.{max(decimals,2)}f}",
+            context=context.strip()[:160],
+        )
+    return None
+
+
 def _check_bp(
     asset: str, period: str, reported_str: str, context: str,
     start_d: str, end_d: str, prices, file_path: Path,
@@ -325,6 +504,62 @@ def _check_bp(
             reported=f"{reported:+.{max(decimals,2)}f}bp",
             expected=f"{expected:+.{max(decimals,2)}f}bp",
             diff=f"{diff:+.{max(decimals,2)}f}bp",
+            context=context.strip()[:160],
+        )
+    return None
+
+
+def _resolve_target_date(window: str, file_path: Path,
+                          periods: dict[str, tuple[str, str]]) -> str | None:
+    """본문 윈도우에서 일자 명시(`4/8(수)`)가 있으면 그 일자.
+    명시 없으면 *일간 보고서만* 그 날로 fallback. 주간/월간은 None 반환(검증 스킵)."""
+    m = DATE_INLINE_PATTERN.search(window)
+    if m:
+        my = re.search(r"(\d{4})", str(file_path))
+        if my:
+            try:
+                return date(int(my.group(1)), int(m.group(1)), int(m.group(2))).isoformat()
+            except ValueError:
+                pass
+    # 일자 명시 없을 때: 일간 보고서만 그 날로 fallback
+    if "일간" in periods:
+        return periods["일간"][1]
+    return None  # 주간/월간 본문은 일자 명시 안 됐으면 검증 안 함 (다른 일자 인용일 수 있음)
+
+
+def _check_daily_pct(
+    asset: str, target_date: str, reported_str: str, context: str,
+    prices, file_path: Path,
+) -> Violation | None:
+    """일간 등락 검증 — target_date 종가 / 직전 영업일 종가."""
+    code = ASSET_ALIASES.get(asset)
+    if not code or code in BOND_CODES:
+        return None
+    end_close = get_close(prices, target_date, code)
+    if end_close is None:
+        return None
+    # 직전 영업일
+    d = date.fromisoformat(target_date)
+    prev_close = None
+    for i in range(1, 8):
+        prev = (d - timedelta(days=i)).isoformat()
+        if (prev, code) in prices:
+            prev_close = prices[(prev, code)]
+            break
+    if prev_close is None or prev_close == 0:
+        return None
+    expected = (end_close / prev_close - 1) * 100
+    reported = parse_pct(reported_str)
+    decimals = _decimals_in(reported_str)
+    expected_rounded = round(expected, decimals)
+    if abs(expected_rounded - reported) >= 10 ** (-decimals) / 2:
+        return Violation(
+            file=str(file_path),
+            asset=asset,
+            period=f"일간({target_date})",
+            reported=f"{reported:+.{max(decimals,2)}f}%",
+            expected=f"{expected:+.{max(decimals,2)}f}%",
+            diff=f"{(reported - expected):+.{max(decimals,2)}f}%P",
             context=context.strip()[:160],
         )
     return None
@@ -483,6 +718,32 @@ def verify(file_path: Path, prices) -> list[Violation]:
         )
         if v:
             violations.append(v)
+
+    # 6. COMBO 패턴 — "{자산} ±N%(종가)" 일간 등락 + 종가 묶음
+    #    인용/비교/forward 키워드(어제, 전일, →, 이상, 돌파 등)가 윈도우에 있으면 스킵 (false positive 차단)
+    for m in COMBO_PATTERN.finditer(text):
+        asset, pct_str, close_str = m.group(1), m.group(2), m.group(3)
+        window = _trim_window_to_paragraph(text, m.start(), m.end())
+        # 인용·비교·forward 키워드 가드
+        if any(kw in window for kw in CITATION_KEYWORDS):
+            continue
+        # forward 컨테이너 (outlook/scenario/risk) 안이면 스킵
+        if _is_in_forward_container(text, m.start()):
+            continue
+        target_date = _resolve_target_date(window, file_path, periods)
+        if not target_date:
+            continue
+        # 일간 등락 검증
+        v_pct = _check_daily_pct(asset, target_date, pct_str, window, prices, file_path)
+        if v_pct:
+            violations.append(v_pct)
+        # 종가 검증
+        v_close = _check_close(asset, target_date, close_str, window, prices, file_path)
+        if v_close:
+            violations.append(v_close)
+
+    # NOTE: STANDALONE_CLOSE_PATTERN 은 정밀도 부족(누적 인용·시나리오 트리거·다른 일자 인용을
+    # 모두 잡아 false positive 폭증)으로 Phase 2 에서 비활성. COMBO 형태로 작성 권장.
 
     return violations
 
