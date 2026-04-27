@@ -101,8 +101,12 @@ def generate_html(data):
     # === 히트맵 행 생성 ===
     def heatmap_row(name, d, show_dollar=False, as_bp=False):
         close = d["close"]
-        is_hol = d.get("holiday", False)
-        hol_note = d.get("holiday_note", "")
+        # data_status: "ok" | "holiday" | "stale" (legacy holiday flag fallback for old JSON)
+        status = d.get("data_status")
+        if status is None:
+            status = "holiday" if d.get("holiday", False) else "ok"
+        is_hol = (status == "holiday")
+        is_stale = (status == "stale")
 
         if as_bp:
             close_str = f"{close:.2f}%"
@@ -111,17 +115,19 @@ def generate_html(data):
         else:
             close_str = fmt(close, 0) if close > 100 else fmt(close, 2)
 
-        # 휴일이면 이름 옆에 표시
+        # 휴일/지연이면 이름 옆에 배지
         name_display = name
         if is_hol:
             name_display = f'{name} <span style="font-size:10px;color:var(--warn);font-weight:400;">(Holiday)</span>'
+        elif is_stale:
+            name_display = f'{name} <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span>'
 
         spark = spark_svg(d.get("spark", []))
         cells = ""
         for period in ["daily", "weekly", "monthly", "ytd"]:
             v = d[period]
-            if is_hol and period == "daily":
-                # 휴일: 전일 종가 유지, 0 변화, 회색 배경
+            if (is_hol or is_stale) and period == "daily":
+                # 휴일/지연: 전일 종가 유지, 0 변화, 회색 배경
                 zero_txt = "0 bp" if as_bp else "0.00%"
                 cells += f'<td class="heat-cell" style="background:#f7f8fa;color:#7c8298">{zero_txt}</td>'
             else:

@@ -33,6 +33,12 @@ try:
 except ImportError:
     HAS_INVESTINY = False
 
+try:
+    import holidays as _holidays_lib
+    HAS_HOLIDAYS = True
+except ImportError:
+    HAS_HOLIDAYS = False
+
 # ── Paths ────────────────────────────────────────────────────────
 HISTORY_DIR = os.path.join(os.path.dirname(__file__), "history")
 HISTORY_CSV = os.path.join(HISTORY_DIR, "market_data.csv")
@@ -57,6 +63,81 @@ FDR_FALLBACK = {
     "JPY=X":    "USD/JPY",
     "CNY=X":    "USD/CNY",
 }
+
+# Naver Finance 글로벌 지수 fallback (worldDayListJson API, 인증 불필요)
+# key: yfinance ticker, value: Naver symbol (예: 'NII@NI225')
+NAVER_FALLBACK = {
+    "^N225":      "NII@NI225",     # Nikkei 225
+    "^HSI":       "HSI@HSI",       # Hang Seng
+    "000001.SS":  "SHS@000001",    # Shanghai Composite
+    "^GDAXI":     "XTR@DAX30",     # DAX
+    "^FCHI":      "PAS@CAC40",     # CAC 40
+    "^STOXX50E":  "STX@SX5E",      # Euro Stoxx 50
+    "^FTSE":      "LNS@FTSE100",   # FTSE 100
+    "^GSPC":      "SPI@SPX",       # S&P 500
+    "^IXIC":      "NAS@IXIC",      # NASDAQ
+}
+
+# 티커 → 시장 코드 (holidays 라이브러리 키). data_status 판정용.
+# 매핑이 없는 티커는 휴일 판별을 건너뛴다 (commodity, FX, multi-region ETF 등).
+TICKER_MARKET = {
+    # KR equities + ETFs (KOSPI/KOSDAQ + .KS suffix)
+    "^KS11": "KR", "^KQ11": "KR", "^KS11V": "KR",
+    # JP
+    "^N225": "JP",
+    # CN (mainland)
+    "000001.SS": "CN",
+    # HK
+    "^HSI": "HK",
+    # IN
+    "^NSEI": "IN",
+    # TW
+    "^TWII": "TW",
+    # US (S&P/NASDAQ/Russell + most US-listed ETFs/stocks)
+    "^GSPC": "US", "^IXIC": "US", "^RUT": "US",
+    "^VIX": "US", "^VIX3M": "US",
+    "^TNX": "US", "^TYX": "US", "^IRX": "US",
+    # EU - 국가별 (라이브러리는 국가 단위 휴일만 지원)
+    "^GDAXI": "DE",   # 독일
+    "^FCHI": "FR",    # 프랑스
+    "^STOXX50E": "DE",  # Euro Stoxx 50 (DE/FR 양국 휴일 영향, DE로 근사)
+    "^FTSE": "GB",    # 영국
+    # MSCI ETFs trade on NYSE → US
+    "URTH": "US", "ACWI": "US", "ILF": "US", "EZA": "US",
+}
+
+def _ticker_market(ticker):
+    """yfinance ticker → market code or None."""
+    if ticker in TICKER_MARKET:
+        return TICKER_MARKET[ticker]
+    # Korean .KS / .KQ tickers
+    if ticker.endswith(".KS") or ticker.endswith(".KQ"):
+        return "KR"
+    # US single-letter or multi-letter ticker without suffix → US
+    if "." not in ticker and "=" not in ticker and "@" not in ticker and not ticker.startswith("^"):
+        return "US"
+    # XL* SPDR sector ETFs, IVW/IVE/QUAL/MTUM/USMV — US listed
+    return None
+
+
+_HOLIDAY_CACHE = {}
+
+def _is_market_holiday(market_code, date):
+    """holidays 라이브러리로 시장 캘린더 휴일 여부. 라이브러리 미지원 시 False."""
+    if not HAS_HOLIDAYS or not market_code:
+        return False
+    key = (market_code, date.year)
+    if key not in _HOLIDAY_CACHE:
+        try:
+            cal_cls = getattr(_holidays_lib, market_code, None)
+            _HOLIDAY_CACHE[key] = cal_cls(years=[date.year]) if cal_cls else None
+        except Exception:
+            _HOLIDAY_CACHE[key] = None
+    cal = _HOLIDAY_CACHE[key]
+    if cal is None:
+        return False
+    return date in cal
+
 
 # yfinance + FDR 모두 실패 시 investiny(investing.com) fallback
 # key: yfinance ticker, value: investing.com ID
@@ -305,8 +386,55 @@ INDICATOR_CODES = {
 
 # ── Core functions ───────────────────────────────────────────────
 
-def calc_metrics(df, ref_date):
-    """DataFrame(index=date, columns=[Close])에서 지표 계산."""
+def _fetch_via_naver(naver_code, target_date, start_date=None, max_pages=3):
+    """Naver Finance worldDayListJson API 로 글로벌 지수 일봉 수집.
+
+    Returns pd.DataFrame(index=date, columns=[Open,High,Low,Close,Volume]) or None.
+    """
+    import pandas as pd
+
+    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+    rows = []
+    for page in range(1, max_pages + 1):
+        url = f"https://finance.naver.com/world/worldDayListJson.naver?symbol={naver_code}&fdtc=0&page={page}"
+        r = requests.get(url, headers=headers, timeout=10)
+        if r.status_code != 200:
+            break
+        data = r.json()
+        if not data:
+            break
+        rows.extend(data)
+        # 최근 날짜만 충분하면 더 안 가져옴 (start_date 이전까지 확보)
+        if start_date is not None:
+            try:
+                oldest = min(dt.datetime.strptime(d["xymd"], "%Y%m%d").date() for d in data)
+                if oldest <= start_date:
+                    break
+            except Exception:
+                pass
+
+    if not rows:
+        return None
+
+    df = pd.DataFrame(rows)
+    df["date_parsed"] = pd.to_datetime(df["xymd"], format="%Y%m%d")
+    df = df.set_index("date_parsed").sort_index()
+    df = df.rename(columns={"open": "Open", "high": "High", "low": "Low", "clos": "Close", "gvol": "Volume"})
+    for col in ["Open", "High", "Low", "Close", "Volume"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    df = df.dropna(subset=["Close"])
+    df = df[df.index.date <= target_date]
+    return df if not df.empty else None
+
+
+def calc_metrics(df, ref_date, market_code=None):
+    """DataFrame(index=date, columns=[Close])에서 지표 계산.
+
+    market_code: holidays 라이브러리 키. 'KR','US','JP','CN','HK','GB','DE','FR' 등.
+                 지정 시 ref_date가 진짜 휴일인지 판별해 data_status를 'holiday' vs 'stale'로 구분.
+                 미지정 시 last_date < ref_date 면 모두 'stale' 처리 (holiday 라이브러리 없을 때 동일).
+    """
     df = df.dropna(subset=["Close"])
     if df.empty:
         return None
@@ -314,10 +442,19 @@ def calc_metrics(df, ref_date):
     last_date = df.index[-1].date() if hasattr(df.index[-1], 'date') else df.index[-1]
     close = float(df.iloc[-1]["Close"])
 
-    is_holiday = last_date < ref_date
+    # data_status 판정: ok / holiday / stale
+    if last_date >= ref_date:
+        data_status = "ok"
+    elif _is_market_holiday(market_code, ref_date):
+        data_status = "holiday"
+    else:
+        data_status = "stale"
+
+    is_holiday = (data_status == "holiday")  # 기존 필드는 진짜 휴장일 때만 True
+    is_stale_or_holiday = (data_status != "ok")
 
     daily_chg = 0.0
-    if not is_holiday and len(df) >= 2:
+    if not is_stale_or_holiday and len(df) >= 2:
         prev = float(df.iloc[-2]["Close"])
         daily_chg = (close - prev) / prev * 100 if prev else 0
 
@@ -343,6 +480,13 @@ def calc_metrics(df, ref_date):
         first_val = float(tail.iloc[0]["Close"])
         spark = [round((float(r["Close"]) / first_val - 1) * 100, 2) for _, r in tail.iterrows()]
 
+    if data_status == "holiday":
+        note = "Holiday"
+    elif data_status == "stale":
+        note = "Data delay"
+    else:
+        note = ""
+
     return {
         "close": close,
         "date": str(last_date),
@@ -352,7 +496,8 @@ def calc_metrics(df, ref_date):
         "ytd": round(ytd_chg, 2),
         "spark": spark,
         "holiday": is_holiday,
-        "holiday_note": "" if not is_holiday else "Holiday",
+        "holiday_note": note,
+        "data_status": data_status,
     }
 
 
@@ -454,29 +599,37 @@ def fetch_data(start_date=None, end_date=None):
             else:
                 df = raw[ticker] if ticker in raw.columns.get_level_values(0) else None
 
+            market_code = _ticker_market(ticker)
+
             metrics = None
             used_df = None
             used_source = None
             if df is not None and not df.empty:
                 df = df.dropna(subset=["Close"])
                 if not df.empty:
-                    metrics = calc_metrics(df, target)
+                    metrics = calc_metrics(df, target, market_code=market_code)
                     used_df = df
                     used_source = "yfinance"
 
             # FX/Commodity 는 yfinance 데이터 부정확 → 항상 FDR/investiny 로 재시도
             needs_inv_fix = cat in ("fx", "commodity")
 
+            def _is_stale(m):
+                """fallback retry 트리거: 데이터 지연(stale)이면 재시도. 진짜 휴일이면 retry 안 함."""
+                if m is None:
+                    return True
+                return m.get("data_status") == "stale"
+
             # Fallback 1: FDR
-            if (metrics is None or metrics["holiday"] or needs_inv_fix) and ticker in FDR_FALLBACK:
+            if (_is_stale(metrics) or needs_inv_fix) and ticker in FDR_FALLBACK:
                 fdr_code = FDR_FALLBACK[ticker]
                 try:
                     fdr_start = (range_start - dt.timedelta(days=3)).strftime("%Y-%m-%d")
                     fdr_end = (target + dt.timedelta(days=1)).strftime("%Y-%m-%d")
                     fdr_df = fdr.DataReader(fdr_code, fdr_start, fdr_end)
                     if not fdr_df.empty:
-                        fdr_metrics = calc_metrics(fdr_df, target)
-                        if fdr_metrics and not fdr_metrics["holiday"]:
+                        fdr_metrics = calc_metrics(fdr_df, target, market_code=market_code)
+                        if fdr_metrics and fdr_metrics.get("data_status") == "ok":
                             metrics = fdr_metrics
                             used_df = fdr_df
                             used_source = "FDR"
@@ -485,7 +638,7 @@ def fetch_data(start_date=None, end_date=None):
                     print(f"  [FDR WARN] {name}: {fe}")
 
             # Fallback 2: investiny
-            if (metrics is None or metrics["holiday"] or needs_inv_fix) and HAS_INVESTINY and ticker in INVESTINY_FALLBACK:
+            if (_is_stale(metrics) or needs_inv_fix) and HAS_INVESTINY and ticker in INVESTINY_FALLBACK:
                 inv_id = INVESTINY_FALLBACK[ticker]
                 try:
                     import pandas as pd
@@ -501,14 +654,29 @@ def fetch_data(start_date=None, end_date=None):
                         inv_df = inv_df.dropna(subset=["Close"])
                         inv_df = inv_df[inv_df.index.date <= target]
                         if not inv_df.empty:
-                            inv_metrics = calc_metrics(inv_df, target)
-                            if inv_metrics and not inv_metrics["holiday"]:
+                            inv_metrics = calc_metrics(inv_df, target, market_code=market_code)
+                            if inv_metrics and inv_metrics.get("data_status") == "ok":
                                 metrics = inv_metrics
                                 used_df = inv_df
                                 used_source = "investiny"
                                 print(f"  [INV] {name}: {inv_metrics['close']:.2f} ({inv_metrics['daily']:+.2f}%) via investing.com id={inv_id}")
                 except Exception as ie:
                     print(f"  [INV WARN] {name}: {ie}")
+
+            # Fallback 3: Naver Finance (글로벌 지수 전용)
+            if _is_stale(metrics) and ticker in NAVER_FALLBACK:
+                naver_code = NAVER_FALLBACK[ticker]
+                try:
+                    nv_df = _fetch_via_naver(naver_code, target, range_start)
+                    if nv_df is not None and not nv_df.empty:
+                        nv_metrics = calc_metrics(nv_df, target, market_code=market_code)
+                        if nv_metrics and nv_metrics.get("data_status") == "ok":
+                            metrics = nv_metrics
+                            used_df = nv_df
+                            used_source = "Naver"
+                            print(f"  [NAVER] {name}: {nv_metrics['close']:.2f} ({nv_metrics['daily']:+.2f}%) via {naver_code}")
+                except Exception as ne:
+                    print(f"  [NAVER WARN] {name}: {ne}")
 
             if metrics is None:
                 continue
