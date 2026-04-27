@@ -235,9 +235,35 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 4. `output/summary/monthly/YYYY-MM.html`의 `tab-macro` 블록에 주입
 5. `YYYY-MM_macro.html` 저장 확인
 
+### Step 7.7: Market Summary 수치 자동 검증
+
+Step 1~7.6에서 작성·갱신된 일간/주간/월간 보고서의 종가·등락률·bp 변화를 `history/market_data.csv` ground truth와 결정론적으로 대조한다. 위반이 있으면 같은 turn 안에서 fix까지 끝낸다.
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  .venv/bin/python scripts/verify_report_numbers.py --auto
+```
+
+**검증 항목** (Phase 1):
+- KPI 카드 (`<div class="s-kpi-label">{자산} WTD</div>...<div class="s-kpi-value">±N%</div>`)
+- 본문 명시 패턴 `{자산} (WTD|MTD|YTD) ±N%` / `±Nbp`
+- HL span 인라인 (`<span class="hl-up/down">±N%</span>`) — 윈도우 300자 내 "WTD/MTD/YTD/주간/월간/연초" 등 키워드가 있을 때
+- 채권 yield bp 변화 (HL span — bp 단위는 키워드 없어도 파일 종류 기반 default 적용)
+- 마크다운 표 3컬럼(시작/종료/등락) 산술 자체 모순
+
+검증 기준: 보고서 표시 자릿수에 맞춰 반올림한 CSV 계산값과 **정확 일치**. 마크다운 표는 정수 반올림 누적을 흡수하기 위해 ±0.1%P 마진만 허용.
+
+**합격 기준**: `[verify] ✓ 위반 없음` 출력. 위반이 남아 있으면 **Step 8 진행 금지**.
+
+**위반 처리 절차**:
+1. 출력에서 `보고서:` (현재 본문 값) vs `실제:` (CSV 계산값) 차이 확인
+2. 해당 파일을 Edit 도구로 직접 수정 (보고서 값을 실제 값으로 교체)
+3. `verify_report_numbers.py --auto` 재실행 → `✓ 위반 없음` 확인 후 Step 8 진행
+4. 위반이 5건 초과이거나 같은 자산에서 반복 발견되면 데이터 문제일 수 있으므로 Step 1~2(데이터 수집) 재실행 검토
+
 ### Step 8: Git Commit + Push — Market Summary
 
-`output/summary/`, `output/index.html`, `history/market_data.csv`를 스테이징 후 커밋·푸시.
+`output/summary/`, `output/index.html`, `history/market_data.csv`를 스테이징 후 커밋·푸시. **Step 7.7 통과(`✓ 위반 없음`) 후에만 진행**.
 
 - 커밋 메시지: `market: YYYY-MM-DD daily report` (주간/월간 포함 시 범위 표기)
 - `git push origin main`
