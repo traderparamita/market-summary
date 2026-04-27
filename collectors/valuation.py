@@ -4,7 +4,7 @@ pykrx로 KOSPI 지수의 PER/PBR/배당수익률 시계열을 수집하여 marke
 Valuation Agent가 KR 시장의 밸류에이션 수준을 판단하는 데 사용.
 
 Usage:
-    python -m portfolio.collectors.valuation --start 2010-01-01
+    python -m collectors.valuation --start 2010-01-01
 """
 
 from __future__ import annotations
@@ -20,9 +20,9 @@ load_dotenv()
 
 from pykrx import stock  # noqa: E402
 
-from portfolio.io import load_csv_dedup, append_save_csv  # noqa: E402
+from io_utils import load_csv_dedup, append_save_csv  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent.parent.parent  # market_summary/ (from portfolio/collectors/)
+ROOT = Path(__file__).resolve().parent.parent  # market_summary/ (from collectors/)
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
 VALUATION_TARGETS: list[tuple[str, str, str]] = [

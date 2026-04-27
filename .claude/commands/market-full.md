@@ -55,9 +55,9 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 - `generate.py` 파이프라인 (Snowflake 중심으로 재구성됨):
   - **Step 1a**: `collect_market.fetch_data()` — core 56+ 지표 수집 → CSV append
   - **Step 1b**: Aux collectors 일간 실행 (`_run_aux_collectors`)
-    - `portfolio.collectors.sector_etfs` — SC_US_*, FA_US_*, SC_KR_* (yfinance)
-    - `portfolio.collectors.krx_sectors` — IX_KR_* (pykrx KOSPI200 GICS)
-    - `portfolio.collectors.valuation` — VAL_KR_* (pykrx KOSPI PER/PBR/DY)
+    - `collectors.sector_etfs` — SC_US_*, FA_US_*, SC_KR_* (yfinance)
+    - `collectors.krx_sectors` — IX_KR_* (pykrx KOSPI200 GICS)
+    - `collectors.valuation` — VAL_KR_* (pykrx KOSPI PER/PBR/DY)
     - 각 collector 가 CSV append 후 Snowflake 자체 upsert (`[SNOWFLAKE]` 마커)
   - **Step 1c**: 통합 Snowflake upsert — CSV 의 `target_date` 전체 행을 읽어 MKT100 에 upsert
   - **Step 2**: `build_report_data()` — **MKT100 (Snowflake)** 에서 읽어 메트릭 계산
@@ -160,7 +160,7 @@ Step 5 완료 후 (Step 5-B 와 독립) `market-summary` 스킬의 **"PM Story �
 대상 날짜가 해당 주의 **마지막 영업일**인 경우에만 실행:
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -m portfolio.collectors.macro
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -m collectors.macro
 ```
 
 실패 시 경고 후 계속 진행 (보고서 생성은 기존 CSV로 진행).
@@ -219,7 +219,7 @@ Step 7 완료 후 (Step 7-B 와 독립) `market-summary` 스킬의 **"PM Story �
 대상 날짜가 해당 월의 **마지막 영업일**인 경우에만 실행:
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -m portfolio.collectors.macro
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -m collectors.macro
 ```
 
 실패 시 경고 후 계속 진행.

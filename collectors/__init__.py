@@ -10,6 +10,6 @@ Modules:
 모두 수행한다. 표준 마커: [SNOWFLAKE] OK/FAILED/SKIP.
 
 Usage:
-    python -m portfolio.collectors.krx_sectors --start 2010-01-01
-    python -m portfolio.collectors.macro --start 2010-01-01
+    python -m collectors.krx_sectors --start 2010-01-01
+    python -m collectors.macro --start 2010-01-01
 """

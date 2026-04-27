@@ -30,7 +30,7 @@ def load_market_data():
 
     반환: ({date_str: {category: {ticker: close}}}, 전체 거래일 목록 sorted)
     """
-    from portfolio.market_source import load_long
+    from market_source import load_long
 
     df = load_long()
     data: dict = {}

@@ -57,8 +57,8 @@ CLI 출력에서 **섹터 Day N/11**, **국가 Day M/11**, **theme**, 3개 subje
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -c "
 from generate_sector_country import get_focus
-from portfolio.view.sector_view import compute_sector_view
-from portfolio.view.country_view import compute_country_view
+from views.sector_view import compute_sector_view
+from views.country_view import compute_country_view
 import math
 
 focus = get_focus('{date}')

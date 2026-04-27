@@ -649,7 +649,7 @@ def build_report_data(target_date):
     simulate.py 는 SNOWFLAKE_DISABLE=1 을 세팅해 CSV 경로 (cutoff 패치) 를 강제한다.
     """
     import pandas as pd
-    from portfolio.market_source import load_long
+    from market_source import load_long
 
     # target_date 기준 과거 2년분만 읽어 충분 (월간/연간 지표 계산용)
     start_ts = pd.Timestamp(target_date) - pd.DateOffset(years=2)

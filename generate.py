@@ -693,7 +693,7 @@ def generate_index():
     weekly_by_month = {}
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*.html")), reverse=True):
         fname = os.path.basename(path)
-        if "_story" in fname or "_macro" in fname:
+        if any(s in fname for s in ("_story", "_macro", "_cs", "_pm")):
             continue
         week_label = fname.replace(".html", "")  # e.g. "2026-W02"
 
@@ -895,9 +895,9 @@ def _run_aux_collectors(target_date: str) -> None:
     print(f"\n=== Aux collectors (date={target_date}) ===")
 
     aux_tasks = [
-        ("sector_etfs", "portfolio.collectors.sector_etfs", "collect_sector_etfs"),
-        ("krx_sectors", "portfolio.collectors.krx_sectors", "collect_krx_sectors"),
-        ("valuation",   "portfolio.collectors.valuation",   "collect_valuation"),
+        ("sector_etfs", "collectors.sector_etfs", "collect_sector_etfs"),
+        ("krx_sectors", "collectors.krx_sectors", "collect_krx_sectors"),
+        ("valuation",   "collectors.valuation",   "collect_valuation"),
     ]
 
     for label, module_path, func_name in aux_tasks:

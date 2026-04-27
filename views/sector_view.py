@@ -5,7 +5,7 @@ US SPDR 11개 섹터 ETF + KR TIGER 섹터 ETF 10개에 대한 로테이션 신�
 - 섹터 리더/래거 순위 + KR-US 섹터 연계 비교
 
 Usage:
-    python -m portfolio.view.sector_view --date 2026-04-14 --html
+    python -m views.sector_view --date 2026-04-14 --html
 """
 
 import argparse
@@ -92,7 +92,7 @@ CYCLE_DESCRIPTIONS = {
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    from portfolio.market_source import load_wide_close
+    from market_source import load_wide_close
     target = pd.Timestamp(date)
     wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
@@ -100,7 +100,7 @@ def _load_prices(date: str) -> pd.DataFrame:
 
 def _latest_macro(date: str) -> str:
     """현재 US 매크로 국면 (2×2 Goldilocks/Reflation/Stagflation/Deflation)."""
-    from portfolio.market_source import load_macro_long
+    from market_source import load_macro_long
     df = load_macro_long(end=date)
     if df.empty:
         return "N/A"
@@ -165,7 +165,7 @@ def _estimate_cycle_phase(date: str, prices: pd.DataFrame) -> str:
 
     # Yield curve from market_data: BD_US_10Y - BD_US_2Y (both are rates)
     curve_slope = 0  # positive = steep, negative = inverted
-    from portfolio.market_source import load_macro_long
+    from market_source import load_macro_long
     macro_df_here = load_macro_long(end=date)
     if not macro_df_here.empty:
         target = pd.Timestamp(date)

@@ -29,8 +29,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from portfolio.view.sector_view import compute_sector_view
-from portfolio.view.country_view import compute_country_view, COUNTRIES
+from views.sector_view import compute_sector_view
+from views.country_view import compute_country_view, COUNTRIES
 
 OUTPUT_ROOT = ROOT / "output" / "sector-country"
 HISTORY_CSV = ROOT / "history" / "market_data.csv"
@@ -38,7 +38,7 @@ HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
 def _load_price_series(indicator_code: str, date_str: str, days: int = 60) -> dict:
     """특정 지표의 최근 N일 가격 시계열 반환 (MKT100 Snowflake, CSV fallback)."""
-    from portfolio.market_source import load_long
+    from market_source import load_long
 
     df = load_long(codes=[indicator_code], end=date_str)
     if df.empty:
@@ -1258,7 +1258,7 @@ def _load_story_chart_data(date_str: str, focus: dict) -> dict:
 
     # 국가 지수 (focus 국가에 맞는 eq_code 사용)
     try:
-        from portfolio.view.country_view import COUNTRIES
+        from views.country_view import COUNTRIES
         country_eq_code = COUNTRIES.get(focus_country_code, {}).get("eq_code", "EQ_SP500") if focus_country_code else "EQ_SP500"
     except Exception:
         country_eq_code = "EQ_SP500"

@@ -8,7 +8,7 @@ Schema:
     로 renormalize 해서 반환하므로 기존 CSV 소비자와 호환된다.
 
 기본 사용법:
-    from portfolio.market_source import load_long, load_wide_close
+    from market_source import load_long, load_wide_close
 
     # Long format (CSV 와 동일 스키마)
     df = load_long(start="2020-01-01")
@@ -30,7 +30,7 @@ from typing import Iterable, Optional
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent
 CSV_PATH = ROOT / "history" / "market_data.csv"
 
 # Snowflake 한글 컬럼 → CSV 영문 대문자 컬럼 (read 시 rename)

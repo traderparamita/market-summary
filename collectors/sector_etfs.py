@@ -4,8 +4,8 @@
 중복 행은 자동으로 건너뜀.
 
 Usage:
-    python -m portfolio.collectors.sector_etfs --start 2010-01-01
-    python -m portfolio.collectors.sector_etfs --kr-only   # KR 섹터만
+    python -m collectors.sector_etfs --start 2010-01-01
+    python -m collectors.sector_etfs --kr-only   # KR 섹터만
 """
 
 from __future__ import annotations
@@ -17,9 +17,9 @@ from pathlib import Path
 import pandas as pd
 import yfinance as yf
 
-from portfolio.io import load_csv_dedup, append_save_csv
+from io_utils import load_csv_dedup, append_save_csv
 
-ROOT = Path(__file__).resolve().parent.parent.parent  # market_summary/ (from portfolio/collectors/)
+ROOT = Path(__file__).resolve().parent.parent  # market_summary/ (from collectors/)
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
 # ── 수집 대상 ──────────────────────────────────────────────────

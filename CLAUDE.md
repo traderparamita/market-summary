@@ -37,20 +37,21 @@ scripts/
 ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
 └── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
 
-portfolio/
-├── market_source.py     # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader 의 단일 진입점
-├── io.py                # CSV 공통 유틸
-├── aimvp/               # Portfolio Agent (AIMVP RiskOn 전략)
-├── view/                # View Agent (9개 뷰: price/macro/correlation/regime/country/sector/bond/style/allocation)
-│   └── _shared.py       # 디자인 시스템 (Mirae Asset 브랜드)
-├── collectors/          # 보조 수집기 (macro, sector_etfs, krx_sectors, valuation)
-└── strategy/            # 멀티에이전트 전략 (sector_rotation 등)
+market_source.py         # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader 의 단일 진입점
+io_utils.py              # CSV 공통 유틸 (load_csv_dedup, append_save_csv)
+macro_indicators.yaml    # FRED + ECOS 매크로 지표 코드 정의 (collectors/macro 가 사용)
+collectors/              # 보조 수집기 (macro, sector_etfs, krx_sectors, valuation)
+views/                   # 섹터·국가 분석 엔진 (sector_view, country_view, _shared)
+                         #   ※ generate_sector_country.py 가 직접 import. 나머지 8개 의사결정 뷰는 market-strategy/ 로 이관
 ```
+
+> **2026-04 리팩토링**: `portfolio/` 디렉터리는 `market-strategy/` (별도 리포)로 이관. market_summary 는 summary/research 만 담당.
+> 자세한 매핑은 [docs/data-sources.md](docs/data-sources.md). market-strategy 코드: `/Users/lifesailor/Desktop/kosmos/ai/investment/market-strategy`.
 
 ## 데이터
 
 - **Snowflake MKT100_MARKET_DAILY 가 단일 정본**. CSV 는 legacy mirror + simulate.py fallback
-- 모든 reader 는 `portfolio.market_source` 경유
+- 모든 reader 는 `market_source` 경유
 - Macro View 만 `history/macro_indicators.csv` 사용
 
 자세한 소스·스키마·수집 대상: [docs/data-sources.md](docs/data-sources.md)
@@ -96,7 +97,7 @@ portfolio/
 ## 상세 문서
 
 - [docs/data-sources.md](docs/data-sources.md) — 수집 대상·소스·CSV 스키마·Snowflake 연동
-- [docs/portfolio-view.md](docs/portfolio-view.md) — Portfolio Agent·View Agent 9개 뷰·Sector Rotation
 - [docs/fund-analysis.md](docs/fund-analysis.md) — Fund S3 저장소·pre-signed URL·재생성
+- Portfolio Agent / View Agent / Sector Rotation 문서는 [market-strategy](file:///Users/lifesailor/Desktop/kosmos/ai/investment/market-strategy) 리포로 이전
 - [docs/output-structure.md](docs/output-structure.md) — output/ 디렉터리 트리·보고서 탭 구성
 - [docs/VISION.md](docs/VISION.md) — 3단계 비전 (도구 → 협업 에이전트 → 자율 운용)

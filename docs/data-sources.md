@@ -188,7 +188,7 @@ generate.py main()
 - **소스**: yfinance (OHLCV)
 - **용도**: 2010~현재 장기 이력 백필 (ETF 상장일 이후)
 - **적재**: `history/market_data.csv` + Snowflake `MKT100_MARKET_DAILY`
-- **실행**: `python -m portfolio.collectors.sector_etfs --start 2010-01-01`
+- **실행**: `python -m collectors.sector_etfs --start 2010-01-01`
 
 ### 2-2. KRX Sectors (`krx_sectors.py`)
 
@@ -196,7 +196,7 @@ generate.py main()
 - **소스**: pykrx (`stock.get_index_ohlcv_by_date`)
 - **용도**: ETF보다 긴 2010~ 이력 확보 (ETF는 2015~2022 상장), sector_country 보고서에서 사용
 - **적재**: `history/market_data.csv` + Snowflake `MKT100_MARKET_DAILY`
-- **실행**: `python -m portfolio.collectors.krx_sectors --start 2010-01-01 [--traditional]`
+- **실행**: `python -m collectors.krx_sectors --start 2010-01-01 [--traditional]`
 - **환경변수**: `KRX_ID`, `KRX_PW` (pykrx 인증)
 
 ### 2-3. Valuation (`valuation.py`)
@@ -205,14 +205,14 @@ generate.py main()
 - **소스**: pykrx (`stock.get_index_fundamental_by_date`, 지수코드 1001=KOSPI)
 - **용도**: KR 시장 밸류에이션 수준 판단 (Valuation View)
 - **적재**: `history/market_data.csv` + Snowflake `MKT100_MARKET_DAILY`
-- **실행**: `python -m portfolio.collectors.valuation --start 2010-01-01`
+- **실행**: `python -m collectors.valuation --start 2010-01-01`
 
 ### 2-4. Macro Indicators (`macro.py`)
 
 - **대상**: 48개 거시지표 (`portfolio/macro_indicators.yaml`에 정의)
 - **소스**: FRED API (US/JP/CN/EU/UK/IN/Global) + ECOS API (KR)
 - **적재**: `history/macro_indicators.csv` + Snowflake `MKT200_MACRO_DAILY`
-- **실행**: `python -m portfolio.collectors.macro --start 2010-01-01`
+- **실행**: `python -m collectors.macro --start 2010-01-01`
 - **환경변수**: `FRED_API_KEY`, `ECOS_API_KEY`
 
 #### 거시지표 목록 (48개)
@@ -336,10 +336,10 @@ SOURCE           →  소스
 
 ### Reader 패턴
 
-모든 소비자는 `portfolio.market_source` 경유:
+모든 소비자는 `market_source` 경유:
 
 ```python
-from portfolio.market_source import load_long, load_wide_close, load_macro_long
+from market_source import load_long, load_wide_close, load_macro_long
 
 load_long(start, end, codes)        # Long format (MKT100 → CSV fallback)
 load_wide_close(start, end, codes)  # DATE × INDICATOR_CODE pivot

@@ -74,15 +74,15 @@ def run_simulation():
         #    매번 fresh import를 위해 캐시 제거
         for mod_name in list(sys.modules.keys()):
             if mod_name in ("generate", "generate_periodic", "collect_market",
-                            "portfolio.market_source"):
+                            "market_source"):
                 del sys.modules[mod_name]
 
         # collect_market: HISTORY_CSV 패치 (수집 로직의 데이터 소스)
         import collect_market
         collect_market.HISTORY_CSV = tmp_csv
 
-        # portfolio.market_source: CSV fallback 시 이 CSV_PATH 를 읽도록 패치
-        import portfolio.market_source as _ms
+        # market_source: CSV fallback 시 이 CSV_PATH 를 읽도록 패치
+        import market_source as _ms
         from pathlib import Path as _Path
         _ms.CSV_PATH = _Path(tmp_csv)
 

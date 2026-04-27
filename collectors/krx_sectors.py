@@ -6,8 +6,8 @@ ETF(2015~2022 상장)보다 훨씬 긴 2010년 이력을 확보한다.
 KRX_ID / KRX_PW 환경변수 필요 (.env에 설정).
 
 Usage:
-    python -m portfolio.collectors.krx_sectors --start 2010-01-01
-    python -m portfolio.collectors.krx_sectors --start 2010-01-01 --traditional  # 전통 업종(2000~)
+    python -m collectors.krx_sectors --start 2010-01-01
+    python -m collectors.krx_sectors --start 2010-01-01 --traditional  # 전통 업종(2000~)
 """
 
 from __future__ import annotations
@@ -23,9 +23,9 @@ load_dotenv()
 
 from pykrx import stock  # noqa: E402
 
-from portfolio.io import load_csv_dedup, append_save_csv  # noqa: E402
+from io_utils import load_csv_dedup, append_save_csv  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent.parent.parent  # market_summary/ (from portfolio/collectors/)
+ROOT = Path(__file__).resolve().parent.parent  # market_summary/ (from collectors/)
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
 # KOSPI 200 GICS 섹터 지수 (2010~ )

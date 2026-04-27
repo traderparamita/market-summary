@@ -6,7 +6,7 @@
 - 변액보험 펀드 유형 매핑: OW/UW → 펀드 비중 확대/축소 방향
 
 Usage:
-    python -m portfolio.view.country_view --date 2026-04-14 --html
+    python -m views.country_view --date 2026-04-14 --html
 """
 
 import argparse
@@ -134,14 +134,14 @@ ACWI_CODE = "EQ_MSCI_ACWI"
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    from portfolio.market_source import load_wide_close
+    from market_source import load_wide_close
     target = pd.Timestamp(date)
     wide = load_wide_close(end=date)
     return wide[wide.index <= target].sort_index()
 
 
 def _load_macro(date: str) -> pd.DataFrame:
-    from portfolio.market_source import load_macro_long
+    from market_source import load_macro_long
     target = pd.Timestamp(date)
     df = load_macro_long(end=date)
     if df.empty:
