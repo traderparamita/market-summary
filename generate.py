@@ -948,20 +948,25 @@ def main(target_date=None, start_date=None):
         _run_aux_collectors(target_date)
 
     # Step 1c: Snowflake MKT100 통합 upsert
-    #   - CSV 의 target_date 전체 행을 읽어 한번에 upsert.
-    #   - 어떤 collector 가 CSV 에 추가했든 모두 반영 → CSV ↔ MKT100 무결성 보장.
+    #   - target_date 외에 직전 5영업일(=달력 7일) 도 함께 upsert.
+    #     (Naver/FDR/investiny fallback 으로 과거 행이 사후 업데이트되는 경우 SF 와의 드리프트 방지)
+    #   - upsert_rows 는 (일자 × 지표코드) 교집합 DELETE 후 INSERT — df 에 없는 코드는 안전.
     #   - 표준 마커: [SNOWFLAKE] OK date=... rows=N  또는  [SNOWFLAKE] FAILED date=... reason=...
     if not start_date:
         try:
             import pandas as pd
             from snowflake_loader import upsert_rows
             df_full = pd.read_csv(HISTORY_CSV)
-            df_today = df_full[df_full["DATE"].astype(str) == target_date]
-            if df_today.empty:
-                print(f"[SNOWFLAKE] SKIP date={target_date} reason=no-csv-rows-for-date")
+            df_full["DATE"] = df_full["DATE"].astype(str)
+            window_start = (dt.datetime.strptime(target_date, "%Y-%m-%d").date()
+                            - dt.timedelta(days=7)).strftime("%Y-%m-%d")
+            df_recent = df_full[(df_full["DATE"] >= window_start) & (df_full["DATE"] <= target_date)]
+            if df_recent.empty:
+                print(f"[SNOWFLAKE] SKIP date={target_date} reason=no-csv-rows-in-window")
             else:
-                nrows = upsert_rows(df_today.copy(), target_date=target_date)
-                print(f"[SNOWFLAKE] OK date={target_date} rows={nrows}")
+                nrows = upsert_rows(df_recent.copy())  # multi-date upsert
+                ndates = df_recent["DATE"].nunique()
+                print(f"[SNOWFLAKE] OK date={target_date} window={window_start}~{target_date} dates={ndates} rows={nrows}")
         except Exception as e:
             reason = str(e).replace("\n", " ")[:300]
             try:
