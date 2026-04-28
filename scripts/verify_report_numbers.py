@@ -24,10 +24,11 @@ Phase 1 범위 (이번 W17 오류 케이스):
 
 Usage:
     .venv/bin/python scripts/verify_report_numbers.py [files...]
-    .venv/bin/python scripts/verify_report_numbers.py --auto      # git diff 기반 자동
-    .venv/bin/python scripts/verify_report_numbers.py --json      # JSON (hooks 용)
+    .venv/bin/python scripts/verify_report_numbers.py --auto           # git diff 기반 자동
+    .venv/bin/python scripts/verify_report_numbers.py --auto --fix     # 자동 감지 + 자동 수정 + 재검증
+    .venv/bin/python scripts/verify_report_numbers.py --json           # JSON (hooks 용)
 
-Exit code: 0 = pass, 1 = violation
+Exit code: 0 = pass, 1 = violation (--fix 사용 시 수정 후 재검증 기준)
 """
 from __future__ import annotations
 
@@ -203,9 +204,17 @@ class Violation:
     expected: str
     diff: str
     context: str
+    # 파일 내 매칭 위치 (--fix 용, 직렬화 제외)
+    match_start: int = -1
+    match_end: int = -1
+    match_text: str = ""   # 원본 매칭 텍스트 (reported 값 부분만 교체하는 데 사용)
 
     def to_dict(self):
-        return asdict(self)
+        d = asdict(self)
+        d.pop("match_start", None)
+        d.pop("match_end", None)
+        d.pop("match_text", None)
+        return d
 
 
 # ── CSV 로더 ────────────────────────────────────────────────────
@@ -296,11 +305,29 @@ def ytd_dates(year: int, end_iso: str) -> tuple[str, str]:
 
 # ── 패턴 ────────────────────────────────────────────────────────
 # "{자산} WTD +1.51bp" / "{자산} WTD −2.84%"
+# span 태그 감싼 형태도 허용: "WTI MTD <span class="pm-dn">−1.43%</span>"
+_SPAN_OPEN = r'(?:<span[^>]*>)?'
+_SPAN_CLOSE = r'(?:</span>)?'
 PCT_PATTERN = re.compile(
-    rf"\b({_ALIAS_ALT})\s+(WTD|MTD|YTD)\s*[:：]?\s*([+\-−–]?\d+\.?\d*)\s*%"
+    rf"\b({_ALIAS_ALT})\s+(WTD|MTD|YTD)\s*[:：]?\s*{_SPAN_OPEN}\s*([+\-−–]?\d+\.?\d*)\s*%\s*{_SPAN_CLOSE}"
 )
 BP_PATTERN = re.compile(
-    rf"\b({_ALIAS_ALT})\s+(WTD|MTD|YTD)\s*[:：]?\s*([+\-−–]?\d+\.?\d*)\s*bp"
+    rf"\b({_ALIAS_ALT})\s+(WTD|MTD|YTD)\s*[:：]?\s*{_SPAN_OPEN}\s*([+\-−–]?\d+\.?\d*)\s*bp\s*{_SPAN_CLOSE}"
+)
+# "{자산} ... · MTD ±N%" — 자산과 MTD 사이에 종가·일간등락 span이 끼어있는 경우
+# 예: "Gold <span ...>$4,609</span> <span ...>−2.01%</span> · MTD <span ...>+2.24%</span>"
+# 조건: 같은 <li>/<p> 블록 안, 자산명과 MTD 사이에 다른 자산명·세미콜론이 없어야 함
+# → 단순 수치/span/구두점(·,공백)만 허용, 최대 120자
+_LI_CONTENT = r'(?:<span[^>]*>[^<]*</span>|[ \t\$·,\./\(\)%─—−–+\d]){0,120}'
+PCT_INLINE_PATTERN = re.compile(
+    rf"\b({_ALIAS_ALT})"
+    rf"(?:\s*{_LI_CONTENT})"
+    rf"\bMTD\s*[:：]?\s*{_SPAN_OPEN}\s*([+\-−–]?\d+\.?\d*)\s*%\s*{_SPAN_CLOSE}"
+)
+BP_INLINE_PATTERN = re.compile(
+    rf"\b({_ALIAS_ALT})"
+    rf"(?:\s*{_LI_CONTENT})"
+    rf"\bMTD\s*[:：]?\s*{_SPAN_OPEN}\s*([+\-−–]?\d+\.?\d*)\s*bp\s*{_SPAN_CLOSE}"
 )
 # HTML KPI: <div class="s-kpi-label">{asset} WTD</div>...<div class="s-kpi-value ...">+X.XX%</div>
 KPI_HTML_PATTERN = re.compile(
@@ -412,6 +439,7 @@ def _trim_window_to_paragraph(text: str, span_start: int, span_end: int,
 def _check_pct(
     asset: str, period: str, reported_str: str, context: str,
     start_d: str, end_d: str, prices, file_path: Path,
+    match_start: int = -1, match_end: int = -1, match_text: str = "",
 ) -> Violation | None:
     code = ASSET_ALIASES.get(asset)
     if not code or code in BOND_CODES:
@@ -425,7 +453,6 @@ def _check_pct(
     decimals = _decimals_in(reported_str)
     expected_rounded = round(expected, decimals)
     if abs(expected_rounded - reported) >= 10 ** (-decimals) / 2:
-        # 표시 자릿수에 맞춰 반올림한 CSV 값과 정확 일치 안 함
         diff = reported - expected
         return Violation(
             file=str(file_path),
@@ -435,6 +462,9 @@ def _check_pct(
             expected=f"{expected:+.{max(decimals,2)}f}%",
             diff=f"{diff:+.{max(decimals,2)}f}%P",
             context=context.strip()[:160],
+            match_start=match_start,
+            match_end=match_end,
+            match_text=match_text,
         )
     return None
 
@@ -483,6 +513,7 @@ def _check_close(
 def _check_bp(
     asset: str, period: str, reported_str: str, context: str,
     start_d: str, end_d: str, prices, file_path: Path,
+    match_start: int = -1, match_end: int = -1, match_text: str = "",
 ) -> Violation | None:
     code = ASSET_ALIASES.get(asset)
     if not code or code not in BOND_CODES:
@@ -491,7 +522,7 @@ def _check_bp(
     p_end = get_close(prices, end_d, code)
     if p_start is None or p_end is None:
         return None
-    expected = (p_end - p_start) * 100  # yield ΔbpYY
+    expected = (p_end - p_start) * 100  # yield Δbp
     reported = parse_bp(reported_str)
     decimals = _decimals_in(reported_str)
     expected_rounded = round(expected, decimals)
@@ -505,6 +536,9 @@ def _check_bp(
             expected=f"{expected:+.{max(decimals,2)}f}bp",
             diff=f"{diff:+.{max(decimals,2)}f}bp",
             context=context.strip()[:160],
+            match_start=match_start,
+            match_end=match_end,
+            match_text=match_text,
         )
     return None
 
@@ -640,7 +674,8 @@ def verify(file_path: Path, prices) -> list[Violation]:
             continue
         s, e = periods[period]
         ctx = text[max(0, m.start() - 40): m.end() + 40]
-        v = _check_pct(asset, period, val, ctx, s, e, prices, file_path)
+        v = _check_pct(asset, period, val, ctx, s, e, prices, file_path,
+                       match_start=m.start(), match_end=m.end(), match_text=m.group(0))
         if v:
             violations.append(v)
 
@@ -651,7 +686,8 @@ def verify(file_path: Path, prices) -> list[Violation]:
             continue
         s, e = periods[period]
         ctx = text[max(0, m.start() - 40): m.end() + 40]
-        v = _check_pct(asset, period, val, ctx, s, e, prices, file_path)
+        v = _check_pct(asset, period, val, ctx, s, e, prices, file_path,
+                       match_start=m.start(), match_end=m.end(), match_text=m.group(0))
         if v:
             violations.append(v)
 
@@ -662,9 +698,42 @@ def verify(file_path: Path, prices) -> list[Violation]:
             continue
         s, e = periods[period]
         ctx = text[max(0, m.start() - 40): m.end() + 40]
-        v = _check_bp(asset, period, val, ctx, s, e, prices, file_path)
+        v = _check_bp(asset, period, val, ctx, s, e, prices, file_path,
+                      match_start=m.start(), match_end=m.end(), match_text=m.group(0))
         if v:
             violations.append(v)
+
+    # 4b. 인라인 패턴 — "Gold ... · MTD +2.24%" 처럼 자산과 기간 키워드 사이에 span 등이 끼어있는 경우
+    # 이미 위에서 잡힌 위치는 중복 스킵
+    seen_positions: set[int] = {v.match_start for v in violations if v.match_start >= 0}
+    for m in PCT_INLINE_PATTERN.finditer(text):
+        if m.start() in seen_positions:
+            continue
+        asset, val = m.group(1), m.group(2)
+        period = "MTD"
+        if period not in periods:
+            continue
+        s, e = periods[period]
+        ctx = text[max(0, m.start() - 40): m.end() + 40]
+        v = _check_pct(asset, period, val, ctx, s, e, prices, file_path,
+                       match_start=m.start(), match_end=m.end(), match_text=m.group(0))
+        if v:
+            violations.append(v)
+            seen_positions.add(m.start())
+    for m in BP_INLINE_PATTERN.finditer(text):
+        if m.start() in seen_positions:
+            continue
+        asset, val = m.group(1), m.group(2)
+        period = "MTD"
+        if period not in periods:
+            continue
+        s, e = periods[period]
+        ctx = text[max(0, m.start() - 40): m.end() + 40]
+        v = _check_bp(asset, period, val, ctx, s, e, prices, file_path,
+                      match_start=m.start(), match_end=m.end(), match_text=m.group(0))
+        if v:
+            violations.append(v)
+            seen_positions.add(m.start())
 
     # 5. HTML <span class="hl-up/down"> 인라인 — 자산명이 span 바로 앞에 있는 케이스
     #    윈도우(직전 300자)에 *명시* period 키워드가 있을 때만 검증.
@@ -714,7 +783,8 @@ def verify(file_path: Path, prices) -> list[Violation]:
             continue
         s, e = periods[period]
         v = (_check_bp if unit == "bp" else _check_pct)(
-            asset, period, val, window, s, e, prices, file_path
+            asset, period, val, window, s, e, prices, file_path,
+            match_start=m.start(), match_end=m.end(), match_text=m.group(0),
         )
         if v:
             violations.append(v)
@@ -802,6 +872,115 @@ def format_human(violations: list[Violation], n_files: int) -> str:
     return "\n".join(lines)
 
 
+def auto_fix(violations: list[Violation]) -> dict[str, int]:
+    """위반 항목을 파일에서 직접 교정한다.
+
+    전략:
+    - match_start/match_end 가 있는 항목: 원본 match_text 안에서 reported 값을
+      expected 값으로 교체 후 파일에 기록.
+    - 위치 정보가 없는 항목(표 일관성 등): 스킵 (수동 수정 필요).
+
+    Returns:
+        {"fixed": N, "skipped": M}  — 수정/스킵 건수
+    """
+    # 파일별로 묶어서 처리 (오프셋 shift 방지 위해 뒤에서부터 교체)
+    by_file: dict[str, list[Violation]] = {}
+    for v in violations:
+        if v.match_start < 0 or not v.match_text:
+            continue
+        by_file.setdefault(v.file, []).append(v)
+
+    fixed = 0
+    skipped = len(violations) - sum(len(vs) for vs in by_file.values())
+
+    for fpath_str, vs in by_file.items():
+        fpath = Path(fpath_str)
+        if not fpath.exists():
+            skipped += len(vs)
+            continue
+
+        text = fpath.read_text(encoding="utf-8", errors="replace")
+
+        # 뒤에서부터 교체해야 앞쪽 오프셋이 밀리지 않음
+        vs_sorted = sorted(vs, key=lambda x: x.match_start, reverse=True)
+
+        for v in vs_sorted:
+            orig = v.match_text
+            # expected 에서 숫자만 추출 ("+4.58%" → "4.58", "-1.47%" → "-1.47")
+            # reported 와 같은 형식(부호+숫자+단위)으로 재조립
+            is_bp = v.expected.endswith("bp")
+            unit = "bp" if is_bp else "%"
+
+            # expected 문자열에서 순수 숫자 추출
+            raw_exp = v.expected.replace("%", "").replace("bp", "").replace("P", "").strip()
+            # 부호 표준화 (−/– → -)
+            for ch in "−–":
+                raw_exp = raw_exp.replace(ch, "-")
+            try:
+                exp_val = float(raw_exp)
+            except ValueError:
+                skipped += 1
+                print(f"[fix] ⚠ expected 파싱 실패: {v.expected!r} — 스킵 ({Path(fpath_str).name} :: {v.asset} {v.period})")
+                continue
+
+            # reported 문자열에서 순수 숫자 추출 (부호 포함)
+            raw_rep = v.reported.replace("%", "").replace("bp", "").replace("P", "").strip()
+            for ch in "−–":
+                raw_rep = raw_rep.replace(ch, "-")
+            try:
+                rep_val = float(raw_rep)
+            except ValueError:
+                skipped += 1
+                continue
+
+            # 소수 자릿수: reported 기준 유지
+            decimals = _decimals_in(v.reported)
+
+            # 새 값 문자열 (부호 포함, 단위 없음 — match_text 안의 숫자 부분만 교체)
+            sign = "+" if exp_val >= 0 else ""
+            new_val_str = f"{sign}{exp_val:.{decimals}f}"
+            # reported 의 부호+숫자 부분 (단위 제외)
+            rep_sign = "+" if rep_val >= 0 else ""
+            # 부호 문자는 보고서에서 −(U+2212) 또는 -(ASCII) 혼용 가능 → 원본 그대로 찾아야 함
+            # match_text 안에서 reported 숫자 값 토큰을 new_val_str 로 교체
+            # 안전하게: 원본 텍스트에서 match_text 전체를 new_match_text 로 교체
+            old_num_pattern = re.compile(
+                r'([+\-−–]?\s*' + re.escape(f"{abs(rep_val):.{decimals}f}") + r')'
+            )
+            new_match = old_num_pattern.sub(new_val_str, orig, count=1)
+            if new_match == orig:
+                # 부호 없는 숫자로도 시도
+                old_num_pattern2 = re.compile(re.escape(f"{abs(rep_val):.{decimals}f}"))
+                new_match = old_num_pattern2.sub(new_val_str, orig, count=1)
+
+            if new_match == orig:
+                skipped += 1
+                print(f"[fix] ⚠ 교체 패턴 불일치 — 스킵 ({Path(fpath_str).name} :: {v.asset} {v.period}  reported={v.reported!r})")
+                continue
+
+            # 파일 텍스트에서 해당 위치의 원본을 교체
+            # match_start/end 는 검증 시점 텍스트 기준 — 뒤에서부터 처리하므로 오프셋 유효
+            if text[v.match_start:v.match_end] == orig:
+                text = text[:v.match_start] + new_match + text[v.match_end:]
+                fixed += 1
+                print(f"[fix] ✓ {Path(fpath_str).name} :: {v.asset} {v.period}  {v.reported} → {v.expected}")
+            else:
+                # 오프셋 drift — 전체 텍스트에서 첫 번째 매치로 교체 시도
+                idx = text.find(orig)
+                if idx >= 0:
+                    text = text[:idx] + new_match + text[idx + len(orig):]
+                    fixed += 1
+                    print(f"[fix] ✓ {Path(fpath_str).name} :: {v.asset} {v.period}  {v.reported} → {v.expected}  (오프셋 drift — 텍스트 검색으로 교체)")
+                else:
+                    skipped += 1
+                    print(f"[fix] ⚠ 원본 텍스트 위치 불일치 — 스킵 ({Path(fpath_str).name} :: {v.asset} {v.period})")
+                    continue
+
+        fpath.write_text(text, encoding="utf-8")
+
+    return {"fixed": fixed, "skipped": skipped}
+
+
 def _send_telegram(violations: list[Violation], n_files: int) -> None:
     """위반 발견 시 Telegram 알림. notify_telegram.send() 재사용."""
     try:
@@ -836,6 +1015,8 @@ def main() -> int:
     ap.add_argument("files", nargs="*", type=Path)
     ap.add_argument("--auto", action="store_true",
                     help="git diff 기반 변경 파일 자동 감지")
+    ap.add_argument("--fix", action="store_true",
+                    help="위반 발견 시 CSV ground truth 값으로 자동 수정 후 재검증")
     ap.add_argument("--json", action="store_true",
                     help="JSON 출력 (hooks/CI 용)")
     ap.add_argument("--telegram", action="store_true",
@@ -866,6 +1047,19 @@ def main() -> int:
     for f in files:
         all_v.extend(verify(f, prices))
 
+    if all_v and args.fix:
+        print(f"[fix] 위반 {len(all_v)}건 — 자동 수정 시작")
+        result = auto_fix(all_v)
+        print(f"[fix] 완료: 수정 {result['fixed']}건 / 스킵 {result['skipped']}건")
+        # 재검증
+        all_v = []
+        for f in files:
+            all_v.extend(verify(f, prices))
+        if all_v:
+            print(f"[fix] ⚠ 재검증 후 잔여 위반 {len(all_v)}건 (수동 확인 필요)")
+        else:
+            print(f"[verify] ✓ 위반 없음 (자동 수정 후 재검증, 대상 {len(files)}개 파일)")
+
     if args.json:
         print(json.dumps(
             {"checked": len(files),
@@ -873,7 +1067,8 @@ def main() -> int:
              "violations": [v.to_dict() for v in all_v]},
             ensure_ascii=False, indent=2,
         ))
-    else:
+    elif not args.fix or all_v:
+        # --fix 성공 시엔 위 메시지로 충분, 실패 잔여분만 출력
         print(format_human(all_v, len(files)))
 
     if all_v and args.telegram:

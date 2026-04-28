@@ -241,7 +241,7 @@ Step 1~7.6에서 작성·갱신된 일간/주간/월간 보고서의 종가·등
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
-  .venv/bin/python scripts/verify_report_numbers.py --auto --telegram
+  .venv/bin/python scripts/verify_report_numbers.py --auto --fix --telegram
 ```
 
 **검증 항목** (Phase 1):
@@ -255,11 +255,9 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 
 **합격 기준**: `[verify] ✓ 위반 없음` 출력. 위반이 남아 있으면 **Step 8 진행 금지**.
 
-**위반 처리 절차**:
-1. 출력에서 `보고서:` (현재 본문 값) vs `실제:` (CSV 계산값) 차이 확인
-2. 해당 파일을 Edit 도구로 직접 수정 (보고서 값을 실제 값으로 교체)
-3. `verify_report_numbers.py --auto` 재실행 → `✓ 위반 없음` 확인 후 Step 8 진행
-4. 위반이 5건 초과이거나 같은 자산에서 반복 발견되면 데이터 문제일 수 있으므로 Step 1~2(데이터 수집) 재실행 검토
+**위반 처리**: `--fix` 플래그가 자동으로 CSV ground truth 값으로 교체 후 재검증한다.
+재검증 후에도 잔여 위반이 있으면(스킵 건 등) 출력 내용을 확인하고 수동 수정 후 재시도.
+위반이 5건 초과이거나 같은 자산에서 반복 발견되면 데이터 문제일 수 있으므로 Step 1~2(데이터 수집) 재실행 검토.
 
 ### Step 8: Git Commit + Push — Market Summary
 
