@@ -103,7 +103,7 @@ TICKER_MARKET = {
     "^STOXX50E": "DE",  # Euro Stoxx 50 (DE/FR 양국 휴일 영향, DE로 근사)
     "^FTSE": "GB",    # 영국
     # MSCI ETFs trade on NYSE → US
-    "URTH": "US", "ACWI": "US", "ILF": "US", "EZA": "US",
+    "URTH": "US", "ACWI": "US", "EEM": "US", "ILF": "US", "EZA": "US",
 }
 
 def _ticker_market(ticker):
@@ -188,6 +188,7 @@ TICKERS = {
         # MSCI ETF proxies
         "MSCI World": "URTH",  # iShares MSCI World ETF
         "MSCI ACWI":  "ACWI",  # iShares MSCI ACWI ETF
+        "MSCI EM":    "EEM",   # iShares MSCI Emerging Markets ETF
         "MSCI LATAM": "ILF",   # iShares Latin America 40 ETF
         "MSCI EMEA":  "EZA",   # iShares South Africa ETF (EMEA proxy)
     },
@@ -306,6 +307,7 @@ INDICATOR_CODES = {
     ("equity", "TWSE"):      "EQ_TWSE",
     ("equity", "MSCI World"): "EQ_MSCI_WORLD",
     ("equity", "MSCI ACWI"):  "EQ_MSCI_ACWI",
+    ("equity", "MSCI EM"):    "EQ_MSCI_EM",
     ("equity", "MSCI LATAM"): "EQ_MSCI_LATAM",
     ("equity", "MSCI EMEA"):  "EQ_MSCI_EMEA",
     ("bond", "US 2Y"):  "BD_US_2Y",
