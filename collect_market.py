@@ -158,6 +158,9 @@ INVESTINY_FALLBACK = {
     "CNY=X":     2111,    # USD/CNY
     "AUDUSD=X":  5,       # AUD/USD
     "GBPUSD=X":  2,       # GBP/USD
+    # Bond yields: ^IRX(13wk proxy) / ^TNX 대신 investing.com 정확 값 사용
+    "^IRX":      23701,   # US 2-Year Treasury Yield
+    "^TNX":      23705,   # US 10-Year Treasury Yield
     # Commodity: yfinance =F 선물 데이터 보정
     "CL=F":      8849,    # WTI Crude Oil
     "BZ=F":      8833,    # Brent Crude Oil
@@ -310,8 +313,9 @@ INDICATOR_CODES = {
     ("equity", "MSCI EM"):    "EQ_MSCI_EM",
     ("equity", "MSCI LATAM"): "EQ_MSCI_LATAM",
     ("equity", "MSCI EMEA"):  "EQ_MSCI_EMEA",
-    ("bond", "US 2Y"):  "BD_US_2Y",
-    ("bond", "US 10Y"): "BD_US_10Y",
+    ("bond", "US 2Y"):       "BD_US_2Y",
+    ("bond", "US 10Y"):      "BD_US_10Y",
+    ("bond", "US 10-2 Spread"): "BD_US_10_2_SPREAD",
     ("bond", "US 30Y"): "BD_US_30Y",
     ("bond", "TLT"):    "BD_TLT",
     ("bond", "AGG"):    "BD_AGG",
@@ -613,8 +617,8 @@ def fetch_data(start_date=None, end_date=None):
                     used_df = df
                     used_source = "yfinance"
 
-            # FX/Commodity 는 yfinance 데이터 부정확 → 항상 FDR/investiny 로 재시도
-            needs_inv_fix = cat in ("fx", "commodity")
+            # FX/Commodity/Bond(US 2Y·10Y) 는 yfinance 부정확 → 항상 investiny 로 재시도
+            needs_inv_fix = cat in ("fx", "commodity") or (cat == "bond" and ticker in INVESTINY_FALLBACK)
 
             def _is_stale(m):
                 """fallback retry 트리거: 데이터 지연(stale)이면 재시도. 진짜 휴일이면 retry 안 함."""
@@ -691,6 +695,25 @@ def fetch_data(start_date=None, end_date=None):
             result[cat][name] = metrics
         except Exception as e:
             print(f"  [WARN] {name} ({ticker}): {e}")
+
+    # ── US 10-2 Spread (파생값) ──
+    try:
+        _2y  = result.get("bond", {}).get("US 2Y")
+        _10y = result.get("bond", {}).get("US 10Y")
+        if _2y and _10y and _2y.get("close") is not None and _10y.get("close") is not None:
+            spread_close = round(_10y["close"] - _2y["close"], 4)
+            spread_daily = round((_10y["daily"] or 0) - (_2y["daily"] or 0), 4) if (_10y.get("daily") is not None and _2y.get("daily") is not None) else None
+            spread_metrics = {**_10y, "close": spread_close, "daily": spread_daily, "data_status": "ok"}
+            result.setdefault("bond", {})["US 10-2 Spread"] = spread_metrics
+            indicator_code = INDICATOR_CODES.get(("bond", "US 10-2 Spread"))
+            if indicator_code:
+                history_rows.append((
+                    str(target), indicator_code, "bond", "US 10-2 Spread",
+                    spread_close, None, None, None, None, "computed",
+                ))
+            print(f"  [SPREAD] US 10-2: {spread_close:+.4f}%")
+    except Exception as _se:
+        print(f"  [SPREAD WARN] {_se}")
 
     # ── 한국 금리: 한국은행 ECOS API ──
     kr_rates, kr_history = fetch_kr_rates(start_date=start_date, end_date=end_date)

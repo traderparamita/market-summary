@@ -109,7 +109,7 @@ def generate_html(data):
         is_stale = (status == "stale")
 
         if as_bp:
-            close_str = f"{close:.2f}%"
+            close_str = f"{close * 100:.0f} bp" if "Spread" in name else f"{close:.2f}%"
         elif show_dollar:
             close_str = f"${fmt(close)}" if close < 10000 else f"${close:,.0f}"
         else:
@@ -431,7 +431,7 @@ body{{
     MSCI_ORDER = ["MSCI World", "MSCI ACWI", "MSCI LATAM", "MSCI EMEA"]
     BOND_RATE_ORDER = [
         "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y",  # 한국
-        "US 2Y", "US 10Y", "US 30Y",                          # 미국
+        "US 2Y", "US 10Y", "US 30Y", "US 10-2 Spread",       # 미국
     ]
     BOND_ETF_ORDER = ["AGG", "TLT", "LQD", "HYG", "EMB"]
     FX_ORDER = ["DXY", "USD/KRW", "EUR/USD", "GBP/USD", "AUD/USD", "USD/JPY", "USD/CNY"]
@@ -458,7 +458,7 @@ body{{
     DATA_SOURCES = {
         "Equity":        "yfinance · FinanceDataReader · investiny",
         "MSCI Equity":   "yfinance (ETF proxy)",
-        "Bonds & Rates": "yfinance · ECOS(한국은행)",
+        "Bonds & Rates": "investing.com(US 2Y·10Y·Spread) · ECOS(한국은행)",
         "Bond ETF":      "yfinance",
         "FX":            "investiny(investing.com) · FinanceDataReader",
         "Commodities":   "investiny(investing.com) · yfinance",
