@@ -10,7 +10,7 @@ import re
 import glob
 import datetime as dt
 import csv
-from generate import generate_index, fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg
+from generate import generate_index, fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg, KO_LABELS
 
 # Shared OG image version (bump in generate.py when the OG image changes)
 try:
@@ -198,29 +198,29 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
 
     # KPI 목록 (일간과 동일한 8개)
     kpi_list = [
-        ("KOSPI", eq.get("KOSPI")),
-        ("S&P500", eq.get("S&P500")),
-        ("NASDAQ", eq.get("NASDAQ")),
-        ("Nikkei", eq.get("Nikkei225")),
-        ("US 10Y", bd.get("US 10Y")),
-        ("USD/KRW", fx.get("USD/KRW")),
-        ("WTI", cm.get("WTI")),
-        ("Gold", cm.get("Gold")),
+        ("코스피", "KOSPI", eq.get("KOSPI")),
+        ("S&P500", "S&P500", eq.get("S&P500")),
+        ("나스닥", "NASDAQ", eq.get("NASDAQ")),
+        ("니케이", "Nikkei225", eq.get("Nikkei225")),
+        ("미국10년", "US 10Y", bd.get("US 10Y")),
+        ("달러/원", "USD/KRW", fx.get("USD/KRW")),
+        ("WTI유", "WTI", cm.get("WTI")),
+        ("금", "Gold", cm.get("Gold")),
     ]
     kpi_items = []
-    for label, d in kpi_list:
+    for ko_label, en_label, d in kpi_list:
         if not d:
             continue
         c = d["close"]
-        if label in ["WTI", "Gold"]:
+        if en_label in ["WTI", "Gold"]:
             v = f"${fmt(c)}"
-        elif label == "US 10Y":
+        elif en_label == "US 10Y":
             v = f"{c:.2f}%"
         elif c > 100:
             v = fmt(c, 0)
         else:
             v = fmt(c, 2)
-        kpi_items.append({"label": label, "value": v, "chg": d["period_chg"]})
+        kpi_items.append({"label": ko_label, "value": v, "chg": d["period_chg"]})
 
     # 히트맵 행 생성
     def heatmap_row(name, d, show_dollar=False, as_bp=False):
@@ -252,8 +252,10 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
                 txt = chg_sign(v)
             return f'<td class="heat-cell" style="background:{bg_};color:{tc_}">{txt}</td>'
 
+        ko = KO_LABELS.get(name)
+        disp = f'{ko}({name})' if ko and ko != name else name
         return f"""<tr>
-          <td class="name-cell">{name}</td>
+          <td class="name-cell">{disp}</td>
           <td class="close-cell">{close_str}</td>
           <td class="spark-cell">{spark}</td>
           {cell(chg)}
@@ -274,7 +276,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
         idx = {n: i for i, n in enumerate(order)}
         return sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
 
-    bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB"}
+    bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB", "IEI", "SHY", "TIP"}
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
 
@@ -531,34 +533,38 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
     html += "</div>\n"
 
     # Top/Bottom
-    html += '<div class="movers-row">\n<div class="movers-card"><h3>Top Gainers ({0})</h3>\n'.format(period_label)
+    html += '<div class="movers-row">\n<div class="movers-card"><h3>상승 Top 3 ({0})</h3>\n'.format(period_label)
     for name, d in top3:
+        ko = KO_LABELS.get(name)
+        disp = f'{ko}({name})' if ko and ko != name else name
         cls = chg_class(d["period_chg"])
-        html += f'<div class="mover-item"><span class="mover-name">{name}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
-    html += '</div>\n<div class="movers-card"><h3>Top Losers ({0})</h3>\n'.format(period_label)
+        html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
+    html += '</div>\n<div class="movers-card"><h3>하락 Top 3 ({0})</h3>\n'.format(period_label)
     for name, d in bottom3:
+        ko = KO_LABELS.get(name)
+        disp = f'{ko}({name})' if ko and ko != name else name
         cls = chg_class(d["period_chg"])
-        html += f'<div class="mover-item"><span class="mover-name">{name}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
+        html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
     html += '</div>\n</div>\n'
 
     # 히트맵 테이블
     DATA_SOURCES = {
-        "Equity":        "yfinance · FinanceDataReader · investiny",
-        "MSCI Equity":   "yfinance (ETF proxy)",
-        "Bonds & Rates": "yfinance · ECOS(한국은행)",
-        "Bond ETF":      "yfinance",
-        "FX":            "investiny(investing.com) · FinanceDataReader",
-        "Commodities":   "investiny(investing.com) · yfinance",
-        "Major Stocks":  "yfinance",
+        "주식(Equity)":           "yfinance · FinanceDataReader · investiny",
+        "MSCI 지수":              "yfinance (ETF proxy)",
+        "채권·금리(Bonds & Rates)": "yfinance · ECOS(한국은행)",
+        "채권 ETF(Bond ETF)":     "yfinance",
+        "환율(FX)":               "investiny(investing.com) · FinanceDataReader",
+        "원자재(Commodities)":    "investiny(investing.com) · yfinance",
+        "주요 종목(Major Stocks)": "yfinance",
     }
     sections = [
-        ("Equity", eq_regional, False, False, EQUITY_ORDER),
-        ("MSCI Equity", eq_msci, False, False, MSCI_ORDER),
-        ("Bonds & Rates", bd_rates, False, True, BOND_ORDER),
-        ("Bond ETF", bd_etf, True, False, ["AGG","TLT","LQD","HYG","EMB"]),
-        ("FX", fx, False, False, FX_ORDER),
-        ("Commodities", cm, True, False, CM_ORDER),
-        ("Major Stocks", st, True, False, ST_ORDER),
+        ("주식(Equity)", eq_regional, False, False, EQUITY_ORDER),
+        ("MSCI 지수", eq_msci, False, False, MSCI_ORDER),
+        ("채권·금리(Bonds & Rates)", bd_rates, False, True, BOND_ORDER),
+        ("채권 ETF(Bond ETF)", bd_etf, True, False, ["AGG","TLT","IEI","SHY","TIP","LQD","HYG","EMB"]),
+        ("환율(FX)", fx, False, False, FX_ORDER),
+        ("원자재(Commodities)", cm, True, False, CM_ORDER),
+        ("주요 종목(Major Stocks)", st, True, False, ST_ORDER),
     ]
     for sec_title, cat, dollar, as_bp, order in sections:
         if not cat:
@@ -570,7 +576,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
         html += f"""<div class="heatmap-section">
 <h2>{sec_title} <span class="badge">{len(items)}</span>{src_html}</h2>
 <table class="heatmap">
-<thead><tr><th>Name</th><th>Close</th><th>Trend</th><th>{period_label}</th><th>Best Day</th><th>Worst Day</th><th>YTD</th></tr></thead>
+<thead><tr><th>종목</th><th>종가</th><th>추이</th><th>{period_label}</th><th>최고일</th><th>최저일</th><th>연초대비</th></tr></thead>
 <tbody>\n"""
         for name, d in items:
             html += heatmap_row(name, d, dollar, as_bp)
