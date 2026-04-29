@@ -41,23 +41,23 @@ def chg_sign(val):
     return f"+{val:.2f}%" if val > 0 else f"{val:.2f}%"
 
 def heat_color(val):
-    """변동폭에 따른 배경색 (라이트 테마용)"""
-    if val >= 3:    return "#c6f6d5"
-    if val >= 1.5:  return "#d4edda"
-    if val >= 0.5:  return "#e8f5e9"
-    if val > 0:     return "#f1f8f4"
+    """변동폭에 따른 배경색 (한국식: 상승=빨간계열, 하락=파란계열)"""
+    if val >= 3:    return "#fbd5d5"
+    if val >= 1.5:  return "#fde8e8"
+    if val >= 0.5:  return "#fef2f2"
+    if val > 0:     return "#fff5f5"
     if val == 0:    return "#f7f8fa"
-    if val > -0.5:  return "#fef2f2"
-    if val > -1.5:  return "#fde8e8"
-    if val > -3:    return "#fbd5d5"
-    return "#f8b4b4"
+    if val > -0.5:  return "#eff6ff"
+    if val > -1.5:  return "#dbeafe"
+    if val > -3:    return "#bfdbfe"
+    return "#93c5fd"
 
 def heat_text(val):
-    if val >= 1.5:  return "#065f46"
-    if val > 0:     return "#047857"
+    if val >= 1.5:  return "#991b1b"
+    if val > 0:     return "#b91c1c"
     if val == 0:    return "#6b7280"
-    if val > -1.5:  return "#b91c1c"
-    return "#7f1d1d"
+    if val > -1.5:  return "#1e40af"
+    return "#1e3a5f"
 
 def spark_svg(data, w=80, h=24, color="#F58220"):
     """미니 SVG 스파크라인"""
@@ -73,13 +73,38 @@ def spark_svg(data, w=80, h=24, color="#F58220"):
         pts.append(f"{x},{y}")
     last_y = round(h - (data[-1] - mn) / rng * (h - 2) - 1, 1)
     # 마지막 값이 양이면 초록, 음이면 빨강
-    end_color = "#0d9b6a" if data[-1] >= 0 else "#d9304f"
+    end_color = "#d92b2b" if data[-1] >= 0 else "#1a5fb4"
     return (
         f'<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
         f'<polyline points="{" ".join(pts)}" fill="none" stroke="{color}" stroke-width="1.5" stroke-linecap="round"/>'
         f'<circle cx="{round((len(data)-1)*step,1)}" cy="{last_y}" r="2.5" fill="{end_color}"/>'
         f'</svg>'
     )
+
+
+KO_LABELS = {
+    "KOSPI": "코스피", "KOSDAQ": "코스닥",
+    "S&P500": "S&P500", "NASDAQ": "나스닥", "Russell2K": "러셀2000",
+    "STOXX50": "유로스톡스50", "FTSE100": "영국FTSE", "DAX": "독일DAX", "CAC40": "프랑스CAC",
+    "Shanghai": "상해종합", "HSI": "항셍", "Nikkei225": "니케이225", "NIFTY50": "인도NIFTY",
+    "MSCI EM": "MSCI 신흥국", "TWSE": "대만가권",
+    "MSCI World": "MSCI 선진국", "MSCI ACWI": "MSCI 전세계",
+    "MSCI LATAM": "MSCI 중남미", "MSCI EMEA": "MSCI 유럽중동",
+    "KR CD 91D": "한국 CD 91일", "KR 3Y": "한국 국채3년", "KR 5Y": "한국 국채5년",
+    "KR 10Y": "한국 국채10년", "KR 30Y": "한국 국채30년",
+    "US 2Y": "미국 국채2년", "US 10Y": "미국 국채10년", "US 30Y": "미국 국채30년",
+    "US 10-2 Spread": "미국 장단기 스프레드",
+    "AGG": "미국 종합채권", "TLT": "미국 장기국채", "IEI": "미국 중기국채",
+    "SHY": "미국 단기국채", "TIP": "미국 물가연동채",
+    "LQD": "투자등급 회사채", "HYG": "하이일드 채권", "EMB": "신흥국 채권",
+    "DXY": "달러인덱스", "USD/KRW": "달러/원", "EUR/USD": "유로/달러",
+    "GBP/USD": "파운드/달러", "AUD/USD": "호주달러", "USD/JPY": "달러/엔", "USD/CNY": "달러/위안",
+    "WTI": "WTI유", "Brent": "브렌트유", "Gold": "금", "Silver": "은",
+    "Copper": "구리", "Nat Gas": "천연가스",
+    "NVIDIA": "엔비디아", "Broadcom": "브로드컴", "Alphabet": "구글", "Amazon": "아마존",
+    "META": "메타", "Apple": "애플", "Microsoft": "마이크로소프트",
+    "Tesla": "테슬라", "TSMC": "TSMC", "Samsung": "삼성전자",
+}
 
 
 def generate_html(data):
@@ -115,12 +140,15 @@ def generate_html(data):
         else:
             close_str = fmt(close, 0) if close > 100 else fmt(close, 2)
 
+        # 한글병행표기
+        ko = KO_LABELS.get(name)
+        base_name = f'{ko}({name})' if ko and ko != name else name
         # 휴일/지연이면 이름 옆에 배지
-        name_display = name
+        name_display = base_name
         if is_hol:
-            name_display = f'{name} <span style="font-size:10px;color:var(--warn);font-weight:400;">(Holiday)</span>'
+            name_display = f'{base_name} <span style="font-size:10px;color:var(--warn);font-weight:400;">(Holiday)</span>'
         elif is_stale:
-            name_display = f'{name} <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span>'
+            name_display = f'{base_name} <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span>'
 
         spark = spark_svg(d.get("spark", []))
         cells = ""
@@ -198,7 +226,7 @@ def generate_html(data):
   --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
   --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
   --accent:#F58220; --accent2:#043B72;
-  --up:#0d9b6a; --down:#d9304f; --warn:#CB6015;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
   --gold:#b8860b; --oil:#d35400;
 }}
 ::selection{{background:#F58220;color:#ffffff}}
@@ -378,22 +406,22 @@ body{{
 """
     # KPI 목록
     kpi_list = [
-        ("KOSPI", eq.get("KOSPI")),
-        ("S&P500", eq.get("S&P500")),
-        ("NASDAQ", eq.get("NASDAQ")),
-        ("Nikkei", eq.get("Nikkei225")),
-        ("US 10Y", bd.get("US 10Y")),
-        ("USD/KRW", fx.get("USD/KRW")),
-        ("WTI", cm.get("WTI")),
-        ("Gold", cm.get("Gold")),
+        ("코스피", "KOSPI", eq.get("KOSPI")),
+        ("S&P500", "S&P500", eq.get("S&P500")),
+        ("나스닥", "NASDAQ", eq.get("NASDAQ")),
+        ("니케이", "Nikkei225", eq.get("Nikkei225")),
+        ("미국10년", "US 10Y", bd.get("US 10Y")),
+        ("달러/원", "USD/KRW", fx.get("USD/KRW")),
+        ("WTI유", "WTI", cm.get("WTI")),
+        ("금", "Gold", cm.get("Gold")),
     ]
-    for label, d in kpi_list:
+    for ko_label, en_label, d in kpi_list:
         if not d:
             continue
         c = d["close"]
-        if label in ["WTI", "Gold"]:
+        if en_label in ["WTI", "Gold"]:
             v = f"${fmt(c)}"
-        elif label == "US 10Y":
+        elif en_label == "US 10Y":
             v = f"{c:.2f}%"
         elif c > 100:
             v = fmt(c, 0)
@@ -401,7 +429,7 @@ body{{
             v = fmt(c, 2)
         cls = chg_class(d["daily"])
         html += f"""  <div class="kpi">
-    <div class="kpi-label">{label}</div>
+    <div class="kpi-label">{ko_label}</div>
     <div class="kpi-value">{v}</div>
     <div class="kpi-chg {cls}">{chg_sign(d['daily'])}</div>
   </div>\n"""
@@ -409,14 +437,18 @@ body{{
 
     # ── Top/Bottom Movers ──
     html += '<div class="movers-row">\n'
-    html += '<div class="movers-card"><h3>Top Gainers</h3>\n'
+    html += '<div class="movers-card"><h3>상승 Top 3</h3>\n'
     for name, d in top3:
+        ko = KO_LABELS.get(name)
+        disp = f'{ko}({name})' if ko and ko != name else name
         cls = chg_class(d["daily"])
-        html += f'<div class="mover-item"><span class="mover-name">{name}</span><span class="mover-val {cls}">{chg_sign(d["daily"])}</span></div>\n'
-    html += '</div>\n<div class="movers-card"><h3>Top Losers</h3>\n'
+        html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["daily"])}</span></div>\n'
+    html += '</div>\n<div class="movers-card"><h3>하락 Top 3</h3>\n'
     for name, d in bottom3:
+        ko = KO_LABELS.get(name)
+        disp = f'{ko}({name})' if ko and ko != name else name
         cls = chg_class(d["daily"])
-        html += f'<div class="mover-item"><span class="mover-name">{name}</span><span class="mover-val {cls}">{chg_sign(d["daily"])}</span></div>\n'
+        html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["daily"])}</span></div>\n'
     html += '</div>\n</div>\n'
 
     # ── 이미지 순서에 맞는 고정 정렬 ──
@@ -433,7 +465,7 @@ body{{
         "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y",  # 한국
         "US 2Y", "US 10Y", "US 30Y", "US 10-2 Spread",       # 미국
     ]
-    BOND_ETF_ORDER = ["AGG", "TLT", "LQD", "HYG", "EMB"]
+    BOND_ETF_ORDER = ["AGG", "TLT", "IEI", "SHY", "TIP", "LQD", "HYG", "EMB"]
     FX_ORDER = ["DXY", "USD/KRW", "EUR/USD", "GBP/USD", "AUD/USD", "USD/JPY", "USD/CNY"]
     CM_ORDER = ["WTI", "Brent", "Gold", "Silver", "Copper", "Nat Gas"]
     ST_ORDER = [
@@ -446,7 +478,7 @@ body{{
         idx = {name: i for i, name in enumerate(order)}
         return sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
 
-    bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB"}
+    bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB", "IEI", "SHY", "TIP"}
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
 
@@ -456,22 +488,22 @@ body{{
 
     # ── Heatmap Tables ──
     DATA_SOURCES = {
-        "Equity":        "yfinance · FinanceDataReader · investiny",
-        "MSCI Equity":   "yfinance (ETF proxy)",
-        "Bonds & Rates": "investing.com(US 2Y·10Y·Spread) · ECOS(한국은행)",
-        "Bond ETF":      "yfinance",
-        "FX":            "investiny(investing.com) · FinanceDataReader",
-        "Commodities":   "investiny(investing.com) · yfinance",
-        "Major Stocks":  "yfinance",
+        "주식(Equity)":           "yfinance · FinanceDataReader · investiny",
+        "MSCI 지수":              "yfinance (ETF proxy)",
+        "채권·금리(Bonds & Rates)": "investing.com(US 2Y·10Y·Spread) · ECOS(한국은행)",
+        "채권 ETF(Bond ETF)":     "yfinance",
+        "환율(FX)":               "investiny(investing.com) · FinanceDataReader",
+        "원자재(Commodities)":    "investiny(investing.com) · yfinance",
+        "주요 종목(Major Stocks)": "yfinance",
     }
     sections = [
-        ("Equity",        eq_regional, False, False, EQUITY_ORDER),
-        ("MSCI Equity",   eq_msci,     False, False, MSCI_ORDER),
-        ("Bonds & Rates", bd_rates,    False, True,  BOND_RATE_ORDER),
-        ("Bond ETF",      bd_etf,      True,  False, BOND_ETF_ORDER),
-        ("FX",            fx,          False, False, FX_ORDER),
-        ("Commodities",   cm,          True,  False, CM_ORDER),
-        ("Major Stocks",  st,          True,  False, ST_ORDER),
+        ("주식(Equity)",           eq_regional, False, False, EQUITY_ORDER),
+        ("MSCI 지수",              eq_msci,     False, False, MSCI_ORDER),
+        ("채권·금리(Bonds & Rates)", bd_rates,  False, True,  BOND_RATE_ORDER),
+        ("채권 ETF(Bond ETF)",     bd_etf,      True,  False, BOND_ETF_ORDER),
+        ("환율(FX)",               fx,          False, False, FX_ORDER),
+        ("원자재(Commodities)",    cm,          True,  False, CM_ORDER),
+        ("주요 종목(Major Stocks)", st,         True,  False, ST_ORDER),
     ]
     for title, cat, dollar, as_bp, order in sections:
         if not cat:
@@ -482,7 +514,7 @@ body{{
         html += f"""<div class="heatmap-section">
 <h2>{title} <span class="badge">{len(items)}</span>{src_html}</h2>
 <table class="heatmap">
-<thead><tr><th>Name</th><th>Close</th><th>20D Trend</th><th>Daily</th><th>Weekly</th><th>Monthly</th><th>YTD</th></tr></thead>
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
 <tbody>\n"""
         for name, d in items:
             html += heatmap_row(name, d, dollar, as_bp)
