@@ -152,19 +152,187 @@ output/summary/{YYYY-MM}/{YYYY-MM-DD}.html       # 주입 대상 HTML (이미 �
 - 당일 09시 이후 장중 데이터 검색 금지
 - 훅(`PreToolUse WebSearch|WebFetch`)이 자동 검증하므로 block되면 쿼리 수정
 
-### Step 3: Story 작성
+### Step 3: Story 작성 (7개 섹션 템플릿)
 
-Story는 HTML 섹션으로 구성된다. 기존 일간 `_story.html`을 Read로 확인해 구조 파악 후 작성.
+Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 일간 `_story.html`을 Read로 확인해 구조 파악 후 작성.
 
-표준 섹션:
-- **Headline**: 하루를 한 문장으로
-- **Narrative**: 아시아 → 유럽 → 미국 순서의 시간순 서사
-- **Causal Chain**: 선행 세션이 후행 세션에 어떤 영향을 미쳤는지
-- **Weekly & Monthly Progress (WTD/MTD)**: 주간·월간 누적 진행 상황 요약 (아래 Step 3-1 참조)
-- **Key Insights**: 2~4개의 핵심 관찰
-- **Risks**: 2~3개의 리스크 요인 (전망 OK, 사후 참조 X)
+---
 
-#### Step 3-1: Weekly & Monthly Progress 단락 작성
+#### 템플릿: 일간 Story 구조
+
+```html
+<!-- ── 1. Story Hero ── -->
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>[한 줄 헤드라인: 오늘의 극단 이벤트 또는 테마]</strong><br><br>
+    
+    <strong>아시아 세션</strong>은 [시간 범위(09:00~15:30)] [주요 흐름을 한 문장으로]. 
+    [지수/섹터별 상세 1-2 문장] [수치와 함께 전개] ... <br><br>
+    
+    <strong>유럽 세션</strong>은 [시간 범위(16:00~01:30)] [주요 이벤트].
+    [지수·상품·통화 전개] ... <br><br>
+    
+    <strong>미국 세션</strong>은 [시간 범위(22:30~06:00)] [주요 이벤트].
+    [지수·금리·상품 마감] ... [다음날 기대사항도 가능]
+  </div>
+</div>
+
+<!-- ── 2. Causal Chain ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 흐름 — 하나의 체인으로 이해하기</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">[원인 1] → [중간 결과] → [최종 결과] 형태로 한 줄 요약</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">[카테고리: 지정학/거시/기업 등]</div>
+    <div class="node-title">[핵심 이벤트]</div>
+    <div class="node-detail">[상세 설명 1-2 문장]</div>
+    <div class="node-impact up/down/flat">[영향 방향]</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  [2번째~5번째 노드 반복]
+</div>
+
+<!-- ── 3. Session Grid (3 세션) ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">[날짜 요약] — [3 세션을 한 문장으로 대조]</div>
+<div class="session-grid">
+  <!-- 아시아 블록 -->
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">🇰🇷</div>
+      <div>
+        <div class="session-name">아시아 세션</div>
+        <div class="session-time">한국 09:00 ~ 15:30</div>
+      </div>
+    </div>
+    <!-- ★ Verdict 배지 (필수) — 한 줄 평가 + 색상 (up/down/flat) -->
+    <span class="session-verdict verdict-up/down">오늘의 아시아 시황 한 줄</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> [시간별 사건 1]</li>
+      <li><span class="ev-time">12:00</span> [시간별 사건 2]</li>
+      <li><span class="ev-time">15:30</span> [시간별 사건 3 + 마감]</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value up/down">+0.39% / −0.49%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">[2번째 지수]</div><div class="s-kpi-value up/down">값</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">[3번째 지수]</div><div class="s-kpi-value up/down">값</div></div>
+    </div>
+  </div>
+  
+  <!-- 유럽 블록 (위와 동일 구조, class="session-block europe" 사용) -->
+  <!-- 미국 블록 (위와 동일 구조, class="session-block us" 사용) -->
+</div>
+
+<!-- ── 4. Cross-Asset Flow Map ── -->
+<div class="cross-asset">
+  <div style="margin-bottom:8px;font-size:15px;font-weight:600;color:#1a1d2e;">자산 간 연결 — 어떻게 한 줄로 이어지는가</div>
+  <div class="sub">[원인] → [자산군1] → [자산군2] → [최종 영향] 형태</div>
+  <div class="af-map">
+    <div class="af-node">
+      <div class="af-node-title">[핵심 이벤트 또는 지표]</div>
+      <div class="af-node-value">[수치 또는 상태]</div>
+      <div class="af-node-chg up/down">[변화율]</div>
+    </div>
+    <div class="af-arrow"><span class="arr">→</span><span class="lbl">[영향 메커니즘]</span></div>
+    [2번째~7번째 노드 반복]
+  </div>
+</div>
+
+<!-- ── 5. Insight Grid (4개 카드) ── -->
+<div class="insight-grid">
+  <div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
+  
+  <div class="insight-card">
+    <div class="badge">인사이트 1</div>
+    <div style="font-weight:600;margin-bottom:6px;">[제목]</div>
+    <div style="font-size:13px;">[1-2 문장 설명]</div>
+  </div>
+  
+  [2번째~4번째 카드 반복]
+</div>
+
+<!-- ── 6. Risk Section (2-3개) ── -->
+<div class="risk-section" style="margin-top:20px;">
+  <h3>⚠️ 이번 주 주목할 리스크</h3>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high/med/low">[위험도]</span>
+      <strong>[리스크 요인]:</strong> [설명 1-2 문장] — [대응 또는 전망]
+    </li>
+    <li class="risk-item">
+      [2번째~3번째 리스크]
+    </li>
+  </ul>
+</div>
+
+<!-- ── 7. WTD / MTD Progress ── -->
+<div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+  <div>
+    <h3>주간 누적 (W## · #/5 영업일 경과 · 전주 금요일 종가 기준)</h3>
+    <ul style="font-size:13px;line-height:1.6;">
+      <li>핵심 지수 (Fri [날짜] → [오늘] [날짜]): KOSPI [%], S&P500 [%], ...</li>
+      <li>이번 주 흐름: [시간순 사실 요약, 사후 프레이밍 금지]</li>
+    </ul>
+  </div>
+  
+  <div>
+    <h3>월간 누적 (#월 · #/22 영업일 경과 · 전월 말 종가 기준)</h3>
+    <ul style="font-size:13px;line-height:1.6;">
+      <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
+      <li>월초 이후 테마: [시간순 서술]</li>
+    </ul>
+  </div>
+</div>
+```
+
+---
+
+#### 작성 규칙 (템플릿 사용 시)
+
+1. **모든 7개 섹션 필수** — 하나라도 빠지면 구조 검증 실패
+2. **Verdict 배지 필수** (Session Grid 내 각 세션):
+   - `verdict-up`: 강세/긍정적 흐름
+   - `verdict-down`: 약세/부정적 흐름
+   - `verdict-flat`: 보합/중립
+3. **시간 정확성**:
+   - 아시아: 09:00~15:30
+   - 유럽: 16:00~01:30 (또는 17:00~00:30, 서머타임 차이)
+   - 미국: 22:30~06:00 (또는 23:30~05:00, 서머타임 차이)
+4. **세션 간 미래 참조 금지** (위의 "3. 세션별 마감 시각 규칙" 참조)
+5. **WTD/MTD 수치 직접 계산** (Step 3-2 참조)
+
+#### Step 3-1: 필수 섹션 체크리스트 (반드시 확인)
+
+일간 Story는 **반드시 다음 7개 섹션을 모두 포함**해야 합니다. 하나라도 빠지면 구조 검증 실패.
+
+- [ ] **1. Story Hero** — `<div class="story-hero">` + `<div class="story-text">`
+  - 한 줄 헤드라인 (강조: 최고·최저·주요 이벤트)
+  - 세션별 상세 서술 (아시아 → 유럽 → 미국, `<br><br>` 구분)
+  
+- [ ] **2. Causal Chain** — `<div class="causal-chain">` + `<div class="cause-node">` ×3~5
+  - 원인→결과 체인 (3~5단계)
+  - 각 노드: label, title, detail, node-impact(up/down/flat)
+  
+- [ ] **3. Session Grid** — `<div class="session-grid">` + `<div class="session-block">` ×3 (asia/europe/us)
+  - 각 세션 블록: header(아이콘+시간대) + verdict 배지 + events + s-kpi 그리드
+  - **Verdict 배지** (필수): `<span class="session-verdict verdict-up/down/flat">` (한 줄 평가)
+  
+- [ ] **4. Cross-Asset Flow Map** — `<div class="cross-asset">` + `<div class="af-map">` + `<div class="af-node">` ×5~7
+  - 자산 간 연결 경로 (시간순)
+  - af-node: title, value, chg(up/down) 포함
+  
+- [ ] **5. Insight Grid** — `<div class="insight-grid">` + `<div class="insight-card">` ×4
+  - 4개 교육 카드 (투자자 관점 핵심 학습)
+  
+- [ ] **6. Risk Section** — `<div class="risk-section">` + `<ul class="risk-items">` + `<li class="risk-item">` ×2~3
+  - 2~3개 리스크 요인 (전망/가능성 표현)
+  
+- [ ] **7. WTD/MTD Progress** — `<h3>` + `<ul>` 2세트
+  - WTD/MTD 누적 지수 + 테마 (별도 섹션)
+
+---
+
+#### Step 3-2: Weekly & Monthly Progress 단락 작성
 
 주간/월간 Story는 **마지막 영업일에만** 작성되므로, 일간 Story 안에 WTD(Week-to-Date)·MTD(Month-to-Date) 한 단락씩을 포함해 주 중간에도 누적 흐름을 볼 수 있게 한다.
 
@@ -314,20 +482,123 @@ hl-up, hl-down, hl-warn, hl-accent
 
 ---
 
-## 주간 Story 작성 절차
+## 주간/월간 Story 작성 절차
 
-### Step 1: 해당 주 일간 Story 수집
+### 주간 Story (마지막 영업일 작성)
 
-- ISO 주차 → 해당 주의 영업일 나열 (월~금, 공휴일 제외)
-- 각 날짜의 `output/summary/YYYY-MM/YYYY-MM-DD_story.html`을 **모두 Read**
-- 각 날짜의 `_data.json`도 필요 시 참조 (수치 확인)
+#### 구조 (템플릿)
 
-### Step 2: 주간 관점 종합
+```html
+<!-- 주간 Story는 일간과 달리 Session Grid 없음 — Narrative 중심 -->
 
-- 한 주를 관통하는 테마 추출 (예: "관세 불확실성에 휩쓸린 한 주")
-- 각 날짜의 주요 이벤트를 시간순으로 배치
-- 주간 누적 수익률, 고점·저점, 최대 변동일 식별
-- **주의**: 특정 날짜 서술 시 그 날짜 이후 이벤트로 설명하지 말 것
+<!-- ── 1. Story Hero (주간 관점) ── -->
+<div class="story-hero">
+  <h2>이번 주 시장 이야기</h2>
+  <div class="story-text">
+    <strong>[한 줄 주간 테마: 관통하는 하나의 내러티브]</strong><br><br>
+    
+    [월요일부터 금요일까지 시간순 서술]
+    - 월요일: [주요 이벤트 + 영향]
+    - 화요일: [연쇄 반응]
+    - ...
+    - 금요일: [주간 마감]
+  </div>
+</div>
+
+<!-- ── 2. Causal Chain (주간 흐름) ── -->
+<!-- 4~6개 노드로 한 주의 인과 표현 -->
+
+<!-- ── 3. Weekly Snapshot (Region Grid 선택) ── -->
+<!-- 선택: Top Movers 또는 Sector Rotation 카드 -->
+
+<!-- ── 4. Cross-Asset Flow Map (주간 흐름) ── -->
+
+<!-- ── 5. Insight Grid (주간 학습 4개) ── -->
+
+<!-- ── 6. Risk Section (주간 이슈 2-3개) ── -->
+
+<!-- ── 7. WTD Progress + 다음 주 전망 (선택) ── -->
+```
+
+#### 주간 작성 규칙
+
+- **일간 Story 5개 수집** (월~금, 공휴일 제외)
+- **주간 관점**: 일간 세부를 거둬내고 한 주를 관통하는 테마 강조
+- **특정 날짜 서술 금지**: "월요일의 하락은 수요일 랠리의 서막이었다" (사후 참조) ❌
+- **허용**: "월요일 하락 후 수요일이 과매도를 되돌리며 반등" ✅
+- **WTD 수치** (Step 3-2 참조): 전주 금요일 종가 기준 계산
+- **선택 섹션**: Top Movers, Sector Rotation 등은 필요시만 추가
+
+---
+
+### 월간 Story (마지막 영업일 작성)
+
+#### 구조 (템플릿)
+
+```html
+<!-- 월간 Story는 주간 Story와 유사하되, 더 거시적 관점 -->
+
+<!-- ── 1. Story Hero (월간 관점) ── -->
+<div class="story-hero">
+  <h2>이번 달 시장 이야기</h2>
+  <div class="story-text">
+    <strong>[한 줄 월간 테마: 한 달을 관통하는 거시 내러티브]</strong><br><br>
+    
+    [월초 ~ 월말 시간순 서술]
+    - 상반부(1~10일): [주요 이벤트]
+    - 중반부(11~20일): [연쇄 반응]
+    - 하반부(21~말): [마무리]
+  </div>
+</div>
+
+<!-- ── 2. Causal Chain (월간 흐름) ── -->
+<!-- 4~6개 노드로 한 달의 인과 표현 -->
+
+<!-- ── 3. Cross-Asset Flow (월간 흐름) ── -->
+
+<!-- ── 4. Insight Grid (월간 학습 4개) ── -->
+
+<!-- ── 5. Risk Section (월간 이슈 2-3개) ── -->
+
+<!-- ── 6. MTD Progress + 다음 달 전망 (선택) ── -->
+```
+
+#### 월간 작성 규칙
+
+- **일간 Story 20개+ 수집** (월초 ~ 월말, 공휴일 제외)
+- **월간 관점**: 주간 이슈들을 거둬내고 달을 관통하는 거시 테마 강조
+- **특정 주/날짜 서술 금지**: "초반 하락은 말미 반등의 기초였다" (사후 참조) ❌
+- **허용**: "3주 연속 하락 후 4주째 반등" (팩트 나열) ✅
+- **MTD 수치** (Step 3-2 참조): 전월 말 종가 기준 계산
+- **섹터/국가 회전**: 월간에만 "S&P 톱 5/바텀 5 섹터" 추가 고려
+
+---
+
+### 공통 규칙 (일간/주간/월간)
+
+| 항목 | 일간 | 주간 | 월간 |
+|------|------|------|------|
+| 세션 구분 | ✅ 3 세션 (Asia/EU/US) | ❌ (통합) | ❌ (통합) |
+| 시간별 상세 | ✅ ev-time | ❌ | ❌ |
+| Causal Chain | ✅ 3~5 노드 | ✅ 4~6 노드 | ✅ 4~6 노드 |
+| Cross-Asset Flow | ✅ 5~7 노드 | ✅ 5~7 노드 | ✅ 5~7 노드 |
+| Insight Grid | ✅ 4개 | ✅ 4개 | ✅ 4개 |
+| Risk Section | ✅ 2~3개 | ✅ 2~3개 | ✅ 2~3개 |
+| 기간 진행 | ✅ WTD/MTD | ✅ WTD | ✅ MTD |
+
+---
+
+### 검증 체크리스트 (일간/주간/월간 공통)
+
+작성 후 **반드시** 다음을 확인:
+
+- [ ] **7개 섹션 확인**: Story Hero / Causal Chain / [Session Grid 일간만] / Cross-Asset / Insight / Risk / 기간 Progress
+- [ ] **시간순 인과관계**: 각 문장이 시간순인가? 사후 참조 없는가?
+- [ ] **요일·휴일 정확성**: 날짜와 요일이 일치하는가? (CSV 검증)
+- [ ] **고점·저점 표현**: "사상 최고치" 주장 전 CSV 확인했는가?
+- [ ] **CSS 클래스**: 사용한 모든 클래스가 화이트리스트에 있는가?
+- [ ] **수치 일치**: WTD/MTD 직접 계산 결과와 일치하는가?
+- [ ] **파일 동기화**: `YYYY-MM-DD.html` + `YYYY-MM-DD_story.html` 내용 동일한가?
 
 ### Step 3: HTML 주입
 
