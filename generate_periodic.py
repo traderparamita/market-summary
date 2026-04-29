@@ -346,7 +346,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
   --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
   --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
   --accent:#F58220; --accent2:#043B72;
-  --up:#0d9b6a; --down:#d9304f; --warn:#CB6015;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
   --gold:#b8860b; --oil:#d35400;
 }}
 ::selection{{background:#F58220;color:#ffffff}}
@@ -435,7 +435,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 .session-name{{font-size:15px;font-weight:600;color:#1a1d2e}}
 .session-time{{font-size:11px;color:var(--muted)}}
 .session-verdict{{display:inline-block;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;margin-bottom:10px}}
-.verdict-up{{background:rgba(13,155,106,0.1);color:var(--up)}}.verdict-down{{background:rgba(217,48,79,0.1);color:var(--down)}}.verdict-mixed{{background:rgba(212,139,7,0.1);color:var(--warn)}}
+.verdict-up{{background:rgba(217,43,43,0.1);color:var(--up)}}.verdict-down{{background:rgba(26,95,180,0.1);color:var(--down)}}.verdict-mixed{{background:rgba(212,139,7,0.1);color:var(--warn)}}
 .session-events{{list-style:none}}.session-events li{{font-size:12px;padding:6px 0 6px 12px;border-bottom:1px solid #f3f4f8;position:relative}}
 .session-events li:last-child{{border:none}}.session-events li::before{{content:'';position:absolute;left:0;top:12px;width:4px;height:4px;border-radius:50%;background:var(--muted)}}
 .session-events .ev-time{{color:var(--muted);font-size:10px;font-weight:600}}
@@ -467,7 +467,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 .risk-items{{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}}
 .risk-item{{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:12px;line-height:1.6}}
 .risk-tag{{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}}
-.risk-tag.high{{background:rgba(217,48,79,0.15);color:var(--down)}}.risk-tag.med{{background:rgba(212,139,7,0.15);color:var(--warn)}}
+.risk-tag.high{{background:rgba(26,95,180,0.15);color:var(--down)}}.risk-tag.med{{background:rgba(212,139,7,0.15);color:var(--warn)}}
 
 /* ── Macro & Events Tab ── */
 .macro-section{{margin-bottom:32px}}
@@ -655,7 +655,7 @@ function switchTab(id){{
 }}
 Chart.defaults.color='#7c8298';Chart.defaults.borderColor='#e8eaf0';
 Chart.defaults.font.family="'Spoqa Han Sans Neo','Spoqa Han Sans',sans-serif";Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',AC='#F58220',WN='#CB6015',MU='#b0b4c4';
+const UP='#d92b2b',DN='#1a5fb4',AC='#F58220',WN='#CB6015',MU='#b0b4c4';
 function bc(d){{return d.map(v=>v>0?UP:v<0?DN:MU)}}
 new Chart(document.getElementById('eqChart'),{{
   type:'bar',

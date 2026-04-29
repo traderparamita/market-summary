@@ -342,7 +342,7 @@ def _prev_cycle_link_html(prev_date: str, label: str = "섹터") -> str:
 def _chg_span(v, na="—") -> str:
     if v is None or (isinstance(v, float) and math.isnan(v)):
         return na
-    color = "#16a34a" if v >= 0 else "#dc2626"
+    color = "#d92b2b" if v >= 0 else "#1a5fb4"
     return f'<span style="color:{color};font-weight:600">{v:+.2f}%</span>'
 
 
@@ -527,7 +527,7 @@ body {
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
 .dispersion-fill {
-  position: absolute; height: 100%; background: linear-gradient(90deg, #dc2626, #f97316, #16a34a);
+  position: absolute; height: 100%; background: linear-gradient(90deg, #1a5fb4, #f97316, #d92b2b);
   border-radius: 6px; transition: width 0.3s;
 }
 .dispersion-markers {
@@ -617,7 +617,7 @@ def _country_card_html(c: dict, is_focus: bool = False, prev_date: str = None) -
     prev_link = _prev_cycle_link_html(prev_date, label="국가") if prev_date else ""
 
     view_label = {"OW": "▲ 비중확대", "UW": "▼ 비중축소", "N": "→ 중립"}.get(c.get("view"), c.get("view", ""))
-    view_color = {"OW": "#16a34a", "UW": "#dc2626", "N": "#d97706"}.get(c.get("view"), "#64748b")
+    view_color = {"OW": "#d92b2b", "UW": "#1a5fb4", "N": "#d97706"}.get(c.get("view"), "#64748b")
 
     return f"""
 <div class="country-card{focus_cls}">
@@ -745,11 +745,11 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
 
     us_rank_labels = json.dumps([s.get("name", "") for s in us_sorted])
     us_rank_scores = json.dumps([_safe(s.get("mom_3m")) for s in us_sorted])
-    us_rank_colors = json.dumps(["#16a34a" if _safe(s.get("mom_3m")) >= 0 else "#dc2626" for s in us_sorted])
+    us_rank_colors = json.dumps(["#d92b2b" if _safe(s.get("mom_3m")) >= 0 else "#1a5fb4" for s in us_sorted])
 
     kr_rank_labels = json.dumps([s.get("name", "") for s in kr_sorted])
     kr_rank_scores = json.dumps([_safe(s.get("mom_3m")) for s in kr_sorted])
-    kr_rank_colors = json.dumps(["#16a34a" if _safe(s.get("mom_3m")) >= 0 else "#dc2626" for s in kr_sorted])
+    kr_rank_colors = json.dumps(["#d92b2b" if _safe(s.get("mom_3m")) >= 0 else "#1a5fb4" for s in kr_sorted])
 
     # Country scatter (3M Return vs ACWI Excess 기준)
     country_scatter = json.dumps([
@@ -852,7 +852,7 @@ Chart.defaults.color = '#7c8298';
 Chart.defaults.font.family = "'Noto Sans KR', sans-serif";
 Chart.defaults.font.size = 11;
 
-const UP='#16a34a', DN='#dc2626', AC='#F58220', NAVY='#043B72', MU='#94a3b8';
+const UP='#d92b2b', DN='#1a5fb4', AC='#F58220', NAVY='#043B72', MU='#94a3b8';
 
 // ── Data 탭 차트 ──
 // US Sector Ranking (Data tab)
