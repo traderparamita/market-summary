@@ -19,7 +19,10 @@ import requests
 import yaml
 from dotenv import load_dotenv
 
-from io_utils import load_csv_dedup, append_save_csv
+try:
+    from .io_utils import load_csv_dedup, append_save_csv
+except ImportError:
+    from io_utils import load_csv_dedup, append_save_csv
 
 # Load environment
 BASE_DIR = Path(__file__).resolve().parent.parent  # market_summary/ (from collectors/)
@@ -28,7 +31,7 @@ load_dotenv(BASE_DIR / ".env")
 FRED_API_KEY = os.getenv("FRED_API_KEY")
 ECOS_API_KEY = os.getenv("ECOS_API_KEY")
 
-MACRO_YAML = BASE_DIR / "macro_indicators.yaml"
+MACRO_YAML = Path(__file__).resolve().parent / "macro_indicators.yaml"
 HISTORY_CSV = BASE_DIR / "history" / "macro_indicators.csv"
 
 CSV_COLUMNS = ["DATE", "INDICATOR_CODE", "CATEGORY", "REGION", "VALUE", "UNIT", "SOURCE"]

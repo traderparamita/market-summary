@@ -78,7 +78,7 @@ def run_simulation():
                 del sys.modules[mod_name]
 
         # collect_market: HISTORY_CSV 패치 (수집 로직의 데이터 소스)
-        import collect_market
+        from collectors import collect_market
         collect_market.HISTORY_CSV = tmp_csv
 
         # market_source: CSV fallback 시 이 CSV_PATH 를 읽도록 패치

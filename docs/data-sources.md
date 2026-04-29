@@ -1,10 +1,10 @@
 # 데이터 소스 & 수집
 
-## 1. 일간 시장 데이터 (`collect_market.py`)
+## 1. 일간 시장 데이터 (`collectors/collect_market.py`)
 
 ### 수집 대상 (96개 티커 → 90개 지표코드)
 
-`collect_market.py`의 `TICKERS` dict에 86개 yfinance 티커가 선언되어 있고,
+`collectors/collect_market.py`의 `TICKERS` dict에 86개 yfinance 티커가 선언되어 있고,
 `fetch_kr_rates()`로 ECOS에서 KR 금리 5개를 별도 수집하여 일간 수집 대상은 총 91개.
 `INDICATOR_CODES` dict에 88개 `(category, ticker) → 지표코드` 매핑이 정의되어 있다.
 매핑이 없는 티커(VKOSPI, KR 5Y, KR 30Y)는 보고서에는 표시되지만 CSV/Snowflake 적재에서 스킵된다.
@@ -32,7 +32,7 @@
 | EQ_MSCI_LATAM | MSCI LATAM | ILF (ETF proxy) | |
 | EQ_MSCI_EMEA | MSCI EMEA | EZA (ETF proxy) | |
 
-#### Bond (11 티커 → 11 지표)
+#### Bond (11 티커 + 2 파생 → 13 지표)
 
 | 지표코드 | 이름 | 소스 | 비고 |
 |----------|------|------|------|
@@ -47,8 +47,10 @@
 | BD_KR_CD91D | KR CD 91일 | ECOS API 817Y002/010502000 | |
 | BD_KR_3Y | KR 국고 3Y | ECOS API 817Y002/010200000 | |
 | BD_KR_10Y | KR 국고 10Y | ECOS API 817Y002/010200001 | |
+| BD_US_10_2_SPREAD | US 10-2 Spread | 파생 (US 10Y − US 2Y) | computed |
+| BD_KR_10_3_SPREAD | KR 10-3 Spread | 파생 (KR 10Y − KR 3Y) | computed |
 
-추가로 SHY/IEI/TIP는 `TICKERS`에 선언 + `INDICATOR_CODES`에 매핑 있으나, 백필은 `portfolio/collectors/sector_etfs.py`에서 수행.
+추가로 SHY/IEI/TIP는 `TICKERS`에 선언 + `INDICATOR_CODES`에 매핑 있으나, 백필은 `collectors/sector_etfs.py`에서 수행.
 
 #### FX (8 티커 → 8 지표)
 
@@ -161,11 +163,13 @@ investiny / investing.com (INVESTINY_FALLBACK dict에 있는 티커만)
 ### 데이터 흐름 (일간)
 
 ```
-collect_market.fetch_data()
+collectors.collect_market.fetch_data()
   ├─ yfinance.download() (96 tickers, batch)
   ├─ FDR fallback (개별)
   ├─ investiny fallback (개별)
-  └─ fetch_kr_rates() → ECOS API
+  ├─ fetch_kr_rates() → ECOS API
+  ├─ US 10-2 Spread 계산 (US 10Y − US 2Y)
+  └─ KR 10-3 Spread 계산 (KR 10Y − KR 3Y)
 
 generate.py main()
   ├─ fetch_data() → result_dict + history_rows
@@ -177,9 +181,9 @@ generate.py main()
 
 ---
 
-## 2. 보조 수집기 (`portfolio/collectors/`)
+## 2. 보조 수집기 (`collectors/`)
 
-일간 `collect_market.py`와 별도로, 이력 백필·특수 지표용 수집기 4종이 있다.
+일간 `collectors/collect_market.py`와 별도로, 이력 백필·특수 지표용 수집기 4종이 있다.
 모두 `history/market_data.csv` (또는 `macro_indicators.csv`)에 append + Snowflake dual-write.
 
 ### 2-1. Sector ETFs (`sector_etfs.py`)
@@ -209,7 +213,7 @@ generate.py main()
 
 ### 2-4. Macro Indicators (`macro.py`)
 
-- **대상**: 48개 거시지표 (`portfolio/macro_indicators.yaml`에 정의)
+- **대상**: 48개 거시지표 (`collectors/macro_indicators.yaml`에 정의)
 - **소스**: FRED API (US/JP/CN/EU/UK/IN/Global) + ECOS API (KR)
 - **적재**: `history/macro_indicators.csv` + Snowflake `MKT200_MACRO_DAILY`
 - **실행**: `python -m collectors.macro --start 2010-01-01`

@@ -17,30 +17,37 @@ Story 작성 규칙은 `market-summary` 스킬에 있다 (Story 작업 시 자�
 ## 구조
 
 ```
-collect_market.py         # 시장 데이터 수집 (TICKERS/INDICATOR_CODES + fetch_data/build_report_data)
 generate.py               # HTML 보고서 생성 (collect_market import + Snowflake dual-write)
 generate_periodic.py      # 주간/월간/분기 집계 (--only {weekly|monthly|quarterly} --quarter N)
 generate_sector_country.py # 섹터·국가 보고서 (11일 사이클)
+market_source.py         # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader 의 단일 진입점
 snowflake_loader.py       # CSV ↔ Snowflake 적재 유틸
+notify_telegram.py       # Telegram 알림 (개인 + 그룹 동시 발송)
 simulate.py               # 과거 날짜 시뮬레이션
 history/market_data.csv       # 일별 시계열 (10컬럼 대문자)
 history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
+
+collectors/
+├── collect_market.py             # 메인 시장 데이터 수집 (TICKERS/INDICATOR_CODES + fetch_data/build_report_data)
+├── io_utils.py                   # CSV 공통 유틸 (load_csv_dedup, append_save_csv)
+├── macro_indicators.yaml         # FRED + ECOS 매크로 지표 코드 정의
+├── macro.py                      # 거시지표 수집 (FRED + ECOS)
+├── sector_etfs.py                # 섹터/스타일 ETF 이력 백필
+├── krx_sectors.py                # KOSPI 200 GICS 섹터 지수
+└── valuation.py                  # KOSPI PER/PBR/배당수익률
 
 scripts/
 ├── auto_market.py                    # 일일 자동화 (일 18:50 + 화~금 06:50 KST, 한국 공휴일 반영)
 ├── collect_weekly.py                 # 주간 수집 러너 (일 19:30 KST)
 ├── collect_securities_reports.py     # 미래에셋증권 상세분석 보고서 → S3
 ├── collect_prism_reports.py          # MVP PRISM 보고서 → S3 (증분 스캔)
+├── verify_report_numbers.py          # 보고서 수치 결정론 검증 (상세 로그: logs/verify_numbers.log)
 ├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
 ├── generate_securities_index.py      # output/securities/index.html
 ├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
 ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
 └── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
 
-market_source.py         # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader 의 단일 진입점
-io_utils.py              # CSV 공통 유틸 (load_csv_dedup, append_save_csv)
-macro_indicators.yaml    # FRED + ECOS 매크로 지표 코드 정의 (collectors/macro 가 사용)
-collectors/              # 보조 수집기 (macro, sector_etfs, krx_sectors, valuation)
 views/                   # 섹터·국가 분석 엔진 (sector_view, country_view, _shared)
                          #   ※ generate_sector_country.py 가 직접 import. 나머지 8개 의사결정 뷰는 market-strategy/ 로 이관
 ```
@@ -53,6 +60,7 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - **Snowflake MKT100_MARKET_DAILY 가 단일 정본**. CSV 는 legacy mirror + simulate.py fallback
 - 모든 reader 는 `market_source` 경유
 - Macro View 만 `history/macro_indicators.csv` 사용
+- 파생 지표: US 10-2 Spread (`BD_US_10_2_SPREAD`), KR 10-3 Spread (`BD_KR_10_3_SPREAD`) — 수집 시 자동 계산·적재
 
 자세한 소스·스키마·수집 대상: [docs/data-sources.md](docs/data-sources.md)
 
@@ -95,6 +103,8 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 ```bash
 .venv/bin/python scripts/verify_report_numbers.py --auto --telegram
 ```
+
+`--auto` 실행 시 상세 로그가 `logs/verify_numbers.log`에 자동 누적 기록된다.
 
 상세: [docs/verify-numbers.md](docs/verify-numbers.md)
 

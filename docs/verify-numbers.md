@@ -75,6 +75,7 @@ expected_close = CSV[(target_date, code)]
 
 4. **target_date 보수적 정책**
    - 본문에 `4/8(수)` 같은 일자 명시(`\d{1,2}/\d{1,2}\([월화수목금토일]\)`) 있으면 그 일자로 검증
+   - 윈도우에 여러 날짜가 공존하면(이벤트 테이블 등) 매칭 위치에 **가장 가까운** 날짜를 선택
    - 명시 없으면 **일간 보고서만** 그 날로 fallback. 주간/월간은 검증 스킵 (다른 일자 인용일 가능성)
 
 ---
@@ -121,7 +122,7 @@ turn 종료 시 자동 발동 — `/market-full` 누락이나 사용자가 수�
 ## 사용법 (CLI)
 
 ```bash
-# git diff 변경분 자동 감지
+# git diff 변경분 자동 감지 (상세 로그 자동 기록)
 .venv/bin/python scripts/verify_report_numbers.py --auto
 
 # 특정 파일 명시
@@ -132,9 +133,23 @@ turn 종료 시 자동 발동 — `/market-full` 누락이나 사용자가 수�
 
 # 위반 시 Telegram 발송
 .venv/bin/python scripts/verify_report_numbers.py --auto --telegram
+
+# 위반 자동 수정 + 재검증
+.venv/bin/python scripts/verify_report_numbers.py --auto --fix
+
+# 상세 로그만 남기기 (수동 실행 시)
+.venv/bin/python scripts/verify_report_numbers.py --log output/summary/2026-04/2026-04-29.html
 ```
 
 Exit code: 0 = pass, 1 = violation, 2 = CSV missing.
+
+### 상세 로그 (`logs/verify_numbers.log`)
+
+`--auto` 또는 `--log` 사용 시 타임스탬프와 함께 누적 기록:
+- 대상 파일 목록
+- 1차 검증 위반 내역
+- 자동 수정 결과 (--fix 사용 시)
+- 최종 잔여 위반 (문맥 포함)
 
 ---
 

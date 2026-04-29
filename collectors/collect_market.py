@@ -25,7 +25,8 @@ import requests
 import yfinance as yf
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(_PROJECT_ROOT, ".env"))
 
 try:
     from investiny import historical_data as inv_historical
@@ -40,7 +41,7 @@ except ImportError:
     HAS_HOLIDAYS = False
 
 # ── Paths ────────────────────────────────────────────────────────
-HISTORY_DIR = os.path.join(os.path.dirname(__file__), "history")
+HISTORY_DIR = os.path.join(_PROJECT_ROOT, "history")
 HISTORY_CSV = os.path.join(HISTORY_DIR, "market_data.csv")
 
 # CSV 스키마 (Snowflake MKT100_MARKET_DAILY 1:1)

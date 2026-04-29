@@ -23,7 +23,10 @@ load_dotenv()
 
 from pykrx import stock  # noqa: E402
 
-from io_utils import load_csv_dedup, append_save_csv  # noqa: E402
+try:
+    from .io_utils import load_csv_dedup, append_save_csv
+except ImportError:
+    from io_utils import load_csv_dedup, append_save_csv
 
 ROOT = Path(__file__).resolve().parent.parent  # market_summary/ (from collectors/)
 MARKET_CSV = ROOT / "history" / "market_data.csv"

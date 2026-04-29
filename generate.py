@@ -17,7 +17,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 OG_IMAGE_VERSION = "20260410-1"
 
 # ── Data collection (collect_market.py) ─────────────────────────
-from collect_market import (
+from collectors.collect_market import (
     fetch_data, fetch_kr_rates, calc_metrics,
     append_to_history, build_report_data,
     HISTORY_CSV, HISTORY_CSV_COLUMNS,
