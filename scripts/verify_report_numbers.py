@@ -1024,6 +1024,50 @@ def _send_telegram(violations: list[Violation], n_files: int) -> None:
         print(f"[verify] ! Telegram 발송 실패: {e}")
 
 
+def _write_log(files: list[Path], violations_before: list[Violation],
+               fix_result: dict | None, violations_after: list[Violation]) -> None:
+    """상세 검증 로그를 logs/verify_numbers.log에 추가."""
+    from datetime import datetime
+    log_path = ROOT / "logs" / "verify_numbers.log"
+    log_path.parent.mkdir(exist_ok=True)
+
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    lines = [
+        f"\n{'='*60}",
+        f"  수치 검증 — {ts}",
+        f"{'='*60}",
+        f"",
+        f"대상 파일 ({len(files)}개):",
+    ]
+    for f in files:
+        lines.append(f"  • {f.name}")
+
+    lines.append(f"")
+    lines.append(f"[1차 검증] 위반 {len(violations_before)}건")
+    for v in violations_before:
+        lines.append(f"  ✗ {Path(v.file).name} :: {v.asset} {v.period}")
+        lines.append(f"      보고서: {v.reported}  실제: {v.expected}  차이: {v.diff}")
+
+    if fix_result:
+        lines.append(f"")
+        lines.append(f"[자동 수정] 수정 {fix_result['fixed']}건 / 스킵 {fix_result['skipped']}건")
+
+    lines.append(f"")
+    if violations_after:
+        lines.append(f"[최종 결과] ✗ 잔여 위반 {len(violations_after)}건")
+        for v in violations_after:
+            lines.append(f"  ✗ {Path(v.file).name} :: {v.asset} {v.period}")
+            lines.append(f"      보고서: {v.reported}  실제: {v.expected}  차이: {v.diff}")
+            lines.append(f"      문맥: {v.context}")
+    else:
+        lines.append(f"[최종 결과] ✓ 위반 없음")
+
+    lines.append("")
+
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("files", nargs="*", type=Path)
@@ -1035,6 +1079,8 @@ def main() -> int:
                     help="JSON 출력 (hooks/CI 용)")
     ap.add_argument("--telegram", action="store_true",
                     help="위반 발견 시 Telegram 알림 발송 (notify_telegram.send 재사용)")
+    ap.add_argument("--log", action="store_true",
+                    help="상세 로그를 logs/verify_numbers.log에 기록")
     args = ap.parse_args()
 
     files = list(args.files)
@@ -1061,10 +1107,13 @@ def main() -> int:
     for f in files:
         all_v.extend(verify(f, prices))
 
+    violations_before = list(all_v)
+    fix_result = None
+
     if all_v and args.fix:
         print(f"[fix] 위반 {len(all_v)}건 — 자동 수정 시작")
-        result = auto_fix(all_v)
-        print(f"[fix] 완료: 수정 {result['fixed']}건 / 스킵 {result['skipped']}건")
+        fix_result = auto_fix(all_v)
+        print(f"[fix] 완료: 수정 {fix_result['fixed']}건 / 스킵 {fix_result['skipped']}건")
         # 재검증
         all_v = []
         for f in files:
@@ -1087,6 +1136,10 @@ def main() -> int:
 
     if all_v and args.telegram:
         _send_telegram(all_v, len(files))
+
+    # 상세 로그 기록 (--log 또는 --auto 시 자동)
+    if args.log or args.auto:
+        _write_log(files, violations_before, fix_result, all_v)
 
     return 1 if all_v else 0
 
