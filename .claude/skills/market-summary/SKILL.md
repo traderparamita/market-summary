@@ -867,8 +867,8 @@ PM 스타일은 **차가운 블루/네이비 계열** (CS 의 오렌지와 시�
   .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
   .pm-section li:last-child{margin-bottom:0}
   .pm-section .pm-num{font-weight:600;color:#1a1d2e}
-  .pm-section .pm-up{color:#0d9b6a;font-weight:600}
-  .pm-section .pm-dn{color:#d9304f;font-weight:600}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
   .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
   .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
 </style>
@@ -1168,9 +1168,9 @@ CSS 정의는 PM 본문 첫 머리에 인라인 `<style>` 으로 추가 (기존 
 .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
 @media (max-width:900px){.scenario-grid{grid-template-columns:1fr}}
 .scenario-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px}
-.scenario-card.bull{border-left:4px solid #0d9b6a}
+.scenario-card.bull{border-left:4px solid #d92b2b}
 .scenario-card.base{border-left:4px solid #F58220;background:linear-gradient(180deg,#fff5eb 0%,#fff 60%);box-shadow:0 2px 8px rgba(245,130,32,0.08)}
-.scenario-card.bear{border-left:4px solid #d9304f}
+.scenario-card.bear{border-left:4px solid #1a5fb4}
 .scenario-card h3{font-size:15px;font-weight:700;margin-bottom:8px}
 .scen-prob{font-size:12px;color:var(--muted);margin-bottom:10px}
 .scen-trigger,.scen-impact{font-size:13.5px;color:#2d3148;margin-bottom:8px;line-height:1.7}

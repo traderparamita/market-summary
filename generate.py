@@ -626,7 +626,7 @@ Chart.defaults.color='#7c8298';
 Chart.defaults.borderColor='#e8eaf0';
 Chart.defaults.font.family="'Spoqa Han Sans Neo','Spoqa Han Sans',sans-serif";
 Chart.defaults.font.size=11;
-const UP='#0d9b6a',DN='#d9304f',AC='#F58220',WN='#CB6015',MU='#b0b4c4',GD='#b8860b';
+const UP='#d92b2b',DN='#1a5fb4',AC='#F58220',WN='#CB6015',MU='#b0b4c4',GD='#b8860b';
 function bc(d){{return d.map(v=>v>0?UP:v<0?DN:MU)}}
 
 // Equity bar
