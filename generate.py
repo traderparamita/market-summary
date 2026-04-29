@@ -397,6 +397,7 @@ body{{
   <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
   <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
 </div>
 
 <!-- ══════ TAB 1: DATA ══════ -->
@@ -610,6 +611,13 @@ body{{
 <!-- PM_STORY_PLACEHOLDER -->
 
 </div><!-- /tab-pm -->
+
+<!-- ══════ TAB 5: MACRO ══════ -->
+<div id="tab-macro" class="tab-panel">
+
+<!-- MACRO_EVENTS_PLACEHOLDER -->
+
+</div><!-- /tab-macro -->
 
 <div class="footer">Daily Market Summary | yfinance auto-generated | {report_date}</div>
 
@@ -1103,7 +1111,40 @@ _TAB_SPECS = [
     ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
     ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
     ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
+    ("macro", "MACRO_EVENTS_PLACEHOLDER",  "_macro"),
 ]
+
+
+def _find_prev_weekly_macro(daily_html_path):
+    """일간 보고서 경로에서 해당 날짜를 역산해, 직전 주 weekly _macro.html 내용을 반환."""
+    import re as _re
+    try:
+        fname = os.path.basename(daily_html_path)
+        m = _re.match(r"(\d{4}-\d{2}-\d{2})", fname)
+        if not m:
+            return ""
+        report_date = dt.datetime.strptime(m.group(1), "%Y-%m-%d").date()
+        iso = report_date.isocalendar()
+        # 해당 주(W_n) 보고서가 있으면 이번 주 주간 macro, 없으면 직전 주
+        # 이번 주 주간 macro가 아직 없을 수 있으니 직전 주 우선
+        prev_week = report_date - dt.timedelta(weeks=1)
+        prev_iso = prev_week.isocalendar()
+        weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
+        # 직전 주 → 이번 주 순서로 시도
+        for candidate in [prev_iso, iso]:
+            macro_path = os.path.join(
+                weekly_dir,
+                f"{candidate[0]}-W{candidate[1]:02d}_macro.html"
+            )
+            if os.path.exists(macro_path):
+                with open(macro_path) as f:
+                    content = f.read().strip()
+                if content and "MACRO_EVENTS_PLACEHOLDER" not in content:
+                    print(f"  Macro injected from: {os.path.basename(macro_path)}")
+                    return content
+    except Exception:
+        pass
+    return ""
 
 
 def _inject_existing_story(path, new_html):
@@ -1135,6 +1176,9 @@ def _inject_existing_story(path, new_html):
                     sib = f.read().strip()
                 if sib and placeholder not in sib:
                     preserved = sib
+        # macro 탭: 해당 날짜의 직전 주 weekly _macro.html fallback
+        if not preserved and tab == "macro":
+            preserved = _find_prev_weekly_macro(path)
         if preserved:
             new_html = new_html.replace(f"<!-- {placeholder} -->", preserved)
 
