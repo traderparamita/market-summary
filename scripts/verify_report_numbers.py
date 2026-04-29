@@ -544,15 +544,24 @@ def _check_bp(
 
 
 def _resolve_target_date(window: str, file_path: Path,
-                          periods: dict[str, tuple[str, str]]) -> str | None:
+                          periods: dict[str, tuple[str, str]],
+                          match_offset_in_window: int | None = None) -> str | None:
     """본문 윈도우에서 일자 명시(`4/8(수)`)가 있으면 그 일자.
+    match_offset_in_window이 주어지면 매칭 위치에 가장 가까운 날짜를 선택한다.
+    (테이블에서 여러 행의 날짜가 윈도우에 공존할 때 인접 행 날짜 오인 방지)
     명시 없으면 *일간 보고서만* 그 날로 fallback. 주간/월간은 None 반환(검증 스킵)."""
-    m = DATE_INLINE_PATTERN.search(window)
-    if m:
+    matches = list(DATE_INLINE_PATTERN.finditer(window))
+    if matches:
         my = re.search(r"(\d{4})", str(file_path))
         if my:
+            year = int(my.group(1))
+            if match_offset_in_window is not None and len(matches) > 1:
+                # 매칭 위치에 가장 가까운 날짜 선택 (같은 <tr> 행 우선)
+                best = min(matches, key=lambda dm: abs(dm.start() - match_offset_in_window))
+            else:
+                best = matches[0]
             try:
-                return date(int(my.group(1)), int(m.group(1)), int(m.group(2))).isoformat()
+                return date(year, int(best.group(1)), int(best.group(2))).isoformat()
             except ValueError:
                 pass
     # 일자 명시 없을 때: 일간 보고서만 그 날로 fallback
@@ -800,7 +809,12 @@ def verify(file_path: Path, prices) -> list[Violation]:
         # forward 컨테이너 (outlook/scenario/risk) 안이면 스킵
         if _is_in_forward_container(text, m.start()):
             continue
-        target_date = _resolve_target_date(window, file_path, periods)
+        # 윈도우 내 매칭 오프셋 계산 (가장 가까운 날짜 선택용)
+        combo_text = m.group(0)
+        match_offset_in_window = window.find(combo_text)
+        if match_offset_in_window < 0:
+            match_offset_in_window = len(window) // 2
+        target_date = _resolve_target_date(window, file_path, periods, match_offset_in_window)
         if not target_date:
             continue
         # 일간 등락 검증

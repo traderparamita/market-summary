@@ -94,6 +94,7 @@ KO_LABELS = {
     "KR 10Y": "한국 국채10년", "KR 30Y": "한국 국채30년",
     "US 2Y": "미국 국채2년", "US 10Y": "미국 국채10년", "US 30Y": "미국 국채30년",
     "US 10-2 Spread": "미국 장단기 스프레드",
+    "KR 10-3 Spread": "한국 장단기 스프레드",
     "AGG": "미국 종합채권", "TLT": "미국 장기국채", "IEI": "미국 중기국채",
     "SHY": "미국 단기국채", "TIP": "미국 물가연동채",
     "LQD": "투자등급 회사채", "HYG": "하이일드 채권", "EMB": "신흥국 채권",
@@ -463,8 +464,8 @@ body{{
     ]
     MSCI_ORDER = ["MSCI World", "MSCI ACWI", "MSCI LATAM", "MSCI EMEA"]
     BOND_RATE_ORDER = [
-        "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y",  # 한국
-        "US 2Y", "US 10Y", "US 30Y", "US 10-2 Spread",       # 미국
+        "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y", "KR 10-3 Spread",  # 한국
+        "US 2Y", "US 10Y", "US 30Y", "US 10-2 Spread",                       # 미국
     ]
     BOND_ETF_ORDER = ["AGG", "TLT", "IEI", "SHY", "TIP", "LQD", "HYG", "EMB"]
     FX_ORDER = ["DXY", "USD/KRW", "EUR/USD", "GBP/USD", "AUD/USD", "USD/JPY", "USD/CNY"]

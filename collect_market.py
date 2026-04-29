@@ -328,6 +328,7 @@ INDICATOR_CODES = {
     ("bond", "KR CD 91D"): "BD_KR_CD91D",
     ("bond", "KR 3Y"):     "BD_KR_3Y",
     ("bond", "KR 10Y"):    "BD_KR_10Y",
+    ("bond", "KR 10-3 Spread"): "BD_KR_10_3_SPREAD",
     ("fx", "DXY"):     "FX_DXY",
     ("fx", "USD/KRW"): "FX_USDKRW",
     ("fx", "EUR/USD"): "FX_EURUSD",
@@ -723,6 +724,19 @@ def fetch_data(start_date=None, end_date=None):
         result["bond"].update(kr_rates)
     history_rows.extend(kr_history)
 
+    # ── KR 10-3 Spread (파생값) ──
+    try:
+        _kr3y  = result.get("bond", {}).get("KR 3Y")
+        _kr10y = result.get("bond", {}).get("KR 10Y")
+        if _kr3y and _kr10y and _kr3y.get("close") is not None and _kr10y.get("close") is not None:
+            kr_spread_close = round(_kr10y["close"] - _kr3y["close"], 4)
+            kr_spread_daily = round((_kr10y["daily"] or 0) - (_kr3y["daily"] or 0), 4) if (_kr10y.get("daily") is not None and _kr3y.get("daily") is not None) else None
+            kr_spread_metrics = {**_kr10y, "close": kr_spread_close, "daily": kr_spread_daily, "data_status": "ok"}
+            result.setdefault("bond", {})["KR 10-3 Spread"] = kr_spread_metrics
+            print(f"  [SPREAD] KR 10-3: {kr_spread_close:+.4f}%")
+    except Exception as _kse:
+        print(f"  [SPREAD WARN] KR 10-3: {_kse}")
+
     return result, history_rows
 
 
@@ -829,6 +843,24 @@ def fetch_kr_rates(start_date=None, end_date=None):
             print(f"  [BOK] {name}: {close}% ({date_fmt})")
         except Exception as e:
             print(f"  [WARN] BOK {name}: {e}")
+
+    # ── KR 10-3 Spread 시계열 (history_rows에서 날짜별 계산) ──
+    kr3y_by_date = {}
+    kr10y_by_date = {}
+    for row in history_rows:
+        if row[1] == "BD_KR_3Y":
+            kr3y_by_date[row[0]] = row[4]
+        elif row[1] == "BD_KR_10Y":
+            kr10y_by_date[row[0]] = row[4]
+    spread_code = INDICATOR_CODES.get(("bond", "KR 10-3 Spread"))
+    if spread_code:
+        for d in sorted(kr10y_by_date.keys()):
+            if d in kr3y_by_date:
+                sp = round(kr10y_by_date[d] - kr3y_by_date[d], 4)
+                history_rows.append((
+                    d, spread_code, "bond", "KR 10-3 Spread",
+                    sp, None, None, None, None, "computed",
+                ))
 
     return result, history_rows
 
