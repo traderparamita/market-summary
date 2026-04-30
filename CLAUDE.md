@@ -62,6 +62,19 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - Macro View 만 `history/macro_indicators.csv` 사용
 - 파생 지표: US 10-2 Spread (`BD_US_10_2_SPREAD`), KR 10-3 Spread (`BD_KR_10_3_SPREAD`) — 수집 시 자동 계산·적재
 
+### 데이터 규모 (2026-04 기준)
+
+| 파일 | 행수 | 지표 수 | 기간 |
+|------|------|--------|------|
+| `history/market_data.csv` | 약 30만 6천 행 | 120개 | 2010~현재 |
+| `history/macro_indicators.csv` | 약 5만 7천 행 | 43개 | 2010~현재 |
+
+**market_data 카테고리 (120개 지표)**:
+- equity(19) · bond(16) · sector_kr(25) · sector_us(11) · index_kr(11) · stocks(14) · fx(8) · style_us(5) · commodity(6) · valuation(3) · risk(2)
+
+**macro_indicators 카테고리 (43개 지표)**:
+- inflation · employment · growth · policy · rates · credit · activity · liquidity · sentiment · fx · risk
+
 자세한 소스·스키마·수집 대상: [docs/data-sources.md](docs/data-sources.md)
 
 ## 핵심 함수
@@ -96,9 +109,22 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - PRISM 보고서: `prism/<카테고리>/YYYY/MM/` (증분 스캔, `logs/prism_last_page.txt` 추적)
 - 수동: `--week-of YYYY-MM-DD` (증권), `--full` (PRISM 전체 재스캔)
 
-## 보고서 수치 자동 검증
+## 품질 자동 검증 (이중 구조)
 
-`/market-full` Step 7.7 + Stop 훅이 turn 종료 시마다 호출. Story 본문의 종가·등락률·bp 변화를 `history/market_data.csv` ground truth와 자동 대조 → 위반 발견 시 commit 차단 + Telegram 알림.
+market-full 워크플로우는 두 개의 독립 검증 레이어를 거친다:
+
+### 1. Story 시간 정확성 검증 (PostToolUse 훅, type: "prompt")
+
+Story 작성 중 Edit/Write 직후 자동 실행. 검증 실패 시 `reason`을 Claude에게 피드백 → **자동 수정 재시도 루프** (사용자 개입 없이 자동 교정, launchd 완전 자동화 가능).
+
+- Check 1: Forward-looking 금지 (D+1 08:00 KST 이후 데이터 사용 금지)
+- Check 2: 세션 간 시간 정확성 (아시아 서술에 유럽 데이터 사용 금지 등)
+- Check 3: 인과관계 방향 ("월요일 하락이 수요일 반등의 서막" 표현 금지)
+- Check 4: 주간/월간 내 일간 간 참조 순서
+
+### 2. 보고서 수치 결정론 검증 (Stop 훅)
+
+turn 종료 시마다 자동 호출. Story 본문의 종가·등락률·bp 변화를 `history/market_data.csv` ground truth와 대조.
 
 ```bash
 .venv/bin/python scripts/verify_report_numbers.py --auto --telegram
@@ -108,9 +134,24 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 
 상세: [docs/verify-numbers.md](docs/verify-numbers.md)
 
+## 로깅
+
+모든 Step 진행 상태가 `logs/market-full-YYYY-MM-DD.log`에 자동 기록된다.
+
+```
+logs/
+├── market-full-YYYY-MM-DD.log   # generate.py + generate_sector_country.py Step 메시지
+├── auto_market.log              # launchd 자동 실행 로그
+├── verify_numbers.log           # 수치 검증 상세 로그
+└── securities_reports.log       # 증권 보고서 수집 로그
+```
+
+- `[SNOWFLAKE] OK/FAILED/SKIP` 마커로 Snowflake 적재 결과 추적
+- `✅ [Step X]`, `⚠ [Step X]`, `⊘ [Step X]` 마커로 Step별 결과 확인
+
 ## 관련 설정
 
-- `.claude/settings.json`: Story 시간 정확성 검증 훅 + Stop 훅 (수치 자동 검증)
+- `.claude/settings.json`: Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse, type: "prompt") + Stop 훅 (수치 자동 검증)
 - `.claude/skills/`: `market-summary`, `sector-country`(research 보고서) 스킬
 - `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/research`
 
