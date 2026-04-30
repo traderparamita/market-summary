@@ -8,11 +8,11 @@
   2. GPT-4o: 제목 기반 테마 3개 + 관련 보고서 인덱스 선정 (function calling)
   3. GPT-4o Vision: 테마별 PDF 앞 2페이지 이미지 →
      { overview, points: [...], insight } 구조 JSON 반환
-  4. HTML 렌더링 → output/securities/
+  4. HTML 렌더링 → output/research/securities/
 
 Output:
-    output/securities/digest_YYYY-WXX.html
-    output/securities/digest_latest.html
+    output/research/securities/digest_YYYY-WXX.html
+    output/research/securities/digest_latest.html
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ load_dotenv(ROOT / ".env")
 
 from generate_securities_index import scan_s3  # noqa: E402
 
-OUTPUT_DIR = ROOT / "output" / "securities"
+OUTPUT_DIR = ROOT / "output" / "research" / "securities"
 MODEL = "gpt-4o"
 S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
 S3_REGION = "ap-northeast-2"

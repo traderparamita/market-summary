@@ -123,7 +123,7 @@ def build_message(date_str: str, data: dict, is_weekly: bool, is_monthly: bool, 
     iso_year, iso_week, _ = dt.isocalendar()
     weekly_url = f"{GITHUB_PAGES}/summary/weekly/{iso_year}-W{iso_week:02d}.html"
     monthly_url = f"{GITHUB_PAGES}/summary/monthly/{year_month}.html"
-    sc_url = f"{GITHUB_PAGES}/sector-country/daily/{year_month}/{date_str}.html"
+    sc_url = f"{GITHUB_PAGES}/research/daily/{year_month}/{date_str}.html"
 
     link_parts = [f"[일간]({daily_url})", f"[주간]({weekly_url})", f"[월간]({monthly_url})", f"[섹터·국가]({sc_url})"]
     lines.append("🔗 " + "  |  ".join(link_parts))
@@ -181,7 +181,7 @@ def build_sc_complete_message(date_str: str, focus: str = "", ow_sectors: str = 
     weekday_ko = ["월", "화", "수", "목", "금", "토", "일"][dt.weekday()]
     now = datetime.datetime.now().strftime("%H:%M")
     year_month = date_str[:7]
-    sc_url = f"{GITHUB_PAGES}/sector-country/daily/{year_month}/{date_str}.html"
+    sc_url = f"{GITHUB_PAGES}/research/daily/{year_month}/{date_str}.html"
 
     lines = [
         f"✅ *{date_str}({weekday_ko}) 섹터·국가 보고서 완료*",

@@ -32,7 +32,7 @@ sys.path.insert(0, str(ROOT))
 from views.sector_view import compute_sector_view
 from views.country_view import compute_country_view, COUNTRIES
 
-OUTPUT_ROOT = ROOT / "output" / "sector-country"
+OUTPUT_ROOT = ROOT / "output" / "research"
 HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
 
@@ -732,7 +732,7 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     if period == "daily":
         focus_hint = (f'<p style="margin-top:8px;font-size:12px">오늘 주제: '
                       f'<strong>{focus["theme"]} + {focus["country_name"]}</strong> '
-                      f'— /sector-country {date_str} 커맨드를 실행하면 심층 분석이 추가됩니다.</p>')
+                      f'— /research {date_str} 커맨드를 실행하면 심층 분석이 추가됩니다.</p>')
 
     # ── Chart Data Preparation ──
     def _safe(v):
@@ -1031,8 +1031,8 @@ def _out_path(date_str: str, period: str) -> Path:
 
 
 def _extract_digest_body() -> tuple[str, str]:
-    """output/securities/digest_latest.html 에서 theme-card 블록과 메타 정보를 추출."""
-    digest_path = ROOT / "output" / "securities" / "digest_latest.html"
+    """output/research/securities/digest_latest.html 에서 theme-card 블록과 메타 정보를 추출."""
+    digest_path = ROOT / "output" / "research" / "securities" / "digest_latest.html"
     if not digest_path.exists():
         return "", ""
     try:
@@ -1056,7 +1056,7 @@ def _extract_digest_body() -> tuple[str, str]:
 
 
 def _update_sc_index() -> None:
-    """output/sector-country/index.html 목록 페이지 생성/갱신.
+    """output/research/index.html 목록 페이지 생성/갱신.
 
     탭 구성:
       1. Theme     — 이번 주 주간 리서치 다이제스트 (digest_latest.html 인라인)
@@ -1338,7 +1338,7 @@ def _update_sc_index() -> None:
 
 
 def _update_index_link(date_str: str, period: str, out_path: Path) -> None:
-    """output/index.html의 Market Research 카드가 sector-country/index.html을 가리키도록 보장."""
+    """output/index.html의 Market Research 카드가 research/index.html을 가리키도록 보장."""
     if period != "daily":
         return
     index_path = ROOT / "output" / "index.html"
@@ -1347,8 +1347,8 @@ def _update_index_link(date_str: str, period: str, out_path: Path) -> None:
     content = index_path.read_text(encoding="utf-8")
     # 개별 daily 경로가 남아있으면 index.html로 교체
     updated = re.sub(
-        r'href="sector-country/daily/[^"]*"',
-        'href="sector-country/index.html"',
+        r'href="research/daily/[^"]*"',
+        'href="research/index.html"',
         content,
     )
     if updated != content:

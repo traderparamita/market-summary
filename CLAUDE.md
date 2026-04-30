@@ -43,7 +43,7 @@ scripts/
 ├── collect_prism_reports.py          # MVP PRISM 보고서 → S3 (증분 스캔)
 ├── verify_report_numbers.py          # 보고서 수치 결정론 검증 (상세 로그: logs/verify_numbers.log)
 ├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
-├── generate_securities_index.py      # output/securities/index.html
+├── generate_securities_index.py      # output/research/securities/index.html
 ├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
 ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
 └── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
@@ -112,7 +112,7 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 + Stop 훅 (수치 자동 검증)
 - `.claude/skills/`: `market-summary`, `sector-country` 스킬
-- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/sector-country`
+- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/research`
 
 ## 상세 문서
 

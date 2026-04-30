@@ -1,4 +1,4 @@
-"""output/securities/index.html 생성기 — S3 Pre-signed URL 기반.
+"""output/research/securities/index.html 생성기 — S3 Pre-signed URL 기반.
 
 미래에셋증권 상세분석 보고서(anthillia/miraeasset-securities/) 를 스캔해
 날짜별 그룹핑된 목록 페이지를 생성한다.
@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
-OUTPUT_DIR = ROOT / "output" / "securities"
+OUTPUT_DIR = ROOT / "output" / "research" / "securities"
 INDEX_PATH = OUTPUT_DIR / "index.html"
 
 S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
