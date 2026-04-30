@@ -1295,7 +1295,7 @@ def _update_sc_index() -> None:
 </style>
 </head>
 <body>
-  <a class="back" href="../index.html">← Back</a>
+  <a class="back" href="../index.html">← Anthillia 메인 허브로</a>
   <h1>Market Research</h1>
   <p class="sub">주간 리서치 테마 · 섹터·국가 포지셔닝</p>
 
