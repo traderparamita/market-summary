@@ -1030,8 +1030,38 @@ def _out_path(date_str: str, period: str) -> Path:
         return OUTPUT_ROOT / "monthly" / f"{_month_label(date_str)}.html"
 
 
+def _extract_digest_body() -> tuple[str, str]:
+    """output/securities/digest_latest.html 에서 theme-card 블록과 메타 정보를 추출."""
+    digest_path = ROOT / "output" / "securities" / "digest_latest.html"
+    if not digest_path.exists():
+        return "", ""
+    try:
+        content = digest_path.read_text(encoding="utf-8")
+        # 주차 레이블 (h1 태그)
+        m_title = re.search(r"<h1>([^<]+)</h1>", content)
+        week_label = m_title.group(1).strip() if m_title else ""
+        # theme-card 블록 전체: footer 직전까지 전부 추출 후 카드 단위로 분리
+        body_match = re.search(
+            r'(<div class="theme-card">.*?)(?=\n<div class="footer"|\Z)',
+            content, re.DOTALL
+        )
+        if not body_match:
+            return week_label, ""
+        block = body_match.group(1)
+        cards = re.split(r'(?=<div class="theme-card">)', block)
+        cards = [c.strip() for c in cards if c.strip()]
+        return week_label, "\n".join(cards)
+    except Exception:
+        return "", ""
+
+
 def _update_sc_index() -> None:
-    """output/sector-country/index.html 목록 페이지 생성/갱신."""
+    """output/sector-country/index.html 목록 페이지 생성/갱신.
+
+    탭 구성:
+      1. Theme     — 이번 주 주간 리서치 다이제스트 (digest_latest.html 인라인)
+      2. Sector·Country — 기존 일별 목록
+    """
     import glob as _glob
 
     daily_dir = OUTPUT_ROOT / "daily"
@@ -1046,7 +1076,6 @@ def _update_sc_index() -> None:
             day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
         except Exception:
             day_name = ""
-        # 섹터 테마·국가명: HTML의 focus-theme에서 직접 추출
         subtitle = ""
         try:
             content = Path(path).read_text(encoding="utf-8")
@@ -1063,62 +1092,228 @@ def _update_sc_index() -> None:
     latest_month = sorted_months[0] if sorted_months else ""
 
     month_btns = ""
-    panels = ""
+    sc_panels = ""
     for m in sorted_months:
         active = " active" if m == latest_month else ""
         label = datetime.strptime(m, "%Y-%m").strftime("%Y %b")
-        month_btns += f'      <button class="month-btn{active}" onclick="showMonth(\'{m}\')">{label}</button>\n'
+        month_btns += f'        <button class="month-btn{active}" onclick="showMonth(\'{m}\')">{label}</button>\n'
         items = ""
         for date, day, subtitle in months[m]:
-            items += f'          <li><a href="daily/{m}/{date}.html">{date} ({day}){subtitle}</a></li>\n'
-        panels += f'      <div class="month-panel{active}" id="m-{m}"><ul>\n{items}      </ul></div>\n'
+            items += f'            <li><a href="daily/{m}/{date}.html">{date} ({day}){subtitle}</a></li>\n'
+        sc_panels += f'        <div class="month-panel{active}" id="m-{m}"><ul>\n{items}        </ul></div>\n'
+
+    # Theme 탭 내용
+    week_label, digest_cards = _extract_digest_body()
+    if digest_cards:
+        theme_tab_content = f"""
+      <div class="digest-week-label">{week_label}</div>
+      <div class="digest-cards">
+{digest_cards}
+      </div>
+      <p class="digest-link-row">
+        <a href="../securities/digest_latest.html" class="digest-full-link">전체 화면으로 보기 →</a>
+      </p>"""
+    else:
+        theme_tab_content = """
+      <div class="digest-empty">
+        <p>아직 이번 주 다이제스트가 생성되지 않았습니다.</p>
+        <p style="margin-top:8px;font-size:13px;color:#7c8298">매주 일요일 자동 생성됩니다.</p>
+      </div>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sector-Country | 섹터·국가 포지셔닝</title>
+<title>Market Research | 섹터·국가 포지셔닝</title>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
-  body {{ font-family:'Spoqa Han Sans Neo','Malgun Gothic',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:720px; margin:0 auto; }}
-  h1 {{ font-size:28px; font-weight:700; margin-bottom:4px; }}
-  .sub {{ font-size:14px; color:#7c8298; margin-bottom:24px; }}
-  .back {{ font-size:13px; color:#7c8298; text-decoration:none; display:inline-block; margin-bottom:16px; }}
-  .back:hover {{ color:#F58220; }}
-  .month-bar {{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }}
+
+  /* ── base ── */
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    font-family: 'Spoqa Han Sans Neo', 'Malgun Gothic', sans-serif;
+    background: #f0f2f7; color: #2d3148;
+    padding: 40px 24px; max-width: 900px; margin: 0 auto;
+  }}
+  a {{ color: inherit; text-decoration: none; }}
+  .back {{ font-size: 13px; color: #7c8298; display: inline-block; margin-bottom: 20px; }}
+  .back:hover {{ color: #F58220; }}
+  h1 {{ font-size: 28px; font-weight: 800; margin-bottom: 4px; }}
+  .sub {{ font-size: 14px; color: #7c8298; margin-bottom: 28px; }}
+
+  /* ── top tabs ── */
+  .tab-bar {{
+    display: flex; gap: 4px;
+    border-bottom: 2px solid #e2e6f0;
+    margin-bottom: 28px;
+  }}
+  .tab-btn {{
+    padding: 10px 22px;
+    font-size: 14px; font-weight: 700;
+    background: none; border: none; border-bottom: 3px solid transparent;
+    margin-bottom: -2px; cursor: pointer;
+    color: #7c8298; font-family: inherit;
+    transition: all .15s;
+  }}
+  .tab-btn:hover {{ color: #2d3148; }}
+  .tab-btn.active {{ color: #F58220; border-bottom-color: #F58220; }}
+  .tab-panel {{ display: none; }}
+  .tab-panel.active {{ display: block; }}
+
+  /* ── Theme 탭 ── */
+  .digest-week-label {{
+    font-size: 13px; font-weight: 700; color: #7c8298;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }}
+  .digest-cards {{ display: flex; flex-direction: column; gap: 16px; }}
+
+  /* digest theme-card 재정의 (원본 스타일 override) */
+  .digest-cards .theme-card {{
+    background: #fff;
+    border: 1px solid #e2e6f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    transition: box-shadow .2s;
+  }}
+  .digest-cards .theme-card:hover {{ box-shadow: 0 6px 20px rgba(0,0,0,0.09); }}
+  .digest-cards .theme-header {{
+    display: flex; align-items: center; gap: 12px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #e2e6f0;
+  }}
+  .digest-cards .theme-badge {{
+    font-size: 10px; font-weight: 800; color: #F58220;
+    background: #fff3e8; padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+  }}
+  .digest-cards .theme-name {{ font-size: 18px; font-weight: 700; color: #1a1d2e; }}
+  .digest-cards .theme-body {{ padding: 0 24px; }}
+  .digest-cards .detail-section {{
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f2f7;
+  }}
+  .digest-cards .detail-section:last-child {{ border-bottom: none; }}
+  .digest-cards .detail-label {{
+    display: inline-block;
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #043B72; background: #eef1f8;
+    padding: 2px 9px; border-radius: 20px;
+    margin-bottom: 8px;
+  }}
+  .digest-cards .detail-insight .detail-label {{
+    color: #1a9e6e; background: #edfaf5;
+  }}
+  .digest-cards .detail-text {{
+    font-size: 14px; color: #2d3148; line-height: 1.8;
+  }}
+  .digest-cards .point-list {{
+    list-style: none !important; display: flex; flex-direction: column; gap: 8px; padding: 0;
+  }}
+  .digest-cards .point-list li {{
+    font-size: 14px; color: #2d3148; line-height: 1.7;
+    padding-left: 18px; position: relative;
+  }}
+  .digest-cards .point-list li::before {{
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 6px; height: 6px; border-radius: 50%; background: #F58220;
+  }}
+  .digest-cards .source-section {{
+    padding: 14px 24px 18px;
+    background: #f8f9fc;
+    border-top: 1px solid #e2e6f0;
+  }}
+  .digest-cards .source-label {{
+    font-size: 10px; font-weight: 700; color: #7c8298;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 8px;
+  }}
+  .digest-cards .source-list {{ list-style: none !important; display: flex; flex-direction: column; gap: 6px; padding: 0; }}
+  .digest-cards .source-item {{
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }}
+  .digest-cards .source-link {{
+    font-size: 12px; color: #043B72;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
+  }}
+  .digest-cards .source-link:hover {{ color: #F58220; text-decoration: underline; }}
+  .digest-cards .source-date {{
+    flex-shrink: 0; font-size: 11px; color: #7c8298;
+    background: #ebebf0; padding: 1px 7px; border-radius: 10px;
+  }}
+  .digest-link-row {{ text-align: right; margin-top: 12px; }}
+  .digest-full-link {{
+    font-size: 13px; font-weight: 700; color: #F58220;
+  }}
+  .digest-full-link:hover {{ text-decoration: underline; }}
+  .digest-empty {{
+    text-align: center; padding: 48px 0;
+    font-size: 15px; color: #7c8298;
+  }}
+
+  /* ── Sector·Country 탭 ── */
+  .month-bar {{ display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }}
   .month-btn {{
-    padding:6px 14px; border:1px solid #e0e3ed; border-radius:16px;
-    background:#fff; color:#7c8298; font-size:12px; font-weight:600;
-    cursor:pointer; transition:all .15s; font-family:inherit;
+    padding: 6px 14px; border: 1px solid #e0e3ed; border-radius: 16px;
+    background: #fff; color: #7c8298; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s; font-family: inherit;
   }}
-  .month-btn:hover {{ border-color:#F58220; color:#F58220; }}
-  .month-btn.active {{ background:#F58220; color:#fff; border-color:#F58220; }}
-  .month-panel {{ display:none; }}
-  .month-panel.active {{ display:block; }}
-  ul {{ list-style:none; padding:0; }}
-  li {{ margin-bottom:8px; }}
-  li a {{
-    display:block; padding:12px 18px; background:#fff; border:1px solid #e0e3ed;
-    border-radius:10px; text-decoration:none; color:#2d3148; font-size:14px;
-    font-weight:500; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
-    font-family:'JetBrains Mono','Spoqa Han Sans Neo',monospace;
+  .month-btn:hover {{ border-color: #F58220; color: #F58220; }}
+  .month-btn.active {{ background: #F58220; color: #fff; border-color: #F58220; }}
+  .month-panel {{ display: none; }}
+  .month-panel.active {{ display: block; }}
+  #tab-sc ul {{ list-style: none; padding: 0; }}
+  #tab-sc li {{ margin-bottom: 8px; }}
+  #tab-sc li a {{
+    display: block; padding: 12px 18px; background: #fff; border: 1px solid #e0e3ed;
+    border-radius: 10px; color: #2d3148; font-size: 14px; font-weight: 500;
+    transition: all .15s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    font-family: 'JetBrains Mono', 'Spoqa Han Sans Neo', monospace;
   }}
-  li a:hover {{ border-color:#F58220; color:#F58220; transform:translateX(4px); }}
+  #tab-sc li a:hover {{ border-color: #F58220; color: #F58220; transform: translateX(4px); }}
+
+  @media (max-width: 600px) {{
+    body {{ padding: 24px 12px; }}
+    .tab-btn {{ padding: 8px 14px; font-size: 13px; }}
+    .digest-cards .theme-name {{ font-size: 16px; }}
+    .digest-cards .detail-text,
+    .digest-cards .point-list li {{ font-size: 13px; }}
+  }}
 </style>
 </head>
 <body>
   <a class="back" href="../index.html">← Back</a>
-  <h1>Sector-Country</h1>
-  <p class="sub">섹터·국가 포지셔닝 보고서 · 11일 사이클 · 매 영업일 업데이트</p>
+  <h1>Market Research</h1>
+  <p class="sub">주간 테마 다이제스트 · 섹터·국가 포지셔닝 · 매 영업일 업데이트</p>
 
-  <div class="month-bar">
-{month_btns}  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('theme')">✦ Theme</button>
+    <button class="tab-btn" onclick="switchTab('sc')">Sector · Country</button>
+  </div>
 
-{panels}
+  <!-- Theme 탭 -->
+  <div id="tab-theme" class="tab-panel active">
+{theme_tab_content}
+  </div>
+
+  <!-- Sector·Country 탭 -->
+  <div id="tab-sc" class="tab-panel">
+    <div class="month-bar">
+{month_btns}    </div>
+{sc_panels}  </div>
+
   <script>
+  function switchTab(name) {{
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }}
   function showMonth(key) {{
     document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));

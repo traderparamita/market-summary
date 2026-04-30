@@ -160,6 +160,21 @@ def render_html(rows: list[dict]) -> str:
     body = "\n".join(date_sections) if date_sections else """
   <div style="text-align:center;color:var(--muted);padding:48px">등록된 보고서가 없습니다.</div>"""
 
+    digest_banner = ""
+    digest_path = OUTPUT_DIR / "digest_latest.html"
+    if digest_path.exists():
+        digest_banner = """
+<div class="digest-banner">
+  <div class="digest-banner-inner">
+    <span class="digest-icon">✦</span>
+    <div>
+      <div class="digest-title">이번 주 핵심 투자 테마</div>
+      <div class="digest-desc">AI가 선정한 주간 리서치 다이제스트</div>
+    </div>
+    <a href="digest_latest.html" class="digest-link">보러 가기 →</a>
+  </div>
+</div>"""
+
     return f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -222,11 +237,29 @@ tr:hover td {{ background:#fafbfe; }}
 .btn-dl:hover {{ background:#d96e18; }}
 .footer {{ text-align:center; font-size:12px; color:var(--muted); padding-top:24px; margin-top:32px; }}
 .footer a {{ color:var(--primary); text-decoration:none; }}
+.digest-banner {{
+  background:linear-gradient(135deg,#043B72,#0d5fa3); border-radius:14px;
+  margin-bottom:20px; overflow:hidden;
+}}
+.digest-banner-inner {{
+  display:flex; align-items:center; gap:16px; padding:18px 24px;
+}}
+.digest-icon {{ font-size:24px; color:#F58220; flex-shrink:0; }}
+.digest-title {{ font-size:15px; font-weight:700; color:#fff; margin-bottom:2px; }}
+.digest-desc {{ font-size:13px; color:rgba(255,255,255,0.7); }}
+.digest-link {{
+  margin-left:auto; flex-shrink:0; background:var(--primary); color:#fff;
+  font-size:13px; font-weight:700; padding:8px 18px; border-radius:8px;
+  text-decoration:none; white-space:nowrap; transition:background 0.15s;
+}}
+.digest-link:hover {{ background:#d96e18; }}
 @media (max-width:720px) {{
   body {{ padding:24px 12px; }}
   td {{ padding:10px 12px; font-size:12px; }}
   .btn {{ padding:5px 8px; font-size:11px; margin-left:3px; }}
   .sz {{ display:none; }}
+  .digest-banner-inner {{ flex-wrap:wrap; }}
+  .digest-link {{ margin-left:0; width:100%; text-align:center; }}
 }}
 </style>
 </head>
@@ -248,6 +281,8 @@ tr:hover td {{ background:#fafbfe; }}
   <strong>&CircleTimes;</strong> 다운로드 링크 유효기간 <strong>{URL_EXPIRES_DAYS}일</strong>
   &middot; 만료 시 페이지 재생성 필요 (~{expires_at.strftime("%m-%d")})
 </div>
+
+{digest_banner}
 
 {body}
 
