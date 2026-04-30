@@ -53,7 +53,11 @@ def human_size(nbytes: int) -> str:
 
 
 def scan_s3() -> list[dict]:
-    s3 = boto3.client("s3", region_name=S3_REGION)
+    s3 = boto3.client(
+        "s3",
+        region_name=S3_REGION,
+        endpoint_url=f"https://s3.{S3_REGION}.amazonaws.com",
+    )
     expires = URL_EXPIRES_DAYS * 24 * 3600
 
     rows = []
