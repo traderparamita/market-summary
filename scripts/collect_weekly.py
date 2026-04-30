@@ -29,6 +29,7 @@ COLLECTORS = [
     ("미래에셋증권 상세분석", "collect_securities_reports.py"),
     ("MVP PRISM", "collect_prism_reports.py"),
     ("주간 리서치 다이제스트", "generate_securities_digest.py"),
+    ("Securities Index 재생성", "generate_securities_index.py"),
 ]
 
 
