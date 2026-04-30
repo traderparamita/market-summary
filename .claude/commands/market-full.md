@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
-description: "market_summary 전체 워크플로우: 데이터 수집 → Dashboard → Story(일/주/월) → 배포 → Sector-Country → 배포"
+description: "market_summary 전체 워크플로우: 데이터 수집 → Dashboard → Story(일/주/월) → 배포 → Research(섹터·국가) → 배포"
 ---
 
 ## Context
@@ -293,31 +293,31 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 
 실패 시 경고 로그 후 **계속 진행** (Step 11 중단 없음).
 
-### Step 11: Sector-Country Story 작성
+### Step 11: Research Story 작성 (섹터·국가·테마)
 
-`sector-country` **스킬**의 작성 절차를 따른다.
+`research` **스킬** (또는 `sector-country` 레거시)의 작성 절차를 따른다.
 
 핵심:
 1. `get_focus(date)` 결과로 오늘의 3개 주제(US 섹터 + KR 섹터 + 국가) 확인
 2. 주제별 Tavily 검색 (최근 1~2주 트렌드 맥락)
-3. Story 작성 후 `output/sector-country/daily/YYYY-MM/YYYY-MM-DD.html`에 주입
+3. Story 작성 후 `output/research/daily/YYYY-MM/YYYY-MM-DD.html`에 주입
 4. `YYYY-MM-DD_story.html` 저장 확인
 
-### Step 12: Git Commit + Push — Sector-Country
+### Step 12: Git Commit + Push — Research
 
-**반드시 디렉터리 전체를 스테이징한다.** 개별 파일만 `git add` 하면 `output/sector-country/index.html` (Step 10에서 `_update_sc_index()` 가 갱신) 이 누락되어 목록 페이지가 다음 날 보고서로 업데이트되지 않는다.
+**반드시 디렉터리 전체를 스테이징한다.** 개별 파일만 `git add` 하면 `output/research/index.html` (Step 10에서 `_update_sc_index()` 가 갱신) 이 누락되어 목록 페이지가 다음 날 보고서로 업데이트되지 않는다.
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
-  git add output/sector-country/ && \
-  git status --short output/sector-country/ && \
-  git commit -m "feat: $ARGUMENTS sector-country — 섹터 Day N/11 · 국가 Day M/11
+  git add output/research/ && \
+  git status --short output/research/ && \
+  git commit -m "feat: $ARGUMENTS 리서치 보고서 — 섹터 Day N/11 · 국가 Day M/11
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>" && \
   git push origin main
 ```
 
-- 커밋 전 `git status --short` 출력에 `output/sector-country/index.html` 이 포함되는지 반드시 확인
+- 커밋 전 `git status --short` 출력에 `output/research/index.html` 이 포함되는지 반드시 확인
 - 커밋 메시지 N/M 은 Step 10 결과에서 얻은 실제 일자 대입
 
 실패 시 즉시 중단하고 사용자에게 상태 보고.

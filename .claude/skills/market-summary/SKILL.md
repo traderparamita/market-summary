@@ -846,7 +846,7 @@ CS(Customer Success) 관점 스토리는 **기존 Market Story를 재작성** �
 </div>
 ```
 
-**절대 쓰지 말 것**: `.story-section`, `.story-content` — Market Summary HTML 에 정의돼 있지 않은 클래스 (sector-country 보고서의 CSS 이므로 여기선 무스타일 상태가 된다).
+**절대 쓰지 말 것**: `.story-section`, `.story-content` — Market Summary HTML 에 정의돼 있지 않은 클래스 (research 보고서의 CSS 이므로 여기선 무스타일 상태가 된다).
 
 **주입 단계**:
 

@@ -20,11 +20,15 @@ output/
 │   └── quarterly/
 │       ├── YYYY-QN.html
 │       └── YYYY-QN_{story,pm,macro}.html
-├── sector-country/              # 섹터·국가 초보자 포지셔닝 보고서 (11일 사이클)
-│   └── daily/
-│       └── YYYY-MM/
-│           ├── YYYY-MM-DD.html
-│           └── YYYY-MM-DD_story.html
+├── research/                    # 통합 리서치 플랫폼 (섹터·국가·테마 + 증권보고서)
+│   ├── daily/                  # 섹터·국가 초보자 포지셔닝 보고서 (11일 사이클)
+│   │   └── YYYY-MM/
+│   │       ├── YYYY-MM-DD.html
+│   │       └── YYYY-MM-DD_story.html
+│   └── securities/             # 미래에셋증권 상세분석 다이제스트 (주 1회)
+│       ├── digest_YYYY-WNN.html
+│       ├── digest_latest.html
+│       └── index.html
 ├── fund/                        # Fund Analysis — S3 기반 다운로드 페이지
 │   └── index.html
 ├── portfolio/                   # Portfolio Agent

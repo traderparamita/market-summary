@@ -7,7 +7,8 @@ description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오�
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 보고서: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/sector-country/daily/**/*.html 2>/dev/null | head -3`
+- 최근 섹터·국가 보고서: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/research/daily/**/*.html 2>/dev/null | head -3`
+- 최근 증권 다이제스트: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/research/securities/*.html 2>/dev/null | head -2`
 - market_data.csv 마지막 날짜: !`tail -5 /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
 
 ---
@@ -252,7 +253,7 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 
 ## Step 6 — `_story.html` 저장
 
-경로: `output/sector-country/daily/YYYY-MM/{date}_story.html`
+경로: `output/research/daily/YYYY-MM/{date}_story.html`
 
 ---
 
@@ -262,7 +263,7 @@ Story 주입 및 `_story.html` 저장 완료 후 변경분을 커밋·푸시한�
 
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
-  git add output/sector-country/ && \
+  git add output/research/ && \
   git commit -m "feat: {date} sector-country 보고서 — 섹터 Day N/11 · 국가 Day M/11
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>" && \
