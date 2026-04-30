@@ -28,6 +28,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import boto3
+from botocore.config import Config
 from dotenv import load_dotenv
 from openai import OpenAI
 from pdf2image import convert_from_path
@@ -574,7 +575,12 @@ def main() -> None:
         print("\n[DRY-RUN] GPT 호출 생략")
     else:
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        s3_client = boto3.client("s3", region_name=S3_REGION)
+        s3_client = boto3.client(
+            "s3",
+            region_name=S3_REGION,
+            endpoint_url=f"https://s3.{S3_REGION}.amazonaws.com",
+            config=Config(s3={"addressing_style": "virtual"}),
+        )
 
         print(f"\n[2/4] 테마 선정 중... ({len(reports)}건 제목 분석)")
         themes = select_themes(client, reports, week_label)
