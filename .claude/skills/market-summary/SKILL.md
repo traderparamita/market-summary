@@ -125,6 +125,26 @@ grep "EQ_KOSPI" history/market_data.csv | grep "^2026" | sort | awk -F',' '{prin
 - 세션 도입부(서두 → 첫 세션)와 세션 종료 후(마지막 세션 → VIX/마무리 단락)에도 `<br><br>` 유지
 - Session Grid 영역(`session-grid`)은 CSS로 이미 분리돼 있어 불필요. **Story Hero 텍스트 블록에만 해당**
 
+### 9. Story Hero 세션별 간결성
+
+Story Hero의 **아시아/유럽/미국 세션 서술은 세션 수준의 핵심 요약만** 작성한다:
+
+**금지 패턴** (시간별 micro-detail):
+- ❌ "09:00 코스피 6,619.00 출발 → 11:00 장중 고점 6,702.38 → 15:30 마감 6,690.90"
+- ❌ "아침 서울 외환시장에서 원/달러는 1,474원으로 출발해 UAE OPEC 탈퇴 발표에 일시 강세..."
+- ❌ "삼성전자 +1.80%(226,000원), SK하이닉스 −0.54%(1,293,000원)는..."
+
+**권장 패턴** (핵심 흐름 중심):
+- ✅ "코스피는 에너지/화학 섹터 +5.03% 급등에 힘입어 3거래일 연속 사상 최고 종가 6,690.90(+0.75%)를 기록"
+- ✅ "원/달러는 유가 상승 영향으로 1,479원 수준으로 약세 전환"
+- ✅ "상하이 +0.71%, 항셍 +1.68%, 알리바바·메이퇀·텐센트 등 인터넷주 일제 강세"
+
+**세션당 길이**: 3-5 문장 (현재 평균 10-12 문장 → 절반 축약)
+
+**Session Grid와 역할 분담**:
+- **Story Hero**: 세션별 핵심만 (why, what happened)
+- **Session Grid**: 시간별 타임라인 상세 (`09:00`, `11:00`, `15:30` 이벤트)
+
 ---
 
 ## 일간 Story 작성 절차
@@ -244,9 +264,8 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
 </div>
 
 <!-- ── 5. Insight Grid (4개 카드) ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
 <div class="insight-grid">
-  <div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
-  
   <div class="insight-card">
     <div class="badge">인사이트 1</div>
     <div style="font-weight:600;margin-bottom:6px;">[제목]</div>
@@ -255,6 +274,37 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
   
   [2번째~4번째 카드 반복]
 </div>
+
+### Insight Grid 작성 원칙
+
+1. **제목 배치**: `<div class="insight-grid">` **밖**에 제목 div 배치 (grid item 충돌 방지)
+2. **카드 개수**: 정확히 4개 (2열 × 2행 배치)
+3. **카드 길이**: 1-2 문장 (현재 3-4 문장 → 축약)
+4. **Badge 순서**: 인사이트 1 → 2 → 3 → 4
+
+**올바른 구조**:
+```html
+<!-- 제목을 grid 밖에 배치 -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <div class="badge">인사이트 1</div>
+    <div style="font-weight:600;margin-bottom:6px;">[제목]</div>
+    <div style="font-size:13px;">[1-2 문장]</div>
+  </div>
+  <!-- 2, 3, 4번 카드 반복 -->
+</div>
+```
+
+**잘못된 구조 (금지)**:
+```html
+<!-- ❌ 제목을 grid 안에 넣으면 첫 번째 grid item이 되어 레이아웃 깨짐 -->
+<div class="insight-grid">
+  <div style="...">오늘의 핵심 학습</div>  <!-- 이것이 grid item 1 -->
+  <div class="insight-card">...</div>      <!-- grid item 2 -->
+  ...
+</div>
+```
 
 <!-- ── 6. Risk Section (2-3개) ── -->
 <div class="risk-section" style="margin-top:20px;">
@@ -271,23 +321,59 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
 </div>
 
 <!-- ── 7. WTD / MTD Progress ── -->
+<div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · #/5 영업일 경과)</h3>
+    <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+      <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
+      <li>원자재: [상품] [%], [상품] [%], ...</li>
+      <li>채권: US 10Y [bp], US 2Y [bp], KR 10Y [bp]</li>
+      <li>FX: DXY [%], 원/달러 [%]</li>
+    </ul>
+  </div>
+  
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">월간 누적 (#월 · #/22 영업일 경과)</h3>
+    <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+      <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
+      <li>원자재: [상품] [%], [상품] [%], ...</li>
+      <li>채권: US 10Y [bp], KR 10Y [bp]</li>
+      <li>FX: DXY [%], 원/달러 [%]</li>
+    </ul>
+  </div>
+</div>
+
+### WTD/MTD 카드 작성 원칙
+
+1. **카드 스타일 적용**: 배경색, 테두리, 그림자로 시각적 구분
+2. **제목 간결화**: "전주 금요일 종가 기준" 같은 중복 설명 제거
+3. **데이터 정렬**: 핵심 지수 → 원자재 → 채권 → FX 순서 유지
+4. **간격 개선**: `line-height:1.7`, `gap:16px`로 가독성 향상
+
+**스타일 필수 요소**:
+- 카드 배경: `background:var(--card)`
+- 테두리: `border:1px solid var(--border)`
+- 둥근 모서리: `border-radius:12px`
+- 그림자: `box-shadow:0 1px 3px rgba(0,0,0,0.04)`
+- 제목 하단선: `border-bottom:1px solid var(--border)`
+
+**금지 패턴** (이전 구조):
+```html
+<!-- ❌ 카드 스타일 없음, 간격 부족 -->
 <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
   <div>
     <h3>주간 누적 (W## · #/5 영업일 경과 · 전주 금요일 종가 기준)</h3>
     <ul style="font-size:13px;line-height:1.6;">
-      <li>핵심 지수 (Fri [날짜] → [오늘] [날짜]): KOSPI [%], S&P500 [%], ...</li>
-      <li>이번 주 흐름: [시간순 사실 요약, 사후 프레이밍 금지]</li>
-    </ul>
-  </div>
-  
-  <div>
-    <h3>월간 누적 (#월 · #/22 영업일 경과 · 전월 말 종가 기준)</h3>
-    <ul style="font-size:13px;line-height:1.6;">
-      <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
-      <li>월초 이후 테마: [시간순 서술]</li>
-    </ul>
-  </div>
-</div>
+```
+
+**권장 패턴**:
+```html
+<!-- ✅ 카드 스타일 포함, 제목 간결, 간격 개선 -->
+<div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · #/5 영업일 경과)</h3>
+    <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+```
 ```
 
 ---
