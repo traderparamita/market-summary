@@ -16,6 +16,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 import boto3
+from botocore.config import Config
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -83,7 +84,12 @@ def extract_category(key: str) -> str:
 
 
 def scan_s3() -> list[dict]:
-    s3 = boto3.client("s3", region_name=S3_REGION)
+    s3 = boto3.client(
+        "s3",
+        region_name=S3_REGION,
+        endpoint_url=f"https://s3.{S3_REGION}.amazonaws.com",
+        config=Config(s3={"addressing_style": "virtual"}),
+    )
     expires = URL_EXPIRES_DAYS * 24 * 3600
 
     rows = []
