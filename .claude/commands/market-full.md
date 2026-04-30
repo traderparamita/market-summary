@@ -318,6 +318,10 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 3. Story 작성 후 `output/research/daily/YYYY-MM/YYYY-MM-DD.html`에 주입
 4. `YYYY-MM-DD_story.html` 저장 확인
 
+**완료 보고**:
+- 성공: `✅ [Step 11] Research Story 작성 완료`
+- 실패: `⚠ [Step 11] Research Story 작성 실패 — 계속 진행`
+
 ### Step 12: Git Commit + Push — Research
 
 **반드시 디렉터리 전체를 스테이징한다.** 개별 파일만 `git add` 하면 `output/research/index.html` (Step 10에서 `_update_sc_index()` 가 갱신) 이 누락되어 목록 페이지가 다음 날 보고서로 업데이트되지 않는다.

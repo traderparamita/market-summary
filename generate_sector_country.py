@@ -17,7 +17,9 @@ Usage:
 
 import argparse
 import json
+import logging
 import math
+import os
 import re
 import sys
 from datetime import date, datetime
@@ -28,6 +30,31 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+
+# ── Logging setup ───────────────────────────────────────────────
+_log_dir = os.path.join(str(ROOT), "logs")
+os.makedirs(_log_dir, exist_ok=True)
+_log_file = os.path.join(_log_dir, f"market-full-{date.today().strftime('%Y-%m-%d')}.log")
+
+_logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
+
+# File handler
+_fh = logging.FileHandler(_log_file, encoding='utf-8')
+_fh.setLevel(logging.DEBUG)
+_fh.setFormatter(logging.Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+_logger.addHandler(_fh)
+
+# Console handler (stdout에만)
+_ch = logging.StreamHandler(sys.stdout)
+_ch.setLevel(logging.INFO)
+_ch.setFormatter(logging.Formatter('%(message)s'))
+_logger.addHandler(_ch)
+
+def _log(msg):
+    """Step 메시지는 logger 대신 이 함수 사용"""
+    _logger.info(msg)
+    print(msg)
 
 from views.sector_view import compute_sector_view
 from views.country_view import compute_country_view, COUNTRIES
@@ -1662,11 +1689,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     out_path, focus = generate(args.date, args.period)
-    print(f"✓ 생성 완료: {out_path}")
-    print(f"  섹터 Day {focus['sector_day']}/11: {focus['theme']} — {focus['theme_en']}")
-    print(f"  국가 Day {focus['country_day']}/11: {focus['country_name']}")
+    _log(f"\n  ✅ [Step 10] Sector-Country Dashboard 생성 완료")
+    _log(f"    생성: {out_path}")
+    _log(f"    섹터 Day {focus['sector_day']}/11: {focus['theme']} — {focus['theme_en']}")
+    _log(f"    국가 Day {focus['country_day']}/11: {focus['country_name']}")
     for s in focus["subjects"]:
         etf = s.get("etf", "")
         ticker = f" ({s['ticker']})" if s.get("ticker") else ""
         flag = s.get("flag", "")
-        print(f"    • {flag} {s['name']} {etf}{ticker}")
+        _log(f"      • {flag} {s['name']} {etf}{ticker}")
