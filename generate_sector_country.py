@@ -1106,12 +1106,14 @@ def _update_sc_index() -> None:
     week_label, digest_cards = _extract_digest_body()
     if digest_cards:
         theme_tab_content = f"""
-      <div class="digest-week-label">{week_label}</div>
+      <div class="digest-source-info">
+        미래에셋증권 상세분석 보고서 기반 · AI 자동 요약 · <span class="digest-week-tag">{week_label}</span>
+      </div>
       <div class="digest-cards">
 {digest_cards}
       </div>
       <p class="digest-link-row">
-        <a href="../securities/digest_latest.html" class="digest-full-link">전체 화면으로 보기 →</a>
+        <a href="../securities/digest_latest.html" class="digest-full-link">전체 보고서 목록 보기 →</a>
       </p>"""
     else:
         theme_tab_content = """
@@ -1164,10 +1166,15 @@ def _update_sc_index() -> None:
   .tab-panel.active {{ display: block; }}
 
   /* ── Theme 탭 ── */
-  .digest-week-label {{
-    font-size: 13px; font-weight: 700; color: #7c8298;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    margin-bottom: 16px;
+  .digest-source-info {{
+    font-size: 13px; color: #7c8298;
+    margin-bottom: 16px; line-height: 1.6;
+  }}
+  .digest-week-tag {{
+    display: inline-block;
+    font-weight: 700; color: #043B72;
+    background: #eef1f8; padding: 1px 9px; border-radius: 10px;
+    font-size: 12px;
   }}
   .digest-cards {{ display: flex; flex-direction: column; gap: 16px; }}
 
@@ -1257,6 +1264,7 @@ def _update_sc_index() -> None:
   }}
 
   /* ── Sector·Country 탭 ── */
+  .sc-sub {{ font-size: 13px; color: #7c8298; margin-bottom: 16px; }}
   .month-bar {{ display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }}
   .month-btn {{
     padding: 6px 14px; border: 1px solid #e0e3ed; border-radius: 16px;
@@ -1289,10 +1297,10 @@ def _update_sc_index() -> None:
 <body>
   <a class="back" href="../index.html">← Back</a>
   <h1>Market Research</h1>
-  <p class="sub">주간 테마 다이제스트 · 섹터·국가 포지셔닝 · 매 영업일 업데이트</p>
+  <p class="sub">주간 리서치 테마 · 섹터·국가 포지셔닝</p>
 
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('theme')">✦ Theme</button>
+    <button class="tab-btn active" onclick="switchTab('theme')">✦ 주간 테마</button>
     <button class="tab-btn" onclick="switchTab('sc')">Sector · Country</button>
   </div>
 
@@ -1303,6 +1311,7 @@ def _update_sc_index() -> None:
 
   <!-- Sector·Country 탭 -->
   <div id="tab-sc" class="tab-panel">
+    <p class="sc-sub">섹터·국가 포지셔닝 · 11일 사이클 · 매 영업일 업데이트</p>
     <div class="month-bar">
 {month_btns}    </div>
 {sc_panels}  </div>
