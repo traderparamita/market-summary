@@ -1140,7 +1140,7 @@ def _update_sc_index() -> None:
 {digest_cards}
       </div>
       <p class="digest-link-row">
-        <a href="../securities/digest_latest.html" class="digest-full-link">전체 보고서 목록 보기 →</a>
+        <a href="securities/digest_latest.html" class="digest-full-link">전체 보고서 목록 보기 →</a>
       </p>"""
     else:
         theme_tab_content = """
