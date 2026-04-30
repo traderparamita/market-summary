@@ -2,6 +2,10 @@
 
 1. 미래에셋증권 상세분석 보고서 (collect_securities_reports.py)
 2. MVP PRISM 보고서 (collect_prism_reports.py)
+3. 주간 리서치 다이제스트 (generate_securities_digest.py)
+4. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
+5. Research Index 갱신 (_update_sc_index) — digest 새 URL을 research/index.html에 반영
+6. Git push — 갱신된 파일 자동 배포
 """
 from __future__ import annotations
 
@@ -85,6 +89,46 @@ def main() -> None:
         except Exception as e:
             print(f"  [ERROR] {label}: {e}")
             results.append((label, False, str(e)))
+
+    # research/index.html 갱신 — digest 새 URL 반영
+    print("\n[Research Index 갱신]")
+    try:
+        sys.path.insert(0, str(ROOT))
+        from generate_sector_country import _update_sc_index
+        _update_sc_index()
+        print("  ✓ research/index.html 갱신 완료")
+        results.append(("Research Index 갱신", True, ""))
+    except Exception as e:
+        print(f"  [ERROR] research/index.html 갱신 실패: {e}")
+        results.append(("Research Index 갱신", False, str(e)))
+
+    # git push — 갱신된 파일 자동 배포
+    print("\n[Git Push]")
+    try:
+        subprocess.run(
+            ["git", "add",
+             "output/research/index.html",
+             "output/research/securities/"],
+            cwd=str(ROOT), check=True, capture_output=True
+        )
+        commit_result = subprocess.run(
+            ["git", "commit", "-m",
+             f"chore: 주간 securities pre-signed URL 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
+            cwd=str(ROOT), capture_output=True, text=True
+        )
+        if commit_result.returncode == 0:
+            subprocess.run(
+                ["git", "push", "origin", "main"],
+                cwd=str(ROOT), check=True, capture_output=True
+            )
+            print("  ✓ git push 완료")
+            results.append(("Git Push", True, ""))
+        else:
+            print("  ⊘ 변경사항 없음 (push 스킵)")
+            results.append(("Git Push", True, "변경사항 없음"))
+    except Exception as e:
+        print(f"  [ERROR] git push 실패: {e}")
+        results.append(("Git Push", False, str(e)))
 
     end_dt = datetime.now(KST)
     end_str = end_dt.strftime("%Y-%m-%d %H:%M:%S KST")
