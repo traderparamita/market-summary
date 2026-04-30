@@ -84,6 +84,7 @@ def extract_category(key: str) -> str:
 
 
 def scan_s3() -> list[dict]:
+    # 리전 엔드포인트 + virtual-hosted 필수 (글로벌 엔드포인트 사용 시 SignatureDoesNotMatch)
     s3 = boto3.client(
         "s3",
         region_name=S3_REGION,
