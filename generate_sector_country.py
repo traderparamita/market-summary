@@ -508,6 +508,11 @@ body {
   text-align: center; color: var(--muted); font-size: 11px;
   padding: 24px; margin-top: 32px; border-top: 1px solid var(--border);
 }
+.ai-disclaimer {
+  text-align: center; color: var(--muted); font-size: 11px;
+  margin-top: 24px; padding: 12px 16px; background: rgba(0,0,0,0.03);
+  border-radius: 8px; line-height: 1.6;
+}
 
 /* ── Chart Section ── */
 .chart-section { margin: 28px 0 36px; }
@@ -869,8 +874,9 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
 
 </div>
 
+<div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
 <div class="footer">
-  Mirae Asset Securities · 섹터·국가 보고서 · {date_str} ({period_label}) · 데이터: history/market_data.csv
+  Mirae Asset Securities · 섹터·국가 보고서 · {date_str} ({period_label}) · AI auto-generated
 </div>
 
 <script>
