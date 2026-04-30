@@ -111,7 +111,7 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 ## 관련 설정
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 + Stop 훅 (수치 자동 검증)
-- `.claude/skills/`: `market-summary`, `sector-country` 스킬
+- `.claude/skills/`: `market-summary`, `sector-country`(research 보고서) 스킬
 - `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/research`
 
 ## 상세 문서

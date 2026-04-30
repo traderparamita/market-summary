@@ -15,7 +15,7 @@ description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오�
 
 ## Your task
 
-Load and follow `.claude/skills/sector-country/SKILL.md`.
+Load and follow `.claude/skills/sector-country/SKILL.md` (research 보고서 스킬).
 
 **Arguments**: $ARGUMENTS (형식: `YYYY-MM-DD`)
 
@@ -264,7 +264,7 @@ Story 주입 및 `_story.html` 저장 완료 후 변경분을 커밋·푸시한�
 ```bash
 cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
   git add output/research/ && \
-  git commit -m "feat: {date} sector-country 보고서 — 섹터 Day N/11 · 국가 Day M/11
+  git commit -m "feat: {date} research 보고서 — 섹터 Day N/11 · 국가 Day M/11
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>" && \
   git push origin main

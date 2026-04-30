@@ -295,7 +295,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 
 ### Step 11: Research Story 작성 (섹터·국가·테마)
 
-`research` **스킬** (또는 `sector-country` 레거시)의 작성 절차를 따른다.
+`research` **스킬**의 작성 절차를 따른다.
 
 핵심:
 1. `get_focus(date)` 결과로 오늘의 3개 주제(US 섹터 + KR 섹터 + 국가) 확인
