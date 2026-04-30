@@ -88,6 +88,11 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 3. Story 작성 (훅이 forward-looking·세션 간 참조 등 자동 검증)
 4. `output/summary/YYYY-MM/YYYY-MM-DD.html`의 Story 탭에 주입 + `_story.html` 저장
 
+**완료 보고**:
+```
+✅ [Step 3] 일간 Market Story 작성 완료
+```
+
 ### Step 3-B: 일간 CS Story 작성
 
 Step 3 완료 **직후** `market-summary` 스킬의 **"CS Story 작성 절차"** 섹션 규칙으로 CS 버전을 작성한다.
@@ -124,6 +129,10 @@ Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 �
 - `market-summary` 스킬의 "주간 Story 작성 절차" 따름
 - 해당 주의 일간 `_story.html`들을 모두 읽어 종합
 - `output/summary/weekly/YYYY-WNN.html`에 주입
+
+**완료 보고**:
+- 마지막 영업일: `✅ [Step 5] 주간 Market Story 작성 완료`
+- 중간 영업일: `⊘ [Step 5] 스킵 (주간 보고서는 마지막 영업일에만 작성)`
 
 ### Step 5-B: 주간 CS Story 작성 (마지막 영업일만)
 
@@ -186,6 +195,10 @@ Step 1~2에서 자동 갱신됨. 별도 실행 불필요.
 
 - `market-summary` 스킬의 "월간 Story 작성 절차" 따름
 - `output/summary/monthly/YYYY-MM.html`에 주입
+
+**완료 보고**:
+- 마지막 영업일: `✅ [Step 7] 월간 Market Story 작성 완료`
+- 중간 영업일: `⊘ [Step 7] 스킵 (월간 보고서는 마지막 영업일에만 작성)`
 
 ### Step 7-B: 월간 CS Story 작성 (마지막 영업일만)
 
@@ -266,7 +279,9 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 - 커밋 메시지: `market: YYYY-MM-DD daily report` (주간/월간 포함 시 범위 표기)
 - `git push origin main`
 
-실패 시 즉시 중단하고 사용자에게 상태 보고.
+**완료 보고**:
+- 성공: `✅ [Step 8] Market Summary git push 완료 (커밋: abcd1ef)`
+- 실패: `❌ [Step 8] git push 실패: <reason> — 즉시 중단`
 
 ### Step 9: Telegram ① — Market Summary 완료 알림
 
@@ -320,7 +335,9 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>" && \
 - 커밋 전 `git status --short` 출력에 `output/research/index.html` 이 포함되는지 반드시 확인
 - 커밋 메시지 N/M 은 Step 10 결과에서 얻은 실제 일자 대입
 
-실패 시 즉시 중단하고 사용자에게 상태 보고.
+**완료 보고**:
+- 성공: `✅ [Step 12] Research git push 완료 (커밋: xyz789)`
+- 실패: `❌ [Step 12] git push 실패: <reason> — 즉시 중단`
 
 ### Step 13: Telegram ② — Sector-Country 완료 알림
 

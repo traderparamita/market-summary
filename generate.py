@@ -971,28 +971,35 @@ def main(target_date=None, start_date=None):
     if not target_date:
         target_date = str(prev_business_day())
 
-    print("=== Daily Market Summary Generator ===")
+    print("=" * 60)
+    print("  [Step 1~2] Data Dashboard 생성")
+    print("=" * 60)
+    print(f"Target date: {target_date}")
     if start_date:
-        print(f"Collecting {start_date} ~ {target_date}")
-    else:
-        print(f"Target date: {target_date}")
+        print(f"Collecting from: {start_date}")
 
     # Step 1a: API 에서 원시 데이터 수집 → CSV 에 축적 (collect_market 핵심 56+ 지표)
+    print("\n  [Step 1a] 마켓 데이터 수집 중...")
     _, history_rows = fetch_data(start_date=start_date, end_date=target_date)
     append_to_history(history_rows)
-    print(f"History updated: {HISTORY_CSV}")
+    print(f"    ✓ CSV 업데이트: {len(history_rows)} 행")
 
     # Step 1b: 보조 수집기 일간 실행 (pykrx KR 섹터 지수 + KOSPI 밸류에이션 + 추가 ETF)
     #   - 전체 재수집(--start) 시에는 실행 안 함 (별도 백필 권장).
     #   - 각 collector 내부에서 CSV append + Snowflake upsert 자동 수행.
+    print("\n  [Step 1b] 보조 수집기 실행 중...")
     if not start_date:
         _run_aux_collectors(target_date)
+        print("    ✓ 보조 수집 완료")
+    else:
+        print("    ⊘ 스킵 (bulk mode: --start)")
 
     # Step 1c: Snowflake MKT100 통합 upsert
     #   - target_date 외에 직전 5영업일(=달력 7일) 도 함께 upsert.
     #     (Naver/FDR/investiny fallback 으로 과거 행이 사후 업데이트되는 경우 SF 와의 드리프트 방지)
     #   - upsert_rows 는 (일자 × 지표코드) 교집합 DELETE 후 INSERT — df 에 없는 코드는 안전.
     #   - 표준 마커: [SNOWFLAKE] OK date=... rows=N  또는  [SNOWFLAKE] FAILED date=... reason=...
+    print("\n  [Step 1c] Snowflake 통합 upsert 중...")
     if not start_date:
         try:
             import pandas as pd
@@ -1003,11 +1010,11 @@ def main(target_date=None, start_date=None):
                             - dt.timedelta(days=7)).strftime("%Y-%m-%d")
             df_recent = df_full[(df_full["DATE"] >= window_start) & (df_full["DATE"] <= target_date)]
             if df_recent.empty:
-                print(f"[SNOWFLAKE] SKIP date={target_date} reason=no-csv-rows-in-window")
+                print(f"    [SNOWFLAKE] SKIP date={target_date} reason=no-csv-rows-in-window")
             else:
                 nrows = upsert_rows(df_recent.copy())  # multi-date upsert
                 ndates = df_recent["DATE"].nunique()
-                print(f"[SNOWFLAKE] OK date={target_date} window={window_start}~{target_date} dates={ndates} rows={nrows}")
+                print(f"    [SNOWFLAKE] OK date={target_date} window={window_start}~{target_date} dates={ndates} rows={nrows}")
         except Exception as e:
             reason = str(e).replace("\n", " ")[:300]
             try:
@@ -1016,11 +1023,12 @@ def main(target_date=None, start_date=None):
                                reason=reason, table="MKT100_MARKET_DAILY")
             except Exception:
                 # _alert_failure 자체도 안되면 최소한 마커는 남김
-                print(f"[SNOWFLAKE] FAILED date={target_date} reason={reason}")
+                print(f"    [SNOWFLAKE] FAILED date={target_date} reason={reason}")
     else:
-        print(f"[SNOWFLAKE] SKIP date={target_date} reason=bulk-mode(--start)")
+        print(f"    ⊘ 스킵 (bulk mode: --start)")
 
     # Step 2: CSV에서 메트릭 계산
+    print("\n  [Step 2] 메트릭 계산 및 HTML 생성 중...")
     data = build_report_data(target_date)
 
     # 월별 폴더에 저장
@@ -1030,18 +1038,21 @@ def main(target_date=None, start_date=None):
     json_path = os.path.join(month_dir, f"{target_date}_data.json")
     with open(json_path, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"Data saved: {json_path}")
+    print(f"    ✓ _data.json 저장")
 
     html, report_date = generate_html(data)
 
     html_path = os.path.join(month_dir, f"{report_date}.html")
     _inject_existing_story(html_path, html)
-    print(f"Report saved: {html_path}")
+    print(f"    ✓ Daily HTML 저장: {html_path}")
 
     # 당일이 포함된 주간/월간 보고서 자동 갱신 (index보다 먼저 — index는 weekly HTML의 date range를 파싱함)
     update_current_periodic(target_date)
 
     generate_index()
+
+    print("\n  ✅ [Step 1~2] 완료")
+    print("=" * 60)
 
     return html_path
 
@@ -1083,7 +1094,7 @@ def update_current_periodic(target_date):
 
                 # 기존 Story 보존
                 _inject_existing_story(path, html)
-                print(f"Weekly updated: {filename}")
+                print(f"    ✓ Weekly auto-updated: {filename}")
 
         # ── 당일 포함 월간 보고서 갱신 ──
         month_str = target_date[:7]
@@ -1102,10 +1113,10 @@ def update_current_periodic(target_date):
                 path = os.path.join(monthly_dir, filename)
 
                 _inject_existing_story(path, html)
-                print(f"Monthly updated: {filename}")
+                print(f"    ✓ Monthly auto-updated: {filename}")
 
     except Exception as e:
-        print(f"[WARN] Periodic update failed: {e}")
+        print(f"    ⚠ Periodic update 경고: {e}")
 
 
 _TAB_SPECS = [
