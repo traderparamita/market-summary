@@ -226,6 +226,8 @@ Market Story HTML 섹션들을 작성합니다.
 
 6. **출력 형식**: HTML만 출력. 마크다운 코드 블록(```html ... ```) 절대 사용 금지. 섹션 외 텍스트 없이.
 
+7. **투자 권유 표현 절대 금지**: "투자자들은 ~해야 합니다", "~에 주목할 필요가 있습니다", "~을 추천합니다" 등 매수·매도를 직·간접으로 유도하는 표현 사용 금지. 시장 사실과 인과관계만 서술할 것.
+
 ### 출력할 섹션 (순서 고정)
 
 1. Story Hero
@@ -527,7 +529,7 @@ body{{
 </div>
 {story_html}
 <div class="footer">Market Summary &mdash; AI-generated from Mirae Asset Securities PDF (OCR) + market data</div>
-<div class="ai-disclaimer">본 보고서는 미래에셋증권 AI 데일리 글로벌 마켓 브리핑 PDF를 OpenAI Vision API로 추출한 후, 시장 데이터와 교차 검증하여 자동 생성되었습니다.</div>
+<div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, <strong>투자 권유가 아닙니다.</strong> 미래에셋증권 AI 데일리 글로벌 마켓 브리핑 PDF를 OpenAI Vision API로 추출·재구성한 내부 검토용 자료로, 수치·해석에 오류가 포함될 수 있습니다. 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
 </body>
 </html>
 """
