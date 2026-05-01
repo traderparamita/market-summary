@@ -43,8 +43,8 @@ OUTPUT_DIR = ROOT / "output" / "research" / "securities"
 MODEL = "gpt-4o"
 S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
 S3_REGION = "ap-northeast-2"
-MAX_PDFS_PER_THEME = 2
-PDF_PAGES = 2
+MAX_PDFS_PER_THEME = 4
+PDF_PAGES = 4
 
 # ── function schemas ──────────────────────────────────────────────────────────
 
@@ -84,18 +84,18 @@ DETAIL_FUNCTION = {
         "properties": {
             "overview": {
                 "type": "string",
-                "description": "현재 시장·업종 상황 요약 (2-3문장)",
+                "description": "이번 주 시장 맥락에서 이 테마의 현황 요약 (3-4문장, 반드시 보고서의 구체적 수치·종목명 포함)",
             },
             "points": {
                 "type": "array",
                 "items": {"type": "string"},
-                "minItems": 2,
-                "maxItems": 4,
-                "description": "애널리스트가 강조한 핵심 투자 포인트 (각 1-2문장)",
+                "minItems": 3,
+                "maxItems": 6,
+                "description": "보고서에서 추출한 핵심 포인트 (각 1-2문장, 수치·목표가·종목명 필수 포함)",
             },
             "insight": {
                 "type": "string",
-                "description": "투자 판단에 도움이 되는 결론 (1-2문장)",
+                "description": "변액보험 상담사가 고객에게 전달할 수 있는 시사점 (3-4문장, 구체적 섹터·자산 방향성 포함)",
             },
         },
         "required": ["overview", "points", "insight"],
@@ -168,13 +168,66 @@ def select_themes(client: OpenAI, reports: list[dict], week_label: str) -> list[
     return []
 
 
+def _load_week_market_context(end_date: datetime) -> str:
+    """해당 주 금요일 기준 _data.json에서 시장 컨텍스트를 추출."""
+    friday = end_date.date() if hasattr(end_date, 'date') else end_date
+    data_path = (
+        ROOT / "output" / "summary"
+        / friday.strftime("%Y-%m")
+        / f"{friday}_data.json"
+    )
+    if not data_path.exists():
+        # 금요일 데이터 없으면 목~수 순으로 탐색
+        for offset in range(1, 5):
+            alt = friday - timedelta(days=offset)
+            alt_path = (
+                ROOT / "output" / "summary"
+                / alt.strftime("%Y-%m")
+                / f"{alt}_data.json"
+            )
+            if alt_path.exists():
+                data_path = alt_path
+                break
+        else:
+            return ""
+
+    try:
+        data = json.loads(data_path.read_text(encoding="utf-8"))
+        eq = data.get("equity", {})
+        comm = data.get("commodity", {})
+        bond = data.get("bond", {})
+        fx = data.get("fx", {})
+
+        def _v(cat, key, field="close"):
+            return cat.get(key, {}).get(field, "?")
+
+        def _d(cat, key):
+            v = cat.get(key, {}).get("daily", "?")
+            return f"{v:+.2f}%" if isinstance(v, (int, float)) else str(v)
+
+        lines = [
+            f"[이번 주 시장 현황 — {data_path.stem} 기준]",
+            f"KOSPI {_v(eq,'KOSPI')} ({_d(eq,'KOSPI')}), KOSDAQ {_v(eq,'KOSDAQ')} ({_d(eq,'KOSDAQ')})",
+            f"S&P500 {_v(eq,'S&P500')} ({_d(eq,'S&P500')}), NASDAQ {_v(eq,'NASDAQ')} ({_d(eq,'NASDAQ')})",
+            f"Nikkei {_v(eq,'NIKKEI225')} ({_d(eq,'NIKKEI225')}), HSI {_v(eq,'HSI')} ({_d(eq,'HSI')})",
+            f"WTI ${_v(comm,'WTI')} ({_d(comm,'WTI')}), Gold ${_v(comm,'Gold')} ({_d(comm,'Gold')})",
+            f"US 10Y {_v(bond,'US 10Y')}%, DXY {_v(fx,'DXY')} ({_d(fx,'DXY')})",
+            f"USD/KRW {_v(fx,'USD/KRW')} ({_d(fx,'USD/KRW')})",
+        ]
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
 def analyze_theme_detail(
     client: OpenAI,
     theme_name: str,
     reports_subset: list[dict],
     s3_client,
+    market_context: str = "",
 ) -> dict:
     """PDF Vision → { overview, points, insight } 구조 반환."""
+    context_block = f"\n\n{market_context}\n\n" if market_context else ""
     content: list[dict] = [
         {
             "type": "text",
@@ -182,6 +235,7 @@ def analyze_theme_detail(
                 f"'{theme_name}' 테마 관련 미래에셋증권 분석 보고서입니다. "
                 "각 보고서의 핵심 내용을 종합해 분석해 주세요. "
                 "수치와 종목명이 보이면 구체적으로 언급하세요."
+                f"{context_block}"
             ),
         }
     ]
@@ -212,13 +266,18 @@ def analyze_theme_detail(
 
     resp = client.chat.completions.create(
         model=MODEL,
-        max_tokens=900,
+        max_tokens=2000,
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "자산운용사 리서치 애널리스트로서, 증권사 보고서 이미지를 분석해 "
-                    "초보 투자자도 이해할 수 있는 명확하고 실용적인 한국어 분석을 작성하세요."
+                    "변액보험 상담사가 고객에게 설명할 수 있도록, 이번 주 시장 맥락에서 "
+                    "이 테마가 왜 중요한지 분석하세요.\n"
+                    "규칙:\n"
+                    "- 보고서에 나온 구체적 수치·종목명·목표가를 반드시 인용\n"
+                    "- 일반론('지속적 성장이 예상됨', '주목해야 할 시기') 절대 금지\n"
+                    "- 이번 주 특유의 이벤트·실적·정책과 연결하여 서술\n"
+                    "- 투자 권유 표현('매수하세요', '추천합니다') 금지, 팩트와 인과관계만"
                 ),
             },
             {"role": "user", "content": content},
@@ -589,12 +648,20 @@ def main() -> None:
         for t in themes:
             print(f"     • {t['name']} (관련 {len(t.get('report_indices', []))}건)")
 
+        market_context = _load_week_market_context(end)
+        if market_context:
+            print(f"\n  시장 컨텍스트 로드 완료")
+        else:
+            print(f"\n  ⚠ 시장 컨텍스트 없음 (data.json 미발견)")
+
         print(f"\n[3/4] PDF Vision 분석 중... (테마당 최대 {MAX_PDFS_PER_THEME}건)")
         for i, theme in enumerate(themes):
             print(f"  [{i+1}/{len(themes)}] {theme['name']}")
             indices = theme.get("report_indices", [])
             subset = [reports[idx] for idx in indices if 0 <= idx < len(reports)]
-            theme["detail"] = analyze_theme_detail(client, theme["name"], subset, s3_client)
+            theme["detail"] = analyze_theme_detail(
+                client, theme["name"], subset, s3_client, market_context
+            )
             pts = len(theme["detail"].get("points", []))
             print(f"    → 완료 (포인트 {pts}개)")
 
