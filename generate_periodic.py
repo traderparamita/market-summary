@@ -488,6 +488,23 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
 .macro-calendar tr:last-child td{{border-bottom:none}}
 .macro-calendar tr:hover td{{background:var(--card2)}}
 .macro-importance{{color:var(--warn);font-weight:700}}
+/* ── CS Story Tab ── */
+.cs-hero{{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}}
+.cs-hero h2{{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}}
+.cs-text{{font-size:16px;color:#2d3148;line-height:1.9}}
+.cs-text p{{margin-bottom:14px}}.cs-text p:last-child{{margin-bottom:0}}
+.cs-section{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.cs-section h3{{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}}
+.cs-section p{{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}}.cs-section p:last-child{{margin-bottom:0}}
+/* ── PM Story Tab ── */
+.pm-hero{{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}}
+.pm-hero h2{{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}}
+.pm-grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}}
+.pm-section{{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.pm-section h3{{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}}
+.pm-section ul{{list-style:none;padding:0;margin:0}}
+.pm-section li{{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}}
+.pm-section li::before{{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}}
 @media(max-width:900px){{
   .chart-grid,.movers-row{{grid-template-columns:1fr}}
   .kpi-strip{{grid-template-columns:repeat(3,1fr)}}
@@ -495,6 +512,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
   .causal-chain{{flex-direction:column}}.cause-arrow{{transform:rotate(90deg);padding:4px 0}}
   .af-map{{grid-template-columns:1fr}}.risk-items{{grid-template-columns:1fr}}
   .macro-cards{{grid-template-columns:1fr}}
+  .pm-grid{{grid-template-columns:1fr}}
 }}
 </style>
 </head>
