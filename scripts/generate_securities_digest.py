@@ -258,6 +258,18 @@ FUND_CATALOG_TEXT = "\n".join(
     f"[{code}] {name} ({cat})" for code, name, cat in FUND_CATALOG
 )
 
+# ── 토큰 사용량 추적 ──────────────────────────────────────────────────────────
+_token_totals: dict[str, int] = {"prompt": 0, "completion": 0, "total": 0}
+
+
+def _track_usage(resp) -> None:
+    usage = getattr(resp, "usage", None)
+    if usage:
+        _token_totals["prompt"] += getattr(usage, "prompt_tokens", 0)
+        _token_totals["completion"] += getattr(usage, "completion_tokens", 0)
+        _token_totals["total"] += getattr(usage, "total_tokens", 0)
+
+
 # ── function schemas ──────────────────────────────────────────────────────────
 
 THEME_FUNCTION = {
@@ -388,6 +400,7 @@ def select_themes(client: OpenAI, reports: list[dict], week_label: str) -> list[
         tools=[{"type": "function", "function": THEME_FUNCTION}],
         tool_choice={"type": "function", "function": {"name": "set_weekly_themes"}},
     )
+    _track_usage(resp)
     msg = resp.choices[0].message
     if msg.tool_calls:
         return json.loads(msg.tool_calls[0].function.arguments).get("themes", [])
@@ -516,6 +529,7 @@ def analyze_theme_detail(
         tools=[{"type": "function", "function": DETAIL_FUNCTION}],
         tool_choice={"type": "function", "function": {"name": "set_theme_detail"}},
     )
+    _track_usage(resp)
     msg = resp.choices[0].message
     if msg.tool_calls:
         return json.loads(msg.tool_calls[0].function.arguments)
@@ -547,8 +561,12 @@ def _render_detail(detail: dict) -> str:
         if insight else ""
     )
 
-    # 관련 펀드 매칭
+    # 관련 펀드 매칭 — FUND_CATALOG에 없는 코드는 hallucination으로 간주하고 제거
     fund_lookup = {code: name for code, name, _ in FUND_CATALOG}
+    valid_codes = set(fund_lookup)
+    dropped = [f.get("code", "") for f in related_funds if f.get("code", "") not in valid_codes]
+    if dropped:
+        print(f"    WARN: 카탈로그에 없는 펀드 코드 제거: {dropped}")
     fund_chips = []
     for f in related_funds:
         code = f.get("code", "")
@@ -947,6 +965,12 @@ def main() -> None:
             )
             pts = len(theme["detail"].get("points", []))
             print(f"    → 완료 (포인트 {pts}개)")
+
+        t = _token_totals
+        print(
+            f"\n  [토큰] prompt={t['prompt']:,}  completion={t['completion']:,}  "
+            f"total={t['total']:,}  (gpt-4o 기준 ~${t['total']/1_000_000*5:.3f})"
+        )
 
     print("\n[4/4] HTML 생성 중...")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
