@@ -25,6 +25,7 @@ import tempfile
 from datetime import date, timedelta
 from pathlib import Path
 
+import boto3
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -32,6 +33,10 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 load_dotenv(ROOT / ".env")
+
+S3_BUCKET = os.getenv("S3_BUCKET_NAME", "mai-life-fund-documents-533370893966-ap-northeast-2-an")
+S3_PDF_PREFIX = "anthillia/miraeasset-daily"
+S3_REGION = os.getenv("AWS_REGION", "ap-northeast-2")
 
 import notify_telegram
 
@@ -530,6 +535,29 @@ body{{
 _DOW_KO = ["월", "화", "수", "목", "금", "토", "일"]
 
 
+def upload_pdf_to_s3(pdf_path: Path, target_date: date) -> str | None:
+    """PDF를 S3에 업로드하고 S3 키를 반환. 실패 시 None (non-fatal)."""
+    s3_key = f"{S3_PDF_PREFIX}/{target_date.strftime('%Y-%m')}/{target_date}_briefing.pdf"
+    try:
+        session = boto3.Session(
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            region_name=S3_REGION,
+        )
+        client = session.client("s3", endpoint_url=f"https://s3.{S3_REGION}.amazonaws.com")
+        client.upload_file(
+            str(pdf_path),
+            S3_BUCKET,
+            s3_key,
+            ExtraArgs={"ContentType": "application/pdf"},
+        )
+        log.info(f"S3 업로드 완료: s3://{S3_BUCKET}/{s3_key}")
+        return s3_key
+    except Exception as e:
+        log.warning(f"S3 업로드 실패 (non-fatal): {e}")
+        return None
+
+
 def save_ocr_html(out_dir: Path, target_date: date, story_html: str) -> Path:
     """독립 _ocr.html 파일 저장 — 기존 .html / _story.html 은 건드리지 않는다."""
     dow = _DOW_KO[target_date.weekday()]
@@ -592,6 +620,15 @@ def main():
         tmp.write(resp.content)
         pdf_path = Path(tmp.name)
     log.info(f"다운로드 완료: {len(resp.content)//1024}KB")
+
+    # ── S3 업로드 ──
+    s3_key = upload_pdf_to_s3(pdf_path, target_date)
+    if s3_key:
+        log.info(f"PDF S3 보관: s3://{S3_BUCKET}/{s3_key}")
+        notify_telegram.send(
+            f"📥 *브리핑 PDF 저장* — {target_date}\n"
+            f"`s3://{S3_BUCKET}/{s3_key}`"
+        )
 
     # ── OCR ──
     log.info("OCR 시작 (gpt-4o Vision)...")
