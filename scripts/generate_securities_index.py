@@ -293,6 +293,8 @@ tr:hover td {{ background:#fafbfe; }}
 
 {body}
 
+<div style="background:#fff8f0;border:1px solid #f0d9b5;border-radius:10px;padding:14px 20px;margin-top:24px;font-size:12px;color:#8b6914;line-height:1.7;">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
+
 <div class="footer">
   Powered by <a href="https://github.com/traderparamita/market-summary" target="_blank">market_summary</a>
   &middot; 생성: {generated.strftime("%Y-%m-%d %H:%M KST")}
