@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.lifesailor.market-ocr</string>
+
+  <!-- 실행 명령 -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/.venv/bin/python</string>
+    <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/scripts/generate_ocr_story.py</string>
+  </array>
+
+  <!-- 일요일 08:30 KST (금요일 보고서 OCR) + 화~금 08:30 KST (전날 보고서 OCR) -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Weekday</key> <integer>0</integer>
+      <key>Hour</key>    <integer>8</integer>
+      <key>Minute</key>  <integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key> <integer>2</integer>
+      <key>Hour</key>    <integer>8</integer>
+      <key>Minute</key>  <integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key> <integer>3</integer>
+      <key>Hour</key>    <integer>8</integer>
+      <key>Minute</key>  <integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key> <integer>4</integer>
+      <key>Hour</key>    <integer>8</integer>
+      <key>Minute</key>  <integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key> <integer>5</integer>
+      <key>Hour</key>    <integer>8</integer>
+      <key>Minute</key>  <integer>30</integer>
+    </dict>
+  </array>
+
+  <key>RunAtLoad</key> <false/>
+
+  <!-- 로그 -->
+  <key>StandardOutPath</key>
+  <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/logs/ocr_story.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/logs/ocr_story.log</string>
+
+  <!-- 작업 디렉터리 -->
+  <key>WorkingDirectory</key>
+  <string>/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary</string>
+
+  <!-- 환경변수 -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/lifesailor/.nvm/versions/node/v24.14.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+    <key>HOME</key>
+    <string>/Users/lifesailor</string>
+    <key>LANG</key>
+    <string>ko_KR.UTF-8</string>
+  </dict>
+</dict>
+</plist>

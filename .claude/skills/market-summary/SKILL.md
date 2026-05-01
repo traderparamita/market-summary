@@ -248,22 +248,7 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
   <!-- 미국 블록 (위와 동일 구조, class="session-block us" 사용) -->
 </div>
 
-<!-- ── 4. Cross-Asset Flow Map ── -->
-<div class="cross-asset">
-  <div style="margin-bottom:8px;font-size:15px;font-weight:600;color:#1a1d2e;">자산 간 연결 — 어떻게 한 줄로 이어지는가</div>
-  <div class="sub">[원인] → [자산군1] → [자산군2] → [최종 영향] 형태</div>
-  <div class="af-map">
-    <div class="af-node">
-      <div class="af-node-title">[핵심 이벤트 또는 지표]</div>
-      <div class="af-node-value">[수치 또는 상태]</div>
-      <div class="af-node-chg up/down">[변화율]</div>
-    </div>
-    <div class="af-arrow"><span class="arr">→</span><span class="lbl">[영향 메커니즘]</span></div>
-    [2번째~7번째 노드 반복]
-  </div>
-</div>
-
-<!-- ── 5. Insight Grid (4개 카드) ── -->
+<!-- ── 4. Insight Grid (4개 카드) ── -->
 <div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
 <div class="insight-grid">
   <div class="insight-card">
@@ -394,7 +379,7 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
 
 #### Step 3-1: 필수 섹션 체크리스트 (반드시 확인)
 
-일간 Story는 **반드시 다음 7개 섹션을 모두 포함**해야 합니다. 하나라도 빠지면 구조 검증 실패.
+일간 Story는 **반드시 다음 6개 섹션을 모두 포함**해야 합니다. 하나라도 빠지면 구조 검증 실패.
 
 - [ ] **1. Story Hero** — `<div class="story-hero">` + `<div class="story-text">`
   - 한 줄 헤드라인 (강조: 최고·최저·주요 이벤트)
@@ -408,17 +393,13 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
   - 각 세션 블록: header(아이콘+시간대) + verdict 배지 + events + s-kpi 그리드
   - **Verdict 배지** (필수): `<span class="session-verdict verdict-up/down/flat">` (한 줄 평가)
   
-- [ ] **4. Cross-Asset Flow Map** — `<div class="cross-asset">` + `<div class="af-map">` + `<div class="af-node">` ×5~7
-  - 자산 간 연결 경로 (시간순)
-  - af-node: title, value, chg(up/down) 포함
-  
-- [ ] **5. Insight Grid** — `<div class="insight-grid">` + `<div class="insight-card">` ×4
+- [ ] **4. Insight Grid** — `<div class="insight-grid">` + `<div class="insight-card">` ×4
   - 4개 교육 카드 (투자자 관점 핵심 학습)
   
-- [ ] **6. Risk Section** — `<div class="risk-section">` + `<ul class="risk-items">` + `<li class="risk-item">` ×2~3
+- [ ] **5. Risk Section** — `<div class="risk-section">` + `<ul class="risk-items">` + `<li class="risk-item">` ×2~3
   - 2~3개 리스크 요인 (전망/가능성 표현)
   
-- [ ] **7. WTD/MTD Progress** — `<h3>` + `<ul>` 2세트
+- [ ] **6. WTD/MTD Progress** — `<h3>` + `<ul>` 2세트
   - WTD/MTD 누적 지수 + 테마 (별도 섹션)
 
 ---
@@ -518,7 +499,6 @@ wtd = (tue_close/fri_close - 1) * 100
 - [ ] `<div class="story-hero">` — Story Hero (헤드라인 + 세션별 내러티브)
 - [ ] `<div class="causal-chain">` — Causal Chain (원인 → 결과 체인)
 - [ ] `<div class="session-grid">` — Session Grid (아시아/유럽/미국 3카드)
-- [ ] `<div class="cross-asset">` + `<div class="af-map">` — **Cross-Asset Flow Map (자산 간 연결)**
 - [ ] `<div class="insight-grid">` — Insight Grid (4개 교육 카드)
 - [ ] `<div class="risk-section">` + `<ul class="risk-items">` — Risk Section
 - [ ] WTD/MTD 블록 (grid 2-pane, `<h3>` + `<ul>`)
@@ -528,7 +508,7 @@ wtd = (tue_close/fri_close - 1) * 100
 > .venv/bin/python -c "
 > import re
 > html = open('output/summary/YYYY-MM/YYYY-MM-DD.html').read()
-> required = ['story-hero','causal-chain','session-grid','cross-asset','af-map','insight-grid','risk-section','risk-items']
+> required = ['story-hero','causal-chain','session-grid','insight-grid','risk-section','risk-items']
 > missing = [c for c in required if f'class=\"{c}' not in html and f'class=\"... {c}' not in html]
 > print('missing:', missing if missing else 'none ✓')
 > "
@@ -544,7 +524,6 @@ story-hero, story-text
 causal-chain, cause-node, cause-arrow, node-label, node-title, node-detail, node-impact (up|down|flat)
 session-grid, session-block (asia|europe|us), session-header, session-icon, session-name, session-time,
   session-verdict (verdict-up|verdict-down|verdict-flat), session-events, ev-time, session-kpi, s-kpi, s-kpi-label, s-kpi-value
-cross-asset, sub, af-map, af-node, af-arrow, af-node-title, af-node-value, af-node-chg (up|down), arr, lbl
 insight-grid, insight-card, badge, metric-row, metric-item, metric-label, metric-value (up|down)
 risk-section, risk-items, risk-item, risk-tag (high|med|low)
 hl-up, hl-down, hl-warn, hl-accent
@@ -602,11 +581,9 @@ hl-up, hl-down, hl-warn, hl-accent
 <!-- ── 3. Weekly Snapshot (Region Grid 선택) ── -->
 <!-- 선택: Top Movers 또는 Sector Rotation 카드 -->
 
-<!-- ── 4. Cross-Asset Flow Map (주간 흐름) ── -->
+<!-- ── 4. Insight Grid (주간 학습 4개) ── -->
 
-<!-- ── 5. Insight Grid (주간 학습 4개) ── -->
-
-<!-- ── 6. Risk Section (주간 이슈 2-3개) ── -->
+<!-- ── 5. Risk Section (주간 이슈 2-3개) ── -->
 
 <!-- ── 7. WTD Progress + 다음 주 전망 (선택) ── -->
 ```
@@ -645,11 +622,9 @@ hl-up, hl-down, hl-warn, hl-accent
 <!-- ── 2. Causal Chain (월간 흐름) ── -->
 <!-- 4~6개 노드로 한 달의 인과 표현 -->
 
-<!-- ── 3. Cross-Asset Flow (월간 흐름) ── -->
+<!-- ── 3. Insight Grid (월간 학습 4개) ── -->
 
-<!-- ── 4. Insight Grid (월간 학습 4개) ── -->
-
-<!-- ── 5. Risk Section (월간 이슈 2-3개) ── -->
+<!-- ── 4. Risk Section (월간 이슈 2-3개) ── -->
 
 <!-- ── 6. MTD Progress + 다음 달 전망 (선택) ── -->
 ```
@@ -672,7 +647,6 @@ hl-up, hl-down, hl-warn, hl-accent
 | 세션 구분 | ✅ 3 세션 (Asia/EU/US) | ❌ (통합) | ❌ (통합) |
 | 시간별 상세 | ✅ ev-time | ❌ | ❌ |
 | Causal Chain | ✅ 3~5 노드 | ✅ 4~6 노드 | ✅ 4~6 노드 |
-| Cross-Asset Flow | ✅ 5~7 노드 | ✅ 5~7 노드 | ✅ 5~7 노드 |
 | Insight Grid | ✅ 4개 | ✅ 4개 | ✅ 4개 |
 | Risk Section | ✅ 2~3개 | ✅ 2~3개 | ✅ 2~3개 |
 | 기간 진행 | ✅ WTD/MTD | ✅ WTD | ✅ MTD |
@@ -683,7 +657,7 @@ hl-up, hl-down, hl-warn, hl-accent
 
 작성 후 **반드시** 다음을 확인:
 
-- [ ] **7개 섹션 확인**: Story Hero / Causal Chain / [Session Grid 일간만] / Cross-Asset / Insight / Risk / 기간 Progress
+- [ ] **6개 섹션 확인**: Story Hero / Causal Chain / [Session Grid 일간만] / Insight / Risk / 기간 Progress
 - [ ] **시간순 인과관계**: 각 문장이 시간순인가? 사후 참조 없는가?
 - [ ] **요일·휴일 정확성**: 날짜와 요일이 일치하는가? (CSV 검증)
 - [ ] **고점·저점 표현**: "사상 최고치" 주장 전 CSV 확인했는가?
