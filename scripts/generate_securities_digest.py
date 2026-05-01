@@ -259,7 +259,7 @@ FUND_CATALOG_TEXT = "\n".join(
 )
 
 # ── 토큰 사용량 추적 ──────────────────────────────────────────────────────────
-_token_totals: dict[str, int] = {"prompt": 0, "completion": 0, "total": 0}
+_token_totals: dict[str, int] = {"prompt": 0, "completion": 0}
 
 
 def _track_usage(resp) -> None:
@@ -267,7 +267,6 @@ def _track_usage(resp) -> None:
     if usage:
         _token_totals["prompt"] += getattr(usage, "prompt_tokens", 0)
         _token_totals["completion"] += getattr(usage, "completion_tokens", 0)
-        _token_totals["total"] += getattr(usage, "total_tokens", 0)
 
 
 # ── function schemas ──────────────────────────────────────────────────────────
@@ -967,10 +966,16 @@ def main() -> None:
             print(f"    → 완료 (포인트 {pts}개)")
 
         t = _token_totals
+        total = t["prompt"] + t["completion"]
         print(
             f"\n  [토큰] prompt={t['prompt']:,}  completion={t['completion']:,}  "
-            f"total={t['total']:,}  (gpt-4o 기준 ~${t['total']/1_000_000*5:.3f})"
+            f"total={total:,}  (gpt-4o 기준 ~${t['prompt']/1e6*2.5 + t['completion']/1e6*10:.4f})"
         )
+        sys.path.insert(0, str(ROOT))
+        import notify_telegram as _nt
+        _nt.send(_nt.build_gpt_usage_message(
+            "generate_securities_digest", week_label, t["prompt"], t["completion"]
+        ))
 
     print("\n[4/4] HTML 생성 중...")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

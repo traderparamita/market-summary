@@ -198,6 +198,19 @@ def build_sc_complete_message(date_str: str, focus: str = "", ow_sectors: str = 
     return "\n".join(lines)
 
 
+def build_gpt_usage_message(script: str, label: str, prompt: int, completion: int) -> str:
+    """GPT 토큰 사용량 텔레그램 메시지 빌더."""
+    total = prompt + completion
+    cost = prompt / 1_000_000 * 2.50 + completion / 1_000_000 * 10.00
+    return (
+        f"🤖 *GPT 사용량 — {script}*\n"
+        f"\n"
+        f"  {label}\n"
+        f"  입력 {prompt:,} · 출력 {completion:,} · 합계 {total:,} tokens\n"
+        f"  비용 ~${cost:.4f}  (gpt-4o 기준)"
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("date", help="YYYY-MM-DD")

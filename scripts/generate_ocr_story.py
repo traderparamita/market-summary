@@ -41,6 +41,18 @@ S3_REGION = os.getenv("AWS_REGION", "ap-northeast-2")
 import notify_telegram
 
 LOG_DIR = ROOT / "logs"
+
+
+def _log_and_notify_usage(resp, label: str) -> None:
+    """GPT 응답에서 토큰 사용량을 추출해 로그 출력 + 텔레그램 전송."""
+    usage = getattr(resp, "usage", None)
+    if not usage:
+        return
+    prompt = getattr(usage, "prompt_tokens", 0)
+    completion = getattr(usage, "completion_tokens", 0)
+    log.info(f"[GPT tokens] {label}: prompt={prompt:,} completion={completion:,} total={prompt+completion:,}")
+    msg = notify_telegram.build_gpt_usage_message("generate_ocr_story", label, prompt, completion)
+    notify_telegram.send(msg)
 LOG_DIR.mkdir(exist_ok=True)
 
 logging.basicConfig(
@@ -342,6 +354,7 @@ def ocr_pdf(pdf_path: Path) -> str:
         max_tokens=4096,
         temperature=0,
     )
+    _log_and_notify_usage(resp, "ocr_pdf")
     return resp.choices[0].message.content
 
 
@@ -413,6 +426,7 @@ def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> st
         max_tokens=8192,
         temperature=0.3,
     )
+    _log_and_notify_usage(resp, "generate_story_html")
     story = resp.choices[0].message.content
     # GPT가 ```html ... ``` 코드블록으로 감싸는 경우 제거
     story = re.sub(r'^```(?:html)?\s*', '', story.strip())
