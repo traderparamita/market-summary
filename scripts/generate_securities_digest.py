@@ -46,6 +46,132 @@ S3_REGION = "ap-northeast-2"
 MAX_PDFS_PER_THEME = 4
 PDF_PAGES = 4
 
+# ── 변액보험 펀드 카탈로그 ────────────────────────────────────────────────────
+# (code, name, category) — 테마 분석 시 관련 펀드 매칭에 사용
+FUND_CATALOG = [
+    # 국내주식
+    ("N100", "주식성장형Ⅱ", "국내주식"),
+    ("N110", "프리미엄포커스", "국내주식"),
+    ("N120", "ETF국내신성장", "국내주식"),
+    ("N130", "인덱스주식형", "국내주식"),
+    ("N140", "가치주식형", "국내주식"),
+    ("N150", "AI국내주식전략", "국내주식/AI"),
+    ("N160", "ETF국내주식", "국내주식"),
+    ("N1A0", "성장형", "국내혼합"),
+    ("N1B0", "혼합형", "국내혼합"),
+    ("N1C0", "안정형", "국내혼합"),
+    ("N1D0", "주식형", "국내주식"),
+    ("N1E0", "배당주식", "국내주식/배당"),
+    ("N1F0", "가치주식", "국내주식/가치"),
+    ("N1G0", "성장섹터배분", "국내주식/섹터"),
+    ("N1H0", "삼성그룹주플러스", "국내주식/그룹주"),
+    ("N1J0", "인덱스성장", "국내주식"),
+    ("N1K0", "인덱스주식", "국내주식"),
+    ("N1M0", "코리아인덱스", "국내주식"),
+    ("N1N0", "액티브주식", "국내주식"),
+    # 이머징/아시아
+    ("N200", "이머징마켓주식", "이머징"),
+    ("N210", "브릭스주식", "이머징/브릭스"),
+    ("N220", "아시아그레이트컨슈머", "아시아/소비"),
+    ("N230", "AP컨슈머", "아시아/소비"),
+    ("N240", "중국본토주식", "중국"),
+    ("N250", "차이나주식성장", "중국"),
+    ("N260", "인도주식", "인도"),
+    ("N270", "베트남주식", "베트남"),
+    ("N2A0", "아시아주식", "아시아"),
+    ("N2B0", "친디아주식", "중국/인도"),
+    ("N2C0", "아시아인프라", "아시아/인프라"),
+    ("N2D0", "이머징네비게이터", "이머징"),
+    ("N2E0", "A+차이나", "중국"),
+    # 선진국
+    ("N300", "선진마켓주식", "선진국"),
+    ("N310", "선진국인컴", "선진국/인컴"),
+    ("N320", "일본주식", "일본"),
+    ("N330", "유럽주식", "유럽"),
+    ("N340", "ETF글로벌주식", "글로벌"),
+    ("N350", "ETF글로벌MVP60", "글로벌/배분"),
+    ("N360", "ETF글로벌MVP30", "글로벌/배분"),
+    ("N370", "글로벌MVP주식", "글로벌/배분"),
+    ("N380", "미국주식", "미국"),
+    ("N390", "ETF글로벌AI테크", "글로벌/AI"),
+    ("N3A0", "유럽주식", "유럽"),
+    ("N3B0", "유럽주식(H)", "유럽"),
+    ("N3C0", "미국인컴앤그로쓰", "미국/인컴"),
+    ("N3D0", "미국인컴앤그로쓰(H)", "미국/인컴"),
+    ("N3E0", "ETF 글로벌MVP주식", "글로벌/배분"),
+    ("N3F0", "ETF AI MVP (적극)", "글로벌/AI"),
+    ("N3G0", "ETF AI MVP (중립)", "글로벌/AI"),
+    # 글로벌 테마
+    ("N400", "글로벌성장주식", "글로벌"),
+    ("N410", "글로벌컨슈머", "글로벌/소비"),
+    ("N420", "글로벌인컴", "글로벌/인컴"),
+    ("N430", "글로벌멀티전략", "글로벌"),
+    ("N440", "글로벌MVP60", "글로벌/배분"),
+    ("N450", "글로벌MVP30", "글로벌/배분"),
+    ("N460", "글로벌 MVP50", "글로벌/배분"),
+    ("N470", "글로벌헬스케어", "글로벌/헬스케어"),
+    ("N480", "롱숏전략", "대안"),
+    ("N490", "글로벌인덱스주식", "글로벌"),
+    ("N4A0", "해외성장", "글로벌"),
+    ("N4B0", "글로벌성장산업재", "글로벌/산업재"),
+    ("N4C0", "글로벌멀티인컴", "글로벌/인컴"),
+    ("N4D0", "글로벌신성장액티브", "글로벌"),
+    ("N4F0", "글로벌IT소프트웨어", "글로벌/IT"),
+    ("N4G0", "글로벌ESG", "글로벌/ESG"),
+    ("N4H0", "[인덱스ETF]미국나스닥100", "미국/나스닥"),
+    ("N4I0", "[인덱스 ETF] 미국S&P500", "미국/S&P"),
+    ("N4J0", "[인덱스 ETF] 미국S&P500(H)", "미국/S&P"),
+    # 국내채권
+    ("N500", "국내채권", "국내채권"),
+    ("N510", "MMF", "국내단기"),
+    ("N520", "ETF국내채권", "국내채권"),
+    ("N530", "장기국내채권", "국내채권/장기"),
+    ("N5A0", "MMF형", "국내단기"),
+    ("N5B0", "채권형", "국내채권"),
+    # 글로벌채권
+    ("N600", "글로벌채권형Ⅱ", "글로벌채권"),
+    ("N610", "글로벌채권토탈리턴", "글로벌채권"),
+    ("N620", "글로벌채권매크로전략", "글로벌채권"),
+    ("N630", "이머징마켓채권형", "이머징채권"),
+    ("N640", "이머징국채", "이머징채권"),
+    ("N650", "글로벌하이일드", "하이일드"),
+    ("N660", "미국하이일드", "하이일드"),
+    ("N670", "글로벌MVP채권", "글로벌채권"),
+    ("N680", "단기하이일드", "하이일드"),
+    ("N690", "선진국투자등급회사채권", "글로벌채권/IG"),
+    ("N6A0", "미국채권", "미국채권"),
+    ("N6B0", "글로벌토탈리턴", "글로벌채권"),
+    ("N6C0", "글로벌하이일드", "하이일드"),
+    ("N6D0", "이머징마켓채권", "이머징채권"),
+    ("N6E0", "듀얼타겟", "글로벌채권"),
+    ("N6F0", "글로벌메자닌채권", "글로벌채권"),
+    ("N700", "ETF글로벌채권", "글로벌채권"),
+    ("N710", "ETF글로벌MVP채권", "글로벌채권"),
+    ("N720", "글로벌채권형Ⅱ(UH)", "글로벌채권/UH"),
+    ("N730", "글로벌채권매크로전략(UH)", "글로벌채권/UH"),
+    ("N740", "글로벌하이일드(UH)", "하이일드/UH"),
+    ("N750", "달러MMF(UH)", "달러단기"),
+    ("N760", "달러미국채(UH)", "미국채권/UH"),
+    ("N770", "미국국채", "미국채권"),
+    # 대안/실물
+    ("N900", "글로벌커머더티주식", "원자재"),
+    ("N910", "글로벌인프라부동산", "인프라/부동산"),
+    ("N920", "골드투자형", "금"),
+    ("N9A0", "TDF2035", "TDF"),
+    ("N9B0", "라이프사이클2025", "라이프사이클"),
+    ("N9C0", "라이프사이클2015", "라이프사이클"),
+    ("N9F0", "글로벌커머더티", "원자재"),
+    ("N9H0", "퓨쳐액세스 A형", "멀티에셋"),
+    ("N9J0", "퓨쳐액세스 B형", "멀티에셋"),
+    ("N9K0", "목표수익 추구형 M(중립)", "목표수익"),
+    ("N9M0", "목표수익 추구형 A(적극)", "목표수익"),
+    ("N9N0", "목표수익 추구형 S(안정)", "목표수익"),
+]
+
+FUND_CATALOG_TEXT = "\n".join(
+    f"[{code}] {name} ({cat})" for code, name, cat in FUND_CATALOG
+)
+
 # ── function schemas ──────────────────────────────────────────────────────────
 
 THEME_FUNCTION = {
@@ -97,8 +223,22 @@ DETAIL_FUNCTION = {
                 "type": "string",
                 "description": "변액보험 상담사가 고객에게 전달할 수 있는 시사점 (3-4문장, 구체적 섹터·자산 방향성 포함)",
             },
+            "related_funds": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "code": {"type": "string", "description": "펀드 코드 (예: N150)"},
+                        "relevance": {"type": "string", "description": "이 테마와 해당 펀드의 연관 이유 (15자 이내)"},
+                    },
+                    "required": ["code", "relevance"],
+                },
+                "minItems": 1,
+                "maxItems": 8,
+                "description": "이 테마와 직접 관련된 변액보험 펀드 코드 목록",
+            },
         },
-        "required": ["overview", "points", "insight"],
+        "required": ["overview", "points", "insight", "related_funds"],
     },
 }
 
@@ -266,7 +406,7 @@ def analyze_theme_detail(
 
     resp = client.chat.completions.create(
         model=MODEL,
-        max_tokens=2000,
+        max_tokens=2500,
         messages=[
             {
                 "role": "system",
@@ -277,7 +417,12 @@ def analyze_theme_detail(
                     "- 보고서에 나온 구체적 수치·종목명·목표가를 반드시 인용\n"
                     "- 일반론('지속적 성장이 예상됨', '주목해야 할 시기') 절대 금지\n"
                     "- 이번 주 특유의 이벤트·실적·정책과 연결하여 서술\n"
-                    "- 투자 권유 표현('매수하세요', '추천합니다') 금지, 팩트와 인과관계만"
+                    "- 투자 권유 표현('매수하세요', '추천합니다') 금지, 팩트와 인과관계만\n\n"
+                    "추가 — related_funds 선정:\n"
+                    "아래 변액보험 펀드 목록에서 이 테마에 직접 영향받는 펀드를 1~8개 선정하세요.\n"
+                    "선정 기준: 테마의 투자 대상(국가·섹터·자산군)과 펀드의 투자 대상이 일치.\n"
+                    "간접적·광범위한 연결(예: '글로벌 성장이니까 모든 주식 펀드')은 포함 금지.\n\n"
+                    f"[변액보험 펀드 목록]\n{FUND_CATALOG_TEXT}"
                 ),
             },
             {"role": "user", "content": content},
@@ -295,10 +440,11 @@ def analyze_theme_detail(
 
 
 def _render_detail(detail: dict) -> str:
-    """{ overview, points, insight } → HTML 블록."""
+    """{ overview, points, insight, related_funds } → HTML 블록."""
     overview = detail.get("overview", "")
     points = detail.get("points", [])
     insight = detail.get("insight", "")
+    related_funds = detail.get("related_funds", [])
 
     point_items = "".join(f"<li>{p}</li>" for p in points)
     point_block = f'<ul class="point-list">{point_items}</ul>' if point_items else ""
@@ -314,6 +460,27 @@ def _render_detail(detail: dict) -> str:
         f'<p class="detail-text">{insight}</p></div>'
         if insight else ""
     )
+
+    # 관련 펀드 매칭
+    fund_lookup = {code: name for code, name, _ in FUND_CATALOG}
+    fund_chips = []
+    for f in related_funds:
+        code = f.get("code", "")
+        name = fund_lookup.get(code, "")
+        if not name:
+            continue
+        relevance = f.get("relevance", "")
+        fund_chips.append(
+            f'<span class="fund-chip" title="{relevance}">[{code}] {name}</span>'
+        )
+    fund_html = ""
+    if fund_chips:
+        fund_html = (
+            f'<div class="detail-section detail-funds">'
+            f'<div class="detail-label">관련 펀드</div>'
+            f'<div class="fund-chips">{"".join(fund_chips)}</div></div>'
+        )
+
     return f"""
     <div class="detail-section">
       <div class="detail-label">현황</div>
@@ -321,6 +488,7 @@ def _render_detail(detail: dict) -> str:
     </div>
     {points_html}
     {insight_html}
+    {fund_html}
 """
 
 
@@ -479,6 +647,26 @@ body {{
 .detail-insight .detail-label {{
   color: var(--green);
   background: var(--green-light);
+}}
+.detail-funds .detail-label {{
+  color: #6b21a8;
+  background: #f3e8ff;
+}}
+.fund-chips {{
+  display: flex; flex-wrap: wrap; gap: 8px;
+}}
+.fund-chip {{
+  display: inline-block;
+  font-size: 12px; font-weight: 600;
+  color: #6b21a8;
+  background: #f8f0ff;
+  border: 1px solid #e9d5ff;
+  padding: 4px 12px; border-radius: 16px;
+  cursor: default;
+  transition: background 0.15s;
+}}
+.fund-chip:hover {{
+  background: #ede2ff;
 }}
 
 .detail-text {{
