@@ -818,6 +818,30 @@ CS(Customer Success) 관점 스토리는 **기존 Market Story를 재작성** �
   <p>{WTD/MTD 맥락 서술}</p>
   <p class="cs-footer">CS Story 는 Market Story 를 수치 대신 맥락·흐름 중심으로 재구성한 고객 설명용 버전입니다. 구체적 수치는 Market Story / Data Dashboard 탭을 참고하세요.</p>
 </div>
+
+<div class="cs-section cs-funds">
+  <h3>💼 오늘의 관련 펀드</h3>
+  <p class="cs-funds-desc">오늘 시장 이슈와 직접 연관된 변액보험 펀드입니다.</p>
+  <div class="cs-fund-chips">
+    <span class="cs-fund-chip">[코드] 펀드명 <em>— 연관 이유</em></span>
+    <!-- 3~8개, 당일 테마에 직접 영향받는 펀드만 선정 -->
+  </div>
+</div>
+```
+
+**관련 펀드 선정 규칙**:
+- `scripts/generate_securities_digest.py` 의 `FUND_CATALOG` (215개 — 변액 N시리즈 110개 + 퇴직 B시리즈 25개 + U/V/W시리즈 80개) 참조
+- 당일 Market Story 에서 등장한 핵심 이슈·테마(국가·섹터·자산)와 펀드 투자 대상이 직접 일치하는 것만 선정
+- 간접·광범위 연결(예: "글로벌 하락이니 모든 주식 펀드") 금지 — 구체적 인과가 있는 펀드만
+- 3~8개 범위 유지
+- 연관 이유는 10~15자 이내 짧은 설명 (예: "유가 급등 수혜", "AI 테마 직접 노출", "인도 GDP 상향")
+
+**CSS** (기존 `<style>` 블록에 추가):
+```css
+  .cs-funds-desc{font-size:13px;color:var(--muted);margin-bottom:12px}
+  .cs-fund-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .cs-fund-chip{display:inline-block;font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px}
+  .cs-fund-chip em{font-style:normal;font-weight:400;color:#7c8298}
 ```
 
 **절대 쓰지 말 것**: `.story-section`, `.story-content` — Market Summary HTML 에 정의돼 있지 않은 클래스 (research 보고서의 CSS 이므로 여기선 무스타일 상태가 된다).
