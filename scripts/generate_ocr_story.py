@@ -331,31 +331,54 @@ def ocr_pdf(pdf_path: Path) -> str:
     from openai import OpenAI
 
     client = OpenAI()
-    images = convert_from_path(str(pdf_path), dpi=200)
-    log.info(f"PDF → {len(images)}페이지 변환")
+    images = convert_from_path(str(pdf_path), dpi=300)  # 200 → 300: 소수점·소형 숫자 인식 개선
+    log.info(f"PDF → {len(images)}페이지 변환 (dpi=300)")
 
-    content = []
+    # gpt-4o가 이미지를 거부할 때 반환하는 패턴
+    REFUSAL_PATTERNS = [
+        "I'm sorry, I can't",
+        "I'm sorry, I cannot",
+        "I can't assist",
+        "I cannot assist",
+        "죄송하지만",
+        "제공할 수 없습니다",
+    ]
+
+    page_texts: list[str] = []
     for i, img in enumerate(images):
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         img.save(tmp.name, "PNG")
         with open(tmp.name, "rb") as f:
             b64 = base64.b64encode(f.read()).decode()
-        content.append({"type": "text", "text": f"[페이지 {i+1}/{len(images)}]"})
-        content.append({"type": "image_url", "image_url": {
-            "url": f"data:image/png;base64,{b64}", "detail": "high"
-        }})
 
-    resp = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": OCR_SYSTEM},
-            {"role": "user", "content": content},
-        ],
-        max_tokens=4096,
-        temperature=0,
-    )
-    _log_and_notify_usage(resp, "ocr_pdf")
-    return resp.choices[0].message.content
+        resp = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": OCR_SYSTEM},
+                {"role": "user", "content": [
+                    {"type": "text", "text": (
+                        f"[페이지 {i+1}/{len(images)}] "
+                        "이 금융 보고서 페이지에 인쇄된 한국어·영어 텍스트와 수치를 있는 그대로 모두 추출하세요. "
+                        "차트·그래프가 있으면 축 레이블·범례·수치만 텍스트로 옮기세요."
+                    )},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}", "detail": "high"}},
+                ]},
+            ],
+            max_tokens=2048,
+            temperature=0,
+        )
+        _log_and_notify_usage(resp, f"ocr_pdf_p{i+1}")
+        page_text = resp.choices[0].message.content.strip()
+
+        # 거부 응답이면 스킵
+        if any(pat in page_text for pat in REFUSAL_PATTERNS) and len(page_text) < 200:
+            log.warning(f"  페이지 {i+1}/{len(images)} 거부 응답 → 스킵")
+            continue
+
+        page_texts.append(f"=== 페이지 {i+1} ===\n{page_text}")
+        log.info(f"  페이지 {i+1}/{len(images)} 완료: {len(page_text)}자")
+
+    return "\n\n".join(page_texts)
 
 
 def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> str:
@@ -595,6 +618,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=None,
                         help="장 기준일 YYYY-MM-DD (기본: 직전 영업일)")
+    parser.add_argument("--attach-id", default=None,
+                        help="미래에셋증권 attachId 직접 지정 (PDF 탐색 건너뜀)")
     parser.add_argument("--dry-run", action="store_true",
                         help="파일 저장 없이 흐름만 확인")
     args = parser.parse_args()
@@ -620,7 +645,12 @@ def main():
     out_dir = ROOT / "output" / "summary" / target_date.strftime("%Y-%m")
 
     # ── PDF 탐색 ──
-    pdf_info = find_daily_briefing_pdf(target_date)
+    if args.attach_id:
+        pdf_url = f"{BASE_URL}/bbs/download/{args.attach_id}.pdf?attachmentId={args.attach_id}"
+        pdf_info = {"title": f"직접 지정 attachId={args.attach_id}", "pdf_url": pdf_url, "attach_id": args.attach_id, "date": str(target_date)}
+        log.info(f"attachId 직접 지정: {args.attach_id}")
+    else:
+        pdf_info = find_daily_briefing_pdf(target_date)
     if not pdf_info:
         msg = f"⚠️ *OCR Story 스킵* — {target_date}\n미래에셋증권 AI 데일리 브리핑 PDF를 찾지 못했습니다.\n_ocr.html 미생성."
         log.info("PDF 없음 → _ocr.html 생성 건너뜀, 텔레그램 알림 발송")
