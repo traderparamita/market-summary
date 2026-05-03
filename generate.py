@@ -396,10 +396,48 @@ body{{
 .footer{{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}}
 .ai-disclaimer{{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}}
 
+/* ── CS Story ── */
+.cs-hero{{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}}
+.cs-hero h2{{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}}
+.cs-hero .cs-subtitle{{font-size:12px;color:var(--muted);margin-bottom:16px}}
+.cs-text{{font-size:16px;color:#2d3148;line-height:1.9}}
+.cs-text p{{margin-bottom:14px}}
+.cs-text p:last-child{{margin-bottom:0}}
+.cs-section{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.cs-section h3{{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}}
+.cs-section p{{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}}
+.cs-section p:last-child{{margin-bottom:0}}
+.cs-footer{{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}}
+.cs-funds-desc{{font-size:13px;color:var(--muted);margin-bottom:12px}}
+.cs-fund-chips{{display:flex;flex-wrap:wrap;gap:8px}}
+.cs-fund-chip{{display:inline-block;font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px}}
+.cs-fund-chip em{{font-style:normal;font-weight:400;color:#7c8298}}
+
+/* ── PM Story ── */
+.pm-hero{{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}}
+.pm-hero h2{{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}}
+.pm-hero .pm-subtitle{{font-size:12px;color:var(--muted);margin-bottom:14px}}
+.pm-tl{{font-size:15px;color:#1a1d2e;line-height:1.8}}
+.pm-tl p{{margin-bottom:8px}}
+.pm-tl p:last-child{{margin-bottom:0}}
+.pm-grid{{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}}
+.pm-section{{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.pm-section h3{{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}}
+.pm-section ul{{list-style:none;padding:0;margin:0}}
+.pm-section li{{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}}
+.pm-section li::before{{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}}
+.pm-section li:last-child{{margin-bottom:0}}
+.pm-section .pm-num{{font-weight:600;color:#1a1d2e}}
+.pm-section .pm-up{{color:#d92b2b;font-weight:600}}
+.pm-section .pm-dn{{color:#1a5fb4;font-weight:600}}
+.pm-section .pm-note{{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}}
+.pm-footer{{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}}
+
 @media(max-width:900px){{
   .session-grid,.insight-grid,.chart-grid,.movers-row{{grid-template-columns:1fr}}
   .causal-chain{{flex-direction:column}}.cause-arrow{{transform:rotate(90deg);padding:4px 0}}
   .af-map{{grid-template-columns:1fr}}.risk-items{{grid-template-columns:1fr}}
+  .pm-grid{{grid-template-columns:1fr}}
 }}
 
 </style>

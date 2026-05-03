@@ -466,14 +466,24 @@ def calc_metrics(df, ref_date, market_code=None):
         prev = float(df.iloc[-2]["Close"])
         daily_chg = (close - prev) / prev * 100 if prev else 0
 
+    # WTD: ISO 주 시작 직전 금요일 종가 대비
+    import pandas as pd
     weekly_chg = 0.0
-    if len(df) >= 6:
-        w = float(df.iloc[-6]["Close"])
+    iso_year, iso_week, _ = last_date.isocalendar()
+    week_monday = dt.date.fromisocalendar(iso_year, iso_week, 1)
+    week_ref_date = week_monday - dt.timedelta(days=3)  # 직전 주 금요일
+    week_ref_rows = df[df.index <= pd.Timestamp(week_ref_date)]
+    if not week_ref_rows.empty:
+        w = float(week_ref_rows.iloc[-1]["Close"])
         weekly_chg = (close - w) / w * 100 if w else 0
 
+    # MTD: 전월 말 마지막 거래일 종가 대비
     monthly_chg = 0.0
-    if len(df) >= 23:
-        m = float(df.iloc[-23]["Close"])
+    month_start = dt.date(last_date.year, last_date.month, 1)
+    month_ref_date = month_start - dt.timedelta(days=1)  # 전월 마지막 캘린더일
+    month_ref_rows = df[df.index <= pd.Timestamp(month_ref_date)]
+    if not month_ref_rows.empty:
+        m = float(month_ref_rows.iloc[-1]["Close"])
         monthly_chg = (close - m) / m * 100 if m else 0
 
     ytd_chg = 0.0
