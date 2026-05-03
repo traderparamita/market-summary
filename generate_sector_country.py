@@ -1075,7 +1075,7 @@ def _extract_digest_body() -> tuple[str, str]:
         week_label = m_title.group(1).strip() if m_title else ""
         # theme-card 블록 전체: footer 직전까지 전부 추출 후 카드 단위로 분리
         body_match = re.search(
-            r'(<div class="theme-card">.*?)(?=\n<div class="footer"|\Z)',
+            r'(<div class="theme-card">.*?)(?=\n<div class="ai-disclaimer">|\n<div class="footer"|\Z)',
             content, re.DOTALL
         )
         if not body_match:
