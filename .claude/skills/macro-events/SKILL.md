@@ -119,6 +119,21 @@ mcp__tavily__search: "next {week/month} economic calendar {next period range}"
 
 `output/summary/{weekly or monthly}/YYYY-WNN_macro.html` (또는 `YYYY-MM_macro.html`) 동일 내용으로 Write/Edit.
 
+### Step 7 — Sources 탭 주입
+
+Step 3~4에서 사용한 Tavily 검색 결과의 출처를 `tab-sources` 탭에 추가한다.
+
+**수집 대상**: Step 3(이번 기간 이벤트 검색) + Step 4(다음 기간 캘린더 검색)에서 참조한 URL·제목·매체·날짜.
+
+**작성 규칙**:
+- 섹션 2개: "이번 기간 이벤트 출처" + "다음 기간 캘린더 출처"
+- 각 출처: `<a href="URL">제목</a> — 매체, 날짜`
+- URL이 없는 출처(macro_indicators.csv 등 로컬 데이터)는 "내부 데이터" 표기
+- 최소 4건 이상
+
+**주입 방법**: 해당 보고서의 `<div id="tab-sources">` ~ `</div><!-- /tab-sources -->` 블록을 Edit.
+`_sources.html` sibling 파일도 동기화 (기존 Story Sources와 병합 — Macro 섹션 append).
+
 ---
 
 ## 보고서 주입 방법
@@ -227,3 +242,4 @@ W17 Macro 탭(`2026-W17_macro.html`)을 품질 기준 예시로 삼는다. 아�
 - [ ] `_macro.html` 파일이 저장되었는가?
 - [ ] 수치 출처가 macro_indicators.csv 또는 신뢰할 수 있는 웹 소스인가?
 - [ ] 이벤트 테이블이 최소 8행 이상인가?
+- [ ] Sources 탭에 Tavily 검색 출처가 4건 이상 기록되었는가?
