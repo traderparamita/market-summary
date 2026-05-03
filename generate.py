@@ -1206,12 +1206,10 @@ def _find_prev_weekly_macro(daily_html_path):
             return ""
         report_date = dt.datetime.strptime(m.group(1), "%Y-%m-%d").date()
         iso = report_date.isocalendar()
-        # 해당 주(W_n) 보고서가 있으면 이번 주 주간 macro, 없으면 직전 주
-        # 이번 주 주간 macro가 아직 없을 수 있으니 직전 주 우선
+        # 직전 주 우선: 월~목은 이번 주 macro 미존재, 금요일은 backfill로 별도 처리
         prev_week = report_date - dt.timedelta(weeks=1)
         prev_iso = prev_week.isocalendar()
         weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
-        # 직전 주 → 이번 주 순서로 시도
         for candidate in [prev_iso, iso]:
             macro_path = os.path.join(
                 weekly_dir,
@@ -1287,6 +1285,46 @@ def _save_story_file(html_path, html_content):
         with open(target, "w") as f:
             f.write(content)
         _log(f"  Tab saved: {os.path.basename(target)}")
+
+
+def backfill_macro_to_daily(week_macro_path):
+    """주간 _macro.html 작성 후, 해당 주 마지막 영업일(금요일) 보고서에만 macro 탭을 주입.
+
+    market-full Step 5.6 이후 호출.
+    금요일 보고서는 주가 끝난 뒤 생성되므로 이번 주 macro가 들어가야 자연스럽다.
+    """
+    import re as _re
+    fname = os.path.basename(week_macro_path)
+    m = _re.match(r"(\d{4})-W(\d{2})_macro\.html", fname)
+    if not m:
+        return
+    year, week = int(m.group(1)), int(m.group(2))
+
+    if not os.path.exists(week_macro_path):
+        return
+    with open(week_macro_path) as f:
+        macro_content = f.read().strip()
+    if not macro_content or "MACRO_EVENTS_PLACEHOLDER" in macro_content:
+        return
+
+    # 해당 주 금요일(마지막 영업일) 보고서만 대상
+    friday = dt.date.fromisocalendar(year, week, 5)
+    daily_path = os.path.join(OUTPUT_DIR, friday.strftime("%Y-%m"), f"{friday.isoformat()}.html")
+    if not os.path.exists(daily_path):
+        return
+    with open(daily_path) as f:
+        html = f.read()
+    pattern = r'(<div id="tab-macro" class="tab-panel">)\s*\n.*?\n(</div><!-- /tab-macro -->)'
+    replacement = rf'\1\n\n{macro_content}\n\n\2'
+    new_html, n = _re.subn(pattern, replacement, html, flags=_re.DOTALL)
+    if n > 0:
+        with open(daily_path, "w") as f:
+            f.write(new_html)
+        base, ext = os.path.splitext(daily_path)
+        macro_sibling = f"{base}_macro{ext}"
+        with open(macro_sibling, "w") as f:
+            f.write(macro_content)
+        _log(f"  Macro backfilled to Friday: {os.path.basename(daily_path)}")
 
 
 if __name__ == "__main__":

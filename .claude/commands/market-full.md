@@ -184,6 +184,12 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 3. Tavily MCP로 다음 주 이벤트 캘린더 수집
 4. `output/summary/weekly/YYYY-WNN.html`의 `tab-macro` 블록에 주입
 5. `YYYY-WNN_macro.html` 저장 확인
+6. **금요일 일간 보고서에 backfill**: 아래 명령으로 해당 주 금요일 보고서의 macro 탭을 W{N} macro로 갱신
+
+```bash
+cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+  .venv/bin/python -c "from generate import backfill_macro_to_daily; backfill_macro_to_daily('output/summary/weekly/YYYY-WNN_macro.html')"
+```
 
 ### Step 6: 월간 Data Dashboard
 
