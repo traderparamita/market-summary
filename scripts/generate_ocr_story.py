@@ -423,7 +423,7 @@ def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> st
             {"role": "system", "content": STORY_SYSTEM},
             {"role": "user", "content": user_msg},
         ],
-        max_tokens=8192,
+        max_tokens=12000,
         temperature=0.3,
     )
     _log_and_notify_usage(resp, "generate_story_html")
