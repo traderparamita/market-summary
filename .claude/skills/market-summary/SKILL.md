@@ -323,7 +323,7 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
 <!-- ── 7. WTD / MTD Progress ── -->
 <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
-    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · #/5 영업일 경과)</h3>
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · 전주 금요일 종가 대비 · MM/DD 기준)</h3>
     <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
       <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
       <li>원자재: [상품] [%], [상품] [%], ...</li>
@@ -333,7 +333,7 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
   </div>
   
   <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
-    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">월간 누적 (#월 · #/22 영업일 경과)</h3>
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">월간 누적 (#월 · 전월 말 종가 대비 · MM/DD 기준)</h3>
     <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
       <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
       <li>원자재: [상품] [%], [상품] [%], ...</li>
@@ -362,7 +362,7 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
 <!-- ❌ 카드 스타일 없음, 간격 부족 -->
 <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
   <div>
-    <h3>주간 누적 (W## · #/5 영업일 경과 · 전주 금요일 종가 기준)</h3>
+    <h3>주간 누적 (W## · #/5 영업일 경과)</h3>
     <ul style="font-size:13px;line-height:1.6;">
 ```
 
@@ -371,7 +371,7 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
 <!-- ✅ 카드 스타일 포함, 제목 간결, 간격 개선 -->
 <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
-    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · #/5 영업일 경과)</h3>
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · 전주 금요일 종가 대비 · MM/DD 기준)</h3>
     <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
 ```
 ```
