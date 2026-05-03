@@ -179,14 +179,19 @@ output/summary/{YYYY-MM}/{YYYY-MM-DD}.html       # 주입 대상 HTML (이미 �
 - 당일 09시 이후 장중 데이터 검색 금지
 - 훅(`PreToolUse WebSearch|WebFetch`)이 자동 검증하므로 block되면 쿼리 수정
 
-### Step 3: Story 작성 (7개 섹션 템플릿)
+### Step 3: Story 작성 (6개 섹션 템플릿)
 
 **표기 규칙**:
 - 지수·종목·통화명은 한국어 단독 사용: `코스피`, `나스닥`, `금`, `달러/원`, `WTI유`
 - 영문 약어도 한국어로: `사상 최고가`, `연초 대비`, `주간 대비`, `월간 대비`, `장단기 스프레드`
 - 색상 컨벤션: 상승=빨간(`hl-up`), 하락=파란(`hl-down`) — 한국 주식창 기준
 
-Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 일간 `_story.html`을 Read로 확인해 구조 파악 후 작성.
+Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
+1. Story Hero · 2. Causal Chain · 3. Session Grid · 4. Insight Grid · 5. Risk Section · 6. WTD/MTD Progress
+
+**제외된 섹션 (사용 금지)**: Cross-Asset Flow Map (`.cross-asset`, `.af-map`) — 억지 인과 유발로 제거됨.
+
+기존 일간 `_story.html`을 Read로 확인해 구조 파악 후 작성.
 
 ---
 
@@ -271,22 +276,25 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
 
 1. **제목 배치**: `<div class="insight-grid">` **밖**에 제목 div 배치 (grid item 충돌 방지)
 2. **카드 개수**: 정확히 4개 (2열 × 2행 배치)
-3. **카드 길이**: 1-2 문장 (현재 3-4 문장 → 축약)
-4. **Badge 순서**: 인사이트 1 → 2 → 3 → 4
+3. **카드 내용**: badge + 제목(bold) + **본문 3-4문장**(투자자 관점 해설) + metric-row(핵심 수치 2개)
+4. **Badge**: 해당 인사이트의 키워드 (예: "Apple", "BOJ", "UAE 탈퇴", "코스피 8위")
+5. **metric-row 필수**: 각 카드 하단에 관련 핵심 수치 2개를 `metric-row` > `metric-item` 구조로 표시
 
-**올바른 구조**:
+**품질 기준 예시** (2026-04-28 참고):
 ```html
-<!-- 제목을 grid 밖에 배치 -->
 <div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
 <div class="insight-grid">
   <div class="insight-card">
-    <div class="badge">인사이트 1</div>
-    <div style="font-weight:600;margin-bottom:6px;">[제목]</div>
-    <div style="font-size:13px;">[1-2 문장]</div>
+    <span class="badge">코스피 8위</span>
+    <div style="font-weight:600;color:#1a1d2e;margin-bottom:8px;">코스피 6,700 첫 돌파 — 한국 시총 세계 8위 부상</div>
+    <div style="font-size:13px;color:#2d3148;line-height:1.7;">장중 6,712.73까지 올라 사상 첫 6,700선 돌파. 종가 6,641.02로 다시 사상 최고 갱신. Bloomberg은 한국 시총이 $4조를 넘어 영국을 추월, 세계 8위로 올라섰다고 보도. 삼성전자·SK하이닉스 2사가 코스피 시총의 40%+ 차지.</div>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">코스피 장중 최고</div><div class="metric-value up">6,712.73</div></div><div class="metric-item"><div class="metric-label">연초 대비</div><div class="metric-value up">+54.10%</div></div></div>
   </div>
-  <!-- 2, 3, 4번 카드 반복 -->
+  <!-- 2, 3, 4번 카드 동일 구조 반복 -->
 </div>
 ```
+
+**부실 카드 금지**: "1-2 문장으로 끝나는 얕은 설명"은 부실로 간주. 각 카드는 **왜 중요한지**(So what?)를 투자자 관점에서 설명해야 함.
 
 **잘못된 구조 (금지)**:
 ```html
@@ -372,7 +380,7 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
 
 #### 작성 규칙 (템플릿 사용 시)
 
-1. **모든 7개 섹션 필수** — 하나라도 빠지면 구조 검증 실패
+1. **모든 6개 섹션 필수** — 하나라도 빠지면 구조 검증 실패 (Cross-Asset Flow Map 제외)
 2. **Verdict 배지 필수** (Session Grid 내 각 세션):
    - `verdict-up`: 강세/긍정적 흐름
    - `verdict-down`: 약세/부정적 흐름
@@ -415,7 +423,7 @@ Story는 **정확히 7개 섹션**을 이 순서대로 구성합니다. 기존 �
 
 주간/월간 Story는 **마지막 영업일에만** 작성되므로, 일간 Story 안에 WTD(Week-to-Date)·MTD(Month-to-Date) 한 단락씩을 포함해 주 중간에도 누적 흐름을 볼 수 있게 한다.
 
-**데이터 소스**: ⚠ `_data.json`의 `weekly` 필드는 **롤링 7일** 기준이라 WTD 와 다릅니다. **직접 계산해야** 합니다.
+**데이터 소스**: `_data.json`의 `weekly` 필드는 **ISO WTD** (전주 금요일 종가 대비), `monthly` 필드는 **Calendar MTD** (전월 말 종가 대비)입니다. `verify_report_numbers.py`와 동일 기준이므로 그대로 사용 가능합니다.
 
 **WTD(Week-to-Date) 계산 규칙**:
 - 기준선: **ISO 주의 전주 마지막 영업일 종가** (보통 전주 금요일)
