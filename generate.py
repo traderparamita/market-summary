@@ -396,6 +396,17 @@ body{{
 .footer{{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}}
 .ai-disclaimer{{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}}
 
+/* ── Sources ── */
+.sources-header{{margin-bottom:20px}}
+.sources-header h2{{font-size:15px;font-weight:700;color:#1a1d2e;margin-bottom:4px}}
+.sources-header .sources-sub{{font-size:12px;color:var(--muted)}}
+.sources-section{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px}}
+.sources-section h3{{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}}
+.sources-list{{margin:0;padding-left:18px;font-size:13px;line-height:1.8}}
+.sources-list a{{color:var(--accent);text-decoration:none}}
+.sources-list a:hover{{text-decoration:underline}}
+.source-meta{{font-size:11px;color:var(--muted)}}
+
 /* ── CS Story ── */
 .cs-hero{{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}}
 .cs-hero h2{{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}}
@@ -465,6 +476,7 @@ body{{
   <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
   <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
+  <button class="tab-btn" onclick="switchTab('sources')">Sources</button>
 </div>
 
 <!-- ══════ TAB 1: DATA ══════ -->
@@ -685,6 +697,13 @@ body{{
 <!-- MACRO_EVENTS_PLACEHOLDER -->
 
 </div><!-- /tab-macro -->
+
+<!-- ══════ TAB 6: SOURCES ══════ -->
+<div id="tab-sources" class="tab-panel">
+
+<!-- SOURCES_PLACEHOLDER -->
+
+</div><!-- /tab-sources -->
 
 <div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
 <div class="footer">Daily Market Summary | AI auto-generated | {report_date}</div>
@@ -1193,6 +1212,7 @@ _TAB_SPECS = [
     ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
     ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
     ("macro", "MACRO_EVENTS_PLACEHOLDER",  "_macro"),
+    ("sources", "SOURCES_PLACEHOLDER",     "_sources"),
 ]
 
 

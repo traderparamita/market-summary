@@ -84,9 +84,10 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/py
 
 핵심:
 1. `output/summary/YYYY-MM/YYYY-MM-DD_data.json` Read → 수치·holiday 확인
-2. 시간순 웹 검색 (아시아 → 유럽 → 미국)
+2. 시간순 웹 검색 (아시아 → 유럽 → 미국) — 검색 결과의 URL·제목·매체·날짜를 sources 용으로 수집
 3. Story 작성 (훅이 forward-looking·세션 간 참조 등 자동 검증)
 4. `output/summary/YYYY-MM/YYYY-MM-DD.html`의 Story 탭에 주입 + `_story.html` 저장
+5. 수집한 출처를 `tab-sources` 탭에 주입 + `_sources.html` 저장
 
 **완료 보고**:
 ```
