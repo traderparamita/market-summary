@@ -27,6 +27,14 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 
 ### 사전 점검
 
+0. **캘린더 검증 (필수 — 요일 추측 금지)**:
+   ```bash
+   cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python scripts/calendar_check.py $ARGUMENTS
+   ```
+   출력된 요일·영업일·공휴일 정보를 **이후 모든 Step에서 참조**한다. 절대로 날짜-요일 매핑을 추측하지 않는다.
+   - "마지막 영업일" 판단은 이 출력의 해당 주/월 영업일 목록 기준
+   - 주간/월간 보고서 생성 여부도 이 데이터로 결정
+
 1. 대상 날짜가 **오늘보다 미래가 아닌지 확인**. 미래면 즉시 중단하고 사용자에게 보고.
 2. 대상 날짜가 주말이거나 한국·미국 공휴일이면 사용자에게 "해당일 보고서를 생성할지" 확인.
 

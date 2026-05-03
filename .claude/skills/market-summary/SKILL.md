@@ -95,14 +95,21 @@ metadata:
 - 금지: "4/2의 유가 폭등을 고려하면 3/30의 하락은 시작에 불과했다"
 - 허용: 전체 주를 시간순으로 나열하며 각 날짜의 팩트를 기술
 
-### 6. 요일·휴일 정확성
+### 6. 요일·휴일 정확성 — 반드시 데이터로 검증
 
 - **날짜와 요일이 정확히 일치하는지 반드시 검증**. Claude는 요일을 자주 틀린다.
+- **Story 작성 전 필수 실행**:
+  ```bash
+  .venv/bin/python scripts/calendar_check.py YYYY-MM-DD
+  ```
+  출력에서 각 날짜의 요일·영업일·공휴일을 확인한 뒤에만 요일을 서술에 사용한다.
+  주간 Story는 `--week W{N}`, 월간 Story는 `--month` 플래그를 추가한다.
 - `_data.json`의 `holiday` 필드로 KOSPI/KOSDAQ 휴장일 확인
 - 한국 공휴일: 삼일절, 광복절, 추석, 설날, 대체공휴일
   - 예: 2026-03-01은 일요일 → 대체공휴일은 3/2 월요일
 - 미국 공휴일: Presidents' Day, Memorial Day, Thanksgiving, Independence Day 등
 - **금지**: "금요일 발표된 고용지표"라고 쓰기 전에 실제 금요일인지 확인
+- **금지**: 요일을 추측하는 것. 항상 `calendar_check.py` 출력 또는 `datetime.date` 결과에 기반
 
 ### 7. 고점·저점 표현 전 반드시 CSV 검증
 

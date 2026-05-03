@@ -14,6 +14,11 @@ Story 작성 규칙은 `market-summary` 스킬에 있다 (Story 작업 시 자�
 
 **주의**: 미래 날짜의 보고서를 미리 생성하지 않는다.
 
+**필수**: 날짜-요일 매핑을 절대 추측하지 않는다. Story/보고서에 요일을 쓰기 전 반드시:
+```bash
+.venv/bin/python scripts/calendar_check.py YYYY-MM-DD [--month | --week WNN]
+```
+
 ## 구조
 
 ```
