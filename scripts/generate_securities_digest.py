@@ -37,11 +37,11 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 load_dotenv(ROOT / ".env")
 
+from _utils import S3_BUCKET
 from generate_securities_index import scan_s3  # noqa: E402
 
 OUTPUT_DIR = ROOT / "output" / "research" / "securities"
 MODEL = "gpt-4o"
-S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
 S3_REGION = "ap-northeast-2"
 MAX_PDFS_PER_THEME = 4
 PDF_PAGES = 4

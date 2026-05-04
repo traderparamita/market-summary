@@ -16,18 +16,15 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-import requests
 from dotenv import load_dotenv
+
+from _utils import telegram_send
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
 PYTHON = sys.executable
 KST = ZoneInfo("Asia/Seoul")
-
-TELEGRAM_TOKEN  = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
-ANTHILLIA_CHAT_ID = os.getenv("ANTHILLIA_CHAT_ID", "")
 
 COLLECTORS = [
     ("미래에셋증권 상세분석", "collect_securities_reports.py"),
@@ -38,18 +35,7 @@ COLLECTORS = [
 
 
 def _send_telegram(text: str) -> None:
-    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        print("[WARN] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID 미설정 → 알림 생략")
-        return
-    chat_ids = [TELEGRAM_CHAT_ID]
-    if ANTHILLIA_CHAT_ID and ANTHILLIA_CHAT_ID != TELEGRAM_CHAT_ID:
-        chat_ids.append(ANTHILLIA_CHAT_ID)
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    for cid in chat_ids:
-        try:
-            requests.post(url, json={"chat_id": cid, "text": text, "parse_mode": "HTML"}, timeout=10)
-        except Exception as e:
-            print(f"  [WARN] Telegram 발송 실패 ({cid}): {e}")
+    telegram_send(text, parse_mode="HTML")
 
 
 def main() -> None:

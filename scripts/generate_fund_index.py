@@ -24,10 +24,11 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
+from _utils import S3_BUCKET
+
 FUND_DIR = ROOT / "output" / "fund"
 INDEX_PATH = FUND_DIR / "index.html"
 
-S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
 S3_PREFIX = "malife_var_dashboard/fund_reports/github/"
 S3_REGION = "ap-northeast-2"
 URL_EXPIRES_DAYS = 7

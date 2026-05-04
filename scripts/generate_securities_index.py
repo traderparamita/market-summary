@@ -23,10 +23,11 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
+from _utils import S3_BUCKET
+
 OUTPUT_DIR = ROOT / "output" / "research" / "securities"
 INDEX_PATH = OUTPUT_DIR / "index.html"
 
-S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
 S3_PREFIX = "anthillia/miraeasset-securities"
 S3_REGION = "ap-northeast-2"
 URL_EXPIRES_DAYS = 7

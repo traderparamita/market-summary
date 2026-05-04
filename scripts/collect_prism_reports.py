@@ -26,13 +26,13 @@ import time
 from pathlib import Path
 
 import boto3
-import requests
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
-S3_BUCKET = "mai-life-fund-documents-533370893966-ap-northeast-2-an"
+from _utils import S3_BUCKET, telegram_send as _telegram_send
+
 S3_PREFIX = "prism"
 S3_REGION = "ap-northeast-2"
 
@@ -149,21 +149,7 @@ def get_filename_and_download(info: dict, dest: Path) -> str | None:
 
 
 def send_telegram(message: str) -> None:
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
-    chat_ids = [os.getenv("TELEGRAM_CHAT_ID"), os.getenv("ANTHILLIA_CHAT_ID")]
-    if not token:
-        return
-    for chat_id in chat_ids:
-        if not chat_id:
-            continue
-        try:
-            requests.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": chat_id, "text": message, "parse_mode": "HTML"},
-                timeout=10,
-            )
-        except Exception:
-            pass
+    _telegram_send(message, parse_mode="HTML")
 
 
 def main() -> None:

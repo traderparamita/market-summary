@@ -34,11 +34,11 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 load_dotenv(ROOT / ".env")
 
-S3_BUCKET = os.getenv("S3_BUCKET_NAME", "mai-life-fund-documents-533370893966-ap-northeast-2-an")
+from _utils import S3_BUCKET, prev_business_day as _prev_biz, next_business_day as _next_biz
+import notify_telegram
+
 S3_PDF_PREFIX = "anthillia/miraeasset-daily"
 S3_REGION = os.getenv("AWS_REGION", "ap-northeast-2")
-
-import notify_telegram
 
 LOG_DIR = ROOT / "logs"
 
@@ -81,30 +81,6 @@ DOWNLOAD_RE = re.compile(r"downConfirm\('([^']+)'\s*,\s*'(\d+)'")
 DAILY_KEYWORDS = ["AI 데일리", "AI데일리", "글로벌 마켓 브리핑", "데일리 글로벌"]
 
 
-def prev_business_day(d: date) -> date:
-    """d 직전 영업일 (한국 공휴일 반영)."""
-    try:
-        import holidays
-        kr_holidays = holidays.KR(years=[d.year, d.year - 1])
-    except ImportError:
-        kr_holidays = {}
-    d -= timedelta(days=1)
-    while d.weekday() >= 5 or d in kr_holidays:
-        d -= timedelta(days=1)
-    return d
-
-
-def next_business_day(d: date) -> date:
-    """d 다음 영업일 (한국 공휴일 반영)."""
-    try:
-        import holidays
-        kr_holidays = holidays.KR(years=[d.year, d.year + 1])
-    except ImportError:
-        kr_holidays = {}
-    d += timedelta(days=1)
-    while d.weekday() >= 5 or d in kr_holidays:
-        d += timedelta(days=1)
-    return d
 
 
 def find_daily_briefing_pdf(target_date: date) -> dict | None:
@@ -684,7 +660,7 @@ def main():
     if args.date:
         target_date = date.fromisoformat(args.date)
     else:
-        target_date = prev_business_day(date.today())
+        target_date = _prev_biz(date.today())
 
     log.info(f"=== OCR Story 시작: {target_date} ===")
 
