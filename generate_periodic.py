@@ -10,7 +10,14 @@ import re
 import glob
 import datetime as dt
 import csv
-from generate import generate_index, fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg, KO_LABELS
+from report_utils import (
+    fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg,
+    KO_LABELS, EQUITY_ORDER, MSCI_ORDER, BOND_RATE_ORDER, BOND_ETF_ORDER,
+    FX_ORDER, CM_ORDER, ST_ORDER, DATA_SOURCES,
+    PERIODIC_TAB_SPECS, save_story_files, inject_existing_story, extract_tab,
+    ordered,
+)
+from generate import generate_index
 
 # Shared OG image version (bump in generate.py when the OG image changes)
 try:
@@ -264,17 +271,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
           {cell(ytd)}
         </tr>"""
 
-    # 정렬 순서
-    EQUITY_ORDER = ["KOSPI","KOSDAQ","S&P500","NASDAQ","Russell2K","STOXX50","FTSE100","DAX","CAC40","Shanghai","HSI","Nikkei225","NIFTY50"]
-    MSCI_ORDER = ["MSCI World","MSCI ACWI","MSCI EM","MSCI LATAM","MSCI EMEA"]
-    BOND_ORDER = ["KR CD 91D","KR 3Y","KR 5Y","KR 10Y","KR 30Y","US 2Y","US 10Y","US 30Y"]
-    FX_ORDER = ["DXY","USD/KRW","EUR/USD","GBP/USD","AUD/USD","USD/JPY","USD/CNY"]
-    CM_ORDER = ["WTI","Brent","Gold","Silver","Copper","Nat Gas"]
-    ST_ORDER = ["NVIDIA","Broadcom","Alphabet","Amazon","META","Apple","Microsoft","Tesla","TSMC","Samsung"]
-
-    def ordered(cat, order):
-        idx = {n: i for i, n in enumerate(order)}
-        return sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
+    BOND_ORDER = BOND_RATE_ORDER  # periodic uses rate order for bonds
 
     bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB", "IEI", "SHY", "TIP"}
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
@@ -578,15 +575,6 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
     html += '</div>\n</div>\n'
 
     # 히트맵 테이블
-    DATA_SOURCES = {
-        "주식(Equity)":           "yfinance · FinanceDataReader · investiny",
-        "MSCI 지수":              "yfinance (ETF proxy)",
-        "채권·금리(Bonds & Rates)": "yfinance · ECOS(한국은행)",
-        "채권 ETF(Bond ETF)":     "yfinance",
-        "환율(FX)":               "investiny(investing.com) · FinanceDataReader",
-        "원자재(Commodities)":    "investiny(investing.com) · yfinance",
-        "주요 종목(Major Stocks)": "yfinance",
-    }
     sections = [
         ("주식(Equity)", eq_regional, False, False, EQUITY_ORDER),
         ("MSCI 지수", eq_msci, False, False, MSCI_ORDER),
@@ -742,71 +730,23 @@ new Chart(document.getElementById('cmChart'),{{
     return html
 
 
-_PERIODIC_TAB_SPECS = [
-    ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
-    ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
-    ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
-    ("sources", "SOURCES_PLACEHOLDER",     "_sources"),
-]
+_PERIODIC_TAB_SPECS = PERIODIC_TAB_SPECS
 
 
 def _save_story_file(html_path, html_content):
-    """Story/CS/PM 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
-    base, ext = os.path.splitext(html_path)
-    for tab, placeholder, suffix in _PERIODIC_TAB_SPECS:
-        m = re.search(
-            rf'<div id="tab-{tab}" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
-            html_content, re.DOTALL,
-        )
-        if not m:
-            continue
-        content = m.group(1).strip()
-        if not content or placeholder in content:
-            continue
-        target = f"{base}{suffix}{ext}"
-        with open(target, "w") as f:
-            f.write(content)
-        print(f"  Tab saved: {os.path.basename(target)}")
+    """Story/CS/PM 탭 내용을 각각 sibling 파일로 저장."""
+    save_story_files(html_path, html_content, _PERIODIC_TAB_SPECS,
+                     log_fn=lambda msg: print(msg))
 
 
 def _inject_existing_story(path, new_html):
     """기존 파일의 Story/CS/PM 탭을 새 HTML placeholder에 주입."""
-    if not os.path.exists(path):
-        return new_html
-    with open(path) as f:
-        old_content = f.read()
-
-    for tab, placeholder, suffix in _PERIODIC_TAB_SPECS:
-        preserved = ""
-        m = re.search(
-            rf'<div id="tab-{tab}" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
-            old_content, re.DOTALL,
-        )
-        if m:
-            candidate = m.group(1).strip()
-            if candidate and placeholder not in candidate:
-                preserved = candidate
-        if not preserved:
-            base, ext = os.path.splitext(path)
-            sib_path = f"{base}{suffix}{ext}"
-            if os.path.exists(sib_path):
-                with open(sib_path) as f:
-                    sib = f.read().strip()
-                if sib and placeholder not in sib:
-                    preserved = sib
-        if preserved:
-            new_html = new_html.replace(f"<!-- {placeholder} -->", preserved)
-    return new_html
+    return inject_existing_story(path, new_html, _PERIODIC_TAB_SPECS)
 
 
 def _save_macro_file(html_path, html_content):
     """HTML에서 Macro & Events 콘텐츠를 추출하여 _macro.html 파일로 저장"""
-    m = re.search(
-        r'<div id="tab-macro" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-macro -->',
-        html_content, re.DOTALL)
-    if not m:
-        return
-    macro = m.group(1).strip()
+    macro = extract_tab(html_content, "macro")
     if not macro or "MACRO_EVENTS_PLACEHOLDER" in macro:
         return
     base, ext = os.path.splitext(html_path)
@@ -822,13 +762,9 @@ def _inject_existing_macro(path, new_html):
     if os.path.exists(path):
         with open(path) as f:
             old_content = f.read()
-        m = re.search(
-            r'<div id="tab-macro" class="tab-panel(?:\s+active)?">\s*\n(.*?)\n</div><!-- /tab-macro -->',
-            old_content, re.DOTALL)
-        if m:
-            candidate = m.group(1).strip()
-            if candidate and "MACRO_EVENTS_PLACEHOLDER" not in candidate:
-                old_macro = candidate
+        candidate = extract_tab(old_content, "macro")
+        if candidate and "MACRO_EVENTS_PLACEHOLDER" not in candidate:
+            old_macro = candidate
         if not old_macro:
             base, ext = os.path.splitext(path)
             sib_path = f"{base}_macro{ext}"
@@ -839,7 +775,6 @@ def _inject_existing_macro(path, new_html):
                     old_macro = sib_macro
     if old_macro:
         new_html = new_html.replace("<!-- MACRO_EVENTS_PLACEHOLDER -->", old_macro)
-    # story도 보존
     new_html = _inject_existing_story(path, new_html)
     with open(path, "w") as f:
         f.write(new_html)

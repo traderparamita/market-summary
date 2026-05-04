@@ -56,83 +56,13 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 HISTORY_DIR = os.path.join(os.path.dirname(__file__), "history")
 
 
-def fmt(val, decimals=2):
-    if abs(val) >= 1000:
-        return f"{val:,.{decimals}f}"
-    return f"{val:.{decimals}f}"
-
-def chg_class(val):
-    return "up" if val > 0 else ("down" if val < 0 else "flat")
-
-def chg_sign(val):
-    return f"+{val:.2f}%" if val > 0 else f"{val:.2f}%"
-
-def heat_color(val):
-    """변동폭에 따른 배경색 (한국식: 상승=빨간계열, 하락=파란계열)"""
-    if val >= 3:    return "#fbd5d5"
-    if val >= 1.5:  return "#fde8e8"
-    if val >= 0.5:  return "#fef2f2"
-    if val > 0:     return "#fff5f5"
-    if val == 0:    return "#f7f8fa"
-    if val > -0.5:  return "#eff6ff"
-    if val > -1.5:  return "#dbeafe"
-    if val > -3:    return "#bfdbfe"
-    return "#93c5fd"
-
-def heat_text(val):
-    if val >= 1.5:  return "#991b1b"
-    if val > 0:     return "#b91c1c"
-    if val == 0:    return "#6b7280"
-    if val > -1.5:  return "#1e40af"
-    return "#1e3a5f"
-
-def spark_svg(data, w=80, h=24, color="#F58220"):
-    """미니 SVG 스파크라인"""
-    if not data or len(data) < 2:
-        return ""
-    mn, mx = min(data), max(data)
-    rng = mx - mn if mx != mn else 1
-    pts = []
-    step = w / (len(data) - 1)
-    for i, v in enumerate(data):
-        x = round(i * step, 1)
-        y = round(h - (v - mn) / rng * (h - 2) - 1, 1)
-        pts.append(f"{x},{y}")
-    last_y = round(h - (data[-1] - mn) / rng * (h - 2) - 1, 1)
-    # 마지막 값이 양이면 초록, 음이면 빨강
-    end_color = "#d92b2b" if data[-1] >= 0 else "#1a5fb4"
-    return (
-        f'<svg width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
-        f'<polyline points="{" ".join(pts)}" fill="none" stroke="{color}" stroke-width="1.5" stroke-linecap="round"/>'
-        f'<circle cx="{round((len(data)-1)*step,1)}" cy="{last_y}" r="2.5" fill="{end_color}"/>'
-        f'</svg>'
-    )
-
-
-KO_LABELS = {
-    "KOSPI": "코스피", "KOSDAQ": "코스닥",
-    "S&P500": "S&P500", "NASDAQ": "나스닥", "Russell2K": "러셀2000",
-    "STOXX50": "유로스톡스50", "FTSE100": "영국FTSE", "DAX": "독일DAX", "CAC40": "프랑스CAC",
-    "Shanghai": "상해종합", "HSI": "항셍", "Nikkei225": "니케이225", "NIFTY50": "인도NIFTY",
-    "MSCI EM": "MSCI 신흥국", "TWSE": "대만가권",
-    "MSCI World": "MSCI 선진국", "MSCI ACWI": "MSCI 전세계",
-    "MSCI LATAM": "MSCI 중남미", "MSCI EMEA": "MSCI 유럽중동",
-    "KR CD 91D": "한국 CD 91일", "KR 3Y": "한국 국채3년", "KR 5Y": "한국 국채5년",
-    "KR 10Y": "한국 국채10년", "KR 30Y": "한국 국채30년",
-    "US 2Y": "미국 국채2년", "US 10Y": "미국 국채10년", "US 30Y": "미국 국채30년",
-    "US 10-2 Spread": "미국 장단기 스프레드",
-    "KR 10-3 Spread": "한국 장단기 스프레드",
-    "AGG": "미국 종합채권", "TLT": "미국 장기국채", "IEI": "미국 중기국채",
-    "SHY": "미국 단기국채", "TIP": "미국 물가연동채",
-    "LQD": "투자등급 회사채", "HYG": "하이일드 채권", "EMB": "신흥국 채권",
-    "DXY": "달러인덱스", "USD/KRW": "달러/원", "EUR/USD": "유로/달러",
-    "GBP/USD": "파운드/달러", "AUD/USD": "호주달러", "USD/JPY": "달러/엔", "USD/CNY": "달러/위안",
-    "WTI": "WTI유", "Brent": "브렌트유", "Gold": "금", "Silver": "은",
-    "Copper": "구리", "Nat Gas": "천연가스",
-    "NVIDIA": "엔비디아", "Broadcom": "브로드컴", "Alphabet": "구글", "Amazon": "아마존",
-    "META": "메타", "Apple": "애플", "Microsoft": "마이크로소프트",
-    "Tesla": "테슬라", "TSMC": "TSMC", "Samsung": "삼성전자",
-}
+from report_utils import (
+    fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg,
+    KO_LABELS, EQUITY_ORDER, MSCI_ORDER, BOND_RATE_ORDER, BOND_ETF_ORDER,
+    FX_ORDER, CM_ORDER, ST_ORDER, DATA_SOURCES,
+    DAILY_TAB_SPECS, extract_tab, save_story_files, inject_existing_story,
+    ordered,
+)
 
 
 def generate_html(data):
@@ -532,32 +462,6 @@ body{{
     html += '</div>\n</div>\n'
 
     # ── 이미지 순서에 맞는 고정 정렬 ──
-    EQUITY_ORDER = [
-        "KOSPI", "KOSDAQ",                                    # 한국
-        "S&P500", "NASDAQ", "Russell2K",                      # 미국
-        "STOXX50", "FTSE100", "DAX", "CAC40",                 # 유럽
-        "Shanghai", "HSI",                                     # 중국
-        "Nikkei225",                                           # 일본
-        "NIFTY50",                                             # 인도
-    ]
-    MSCI_ORDER = ["MSCI World", "MSCI ACWI", "MSCI EM", "MSCI LATAM", "MSCI EMEA"]
-    BOND_RATE_ORDER = [
-        "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y", "KR 10-3 Spread",  # 한국
-        "US 2Y", "US 10Y", "US 30Y", "US 10-2 Spread",                       # 미국
-    ]
-    BOND_ETF_ORDER = ["AGG", "TLT", "IEI", "SHY", "TIP", "LQD", "HYG", "EMB"]
-    FX_ORDER = ["DXY", "USD/KRW", "EUR/USD", "GBP/USD", "AUD/USD", "USD/JPY", "USD/CNY"]
-    CM_ORDER = ["WTI", "Brent", "Gold", "Silver", "Copper", "Nat Gas"]
-    ST_ORDER = [
-        "NVIDIA", "Broadcom", "Alphabet", "Amazon", "META",
-        "Apple", "Microsoft", "Tesla", "TSMC", "Samsung",
-    ]
-
-    def ordered(cat, order):
-        """order 리스트 순서대로 정렬, 없는 항목은 뒤에 추가"""
-        idx = {name: i for i, name in enumerate(order)}
-        return sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
-
     bond_etfs = {"AGG", "TLT", "HYG", "LQD", "EMB", "IEI", "SHY", "TIP"}
     bd_rates = {k: v for k, v in bd.items() if k not in bond_etfs}
     bd_etf = {k: v for k, v in bd.items() if k in bond_etfs}
@@ -567,15 +471,6 @@ body{{
     eq_msci = {k: v for k, v in eq.items() if k in msci_names}
 
     # ── Heatmap Tables ──
-    DATA_SOURCES = {
-        "주식(Equity)":           "yfinance · FinanceDataReader · investiny",
-        "MSCI 지수":              "yfinance (ETF proxy)",
-        "채권·금리(Bonds & Rates)": "investing.com(US 2Y·10Y·Spread) · ECOS(한국은행)",
-        "채권 ETF(Bond ETF)":     "yfinance",
-        "환율(FX)":               "investiny(investing.com) · FinanceDataReader",
-        "원자재(Commodities)":    "investiny(investing.com) · yfinance",
-        "주요 종목(Major Stocks)": "yfinance",
-    }
     sections = [
         ("주식(Equity)",           eq_regional, False, False, EQUITY_ORDER),
         ("MSCI 지수",              eq_msci,     False, False, MSCI_ORDER),
@@ -1208,13 +1103,7 @@ def update_current_periodic(target_date):
         _log(f"    ⚠ Periodic update 경고: {e}")
 
 
-_TAB_SPECS = [
-    ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
-    ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
-    ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
-    ("macro", "MACRO_EVENTS_PLACEHOLDER",  "_macro"),
-    ("sources", "SOURCES_PLACEHOLDER",     "_sources"),
-]
+_TAB_SPECS = DAILY_TAB_SPECS
 
 
 def _find_prev_weekly_macro(daily_html_path):
@@ -1227,7 +1116,6 @@ def _find_prev_weekly_macro(daily_html_path):
             return ""
         report_date = dt.datetime.strptime(m.group(1), "%Y-%m-%d").date()
         iso = report_date.isocalendar()
-        # 직전 주 우선: 월~목은 이번 주 macro 미존재, 금요일은 backfill로 별도 처리
         prev_week = report_date - dt.timedelta(weeks=1)
         prev_iso = prev_week.isocalendar()
         weekly_dir = os.path.join(OUTPUT_DIR, "weekly")
@@ -1249,63 +1137,17 @@ def _find_prev_weekly_macro(daily_html_path):
 
 def _inject_existing_story(path, new_html):
     """기존 파일의 Story/CS/PM 탭 내용을 새 HTML placeholder에 주입 + sibling 파일 저장."""
-    import re
-    if os.path.exists(path):
-        with open(path) as f:
-            old_content = f.read()
-    else:
-        old_content = ""
-
-    for tab, placeholder, suffix in _TAB_SPECS:
-        preserved = ""
-        if old_content:
-            m = re.search(
-                rf'<div id="tab-{tab}" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
-                old_content, re.DOTALL,
-            )
-            if m:
-                content = m.group(1).strip()
-                if content and placeholder not in content:
-                    preserved = content
-        # sibling 파일에서 복원
-        if not preserved:
-            base, ext = os.path.splitext(path)
-            sibling = f"{base}{suffix}{ext}"
-            if os.path.exists(sibling):
-                with open(sibling) as f:
-                    sib = f.read().strip()
-                if sib and placeholder not in sib:
-                    preserved = sib
-        # macro 탭: 해당 날짜의 직전 주 weekly _macro.html fallback
-        if not preserved and tab == "macro":
-            preserved = _find_prev_weekly_macro(path)
-        if preserved:
-            new_html = new_html.replace(f"<!-- {placeholder} -->", preserved)
+    new_html = inject_existing_story(path, new_html, _TAB_SPECS)
+    # macro 탭 추가 fallback: 직전 주 weekly _macro.html
+    if "<!-- MACRO_EVENTS_PLACEHOLDER -->" in new_html:
+        macro = _find_prev_weekly_macro(path)
+        if macro:
+            new_html = new_html.replace("<!-- MACRO_EVENTS_PLACEHOLDER -->", macro)
 
     with open(path, "w") as f:
         f.write(new_html)
 
-    _save_story_file(path, new_html)
-
-
-def _save_story_file(html_path, html_content):
-    """Story/CS/PM 탭 내용을 각각 sibling 파일로 저장. placeholder 상태면 skip."""
-    import re
-    base, ext = os.path.splitext(html_path)
-    for tab, placeholder, suffix in _TAB_SPECS:
-        m = re.search(
-            rf'<div id="tab-{tab}" class="tab-panel(?: active)?">\s*\n(.*?)\n</div><!-- /tab-{tab} -->',
-            html_content, re.DOTALL,
-        )
-        if not m:
-            continue
-        content = m.group(1).strip()
-        if not content or placeholder in content:
-            continue
-        target = f"{base}{suffix}{ext}"
-        with open(target, "w") as f:
-            f.write(content)
-        _log(f"  Tab saved: {os.path.basename(target)}")
+    save_story_files(path, new_html, _TAB_SPECS, log_fn=_log)
 
 
 def backfill_macro_to_daily(week_macro_path):
