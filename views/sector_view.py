@@ -92,10 +92,8 @@ CYCLE_DESCRIPTIONS = {
 # ── Data loaders ──────────────────────────────────────────────────────────
 
 def _load_prices(date: str) -> pd.DataFrame:
-    from market_source import load_wide_close
-    target = pd.Timestamp(date)
-    wide = load_wide_close(end=date)
-    return wide[wide.index <= target].sort_index()
+    from ._shared import load_prices
+    return load_prices(date)
 
 
 def _latest_macro(date: str) -> str:
@@ -242,11 +240,8 @@ def _momentum_dispersion(sectors: list) -> dict:
 # ── Signal calculators ───────────────────────────────────────────────────
 
 def _momentum(px: pd.Series, months: int) -> float:
-    target = px.index[-1] - pd.DateOffset(months=months)
-    past = px[px.index <= target]
-    if past.empty:
-        return np.nan
-    return float(px.iloc[-1] / past.iloc[-1] - 1)
+    from ._shared import momentum
+    return momentum(px, months)
 
 
 def _trend_score(px: pd.Series) -> int:
@@ -468,14 +463,8 @@ def render_html(data: dict) -> str:
     _nav_html = nav_html(date, "sector")
 
     # Regime 색
-    regime_colors = {
-        "Goldilocks":  ("#16a34a", "#dcfce7"),
-        "Reflation":   ("#d97706", "#fef3c7"),
-        "Stagflation": ("#dc2626", "#fee2e2"),
-        "Deflation":   ("#2563eb", "#dbeafe"),
-        "N/A":         ("#64748b", "#f1f5f9"),
-    }
-    rfg, rbg = regime_colors.get(regime, ("#64748b", "#f1f5f9"))
+    from ._shared import REGIME_COLORS
+    rfg, rbg = REGIME_COLORS.get(regime, ("#64748b", "#f1f5f9"))
 
     # Cycle phase 색
     cycle_colors = {

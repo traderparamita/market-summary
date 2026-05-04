@@ -390,3 +390,35 @@ def html_page(title: str, date_str: str, body: str,
 </div>
 </body>
 </html>"""
+
+
+# ── Shared computation helpers ────────────────────────────────────────────
+
+import numpy as np
+import pandas as pd
+
+
+REGIME_COLORS: dict[str, tuple[str, str]] = {
+    "Goldilocks":   ("#16a34a", "#dcfce7"),
+    "Reflation":    ("#d97706", "#fef3c7"),
+    "Stagflation":  ("#dc2626", "#fee2e2"),
+    "Deflation":    ("#2563eb", "#dbeafe"),
+    "N/A":          ("#64748b", "#f1f5f9"),
+}
+
+
+def load_prices(date: str) -> "pd.DataFrame":
+    """날짜 기준 wide-format 종가 DataFrame (모든 지표 코드 × 날짜)."""
+    from market_source import load_wide_close
+    target = pd.Timestamp(date)
+    wide = load_wide_close(end=date)
+    return wide[wide.index <= target].sort_index()
+
+
+def momentum(px: "pd.Series", months: int) -> float:
+    """달력 기준 수익률 (소수점 반환). 데이터 부족 시 nan."""
+    target = px.index[-1] - pd.DateOffset(months=months)
+    past = px[px.index <= target]
+    if past.empty:
+        return np.nan
+    return float(px.iloc[-1] / past.iloc[-1] - 1)
