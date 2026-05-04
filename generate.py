@@ -540,7 +540,7 @@ body{{
         "Nikkei225",                                           # 일본
         "NIFTY50",                                             # 인도
     ]
-    MSCI_ORDER = ["MSCI World", "MSCI ACWI", "MSCI LATAM", "MSCI EMEA"]
+    MSCI_ORDER = ["MSCI World", "MSCI ACWI", "MSCI EM", "MSCI LATAM", "MSCI EMEA"]
     BOND_RATE_ORDER = [
         "KR CD 91D", "KR 3Y", "KR 5Y", "KR 10Y", "KR 30Y", "KR 10-3 Spread",  # 한국
         "US 2Y", "US 10Y", "US 30Y", "US 10-2 Spread",                       # 미국
@@ -631,8 +631,8 @@ body{{
     html += '</div>\n'
 
     # ── Charts ──
-    eq_sorted_names = [n for n, _ in sorted(eq.items(), key=lambda x: x[1]["daily"], reverse=True)]
-    eq_sorted_daily = [eq[n]["daily"] for n in eq_sorted_names]
+    eq_sorted_names = [n for n, _ in sorted(eq_regional.items(), key=lambda x: x[1]["daily"], reverse=True)]
+    eq_sorted_daily = [eq_regional[n]["daily"] for n in eq_sorted_names]
     st_sorted_names = [n for n, _ in sorted(st.items(), key=lambda x: x[1]["daily"], reverse=True)]
     st_sorted_daily = [st[n]["daily"] for n in st_sorted_names]
     cm_names = list(cm.keys())
@@ -642,7 +642,7 @@ body{{
 
     # Scatter: daily vs weekly (cross-asset)
     scatter_data = []
-    for cat_items, cat_label in [(eq, "equity"), (st, "stocks"), (cm, "commodity")]:
+    for cat_items, cat_label in [(eq_regional, "equity"), (eq_msci, "msci"), (st, "stocks"), (cm, "commodity")]:
         for name, d in cat_items.items():
             scatter_data.append({"x": d["weekly"], "y": d["daily"], "label": name, "cat": cat_label})
 
@@ -744,6 +744,7 @@ new Chart(document.getElementById('scatterChart'),{{
   data:{{
     datasets:[
       {{label:'Equity',data:{json.dumps([s for s in scatter_data if s['cat']=='equity'])},backgroundColor:AC+'aa',pointRadius:6}},
+      {{label:'MSCI',data:{json.dumps([s for s in scatter_data if s['cat']=='msci'])},backgroundColor:'#8B5CF6aa',pointRadius:6}},
       {{label:'Stocks',data:{json.dumps([s for s in scatter_data if s['cat']=='stocks'])},backgroundColor:'#043B72aa',pointRadius:6}},
       {{label:'Commodity',data:{json.dumps([s for s in scatter_data if s['cat']=='commodity'])},backgroundColor:WN+'aa',pointRadius:6}}
     ]
