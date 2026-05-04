@@ -822,20 +822,20 @@ def fetch_kr_rates(start_date=None, end_date=None):
             date_fmt = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
 
             daily_chg = 0.0
-            if len(valid) >= 2:
+            if len(valid) >= 2 and valid[-2][1]:
                 daily_chg = (close - valid[-2][1]) / valid[-2][1] * 100
 
             weekly_chg = 0.0
-            if len(valid) >= 5:
+            if len(valid) >= 5 and valid[-5][1]:
                 weekly_chg = (close - valid[-5][1]) / valid[-5][1] * 100
 
             monthly_chg = 0.0
             ytd_chg = 0.0
             if not is_sample:
-                if len(valid) >= 23:
+                if len(valid) >= 23 and valid[-23][1]:
                     monthly_chg = (close - valid[-23][1]) / valid[-23][1] * 100
                 yr_vals = [(t, v) for t, v in valid if t[:4] == str(ref_date.year)]
-                if yr_vals:
+                if yr_vals and yr_vals[0][1]:
                     ytd_chg = (close - yr_vals[0][1]) / yr_vals[0][1] * 100
 
             spark_vals = [v for _, v in valid]

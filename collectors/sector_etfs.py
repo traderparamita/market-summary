@@ -65,8 +65,6 @@ TARGETS: list[tuple[str, str, str, str]] = [
     ("SC_KR_TRANSPORT", "140710.KS", "sector_kr", "KODEX 운송"),                  # 2011~
     ("SC_KR_MEDIA",     "108590.KS", "sector_kr", "KODEX 미디어&엔터"),           # 2011~
     ("SC_KR_DEFENSE",   "174360.KS", "sector_kr", "TIGER 경기방어"),              # 2013~
-    ("SC_KR_STAPLES",   "227550.KS", "sector_kr", "TIGER 200 필수소비재"), # 2017~
-    ("SC_KR_INDU",      "227560.KS", "sector_kr", "TIGER 200 산업재"),    # 2017~
     ("SC_KR_GAME",      "228800.KS", "sector_kr", "KODEX 게임&엔터"),     # 2015~
     ("SC_KR_BIOTECH",   "278530.KS", "sector_kr", "KODEX 바이오테크"),     # 2019~
     ("SC_KR_COSDAQ_IT", "261240.KS", "sector_kr", "KODEX 코스닥150IT"),   # 2019~

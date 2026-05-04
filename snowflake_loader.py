@@ -180,11 +180,12 @@ def upsert_rows(df: pd.DataFrame, *, target_date: Optional[str] = None) -> int:
     try:
         cur = conn.cursor()
         if dates_to_delete and codes_to_delete:
-            d_ph = ", ".join(f"'{d}'" for d in dates_to_delete)
-            c_ph = ", ".join(f"'{c}'" for c in codes_to_delete)
+            d_ph = ", ".join(["%s"] * len(dates_to_delete))
+            c_ph = ", ".join(["%s"] * len(codes_to_delete))
             cur.execute(
                 f'DELETE FROM {TABLE} '
-                f'WHERE "일자" IN ({d_ph}) AND "지표코드" IN ({c_ph})'
+                f'WHERE "일자" IN ({d_ph}) AND "지표코드" IN ({c_ph})',
+                dates_to_delete + codes_to_delete,
             )
             print(f"[loader] DELETE (일자 × 지표코드) 교집합: "
                   f"{len(dates_to_delete)}일 × {len(codes_to_delete)}코드")
@@ -245,11 +246,16 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
             # (일자, 지표코드) 단위 DELETE 후 INSERT
             keys = df[["일자", "지표코드"]].drop_duplicates()
             if len(keys):
-                placeholders = ", ".join(f"(TO_DATE('{r.일자}'), '{r.지표코드}')" for r in keys.itertuples())
-                cur.execute(f'''
-                  DELETE FROM FDE_DB.PUBLIC.MKT200_MACRO_DAILY
-                  WHERE ("일자", "지표코드") IN ({placeholders})
-                ''')
+                cond = " OR ".join(
+                    ['("일자" = TO_DATE(%s) AND "지표코드" = %s)'] * len(keys)
+                )
+                params = []
+                for r in keys.itertuples():
+                    params.extend([str(r.일자), r.지표코드])
+                cur.execute(
+                    f'DELETE FROM FDE_DB.PUBLIC.MKT200_MACRO_DAILY WHERE {cond}',
+                    params,
+                )
 
             success, nchunks, nrows, _ = write_pandas(
                 conn, df, "MKT200_MACRO_DAILY",

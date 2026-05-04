@@ -266,7 +266,7 @@ def generate_periodic_html(agg, title, subtitle, period_label, filename):
 
     # 정렬 순서
     EQUITY_ORDER = ["KOSPI","KOSDAQ","S&P500","NASDAQ","Russell2K","STOXX50","FTSE100","DAX","CAC40","Shanghai","HSI","Nikkei225","NIFTY50"]
-    MSCI_ORDER = ["MSCI World","MSCI ACWI","MSCI LATAM","MSCI EMEA"]
+    MSCI_ORDER = ["MSCI World","MSCI ACWI","MSCI EM","MSCI LATAM","MSCI EMEA"]
     BOND_ORDER = ["KR CD 91D","KR 3Y","KR 5Y","KR 10Y","KR 30Y","US 2Y","US 10Y","US 30Y"]
     FX_ORDER = ["DXY","USD/KRW","EUR/USD","GBP/USD","AUD/USD","USD/JPY","USD/CNY"]
     CM_ORDER = ["WTI","Brent","Gold","Silver","Copper","Nat Gas"]

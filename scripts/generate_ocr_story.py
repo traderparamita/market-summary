@@ -82,17 +82,27 @@ DAILY_KEYWORDS = ["AI 데일리", "AI데일리", "글로벌 마켓 브리핑", "
 
 
 def prev_business_day(d: date) -> date:
-    """d 직전 영업일."""
+    """d 직전 영업일 (한국 공휴일 반영)."""
+    try:
+        import holidays
+        kr_holidays = holidays.KR(years=[d.year, d.year - 1])
+    except ImportError:
+        kr_holidays = {}
     d -= timedelta(days=1)
-    while d.weekday() >= 5:
+    while d.weekday() >= 5 or d in kr_holidays:
         d -= timedelta(days=1)
     return d
 
 
 def next_business_day(d: date) -> date:
-    """d 다음 영업일."""
+    """d 다음 영업일 (한국 공휴일 반영)."""
+    try:
+        import holidays
+        kr_holidays = holidays.KR(years=[d.year, d.year + 1])
+    except ImportError:
+        kr_holidays = {}
     d += timedelta(days=1)
-    while d.weekday() >= 5:
+    while d.weekday() >= 5 or d in kr_holidays:
         d += timedelta(days=1)
     return d
 
@@ -343,8 +353,11 @@ def ocr_pdf(pdf_path: Path) -> str:
     for i, img in enumerate(images):
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         img.save(tmp.name, "PNG")
-        with open(tmp.name, "rb") as f:
-            b64 = base64.b64encode(f.read()).decode()
+        try:
+            with open(tmp.name, "rb") as f:
+                b64 = base64.b64encode(f.read()).decode()
+        finally:
+            os.unlink(tmp.name)
 
         resp = client.chat.completions.create(
             model="gpt-4o",

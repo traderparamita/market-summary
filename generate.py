@@ -802,7 +802,7 @@ def generate_index():
         try:
             d = dt.datetime.strptime(date, "%Y-%m-%d")
             day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
-        except:
+        except Exception:
             day_name = ""
         if month not in months:
             months[month] = []
@@ -839,7 +839,7 @@ def generate_index():
             m = _re.search(r'class="date">\s*([\d-]+)\s*~\s*([\d-]+)', head)
             if m:
                 date_range = f"{m.group(1)} ~ {m.group(2)}"
-        except:
+        except Exception:
             pass
 
         # 월 판단
@@ -848,7 +848,7 @@ def generate_index():
             week_num = int(week_label.split("W")[1])
             monday = dt.datetime.strptime(f"{year}-W{week_num:02d}-1", "%Y-W%W-%w").date()
             month_key = monday.strftime("%Y-%m")
-        except:
+        except Exception:
             month_key = week_label[:7]
 
         if month_key not in weekly_by_month:
@@ -882,7 +882,7 @@ def generate_index():
         try:
             d = dt.datetime.strptime(label, "%Y-%m")
             label = d.strftime("%Y %B")
-        except:
+        except Exception:
             pass
         monthly_items += f'      <li><a href="monthly/{fname}">{label}</a></li>\n'
 

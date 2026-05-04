@@ -110,7 +110,7 @@ def fetch_ecos_series(series_id: str, start_date: str, item_code: str = None, cy
         end_str = end_dt.strftime("%Y%m%d")
 
     # ECOS API endpoint
-    url = f"http://ecos.bok.or.kr/api/StatisticSearch/{ECOS_API_KEY}/json/kr/1/10000/{series_id}/{cycle}/{start_str}/{end_str}"
+    url = f"https://ecos.bok.or.kr/api/StatisticSearch/{ECOS_API_KEY}/json/kr/1/10000/{series_id}/{cycle}/{start_str}/{end_str}"
 
     if item_code:
         url += f"/{item_code}"
