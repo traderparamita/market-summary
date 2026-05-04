@@ -200,6 +200,7 @@ Market Story HTML 섹션들을 작성합니다.
 - 수치는 반드시 [시장 데이터] 의 값만 사용 (보고서 수치 대신)
 - 이벤트 맥락·종목 스토리·배경 설명은 [브리핑 원문] 에서 가져옴
 - 아시아→유럽→미국 시간 순서 엄수 (미래 세션 데이터를 이전 세션에 사용 금지)
+- **[필수 포함 이벤트]에 나열된 항목은 반드시 Story 어딘가에 등장해야 한다**
 
 ### 색상 규칙
 - 상승/긍정: <span class="hl-up">+X%</span>  (빨간색)
@@ -208,37 +209,31 @@ Market Story HTML 섹션들을 작성합니다.
 
 ### ★ 품질 기준 (반드시 준수)
 
-1. **session-events 리스트 항목**: 단순 한 줄 요약 금지. 수치·종목명·원인을 포함한 1~2문장.
+1. **session-events 리스트 항목**: 단순 한 줄 요약 금지. 브리핑 원문의 구체 사건을 인용해 수치·종목명·원인을 포함한 1~2문장.
    ❌ BAD:  <li><span class="ev-time">09:00</span> KOSPI 상승 시작</li>
    ✅ GOOD: <li><span class="ev-time">09:00</span> KOSPI 강세 출발 &mdash; 전일 미국장 약보합에도 삼성전자 <span class="hl-up">+1.80%</span>(226,000원) 주도로 반도체·대형주 강세. SK하이닉스 동반 상승</li>
+   ※ 아시아·유럽 시장이 공휴일인 경우: "휴장 (노동절 등)" 처리, ±0.00% 채우기 금지
 
 2. **session-verdict**: 단순 "혼조세" 금지. 오늘의 핵심 사건·원인을 담는다.
    ❌ BAD:  <span class="session-verdict verdict-mixed">혼조세</span>
    ✅ GOOD: <span class="session-verdict verdict-up">KOSPI·항셍 강세 &middot; 유가 우려는 아직 미반영</span>
 
-3. **af-node 구조**: 반드시 af-node-title / af-node-value / af-node-chg 3개 내부 div 사용.
-   ❌ BAD:  <div class="af-node">유가 상승</div>
-   ✅ GOOD:
-   <div class="af-node">
-     <div class="af-node-title">Brent / WTI</div>
-     <div class="af-node-value">$113.37 / $106.88</div>
-     <div class="af-node-chg up">+8.69% / +6.95%</div>
-   </div>
-
-4. **insight-card `<p>`**: 반드시 3단락 구성. 각 3~5문장.
-   - 1단락: 오늘 사건이 왜 중요한지 (초보자 눈높이)
-   - 2단락: 작동 메커니즘 (인과 경로)
-   - 3단락: 투자 시사점 / 관련 지표 해석
+3. **insight-card `<p>`**: 반드시 3단락 구성. 각 3~5문장.
+   - 1단락: 오늘 브리핑 원문의 구체 사건·수치를 인용하며 왜 중요한지 (초보자 눈높이)
+   - 2단락: 작동 메커니즘 (인과 경로) — 브리핑 원문의 설명을 활용
+   - 3단락: 관련 자산·섹터에 미치는 파급 효과 (사실 기술만)
    단락 구분은 <br><br>
+   ❌ BAD: "투자자들은 ~에 주목할 필요가 있습니다" 같은 일반론
+   ✅ GOOD: 오늘 브리핑의 실제 수치·종목·이벤트를 직접 인용
 
-5. **risk-item**: `<strong>리스크 제목</strong><br>` 뒤에 2~3문장 시나리오.
+4. **risk-item**: `<strong>리스크 제목</strong><br>` 뒤에 2~3문장 시나리오. 오늘 브리핑에서 언급된 리스크 요인을 우선 사용.
    ❌ BAD:  <span>중동 지역의 지정학적 리스크가 에너지 시장에 미치는 영향</span>
    ✅ GOOD: <span><strong>유가 $120 돌파 가능성 &mdash; 이란 봉쇄 장기화 시나리오</strong><br>
      브렌트유가 장중 $119대를 터치한 뒤 $113에 마감했습니다. 이란 핵 합의 진전이 없는 한 봉쇄는 유지될 전망이며, 추가 공급 차질 시 $120 → $130 시나리오까지 열립니다.</span>
 
-6. **출력 형식**: HTML만 출력. 마크다운 코드 블록(```html ... ```) 절대 사용 금지. 섹션 외 텍스트 없이.
+5. **출력 형식**: HTML만 출력. 마크다운 코드 블록(```html ... ```) 절대 사용 금지. 섹션 외 텍스트 없이.
 
-7. **투자 권유 표현 절대 금지**: "투자자들은 ~해야 합니다", "~에 주목할 필요가 있습니다", "~을 추천합니다" 등 매수·매도를 직·간접으로 유도하는 표현 사용 금지. 시장 사실과 인과관계만 서술할 것.
+6. **투자 권유 표현 절대 금지**: "투자자들은 ~해야 합니다", "~에 주목할 필요가 있습니다", "~을 추천합니다" 등 매수·매도를 직·간접으로 유도하는 표현 사용 금지. 시장 사실과 인과관계만 서술할 것.
 
 ### 출력할 섹션 (순서 고정)
 
@@ -430,8 +425,57 @@ def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> st
 {vix_str}
 """
 
+    # OCR 원문에서 종목명+수치 패턴을 미리 추출해 "필수 포함" 목록으로 만든다
+    import re as _re
+    # "(종목명)(+/-수치%)" 패턴 — 줄넘김 방지: \s 대신 [ \t]
+    ticker_hits = _re.findall(
+        r'([A-Za-z가-힣·][ \tA-Za-z가-힣·]{1,18})\s*\(([+\-±][\d.]+%)\)',
+        ocr_text,
+    )
+    # 종목명 좌측 노이즈 제거: 마지막 한글·영문 단어만 남김
+    # 접속사·조사·부사·업종 설명어로 시작하는 경우 종목명만 남김
+    _NOISE_PREFIXES = {
+        "다만", "또한", "와", "과", "및", "등", "이어", "더해", "앞둔", "한편", "특히",
+        "업체", "기업", "제약사", "플랫폼", "회사", "업종", "미국", "글로벌",
+    }
+    def _clean_name(s: str) -> str:
+        s = s.strip()
+        parts = s.split()
+        # 첫 단어가 노이즈면 제거
+        while len(parts) > 1 and parts[0] in _NOISE_PREFIXES:
+            parts = parts[1:]
+        # 종목명은 보통 1~2단어
+        return " ".join(parts[-2:]) if len(parts) > 2 else " ".join(parts)
+    ticker_hits = [(_clean_name(n), c) for n, c in ticker_hits]
+    # 중복 제거 (같은 종목명 유지)
+    seen: set[str] = set()
+    deduped = []
+    for n, c in ticker_hits:
+        if n not in seen:
+            seen.add(n)
+            deduped.append((n, c))
+    ticker_hits = deduped
+    # 섹션 제목(## 또는 줄 앞 한글 제목) 추출 — 보고서 헤더 제외
+    _skip = {"AI 데일리 글로벌 마켓 브리핑", "Summary", "특징종목", "Compliance Notice"}
+    section_hits = _re.findall(r'^(?:##\s*)?([가-힣A-Za-z][가-힣A-Za-z\s\-\'·]{4,40})$', ocr_text, _re.MULTILINE)
+    section_hits = [s.strip() for s in section_hits if len(s.strip()) > 4 and s.strip() not in _skip][:8]
+
+    must_include_lines = []
+    if ticker_hits:
+        must_include_lines.append("▶ 반드시 Story에 포함할 종목·수치 (수치는 [시장 데이터] 기준으로 교체):")
+        for name, chg in ticker_hits[:20]:
+            must_include_lines.append(f"  - {name.strip()} ({chg})")
+    if section_hits:
+        must_include_lines.append("▶ 브리핑 원문의 주요 섹션 (해당 내용을 반드시 Story 어딘가에 반영):")
+        for s in section_hits:
+            must_include_lines.append(f"  - {s}")
+    must_include_block = "\n".join(must_include_lines) if must_include_lines else "(자동 추출 없음 — 브리핑 원문 전체 참고)"
+
     user_msg = f"""아래 미래에셋증권 브리핑 원문과 시장 데이터를 바탕으로 Market Story HTML 섹션 1~5를 순서대로 작성하세요.
 섹션 외 다른 텍스트는 출력하지 마세요.
+
+[필수 포함 이벤트]
+{must_include_block}
 
 --- 브리핑 원문 ---
 {ocr_text}
