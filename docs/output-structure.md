@@ -2,7 +2,7 @@
 
 ```
 output/
-├── index.html                   # 메인 허브 (Summary + Portfolio + View)
+├── index.html                   # 메인 허브 (Summary + Research + Fund)
 ├── summary/                     # Market Summary 일/주/월/분기 보고서
 │   ├── index.html              # Summary 인덱스 (Daily/Weekly/Monthly/Quarterly 4개 탭)
 │   ├── YYYY-MM/
@@ -31,23 +31,10 @@ output/
 │       └── index.html
 ├── fund/                        # Fund Analysis — S3 기반 다운로드 페이지
 │   └── index.html
-├── portfolio/                   # Portfolio Agent
-│   ├── aimvp/
-│   │   └── YYYY-MM-DD.html
-│   └── strategy/
-│       ├── YYYY-MM-DD.html
-│       └── YYYY-MM-DD_signals.csv
-└── view/                        # View Agent (9개 뷰)
-    ├── index.html
-    ├── price/          → YYYY-MM-DD.html
-    ├── macro/          → YYYY-MM-DD.html
-    ├── correlation/    → YYYY-MM-DD.html
-    ├── regime/         → YYYY-MM-DD.html
-    ├── country/        → YYYY-MM-DD.html
-    ├── sector/         → YYYY-MM-DD.html
-    ├── bond/           → YYYY-MM-DD.html
-    ├── style/          → YYYY-MM-DD.html
-    └── allocation/     → YYYY-MM-DD.html
+├── prism/                       # MVP PRISM 보고서 S3 인덱스 (5개 카테고리 탭)
+│   └── index.html
+├── portfolio/                   # (이관됨 → market-strategy/, 레거시 잔존)
+└── view/                        # (이관됨 → market-strategy/, 레거시 잔존)
 ```
 
 GitHub Pages 자동 배포 (main 브랜치 push 시 `output/` 폴더).

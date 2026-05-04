@@ -14,7 +14,6 @@ def is_story_file(file_path: str) -> bool:
     return (
         ("/output/" in file_path and file_path.endswith(".html"))
         or file_path.endswith("generate_stories.py")
-        or file_path.endswith("inject_stories.py")
     )
 
 

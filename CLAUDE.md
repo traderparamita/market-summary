@@ -29,6 +29,7 @@ market_source.py         # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모
 snowflake_loader.py       # CSV ↔ Snowflake 적재 유틸
 notify_telegram.py       # Telegram 알림 (개인 + 그룹 동시 발송)
 simulate.py               # 과거 날짜 시뮬레이션
+gen_assets.py             # 브랜드 에셋 생성 (favicon, OG image)
 history/market_data.csv       # 일별 시계열 (10컬럼 대문자)
 history/macro_indicators.csv  # 거시지표 시계열 (7컬럼 대문자)
 
@@ -46,12 +47,23 @@ scripts/
 ├── collect_weekly.py                 # 주간 수집 러너 (일 19:30 KST)
 ├── collect_securities_reports.py     # 미래에셋증권 상세분석 보고서 → S3
 ├── collect_prism_reports.py          # MVP PRISM 보고서 → S3 (증분 스캔)
+├── generate_ocr_story.py             # 일일 브리핑 PDF → OCR → Story 생성
+├── generate_securities_digest.py     # 증권 보고서 Claude 분석 → 주간 다이제스트
 ├── verify_report_numbers.py          # 보고서 수치 결정론 검증 (상세 로그: logs/verify_numbers.log)
+├── verify_snowflake_drift.py         # Snowflake ↔ CSV 정합성 비교
+├── calendar_check.py                 # 영업일 검증·날짜 포맷터
+├── backfill_us_yields.py             # US 수익률 곡선 백필 (investiny)
 ├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
 ├── generate_securities_index.py      # output/research/securities/index.html
 ├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
 ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
+├── com.lifesailor.market-ocr.plist           # launchd: 일일 OCR Story
 └── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
+
+db/
+├── MKT.sql              # Snowflake MKT100/MKT200 DDL (정본)
+├── FND.sql              # Snowflake FND 계열 DDL (market-strategy 참조용)
+└── migrate.py           # 스키마 생성/마이그레이션 유틸
 
 views/                   # 섹터·국가 분석 엔진 (sector_view, country_view, _shared)
                          #   ※ generate_sector_country.py 가 직접 import. 나머지 8개 의사결정 뷰는 market-strategy/ 로 이관
@@ -108,6 +120,7 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 |------|----------|------|
 | 일 18:50 KST | `auto_market.py` | 금요일 보고서 (market-full + Snowflake drift 검증) |
 | 화~금 06:50 KST | `auto_market.py` | 전날 보고서 (한국 공휴일 자동 건너뜀, `holidays` 라이브러리) |
+| 일+화~금 08:30 KST | `generate_ocr_story.py` | 일일 브리핑 PDF OCR → Story 주입 |
 | 일 19:30 KST | `collect_weekly.py` | ① 미래에셋증권 상세분석 → S3 ② MVP PRISM → S3 |
 
 - 증권 보고서: `anthillia/miraeasset-securities/YYYY-MM/` (직전 영업주 스크래핑)
@@ -147,6 +160,7 @@ turn 종료 시마다 자동 호출. Story 본문의 종가·등락률·bp 변�
 logs/
 ├── market-full-YYYY-MM-DD.log   # generate.py + generate_sector_country.py Step 메시지
 ├── auto_market.log              # launchd 자동 실행 로그
+├── ocr_story.log                # OCR Story 생성 로그
 ├── verify_numbers.log           # 수치 검증 상세 로그
 └── securities_reports.log       # 증권 보고서 수집 로그
 ```
@@ -157,8 +171,8 @@ logs/
 ## 관련 설정
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse, type: "prompt") + Stop 훅 (수치 자동 검증)
-- `.claude/skills/`: `market-summary`, `sector-country`(research 보고서) 스킬
-- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/research`
+- `.claude/skills/`: `market-summary`, `sector-country`, `macro-events`, `mali-etf-analysis`
+- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/market-pm`, `/market-cs`, `/research`, `/review-story`
 
 ## 상세 문서
 
