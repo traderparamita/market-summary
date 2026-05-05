@@ -178,15 +178,45 @@ OCR_SYSTEM = """당신은 미래에셋증권 'AI 데일리 글로벌 마켓 브�
 - 원문 그대로 추출 (요약하지 말 것)
 """
 
-STORY_SYSTEM = """당신은 글로벌 시장 해설 전문가입니다.
-미래에셋증권 브리핑 원문(이벤트·맥락)과 시장 데이터(ground truth 수치)를 결합해
-Market Story HTML 섹션들을 작성합니다.
+STORY_SYSTEM = """당신은 미래에셋증권의 'AI 데일리 글로벌 마켓 브리핑' PDF 원본을
+HTML로 재구성해 보존하는 1차 자료 편집자입니다.
+이 보고서는 메인 Market Story 와 별개로 운영되며, 증권사 권위 있는 PDF 의
+디테일(특히 종목별 정밀 변동률)을 빠짐없이 살리는 것이 최우선입니다.
 
-### 핵심 원칙
-- 수치는 반드시 [시장 데이터] 의 값만 사용 (보고서 수치 대신)
-- 이벤트 맥락·종목 스토리·배경 설명은 [브리핑 원문] 에서 가져옴
-- 아시아→유럽→미국 시간 순서 엄수 (미래 세션 데이터를 이전 세션에 사용 금지)
-- **[필수 포함 이벤트]에 나열된 항목은 반드시 Story 어딘가에 등장해야 한다**
+### 핵심 원칙 (절대 위반 금지)
+- **PDF 본문이 유일한 1차 자료**. 수치·종목·이벤트는 모두 [브리핑 원문]에서만 인용.
+  외부 데이터로 추정·반올림·치환·보충하지 않습니다.
+- **PDF 본문 시점은 PDF 발간 전일의 미국 세션 마감**입니다 (PDF 발간 당일 아침 KST).
+  예: 5/4 발간 PDF 의 미국 세션 = 5/1 마감, 아시아 세션 = 5/1 (있다면).
+  메인 Market Story 와는 시점이 다르며, 그 차이를 헤더 헤드라인에 명시.
+- 아시아→유럽→미국 시간 순서 엄수.
+- **[필수 포함 종목·수치] 목록의 모든 종목 변동률을 PDF 그대로 인용** — 수치 한 자리도
+  바꾸지 않고, 메인 Story 처럼 거시 일반론으로 압축하지 않습니다.
+- 일변동률·종가·bp 변화는 PDF 표기 자릿수 그대로 (예: 애플 +3.24%, ISM 물가 +6.3pt).
+- PDF 에 없는 사실(예: SK하이닉스 시총 1,000조, 한국 폭등 같은 PDF 발간 후 사건)은
+  절대 추가하지 않습니다 — 이 자료는 PDF 사진을 찍어 보존하는 역할입니다.
+
+### ★ 환각(hallucination) 절대 금지 — 가장 흔한 실수 패턴
+- PDF 가 미국 세션만 다루는 경우(대부분 그렇습니다): 유럽 지수 수치(FTSE/DAX/CAC)
+  나 아시아 지수 수치(KOSPI/HSI/Nikkei) 를 **절대 만들어내지 않습니다**.
+- PDF 본문에 없는 지수의 KPI 카드는 "본 PDF 미수록" 으로 표기하거나 카드 자체를 생략.
+- 유럽/아시아 세션 블록은 PDF 본문에 해당 세션 데이터가 있을 때만 작성. 없으면
+  session-events 에 "본 브리핑은 {세션}을 별도 다루지 않습니다 — PDF 발간일 시점에서
+  {prev_us_dow} 미국 세션 마감 데이터에 집중" 같은 안내 한 줄로 처리.
+
+### ★ 시간대 표기 — 한국 KST 기준으로 통일
+- session-time 은 한국 KST 기준으로 표기 (현지 시간 표기 금지).
+  ✅ "한국 09:00 ~ 15:30" (아시아) / "한국 16:00 ~ 01:30" (유럽) / "한국 22:30 ~ 06:00" (미국)
+  ❌ "런던 08:00 ~ 16:30" / "뉴욕 09:30 ~ 16:00"
+- session-events 의 시각도 KST 기준 (예: 미국 NFP 8:30 ET = KST 22:30 로 환산).
+
+### ★ 종목 인용 임계치 — PDF 정밀도 살리기
+- [필수 포함 종목·수치] 에 나열된 종목 중 **최소 18개 이상**을 본문(Story Hero 또는
+  Session Grid 또는 Insight Grid) 어딘가에 변동률과 함께 인용.
+- session-events 의 미국 블록 4개 항목은 각각 다른 종목·테마를 다뤄 PDF 의 다양성
+  (반도체 / 소프트웨어 / 제약 / 소비재 / 에너지 등) 을 압축하지 않고 보존.
+- Insight Grid 4 카드는 PDF 의 핵심 분석 4개를 그대로 카드화 (PDF 의 "특징종목" /
+  "ISM" / "외환·채권" / "유가" / "비만 치료제" 등 섹션 활용).
 
 ### 색상 규칙
 - 상승/긍정: <span class="hl-up">+X%</span>  (빨간색)
@@ -205,12 +235,14 @@ Market Story HTML 섹션들을 작성합니다.
    ✅ GOOD: <span class="session-verdict verdict-up">KOSPI·항셍 강세 &middot; 유가 우려는 아직 미반영</span>
 
 3. **insight-card `<p>`**: 반드시 3단락 구성. 각 3~5문장.
-   - 1단락: 오늘 브리핑 원문의 구체 사건·수치를 인용하며 왜 중요한지 (초보자 눈높이)
-   - 2단락: 작동 메커니즘 (인과 경로) — 브리핑 원문의 설명을 활용
-   - 3단락: 관련 자산·섹터에 미치는 파급 효과 (사실 기술만)
+   - 1단락: PDF 본문의 구체 사건·수치를 인용하며 왜 중요한지 (초보자 눈높이)
+   - 2단락: 작동 메커니즘 (인과 경로) — PDF 본문의 설명을 활용
+   - 3단락: 관련 자산·섹터에 미치는 파급 효과 (사실 기술만, PDF 에 있는 내용만)
    단락 구분은 <br><br>
    ❌ BAD: "투자자들은 ~에 주목할 필요가 있습니다" 같은 일반론
-   ✅ GOOD: 오늘 브리핑의 실제 수치·종목·이벤트를 직접 인용
+   ❌ BAD: "기술주는 AI 인프라 투자에도 비용 우려가 존재합니다" 같은 백과사전식 풀이
+   ✅ GOOD: PDF 의 실제 수치·종목·이벤트를 직접 인용 (예: "애플 +3.24%·아마존 +2.12%·
+       MSFT +1.63% 등 빅테크 일제 강세. AI capex 4사 합산 $7,250억으로 지난해 대비 77% 상향")
 
 4. **risk-item**: `<strong>리스크 제목</strong><br>` 뒤에 2~3문장 시나리오. 오늘 브리핑에서 언급된 리스크 요인을 우선 사용.
    ❌ BAD:  <span>중동 지역의 지정학적 리스크가 에너지 시장에 미치는 영향</span>
@@ -223,14 +255,27 @@ Market Story HTML 섹션들을 작성합니다.
 
 ### 출력할 섹션 (순서 고정)
 
-1. Story Hero
+1. Story Hero (★ 가장 풍부하게 작성 — 본 자료의 핵심 페이지)
+   - PDF 본문의 디테일을 압축하지 말고 풍부하게 살립니다.
+   - 헤드라인은 PDF 1면 헤드라인 + 핵심 수치 2~3개 (예: "S&P500/나스닥 사상 최고치
+     재경신 — 애플 +3.24%, 오라클 +6.47%, 다우는 −0.31% 차별화").
+   - 미국 세션 단락은 **6~9 문장**으로 가장 길게: 지수 마감(다우/S&P/나스닥/러셀2K
+     모두) + 빅테크 실적·주도주 (애플/MSFT/아마존/알파벳 변동률) + 반도체 동향
+     (엔비디아/마이크론/AMD/브로드컴/샌디스크) + 소프트웨어 (오라클/아틀라시안/
+     세일즈포스 등) + 제약 (일라이릴리/노보노디스크/암젠) + 거시·정책 (ISM 52.7,
+     물가지수 84.6, 미국-이란 협상, 유가 급락-반등) + VIX/채권/외환 핵심.
+   - 유럽·아시아 세션은 PDF 본문에 데이터가 있을 때만 작성, 없으면 한 줄 안내로
+     처리하고 미국 세션을 더 자세히.
 <div class="story-hero">
   <h2>오늘의 시장 이야기</h2>
   <div class="story-text">
-    <strong>[핵심 이벤트를 담은 한 줄 헤드라인 — 숫자·종목·사건 포함]</strong><br><br>
-    [아시아 세션 서술 — KOSPI·HSI·TWSE 수치와 주도 종목 포함, 2~3문장]<br><br>
-    <strong>유럽 세션</strong>[유럽 서술 — 주요 지수 수치·원인 포함, 2~3문장]<br><br>
-    <strong>미국 세션</strong>[미국 서술 — 지수 수치·핵심 이벤트·장 후 실적 포함, 3~4문장]
+    <strong>[PDF 1면 헤드라인을 살린 한 줄 + 핵심 수치 2~3개]</strong><br><br>
+    [아시아 세션: PDF 에 있으면 4~6문장, 없으면 "본 브리핑은 ~을 별도 다루지 않습니다" 한 줄]<br><br>
+    <strong>유럽 세션</strong> [PDF 에 있으면 4~6문장, 없으면 한 줄 안내]<br><br>
+    <strong>미국 세션</strong> [6~9문장으로 가장 풍부하게 — PDF 본문의 종목·이벤트·
+    수치·정책을 압축하지 말고 모두 살립니다. 빅테크·반도체·소프트웨어·제약·소비재·
+    에너지·거시(ISM)·외환·채권·VIX 가 한 단락에 담기도록 길게 쓰되, 시간순(개장→
+    중간→마감) 으로 정렬.]
   </div>
 </div>
 
@@ -366,53 +411,14 @@ def ocr_pdf(pdf_path: Path) -> str:
 
 
 def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> str:
+    """PDF OCR 원문 → HTML 스토리.
+
+    data_json 인자는 호환성을 위해 받지만 사용하지 않습니다 (PDF가 1차 자료).
+    PDF 본문 시점(보통 PDF 발간 전일 미국 세션)에 충실하게 작성하기 위해서입니다.
+    """
     from openai import OpenAI
 
     client = OpenAI()
-
-    def _fmt(cat: str, keys: list) -> str:
-        lines = []
-        for k in keys:
-            v = data_json.get(cat, {}).get(k, {})
-            if not v:
-                continue
-            chg = v.get("daily", "?")
-            chg_str = f"{chg:+.2f}%" if isinstance(chg, (int, float)) else str(chg)
-            lines.append(f"  {k}: {v.get('close', '?')} ({chg_str})")
-        return "\n".join(lines) if lines else "  (데이터 없음)"
-
-    eq   = ["KOSPI","KOSDAQ","TWSE","NIKKEI225","SSE","HSI","S&P500","NASDAQ","DOW","RUSSELL2K","DAX","CAC40","FTSE100","STOXX50"]
-    bond = ["US 10Y","US 2Y","KR 10Y","KR 3Y","US 30Y","US 10-2 Spread"]
-    fx   = ["DXY","USD/KRW","USD/JPY","EUR/USD","AUD/USD"]
-    comm = ["WTI","Brent","Gold","Silver","Copper","NatGas"]
-    stk  = list(data_json.get("stocks", {}).keys())
-    sec  = list(data_json.get("sector_us", {}).keys())
-    vix  = data_json.get("risk", {}).get("VIX", {})
-    vix_str = f"  VIX: {vix.get('close','?')} ({vix.get('daily','?')}%)" if vix else ""
-
-    market_data = f"""=== {target_date} 시장 데이터 (ground truth — 수치는 이것만 사용) ===
-
-[주요 지수]
-{_fmt('equity', eq)}
-
-[채권 금리]
-{_fmt('bond', bond)}
-
-[외환]
-{_fmt('fx', fx)}
-
-[원자재]
-{_fmt('commodity', comm)}
-
-[개별 종목]
-{_fmt('stocks', stk)}
-
-[미국 섹터 ETF]
-{_fmt('sector_us', sec)}
-
-[변동성]
-{vix_str}
-"""
 
     # OCR 원문에서 종목명+수치 패턴을 미리 추출해 "필수 포함" 목록으로 만든다
     import re as _re
@@ -451,26 +457,40 @@ def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> st
 
     must_include_lines = []
     if ticker_hits:
-        must_include_lines.append("▶ 반드시 Story에 포함할 종목·수치 (수치는 [시장 데이터] 기준으로 교체):")
-        for name, chg in ticker_hits[:20]:
+        must_include_lines.append(
+            "▶ 아래 종목·수치는 PDF 본문에 명시된 그대로 빠짐없이 Story 에 인용하세요"
+            " (수치 변경·반올림·치환·일반화 금지). 가능하면 모두 포함하되, 최소 12개 이상:"
+        )
+        for name, chg in ticker_hits[:30]:
             must_include_lines.append(f"  - {name.strip()} ({chg})")
     if section_hits:
-        must_include_lines.append("▶ 브리핑 원문의 주요 섹션 (해당 내용을 반드시 Story 어딘가에 반영):")
+        must_include_lines.append("▶ PDF 본문의 주요 섹션 (해당 내용을 반드시 Story 어딘가에 반영):")
         for s in section_hits:
             must_include_lines.append(f"  - {s}")
-    must_include_block = "\n".join(must_include_lines) if must_include_lines else "(자동 추출 없음 — 브리핑 원문 전체 참고)"
+    must_include_block = "\n".join(must_include_lines) if must_include_lines else "(자동 추출 없음 — PDF 원문 전체 참고)"
 
-    user_msg = f"""아래 미래에셋증권 브리핑 원문과 시장 데이터를 바탕으로 Market Story HTML 섹션 1~5를 순서대로 작성하세요.
-섹션 외 다른 텍스트는 출력하지 마세요.
+    # PDF 본문 시점 메타: 발간일 = target_date, 본문 시점 = 직전 미국 영업일
+    publish_dow = _DOW_KO[target_date.weekday()]
+    prev_us = _prev_biz(target_date)
+    prev_us_dow = _DOW_KO[prev_us.weekday()]
+    pdf_meta = (
+        f"PDF 발간일: {target_date} ({publish_dow}) 아침 KST\n"
+        f"PDF 본문 미국 세션 시점: {prev_us} ({prev_us_dow}) 마감 (직전 영업일)\n"
+        f"PDF 본문 아시아·유럽 세션이 있다면: 같은 {prev_us} 거래"
+    )
 
-[필수 포함 이벤트]
+    user_msg = f"""미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF 원본을 보존하는 1차 자료를 작성합니다.
+PDF 본문에 있는 정보만 인용하세요. 외부 데이터·웹 검색·일반론 추가 절대 금지.
+출력은 Story HTML 섹션 1~5 만, 다른 텍스트 없이.
+
+[PDF 시점 메타 — 헤로 헤드라인에 반드시 명시]
+{pdf_meta}
+
+[필수 포함 종목·수치 (PDF 그대로 인용)]
 {must_include_block}
 
---- 브리핑 원문 ---
+--- PDF 본문 (1차 자료, 유일한 ground truth) ---
 {ocr_text}
-
---- 시장 데이터 ---
-{market_data}
 """
 
     resp = client.chat.completions.create(
@@ -590,16 +610,16 @@ body{{
 <body>
 <div class="header">
   <div class="header-left">
-    <h1>Daily Market Story</h1>
+    <h1>🏛 미래에셋 모닝 브리핑 (PDF 1차 자료)</h1>
     <div class="date">{date_long}</div>
   </div>
   <div class="header-right">
-    <span class="source-badge">PDF OCR &rarr; Story</span>
+    <span class="source-badge">PDF 1차 자료 보존</span>
   </div>
 </div>
 {story_html}
-<div class="footer">Market Summary &mdash; AI-generated from Mirae Asset Securities PDF (OCR) + market data</div>
-<div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, <strong>투자 권유가 아닙니다.</strong> 미래에셋증권 AI 데일리 글로벌 마켓 브리핑 PDF를 OpenAI Vision API로 추출·재구성한 내부 검토용 자료로, 수치·해석에 오류가 포함될 수 있습니다. 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
+<div class="footer">미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF &mdash; OpenAI Vision OCR 추출 후 HTML 재구성. 글로벌 풀 사이클 종합은 메인 Market Story 탭을 참고하세요.</div>
+<div class="ai-disclaimer">⚠️ 본 자료는 미래에셋증권 PDF 원본을 OCR 추출한 <strong>1차 자료 보존</strong>입니다. PDF 발간 시점(아침 KST) 기준으로 작성되어 메인 Market Story 와 시점·범위가 다릅니다. 수치는 PDF 본문 그대로이며, 투자 판단 시 PDF 원본을 확인하시기 바랍니다.</div>
 </body>
 </html>
 """
@@ -631,9 +651,18 @@ def upload_pdf_to_s3(pdf_path: Path, target_date: date) -> str | None:
 
 
 def save_ocr_html(out_dir: Path, target_date: date, story_html: str) -> Path:
-    """독립 _ocr.html 파일 저장 — 기존 .html / _story.html 은 건드리지 않는다."""
+    """독립 _ocr.html 파일 저장 — 기존 .html / _story.html 은 건드리지 않는다.
+
+    date_long 은 'PDF 발간일' 과 'PDF 본문 시점(직전 영업일 미국 마감)' 둘 다 표기해
+    메인 Market Story 와의 시점 차이를 사용자가 즉시 인지하도록 한다.
+    """
     dow = _DOW_KO[target_date.weekday()]
-    date_long = f"{target_date.strftime('%Y-%m-%d')} ({dow})"
+    prev_us = _prev_biz(target_date)
+    prev_us_dow = _DOW_KO[prev_us.weekday()]
+    date_long = (
+        f"PDF 발간 {target_date.strftime('%Y-%m-%d')} ({dow}) 아침 KST "
+        f"&middot; 본문 시점 {prev_us.strftime('%Y-%m-%d')} ({prev_us_dow}) 미국 마감"
+    )
     html = OCR_HTML_TEMPLATE.format(
         date=str(target_date),
         date_long=date_long,
