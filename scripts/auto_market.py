@@ -128,6 +128,11 @@ def run_market_full(date_str: str) -> bool:
 
     prompt = f"/market-full {date_str}"
 
+    # .env 의 stale ANTHROPIC_API_KEY 가 OAuth 구독을 가리고 'Invalid API key' 를
+    # 유발한 사례가 있어, Claude CLI 호출 시점에는 환경변수에서 제외하고 키체인
+    # OAuth 로 폴백시킨다.
+    clean_env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
+
     result = subprocess.run(
         [claude_bin, "--dangerously-skip-permissions", "-p", prompt],
         cwd=str(ROOT),
@@ -135,7 +140,7 @@ def run_market_full(date_str: str) -> bool:
         text=True,
         timeout=3600,   # Story 작성 + 웹 검색 포함 최대 1시간
         env={
-            **os.environ,
+            **clean_env,
             # nvm PATH 보강
             "PATH": (
                 str(Path(claude_bin).parent)
