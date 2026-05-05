@@ -363,6 +363,18 @@ STANDALONE_CLOSE_PATTERN = re.compile(
     rf'\s*원?'
 )
 
+# T1 종목 일변동률: 14개 핵심 stocks 만 — "Apple +3.24%" / "삼성전자 +5.44%" 형식
+# COMBO 가 종가 괄호가 있는 경우만 잡으므로 그 외 케이스 보강 (negative lookahead 로 COMBO 와 중복 방지)
+_STOCK_ALIASES = {k: v for k, v in ASSET_ALIASES.items() if v.startswith("ST_")}
+_STOCK_ALIAS_ALT = "|".join(
+    re.escape(k) for k in sorted(_STOCK_ALIASES.keys(), key=len, reverse=True)
+)
+STOCK_DAILY_PATTERN = re.compile(
+    rf'\b({_STOCK_ALIAS_ALT})\s*'
+    rf'(?:<span[^>]*>)?\s*([+\-−–]?\d+\.?\d*)\s*%\s*(?:</span>)?'
+    rf'(?!\s*\(\s*\$?[\d,])'   # 종가 괄호 뒤따르면 COMBO 가 처리
+)
+
 # 본문 인라인 일자 (다른 일자 인용 — 4/8(수), 4/15(수), 등)
 DATE_INLINE_PATTERN = re.compile(r'(\d{1,2})/(\d{1,2})\s*\([월화수목금토일]\)')
 
@@ -797,6 +809,33 @@ def verify(file_path: Path, prices) -> list[Violation]:
         )
         if v:
             violations.append(v)
+
+    # 5b. T1 종목 일변동률 — Apple/삼성전자 등 14개 핵심 stocks (괄호 종가 없는 케이스)
+    #     COMBO 와 중복 방지를 위해 STOCK_DAILY_PATTERN 자체에 negative lookahead 적용
+    #     윈도우(직전 300자) 내 인용/forward 키워드 있으면 스킵
+    if "일간" in periods:
+        _, target_iso = periods["일간"]
+        for m in STOCK_DAILY_PATTERN.finditer(text):
+            if m.start() in seen_positions:
+                continue
+            asset, val = m.group(1), m.group(2)
+            window = _trim_window_to_paragraph(text, m.start(), m.end())
+            # 인용/비교/forward 키워드 가드
+            if any(kw in window for kw in CITATION_KEYWORDS):
+                continue
+            # 다른 일자 인용 (4/8(수) 형식)
+            if DAILY_HINT_PATTERN.search(window):
+                continue
+            # outlook/scenario/risk 컨테이너 안이면 스킵
+            if _is_in_forward_container(text, m.start()):
+                continue
+            v = _check_daily_pct(asset, target_iso, val, window, prices, file_path)
+            if v:
+                v.match_start = m.start()
+                v.match_end = m.end()
+                v.match_text = m.group(0)
+                violations.append(v)
+                seen_positions.add(m.start())
 
     # 6. COMBO 패턴 — "{자산} ±N%(종가)" 일간 등락 + 종가 묶음
     #    인용/비교/forward 키워드(어제, 전일, →, 이상, 돌파 등)가 윈도우에 있으면 스킵 (false positive 차단)
