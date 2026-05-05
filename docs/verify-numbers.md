@@ -23,7 +23,7 @@
 
 ---
 
-## 검출 패턴 (6개)
+## 검출 패턴 (7개)
 
 | # | 패턴 | 매칭 예 | 신뢰도 |
 |---|---|---|---|
@@ -33,8 +33,23 @@
 | 4 | HL span 인라인 | `US 10Y <span class="hl-up">+6.4bp</span>` | ⭐⭐ (컨텍스트 추론) |
 | 5 | 마크다운 표 3컬럼 | `\| KOSPI \| 4,214 \| 5,052 \| +19.89% \|` | ⭐⭐⭐ (CSV 없이 산술 모순) |
 | 6 | COMBO 묶음 | `삼성전자 +4.37%(186,200원)` / `KOSPI +2.74%(5,377)` | ⭐⭐ (일간 등락 + 종가 동시) |
+| 7 | 종목 일변동률 (T1) | `Apple +3.24%` / `삼성전자 +5.44%` | ⭐⭐ (CITATION/forward/DAILY_HINT 가드) |
 
 > 단독 종가 패턴 (`KOSPI 5,377` 단독)은 정밀도 부족(다른 일자 인용·시나리오 트리거 false positive)으로 **비활성화**. COMBO 형태로 작성 권장.
+
+### 패턴 #7 — T1 종목 일변동률 (2026-05 추가)
+
+`STOCK_DAILY_PATTERN` 은 종가 괄호 없이 `{종목} ±N%` 형식만 따로 잡는다. COMBO 패턴은 종가 괄호가 있어야 매칭하므로 본문 인라인의 `Apple +5.4% 급등` 같은 케이스를 놓치는 사각지대가 있었다 (2026-05-01 보고서의 Apple 변동률 오류 사고가 계기).
+
+**검증 대상 화이트리스트 (14개 핵심 stocks)**: `_data.json` stocks 카테고리에 매일 들어오는 종목으로 한정 — Apple · MSFT · NVIDIA · Alphabet · Amazon · META · Tesla · Broadcom · Palantir · Samsung(삼성전자) · TSMC · Alibaba · Tencent · Meituan.
+
+> **왜 14개로 제한하나?** 한국 KOSPI200 종목·미국 S&P500 종목 등 보고서에 등장하는 100+개 종목은 우리 CSV/Snowflake 에 없어 자동 검증 자료가 없다. 자료 있는 14개만 결정론적으로 검증하고, 그 외 종목은 출처 인용으로 신뢰도를 위임한다 (메인 Story 의 Sources 탭 / OCR 1차 자료).
+
+**가드 (false positive 차단)**:
+- `CITATION_KEYWORDS` (어제·전일·전주·돌파·치솟·급등·급락·최고치 등) 윈도우에 있으면 스킵
+- `DAILY_HINT_PATTERN` (`4/8(수)` 같은 다른 일자 명시) 있으면 스킵
+- `_is_in_forward_container` (scenario / outlook / risk-section) 안이면 스킵
+- 종가 괄호가 뒤따르면 COMBO 가 처리하므로 negative lookahead 로 중복 회피
 
 ---
 
