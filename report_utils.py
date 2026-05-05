@@ -114,7 +114,7 @@ DATA_SOURCES = {
     "채권·금리(Bonds & Rates)": "investing.com(US 2Y·10Y·Spread) · ECOS(한국은행)",
     "채권 ETF(Bond ETF)":     "yfinance",
     "환율(FX)":               "investiny(investing.com) · FinanceDataReader",
-    "원자재(Commodities)":    "investiny(investing.com) · yfinance",
+    "원자재(Commodities)":    "investiny(investing.com) · yfinance · NYMEX/COMEX/ICE front-month 선물",
     "주요 종목(Major Stocks)": "yfinance",
 }
 
