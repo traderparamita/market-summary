@@ -1,4 +1,4 @@
-﻿---
+---
 allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
 description: "market_summary 전체 워크플로우: 데이터 수집 → Dashboard → Story(일/주/월) → 배포 → Research(섹터·국가) → 배포"
@@ -47,7 +47,6 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 사전 점검 통과 후 즉시 전송. 실패해도 계속 진행.
 
 ```bash
-\
   .venv/bin/python notify_telegram.py $ARGUMENTS --start
 ```
 
@@ -196,7 +195,6 @@ Step 5 완료 후 (Step 5-B 와 독립) `market-summary` 스킬의 **"PM Story �
 6. **금요일 일간 보고서에 backfill**: 아래 명령으로 해당 주 금요일 보고서의 macro 탭을 W{N} macro로 갱신
 
 ```bash
-\
   .venv/bin/python -c "from generate import backfill_macro_to_daily; backfill_macro_to_daily('output/summary/weekly/YYYY-WNN_macro.html')"
 ```
 
@@ -268,7 +266,6 @@ Step 7 완료 후 (Step 7-B 와 독립) `market-summary` 스킬의 **"PM Story �
 Step 1~7.6에서 작성·갱신된 일간/주간/월간 보고서의 종가·등락률·bp 변화를 `history/market_data.csv` ground truth와 결정론적으로 대조한다. 위반이 있으면 같은 turn 안에서 fix까지 끝낸다.
 
 ```bash
-\
   .venv/bin/python scripts/verify_report_numbers.py --auto --fix --telegram
 ```
 
@@ -303,7 +300,6 @@ Step 1~7.6에서 작성·갱신된 일간/주간/월간 보고서의 종가·등
 Step 8 성공 후 즉시 전송. 실패해도 블록 B로 계속 진행.
 
 ```bash
-\
   .venv/bin/python notify_telegram.py $ARGUMENTS \
     [--weekly]   # 해당 주 마지막 영업일이면 추가 \
     [--monthly]  # 해당 월 마지막 영업일이면 추가
@@ -342,7 +338,6 @@ Step 8 성공 후 즉시 전송. 실패해도 블록 B로 계속 진행.
 **반드시 디렉터리 전체를 스테이징한다.** 개별 파일만 `git add` 하면 `output/research/index.html` (Step 10에서 `_update_sc_index()` 가 갱신) 이 누락되어 목록 페이지가 다음 날 보고서로 업데이트되지 않는다.
 
 ```bash
-\
   git add output/research/ && \
   git status --short output/research/ && \
   git commit -m "feat: $ARGUMENTS 리서치 보고서 — 섹터 Day N/11 · 국가 Day M/11
@@ -363,7 +358,6 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>" && \
 Step 12 성공 후 즉시 전송. 실패해도 완료 보고로 계속.
 
 ```bash
-\
   .venv/bin/python notify_telegram.py $ARGUMENTS --sc-complete \
     --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/11 — 오늘의 국가" \
     --ow "OW 섹터/국가 목록" \

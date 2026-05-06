@@ -1,4 +1,4 @@
-﻿# Macro & Events Skill
+# Macro & Events Skill
 
 주간/월간 보고서의 **Macro & Events** 탭 콘텐츠 작성 규칙과 절차.
 이 탭은 **초보 투자자**를 위한 매크로 이벤트 해설 + 다음 기간 캘린더다.

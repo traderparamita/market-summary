@@ -1,4 +1,4 @@
-﻿---
+---
 allowed-tools: Read, Edit, Bash(.venv/bin/python:*), Bash(grep:*), Bash(ls:*)
 argument-hint: "[YYYY-MM-DD] [period: daily|weekly|monthly]  (둘 다 생략 시 전 영업일·daily)"
 description: "market_summary CS Story 작성: 기존 Story에서 수치를 최대한 제거하고 맥락 중심으로 재작성 (Story 탭과 병행 운영되는 CS 탭)"

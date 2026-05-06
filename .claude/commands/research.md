@@ -1,4 +1,4 @@
-﻿---
+---
 allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Bash(tail:*), Bash(awk:*), Bash(sort:*), Bash(cut:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (날짜 생략 시 전 영업일)"
 description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오늘의 3개 주제(US섹터+KR섹터+국가) Tavily 검색 → Story 주입"
@@ -34,7 +34,6 @@ Load and follow `.claude/skills/sector-country/SKILL.md` (research 보고서 스
 사전 점검 통과 후 즉시 전송. 실패해도 계속 진행.
 
 ```bash
-\
   .venv/bin/python notify_telegram.py {date} --start --label "섹터·국가"
 ```
 
@@ -262,7 +261,6 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 Story 주입 및 `_story.html` 저장 완료 후 변경분을 커밋·푸시한다. 실패해도 Step 8로 계속 진행.
 
 ```bash
-\
   git add output/research/ && \
   git commit -m "feat: {date} research 보고서 — 섹터 Day N/11 · 국가 Day M/11
 
@@ -281,7 +279,6 @@ Story 주입 성공 후 전송. 실패해도 계속.
 - `--uw`: UW 섹터/국가 목록 (없으면 생략)
 
 ```bash
-\
   .venv/bin/python notify_telegram.py {date} --sc-complete \
     --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/11 — 오늘의 국가" \
     --ow "XLK, TIGER 200 IT, 미국" \

@@ -1,4 +1,4 @@
-﻿---
+---
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(cd:*)
 description: "market_summary 보고서 git commit + push → GitHub Pages 자동 배포"
 ---

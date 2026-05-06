@@ -1,4 +1,4 @@
-﻿---
+---
 allowed-tools: Read, Edit, Bash(.venv/bin/python:*), Bash(grep:*), Bash(ls:*)
 argument-hint: "[YYYY-MM-DD] [period: daily|weekly|monthly]  (둘 다 생략 시 전 영업일·daily)"
 description: "market_summary PM Story 작성: 기존 Market Story + _data.json 을 바탕으로 지역·자산군별 6개 섹션(한국·매크로·아시아및중국·미국·유럽·채권) 매니저 브리프 생성"

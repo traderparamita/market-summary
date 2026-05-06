@@ -1,4 +1,4 @@
-﻿---
+---
 allowed-tools: Bash(.venv/bin/python:*), Bash(ls:*), Read
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
 description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (generate.py → collect_market.py 실행)"
