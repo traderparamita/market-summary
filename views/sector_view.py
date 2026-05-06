@@ -36,23 +36,23 @@ US_SECTORS = {
     "SC_US_REIT":    {"name": "Real Estate",      "etf": "XLRE", "cycle": ["Deflation"], "kr_peer": "SC_KR_CONSTR"},
 }
 
-# ── TIGER 200 GICS 11개 (sector_country 사이클 기준) ─────────────────────
-# data_code: 모멘텀 계산용 인디케이터 (KOSPI200 GICS 지수 — pykrx 정합 데이터)
-# 카드 라벨은 TIGER 200 ETF 명을 유지하되, 모멘텀 데이터는 추적 대상 지수에서 직접 가져온다.
-# 2026-05 — yfinance 의 한국 ETF auto_adjust 누적 오류로 SC_KR_* 가 지수와 5~90pp 괴리되어
-# 모멘텀 카드 신뢰도가 무너졌음. ETF 추적 지수(IX_KR_*)로 데이터 소스 전환.
+# ── KRX GICS 11개 섹터 지수 (sector_country 사이클 기준) ─────────────────
+# data_code: 모멘텀 계산용 인디케이터 — 한국거래소 KOSPI200 GICS 지수 (pykrx 수집)
+# 카드 라벨도 추적 ETF 가 아닌 GICS 지수명으로 통일 — 데이터 출처와 표기 일치.
+# 2026-05 — yfinance 의 한국 ETF auto_adjust 누적 오류로 SC_KR_* (TIGER 200 시리즈) 가
+# 지수와 5~90pp 괴리되어 모멘텀 카드 신뢰도가 무너졌음. KOSPI200 GICS 지수로 데이터 소스 + 라벨 동시 전환.
 KR_SECTORS = {
-    "SC_KR_CONSTR":  {"name": "건설",             "etf": "TIGER 200 건설",              "ticker": "139270.KS", "data_code": "IX_KR_CONSTR",  "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_REIT"},
-    "SC_KR_DISCR":   {"name": "경기소비재",        "etf": "TIGER 200 경기소비재",        "ticker": "227540.KS", "data_code": "IX_KR_DISCR",   "cycle": ["Goldilocks", "Early"],              "us_peer": "SC_US_DISCR"},
-    "SC_KR_FIN":     {"name": "금융",             "etf": "TIGER 200 금융",              "ticker": "435420.KS", "data_code": "IX_KR_FIN",     "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
-    "SC_KR_INDU":    {"name": "산업재",            "etf": "TIGER 200 산업재",            "ticker": "227560.KS", "data_code": "IX_KR_INDU",    "cycle": ["Goldilocks", "Reflation", "Early"], "us_peer": "SC_US_INDU"},
-    "SC_KR_STAPLES": {"name": "생활소비재",        "etf": "TIGER 200 생활소비재",        "ticker": "227550.KS", "data_code": "IX_KR_STAPLES", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_STAPLES"},
-    "SC_KR_ENERGY":  {"name": "에너지화학",        "etf": "TIGER 200 에너지화학",        "ticker": "472170.KS", "data_code": "IX_KR_ENERGY",  "cycle": ["Reflation", "Stagflation"],        "us_peer": "SC_US_ENERGY"},
-    "SC_KR_HEAVY":   {"name": "중공업",            "etf": "TIGER 200 중공업",            "ticker": "157490.KS", "data_code": "IX_KR_HEAVY",   "cycle": ["Reflation", "Mid"],                "us_peer": "SC_US_MATL"},
-    "SC_KR_STEEL":   {"name": "철강소재",          "etf": "TIGER 200 철강소재",          "ticker": "494840.KS", "data_code": "IX_KR_STEEL",   "cycle": ["Reflation"],                       "us_peer": "SC_US_UTIL"},
-    "SC_KR_COMM":    {"name": "커뮤니케이션서비스","etf": "TIGER 200 커뮤니케이션서비스","ticker": "364990.KS", "data_code": "IX_KR_COMM",    "cycle": ["Goldilocks"],                      "us_peer": "SC_US_COMM"},
-    "SC_KR_HLTH":    {"name": "헬스케어",          "etf": "TIGER 200 헬스케어",          "ticker": "227570.KS", "data_code": "IX_KR_HEALTH",  "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_HEALTH"},
-    "SC_KR_IT":      {"name": "IT",               "etf": "TIGER 200 IT",               "ticker": "364980.KS", "data_code": "IX_KR_IT",      "cycle": ["Goldilocks", "Mid"],              "us_peer": "SC_US_TECH"},
+    "SC_KR_CONSTR":  {"name": "건설",             "etf": "KOSPI200 건설 (KRX GICS)",          "data_code": "IX_KR_CONSTR",  "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_REIT"},
+    "SC_KR_DISCR":   {"name": "경기소비재",        "etf": "KOSPI200 경기소비재 (KRX GICS)",   "data_code": "IX_KR_DISCR",   "cycle": ["Goldilocks", "Early"],              "us_peer": "SC_US_DISCR"},
+    "SC_KR_FIN":     {"name": "금융",             "etf": "KOSPI200 금융 (KRX GICS)",         "data_code": "IX_KR_FIN",     "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
+    "SC_KR_INDU":    {"name": "산업재",            "etf": "KOSPI200 산업재 (KRX GICS)",       "data_code": "IX_KR_INDU",    "cycle": ["Goldilocks", "Reflation", "Early"], "us_peer": "SC_US_INDU"},
+    "SC_KR_STAPLES": {"name": "생활소비재",        "etf": "KOSPI200 생활소비재 (KRX GICS)",   "data_code": "IX_KR_STAPLES", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_STAPLES"},
+    "SC_KR_ENERGY":  {"name": "에너지화학",        "etf": "KOSPI200 에너지/화학 (KRX GICS)", "data_code": "IX_KR_ENERGY",  "cycle": ["Reflation", "Stagflation"],        "us_peer": "SC_US_ENERGY"},
+    "SC_KR_HEAVY":   {"name": "중공업",            "etf": "KOSPI200 중공업 (KRX GICS)",       "data_code": "IX_KR_HEAVY",   "cycle": ["Reflation", "Mid"],                "us_peer": "SC_US_MATL"},
+    "SC_KR_STEEL":   {"name": "철강소재",          "etf": "KOSPI200 철강/소재 (KRX GICS)",   "data_code": "IX_KR_STEEL",   "cycle": ["Reflation"],                       "us_peer": "SC_US_UTIL"},
+    "SC_KR_COMM":    {"name": "커뮤니케이션서비스","etf": "KOSPI200 커뮤니케이션 (KRX GICS)", "data_code": "IX_KR_COMM",    "cycle": ["Goldilocks"],                      "us_peer": "SC_US_COMM"},
+    "SC_KR_HLTH":    {"name": "헬스케어",          "etf": "KOSPI200 헬스케어 (KRX GICS)",     "data_code": "IX_KR_HEALTH",  "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_HEALTH"},
+    "SC_KR_IT":      {"name": "IT",               "etf": "KOSPI200 정보기술 (KRX GICS)",     "data_code": "IX_KR_IT",      "cycle": ["Goldilocks", "Mid"],              "us_peer": "SC_US_TECH"},
 }
 
 # 매크로 국면 → 선호 섹터 매핑

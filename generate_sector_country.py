@@ -4,7 +4,7 @@ compute_sector_view() + compute_country_view() 데이터를 결합해
 초보자 친화 HTML Data Dashboard를 생성한다.
 
 사이클 구조:
-  - 섹터: 11일 사이클 (US SPDR 11개 × KR TIGER 200 11개 1:1 페어)
+  - 섹터: 11일 사이클 (US SPDR 11개 × KR KOSPI200 GICS 11개 1:1 페어)
   - 국가: 10일 독립 사이클 (한국·미국 5일 간격 2회 반복)
   - 하루에 섹터 2개(US + KR) + 국가 1개 = 3개 주제
 
@@ -127,7 +127,7 @@ COUNTRY_REP_STOCKS = {
 }
 
 # ── 섹터 11일 로테이션 ─────────────────────────────────────────────────────
-# US SPDR 11개 × KR TIGER 200 11개 1:1 페어
+# US SPDR 11개 × KR KOSPI200 GICS 11개 1:1 페어
 SECTOR_ROTATION = [
     {
         "sector_day": 1,
@@ -135,7 +135,7 @@ SECTOR_ROTATION = [
         "theme_en": "Technology & IT",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_TECH",  "name": "Technology",   "etf": "XLK"},
-            {"type": "kr_sector", "code": "SC_KR_IT",    "name": "IT",           "etf": "TIGER 200 IT",               "ticker": "364980.KS"},
+            {"type": "kr_sector", "code": "SC_KR_IT",    "name": "IT",           "etf": "KOSPI200 정보기술 (KRX GICS)"},
         ],
     },
     {
@@ -144,7 +144,7 @@ SECTOR_ROTATION = [
         "theme_en": "Communication Services",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_COMM",    "name": "Communication",  "etf": "XLC"},
-            {"type": "kr_sector", "code": "SC_KR_COMM",   "name": "커뮤니케이션서비스", "etf": "TIGER 200 커뮤니케이션서비스", "ticker": "364990.KS"},
+            {"type": "kr_sector", "code": "SC_KR_COMM",   "name": "커뮤니케이션서비스", "etf": "KOSPI200 커뮤니케이션 (KRX GICS)"},
         ],
     },
     {
@@ -153,7 +153,7 @@ SECTOR_ROTATION = [
         "theme_en": "Financials",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_FIN",    "name": "Financials",   "etf": "XLF"},
-            {"type": "kr_sector", "code": "SC_KR_FIN",    "name": "금융",          "etf": "TIGER 200 금융",              "ticker": "435420.KS"},
+            {"type": "kr_sector", "code": "SC_KR_FIN",    "name": "금융",          "etf": "KOSPI200 금융 (KRX GICS)"},
         ],
     },
     {
@@ -162,7 +162,7 @@ SECTOR_ROTATION = [
         "theme_en": "Energy & Chemicals",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_ENERGY", "name": "Energy",       "etf": "XLE"},
-            {"type": "kr_sector", "code": "SC_KR_ENERGY", "name": "에너지화학",    "etf": "TIGER 200 에너지화학",         "ticker": "472170.KS"},
+            {"type": "kr_sector", "code": "SC_KR_ENERGY", "name": "에너지화학",    "etf": "KOSPI200 에너지/화학 (KRX GICS)"},
         ],
     },
     {
@@ -171,7 +171,7 @@ SECTOR_ROTATION = [
         "theme_en": "Health Care",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_HEALTH", "name": "Health Care",  "etf": "XLV"},
-            {"type": "kr_sector", "code": "SC_KR_HLTH",   "name": "헬스케어",      "etf": "TIGER 200 헬스케어",           "ticker": "227570.KS"},
+            {"type": "kr_sector", "code": "SC_KR_HLTH",   "name": "헬스케어",      "etf": "KOSPI200 헬스케어 (KRX GICS)"},
         ],
     },
     {
@@ -180,7 +180,7 @@ SECTOR_ROTATION = [
         "theme_en": "Industrials",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_INDU",   "name": "Industrials",  "etf": "XLI"},
-            {"type": "kr_sector", "code": "SC_KR_INDU",   "name": "산업재",        "etf": "TIGER 200 산업재",             "ticker": "227560.KS"},
+            {"type": "kr_sector", "code": "SC_KR_INDU",   "name": "산업재",        "etf": "KOSPI200 산업재 (KRX GICS)"},
         ],
     },
     {
@@ -189,7 +189,7 @@ SECTOR_ROTATION = [
         "theme_en": "Materials & Heavy Industry",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_MATL",   "name": "Materials",    "etf": "XLB"},
-            {"type": "kr_sector", "code": "SC_KR_HEAVY",  "name": "중공업",        "etf": "TIGER 200 중공업",             "ticker": "157490.KS"},
+            {"type": "kr_sector", "code": "SC_KR_HEAVY",  "name": "중공업",        "etf": "KOSPI200 중공업 (KRX GICS)"},
         ],
     },
     {
@@ -198,7 +198,7 @@ SECTOR_ROTATION = [
         "theme_en": "Consumer Discretionary",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_DISCR",  "name": "Consumer Discr.", "etf": "XLY"},
-            {"type": "kr_sector", "code": "SC_KR_DISCR",  "name": "경기소비재",      "etf": "TIGER 200 경기소비재",        "ticker": "227540.KS"},
+            {"type": "kr_sector", "code": "SC_KR_DISCR",  "name": "경기소비재",      "etf": "KOSPI200 경기소비재 (KRX GICS)"},
         ],
     },
     {
@@ -207,7 +207,7 @@ SECTOR_ROTATION = [
         "theme_en": "Consumer Staples",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_STAPLES","name": "Consumer Staples","etf": "XLP"},
-            {"type": "kr_sector", "code": "SC_KR_STAPLES","name": "생활소비재",      "etf": "TIGER 200 생활소비재",        "ticker": "227550.KS"},
+            {"type": "kr_sector", "code": "SC_KR_STAPLES","name": "생활소비재",      "etf": "KOSPI200 생활소비재 (KRX GICS)"},
         ],
     },
     {
@@ -216,7 +216,7 @@ SECTOR_ROTATION = [
         "theme_en": "Utilities & Steel/Materials",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_UTIL",   "name": "Utilities",    "etf": "XLU"},
-            {"type": "kr_sector", "code": "SC_KR_STEEL",  "name": "철강소재",      "etf": "TIGER 200 철강소재",           "ticker": "494840.KS"},
+            {"type": "kr_sector", "code": "SC_KR_STEEL",  "name": "철강소재",      "etf": "KOSPI200 철강/소재 (KRX GICS)"},
         ],
     },
     {
@@ -225,7 +225,7 @@ SECTOR_ROTATION = [
         "theme_en": "Real Estate & Construction",
         "subjects": [
             {"type": "us_sector", "code": "SC_US_REIT",   "name": "Real Estate",  "etf": "XLRE"},
-            {"type": "kr_sector", "code": "SC_KR_CONSTR", "name": "건설",          "etf": "TIGER 200 건설",              "ticker": "139270.KS"},
+            {"type": "kr_sector", "code": "SC_KR_CONSTR", "name": "건설",          "etf": "KOSPI200 건설 (KRX GICS)"},
         ],
     },
 ]
@@ -852,7 +852,7 @@ def _build_html(date_str: str, period: str, sv: dict, cv: dict, focus: dict) -> 
     </div>
     <div class="sector-grid">{us_cards}</div>
 
-    <div class="section-title">🇰🇷 한국 섹터 (TIGER 200 GICS 11개)</div>
+    <div class="section-title">🇰🇷 한국 섹터 (KRX GICS 11개)</div>
     <div class="chart-card chart-full" style="margin-bottom:12px">
       <div class="chart-title">KR Sector 3M Return Ranking</div>
       <div class="chart-box">
