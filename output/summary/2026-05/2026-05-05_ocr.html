@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Story (OCR) | 2026-05-05</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
+  --gold:#b8860b; --oil:#d35400;
+}
+::selection{background:#F58220;color:#ffffff}
+.story-hero{border-left-color:#3b6ee6!important}
+.story-hero h2{color:#3b6ee6!important}
+.story-text .hl-accent{color:#3b6ee6!important}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
+}
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.header-right .source-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,130,32,0.1);color:var(--accent)}
+.story-hero{background:linear-gradient(135deg,#eef1f8,#e8e5f3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:32px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text strong{color:#1a1d2e}.story-text .hl-up{color:var(--up);font-weight:600}.story-text .hl-down{color:var(--down);font-weight:600}.story-text .hl-warn{color:var(--warn);font-weight:600}
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text)}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+.session-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.session-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.session-block::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.session-block.asia::before{background:linear-gradient(90deg,#d48b07,#e06818)}
+.session-block.europe::before{background:linear-gradient(90deg,#F58220,#043B72)}
+.session-block.us::before{background:linear-gradient(90deg,#043B72,#7F9FC3)}
+.session-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.session-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.session-icon.asia{background:rgba(212,139,7,0.1)}.session-icon.europe{background:rgba(59,110,230,0.1)}.session-icon.us{background:rgba(107,92,231,0.1)}
+.session-name{font-size:15px;font-weight:600;color:#1a1d2e}
+.session-time{font-size:11px;color:var(--muted)}
+.session-verdict{display:inline-block;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;margin-bottom:10px}
+.verdict-up{background:rgba(13,155,106,0.1);color:var(--up)}.verdict-down{background:rgba(217,48,79,0.1);color:var(--down)}.verdict-mixed{background:rgba(212,139,7,0.1);color:var(--warn)}.verdict-flat{background:rgba(124,130,152,0.1);color:var(--muted)}
+.session-events{list-style:none}.session-events li{font-size:12px;padding:6px 0 6px 12px;border-bottom:1px solid #f3f4f8;position:relative}
+.session-events li:last-child{border:none}.session-events li::before{content:'';position:absolute;left:0;top:12px;width:4px;height:4px;border-radius:50%;background:var(--muted)}
+.session-events .ev-time{color:var(--muted);font-size:10px;font-weight:600}
+.session-kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.s-kpi{text-align:center;padding:6px;border-radius:6px;background:var(--card2)}
+.s-kpi-label{font-size:10px;color:var(--muted)}.s-kpi-value{font-size:15px;font-weight:700}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}.metric-label{font-size:10px;color:var(--muted)}.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.cross-asset{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:28px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cross-asset h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:6px}
+.cross-asset .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.af-map{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:10px 6px}
+.af-node{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;min-width:120px}
+.af-node-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.af-node-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.af-node-chg{font-size:12px;font-weight:600}
+.af-arrow{text-align:center;color:var(--muted);font-size:12px;line-height:1.3}
+.af-arrow .arr{font-size:16px;display:block}.af-arrow .lbl{font-size:10px}
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:28px;margin-bottom:28px}
+.risk-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:12px;line-height:1.6}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}
+.risk-tag.high{background:rgba(217,48,79,0.15);color:var(--down)}.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+@media(max-width:900px){
+  .session-grid,.insight-grid{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .af-map{grid-template-columns:1fr}.risk-items{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>🏛 미래에셋 모닝 브리핑 (PDF 1차 자료)</h1>
+    <div class="date">PDF 발간 2026-05-05 (화) 아침 KST &middot; 본문 시점 2026-05-04 (월) 미국 마감</div>
+  </div>
+  <div class="header-right">
+    <span class="source-badge">PDF 1차 자료 보존</span>
+  </div>
+</div>
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>반도체 강세에 나스닥·S&P500 ‘사상 최고’ — 인텔 +12.92%, 마이크론 +11.06%, 애플 +2.66%</strong><br><br>
+    본 브리핑은 아시아 세션을 별도 다루지 않습니다 — PDF 발간일 시점에서 미국 세션 마감 데이터에 집중.<br><br>
+    <strong>유럽 세션</strong> 본 브리핑은 유럽 세션을 별도 다루지 않습니다 — PDF 발간일 시점에서 미국 세션 마감 데이터에 집중.<br><br>
+    <strong>미국 세션</strong> 2026년 5월 4일, 미국 증시는 반도체주의 강력한 랠리에 힘입어 나스닥과 S&P500이 사상 최고치를 경신했습니다. S&P500은 <span class="hl-up">+0.81%</span> 상승한 7,259.22에, 나스닥은 <span class="hl-up">+1.03%</span> 상승한 25,326.12에 마감했습니다. 다우존스 산업평균지수는 <span class="hl-up">+0.73%</span> 상승한 49,298.25에, 러셀2000은 <span class="hl-up">+1.75%</span> 상승한 2,845.00에 마감했습니다. 인텔은 애플이 인텔의 파운드리 서비스를 활용할 가능성이 있다는 소식에 <span class="hl-up">+12.92%</span> 급등했으며, 마이크론 테크놀로지는 최대 용량 SSD 공개 이후 <span class="hl-up">+11.06%</span> 급등했습니다. 샌디스크 <span class="hl-up">+11.98%</span>, 웨스턴 디지털 <span class="hl-up">+5.18%</span>, 램리서치 <span class="hl-up">+6.66%</span>, 브로드컴 <span class="hl-up">+2.61%</span>, 퀄컴 <span class="hl-up">+10.79%</span> 등 반도체 관련주들이 강세를 보였습니다. 반면, 팔란티어 테크는 실적이 예상을 웃돌았음에도 불구하고 <span class="hl-down">-6.93%</span> 하락했습니다. 제약업체 화이자는 <span class="hl-up">+0.57%</span> 상승했으며, 쇼피파이는 매출 성장 둔화 전망에 <span class="hl-down">-15.62%</span> 하락했습니다. 국채금리는 장기물 중심으로 하락했으며, 달러 가치는 소폭 상승했습니다.
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 흐름 &mdash; 하나의 체인으로 이해하기</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">반도체 강세가 미국 증시를 견인하며 사상 최고치를 경신했습니다.</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">아시아 오전</div>
+    <div class="node-title">본 PDF 미수록</div>
+    <div class="node-detail">본 브리핑은 아시아 세션을 별도 다루지 않습니다.</div>
+    <div class="node-impact mixed">미국 세션에 집중</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">유럽 오후</div>
+    <div class="node-title">본 PDF 미수록</div>
+    <div class="node-detail">본 브리핑은 유럽 세션을 별도 다루지 않습니다.</div>
+    <div class="node-impact mixed">미국 세션에 집중</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 개장</div>
+    <div class="node-title">반도체주 급등</div>
+    <div class="node-detail">인텔 +12.92%, 마이크론 +11.06% 등 반도체주 강세</div>
+    <div class="node-impact up">지수 상승 견인</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 마감</div>
+    <div class="node-title">사상 최고치 경신</div>
+    <div class="node-detail">S&P500 +0.81%, 나스닥 +1.03% 사상 최고</div>
+    <div class="node-impact up">긍정적 마감</div>
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">반도체주의 강세가 미국 증시를 견인했습니다.</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">&#127472;&#127479;</div>
+      <div><div class="session-name">아시아 세션</div><div class="session-time">한국 09:00 ~ 15:30</div></div>
+    </div>
+    <span class="session-verdict verdict-mixed">본 브리핑은 아시아 세션을 별도 다루지 않습니다.</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> 본 브리핑은 아시아 세션을 별도 다루지 않습니다.</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">HSI</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">TWSE</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+    </div>
+  </div>
+  <div class="session-block europe">
+    <div class="session-header">
+      <div class="session-icon europe">&#127466;&#127482;</div>
+      <div><div class="session-name">유럽 세션</div><div class="session-time">한국 16:00 ~ 01:30</div></div>
+    </div>
+    <span class="session-verdict verdict-mixed">본 브리핑은 유럽 세션을 별도 다루지 않습니다.</span>
+    <ul class="session-events">
+      <li><span class="ev-time">16:00</span> 본 브리핑은 유럽 세션을 별도 다루지 않습니다.</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">FTSE 100</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">CAC 40</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+    </div>
+  </div>
+  <div class="session-block us">
+    <div class="session-header">
+      <div class="session-icon us">&#127482;&#127480;</div>
+      <div><div class="session-name">미국 세션</div><div class="session-time">한국 22:30 ~ 06:00</div></div>
+    </div>
+    <span class="session-verdict verdict-up">반도체주 강세로 나스닥·S&P500 사상 최고</span>
+    <ul class="session-events">
+      <li><span class="ev-time">22:30</span> 인텔 +12.92%, 애플과의 협력 논의 소식에 급등</li>
+      <li><span class="ev-time">23:00</span> 마이크론 +11.06%, 최대 용량 SSD 공개 이후 상승</li>
+      <li><span class="ev-time">02:00</span> 팔란티어 -6.93%, 실적 호조에도 주가 하락</li>
+      <li><span class="ev-time">06:00</span> S&P500 +0.81%, 나스닥 +1.03% 사상 최고 마감</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">S&P500</div><div class="s-kpi-value up">+0.81%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">NASDAQ</div><div class="s-kpi-value up">+1.03%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">DOW JONES</div><div class="s-kpi-value up">+0.73%</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">알아두면 좋은 시장 상식 4가지</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">오늘의 뉴스를 이해하기 위해 꼭 알아야 할 개념들을 쉽게 설명합니다.</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(255, 99, 132, 0.2);color:#ff6384">반도체</span>
+    <h3>반도체 랠리와 시장 영향</h3>
+    <p>
+      반도체주가 AI발 모멘텀을 반영하며 강력한 랠리로 시장 상승을 이끌었습니다. 인텔은 애플과의 협력 논의 소식으로 <span class="hl-up">+12.92%</span> 상승했고, 마이크론은 최대 용량 SSD 공개 이후 <span class="hl-up">+11.06%</span> 급등했습니다.<br><br>
+      반도체 산업은 AI와 데이터센터 수요 증가로 인해 지속적인 성장을 보이고 있습니다. 특히, 인텔과 마이크론의 기술 혁신은 시장에서 큰 주목을 받고 있습니다.<br><br>
+      이러한 반도체주의 강세는 나스닥과 S&P500의 사상 최고치 경신을 견인하며, 기술주 전반에 긍정적인 영향을 미치고 있습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">인텔</div><div class="metric-value up">+12.92%</div></div>
+      <div class="metric-item"><div class="metric-label">마이크론</div><div class="metric-value up">+11.06%</div></div>
+      <div class="metric-item"><div class="metric-label">필라델피아 반도체지수</div><div class="metric-value up">+4.23%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(54, 162, 235, 0.2);color:#36a2eb">거시경제</span>
+    <h3>국채금리 하락과 경제 전망</h3>
+    <p>
+      미국 국채금리는 장기물 중심으로 하락했습니다. 10년물 금리는 3bp 하락한 4.416%에 거래되었으며, 30년물 금리는 4.3bp 하락한 4.982%를 기록했습니다.<br><br>
+      국채금리 하락은 국제유가 하락과 이란과의 휴전 유지 소식에 따른 것입니다. 이러한 금리 하락은 경제 전반에 긍정적인 영향을 미칠 수 있습니다.<br><br>
+      금리 하락은 기업의 자금 조달 비용을 낮추고, 소비자 대출 금리를 인하하여 경제 활동을 촉진할 수 있습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">10년물 금리</div><div class="metric-value down">4.416%</div></div>
+      <div class="metric-item"><div class="metric-label">30년물 금리</div><div class="metric-value down">4.982%</div></div>
+      <div class="metric-item"><div class="metric-label">2년물 금리</div><div class="metric-value down">3.938%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(255, 206, 86, 0.2);color:#ffce56">외환</span>
+    <h3>달러 가치 소폭 상승</h3>
+    <p>
+      외환시장에서 달러화 가치는 소폭 상승했습니다. 달러인덱스(DXY)는 98.480으로 <span class="hl-up">+0.057%</span> 상승했습니다.<br><br>
+      달러의 강세는 유가 하락세와 맞물려 장 중 약세를 보이다가, 유가가 낙폭을 축소하면서 반등한 결과입니다.<br><br>
+      달러 강세는 수입 물가를 낮추고, 미국 내 인플레이션 압력을 완화할 수 있습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">달러인덱스</div><div class="metric-value up">98.480</div></div>
+      <div class="metric-item"><div class="metric-label">달러–엔 환율</div><div class="metric-value up">157.880엔</div></div>
+      <div class="metric-item"><div class="metric-label">유로–달러 환율</div><div class="metric-value down">소폭 하락</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(75, 192, 192, 0.2);color:#4bc0c0">소프트웨어</span>
+    <h3>팔란티어의 실적과 주가 하락</h3>
+    <p>
+      팔란티어 테크는 전분기 실적이 예상을 웃돌았지만 주가는 <span class="hl-down">-6.93%</span> 하락했습니다. 매출은 85% 증가했으나, AI 소프트웨어 시장의 경쟁 심화와 밸류에이션 부담이 주가에 영향을 미쳤습니다.<br><br>
+      팔란티어의 실적은 강력한 내수 성과를 반영했으나, 시장의 높은 기대치와 경쟁 심화가 주가 하락의 원인으로 작용했습니다.<br><br>
+      이러한 주가 하락은 AI 소프트웨어 시장의 경쟁이 치열해지고 있음을 시사하며, 투자자들에게는 주의가 필요합니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">팔란티어 주가</div><div class="metric-value down">-6.93%</div></div>
+      <div class="metric-item"><div class="metric-label">매출 증가율</div><div class="metric-value up">85%</div></div>
+      <div class="metric-item"><div class="metric-label">조정 주당 순이익</div><div class="metric-value up">0.33달러</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="risk-section">
+  <h2>앞으로 주의해야 할 점</h2>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">현재 시장 압력 요약</div>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>반도체주 과열 우려</strong><br>반도체주의 급등세가 지속되면서 과열 우려가 제기되고 있습니다. 특히, 인텔과 마이크론의 주가 상승은 시장의 기대치를 크게 상회하고 있어 조정 가능성이 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>이란과의 긴장 고조 가능성</strong><br>미국과 이란 사이의 긴장이 다시 고조될 가능성이 있습니다. 휴전 유지가 불확실한 상황에서, 추가적인 무력 충돌이 발생할 경우 시장에 부정적인 영향을 미칠 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag med">보통</span><span><strong>달러 강세 지속</strong><br>달러 가치의 상승이 수출 기업에 부담을 줄 수 있습니다. 특히, 달러 강세가 장기화될 경우 미국 내 제조업체의 경쟁력이 약화될 수 있습니다.</span></li>
+  </ul>
+</div>
+<div class="footer">미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF &mdash; OpenAI Vision OCR 추출 후 HTML 재구성. 글로벌 풀 사이클 종합은 메인 Market Story 탭을 참고하세요.</div>
+<div class="ai-disclaimer">⚠️ 본 자료는 미래에셋증권 PDF 원본을 OCR 추출한 <strong>1차 자료 보존</strong>입니다. PDF 발간 시점(아침 KST) 기준으로 작성되어 메인 Market Story 와 시점·범위가 다릅니다. 수치는 PDF 본문 그대로이며, 투자 판단 시 PDF 원본을 확인하시기 바랍니다.</div>
+</body>
+</html>

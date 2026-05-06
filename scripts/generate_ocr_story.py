@@ -86,16 +86,24 @@ DAILY_KEYWORDS = ["AI 데일리", "AI데일리", "글로벌 마켓 브리핑", "
 def find_daily_briefing_pdf(target_date: date) -> dict | None:
     """target_date 장 기준 AI 데일리 브리핑 PDF를 찾는다.
 
-    게시일 패턴:
-      - 대부분: 미국장 마감 당일 새벽(한국시간) → row_date == target_date
-      - 가끔:   익영업일 새벽 → row_date == next_business_day(target_date)
-    따라서 row_date 조건 대신 제목의 한글 날짜(예: "4월 28일")로만 식별한다.
+    매칭 기준 = 게시일(row_date). 제목의 한글 날짜는 발간일 기준일 때도
+    있고 대상장일 기준일 때도 있어 신뢰하지 않는다 (2026-05-06 이후 발간일
+    표기로 전환 확인).
+
+    유효 row_date 후보:
+      - target_date          : 미국장 마감 당일 새벽(한국시간) 발간
+      - next_business_day    : 익영업일 새벽 발간 (가장 흔함)
+      - target_date + 1day   : 캘린더 익일 (KR 휴장 끼는 경우 대비)
     탐색은 최대 10페이지, row_date 가 target_date -3일 이전이면 중단.
     """
     session = requests.Session()
-    title_date_ko = f"{target_date.month}월 {target_date.day}일"
+    valid_row_dates = {
+        target_date.strftime("%Y-%m-%d"),
+        _next_biz(target_date).strftime("%Y-%m-%d"),
+        (target_date + timedelta(days=1)).strftime("%Y-%m-%d"),
+    }
     cutoff = (target_date - timedelta(days=3)).strftime("%Y-%m-%d")
-    log.info(f"PDF 탐색: 장 기준일={target_date}, 제목 키워드='{title_date_ko}'")
+    log.info(f"PDF 탐색: 장 기준일={target_date}, 게시일 후보={sorted(valid_row_dates)}")
 
     for page in range(1, 11):
         params = {"categoryId": CATEGORY_ID, "curPage": str(page)}
@@ -123,7 +131,6 @@ def find_daily_briefing_pdf(target_date: date) -> dict | None:
             title_a = tds[1].find("a")
             title = title_a.get_text(strip=True) if title_a else ""
 
-            # target_date -3일 이전이면 더 볼 필요 없음
             if row_date < cutoff:
                 log.info(f"탐색 범위 초과({row_date} < {cutoff}) → 중단")
                 return None
@@ -131,9 +138,8 @@ def find_daily_briefing_pdf(target_date: date) -> dict | None:
             if not any(kw in title for kw in DAILY_KEYWORDS):
                 continue
 
-            # 제목의 한글 날짜로 target_date 검증
-            if title_date_ko not in title:
-                log.debug(f"날짜 불일치 스킵: '{title[:60]}'")
+            if row_date not in valid_row_dates:
+                log.debug(f"게시일 불일치 스킵: row_date={row_date} title='{title[:60]}'")
                 continue
 
             down_a = tds[2].find("a", href=re.compile(r"downConfirm"))
@@ -144,7 +150,7 @@ def find_daily_briefing_pdf(target_date: date) -> dict | None:
                 continue
 
             pdf_url, attach_id = m.group(1), m.group(2)
-            log.info(f"PDF 발견: {title[:60]} | attachId={attach_id}")
+            log.info(f"PDF 발견: row_date={row_date} | {title[:60]} | attachId={attach_id}")
             return {"title": title, "pdf_url": pdf_url, "attach_id": attach_id, "date": row_date}
 
     log.info("AI 데일리 브리핑 PDF 미발견")
