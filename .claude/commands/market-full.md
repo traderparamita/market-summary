@@ -62,7 +62,7 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 - `generate.py` 파이프라인 (Snowflake 중심으로 재구성됨):
   - **Step 1a**: `collect_market.fetch_data()` — core 56+ 지표 수집 → CSV append
   - **Step 1b**: Aux collectors 일간 실행 (`_run_aux_collectors`)
-    - `collectors.sector_etfs` — SC_US_*, FA_US_*, SC_KR_* (yfinance)
+    - `collectors.sector_etfs` — SC_US_*, FA_US_*, US Bond ETFs (yfinance)
     - `collectors.krx_sectors` — IX_KR_* (pykrx KOSPI200 GICS)
     - `collectors.valuation` — VAL_KR_* (pykrx KOSPI PER/PBR/DY)
     - 각 collector 가 CSV append 후 Snowflake 자체 upsert (`[SNOWFLAKE]` 마커)

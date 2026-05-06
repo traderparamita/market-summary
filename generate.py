@@ -79,7 +79,10 @@ def generate_html(data):
     fx = data.get("fx", {})
     cm = data.get("commodity", {})
     rk = data.get("risk", {})
-    st = data.get("stocks", {})
+    # stocks: KR50/US50 백필분(stocks_universe.py)이 시계열에 합쳐져 있으나 dashboard
+    # 노출은 ST_ORDER 화이트리스트로만 통제. 본문/검증은 build_report_data 전체 결과를 활용.
+    st_all = data.get("stocks", {})
+    st = {k: v for k, v in st_all.items() if k in ST_ORDER}
 
     # === 히트맵 행 생성 ===
     def heatmap_row(name, d, show_dollar=False, as_bp=False):
@@ -915,18 +918,20 @@ def _run_aux_collectors(target_date: str) -> None:
     daily market-full 에서 MKT100 이 단일 소스가 되려면 보조 지표들도 매일 수집돼야 한다.
     각 collector 는 dedup 로직이 있어 중복 호출해도 이미 있는 행은 건너뛴다.
 
-    - collect_sector_etfs: SC_US_*, FA_US_*, SC_KR_* (ETF 기반, yfinance)
-    - collect_krx_sectors: IX_KR_* (KOSPI200 GICS 지수, pykrx)
-    - collect_valuation:   VAL_KR_* (KOSPI PER/PBR/DY, pykrx)
+    - collect_sector_etfs:      SC_US_*, FA_US_*, US Bond ETFs (yfinance)
+    - collect_krx_sectors:      IX_KR_* (KOSPI200 GICS 지수, pykrx)
+    - collect_valuation:        VAL_KR_* (KOSPI PER/PBR/DY, pykrx)
+    - collect_stocks_universe:  ST_KR_* / 신규 ST_<TICKER> (KR50 + US S&P50 종목, yfinance)
 
     실패해도 메인 파이프라인은 계속 — 각 collector 는 [AUX] 마커로 결과 표시.
     """
     print(f"\n=== Aux collectors (date={target_date}) ===")
 
     aux_tasks = [
-        ("sector_etfs", "collectors.sector_etfs", "collect_sector_etfs"),
-        ("krx_sectors", "collectors.krx_sectors", "collect_krx_sectors"),
-        ("valuation",   "collectors.valuation",   "collect_valuation"),
+        ("sector_etfs",     "collectors.sector_etfs",     "collect_sector_etfs"),
+        ("krx_sectors",     "collectors.krx_sectors",     "collect_krx_sectors"),
+        ("valuation",       "collectors.valuation",       "collect_valuation"),
+        ("stocks_universe", "collectors.stocks_universe", "collect_stocks_universe"),
     ]
 
     for label, module_path, func_name in aux_tasks:

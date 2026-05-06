@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent  # market_summary/ (from collector
 MARKET_CSV = ROOT / "history" / "market_data.csv"
 
 # KOSPI 200 GICS 섹터 지수 (2010~ )
-# indicator_code는 IX_KR_ prefix로 ETF(SC_KR_)와 구별
+# IX_KR_ prefix. KR 섹터 데이터의 단일 정본 (이전 SC_KR_* ETF 시계열은 2026-05-07 제거).
 GICS_SECTORS: list[tuple[str, str, str, str]] = [
     ("IX_KR_IT",       "1155", "index_kr", "KOSPI200 정보기술"),
     ("IX_KR_COMM",     "1150", "index_kr", "KOSPI200 커뮤니케이션"),

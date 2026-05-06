@@ -263,19 +263,8 @@ INSERT INTO MKT000_MARKET_INDICATOR (
     ('FA_US_MOMENTUM',  'STYLE_US', 'iShares Momentum', '모멘텀',  'iShares MSCI USA Momentum Factor', 'US', 'pt', 'pct', 'yfinance', 'MTUM', NULL, NULL, 223, TRUE),
     ('FA_US_LOWVOL',    'STYLE_US', 'iShares LowVol',   '저변동성','iShares MSCI USA Min Vol Factor',  'US', 'pt', 'pct', 'yfinance', 'USMV', NULL, NULL, 224, TRUE),
 
-    -- ── KR SECTOR ETF (11): TIGER 200 GICS — sector_report.py SECTOR_ROTATION 기준 ──
-    -- US SPDR 11개와 1:1 페어링. 소스_티커=pykrx 6자리, 소스_폴백=yfinance .KS 티커
-    ('SC_KR_IT',        'SECTOR_KR', 'TIGER IT',       'TIGER 200 IT',           'TIGER 200 IT ETF',               'Korea', 'KRW', 'pct', 'pykrx', '364980', NULL, '364980.KS', 230, TRUE),
-    ('SC_KR_COMM',      'SECTOR_KR', 'TIGER Comm',     'TIGER 200 커뮤니케이션서비스', 'TIGER 200 커뮤니케이션서비스 ETF', 'Korea', 'KRW', 'pct', 'pykrx', '364990', NULL, '364990.KS', 231, TRUE),
-    ('SC_KR_FIN',       'SECTOR_KR', 'TIGER Fin',      'TIGER 200 금융',         'TIGER 200 금융 ETF',             'Korea', 'KRW', 'pct', 'pykrx', '435420', NULL, '435420.KS', 232, TRUE),
-    ('SC_KR_ENERGY',    'SECTOR_KR', 'TIGER Energy',   'TIGER 200 에너지화학',    'TIGER 200 에너지화학 ETF',        'Korea', 'KRW', 'pct', 'pykrx', '472170', NULL, '472170.KS', 233, TRUE),
-    ('SC_KR_HLTH',      'SECTOR_KR', 'TIGER Health',   'TIGER 200 헬스케어',     'TIGER 200 헬스케어 ETF',         'Korea', 'KRW', 'pct', 'pykrx', '227570', NULL, '227570.KS', 234, TRUE),
-    ('SC_KR_INDU',      'SECTOR_KR', 'TIGER Indu',     'TIGER 200 산업재',       'TIGER 200 산업재 ETF',           'Korea', 'KRW', 'pct', 'pykrx', '227560', NULL, '227560.KS', 235, TRUE),
-    ('SC_KR_HEAVY',     'SECTOR_KR', 'TIGER Heavy',    'TIGER 200 중공업',       'TIGER 200 중공업 ETF',           'Korea', 'KRW', 'pct', 'pykrx', '157490', NULL, '157490.KS', 236, TRUE),
-    ('SC_KR_DISCR',     'SECTOR_KR', 'TIGER Discr',    'TIGER 200 경기소비재',   'TIGER 200 경기소비재 ETF',       'Korea', 'KRW', 'pct', 'pykrx', '227540', NULL, '227540.KS', 237, TRUE),
-    ('SC_KR_STAPLES',   'SECTOR_KR', 'TIGER Staples',  'TIGER 200 생활소비재',   'TIGER 200 생활소비재 ETF',       'Korea', 'KRW', 'pct', 'pykrx', '227550', NULL, '227550.KS', 238, TRUE),
-    ('SC_KR_STEEL',     'SECTOR_KR', 'TIGER Steel',    'TIGER 200 철강소재',     'TIGER 200 철강소재 ETF',         'Korea', 'KRW', 'pct', 'pykrx', '494840', NULL, '494840.KS', 239, TRUE),
-    ('SC_KR_CONSTR',    'SECTOR_KR', 'TIGER Constr',   'TIGER 200 건설',         'TIGER 200 건설 ETF',             'Korea', 'KRW', 'pct', 'pykrx', '139270', NULL, '139270.KS', 240, TRUE),
+    -- ※ KR SECTOR ETF (SC_KR_*) 시드 제거 — 2026-05-07. KRX GICS 지수 (IX_KR_*, V005 확장) 로 일원화.
+    --    ETF 시계열은 yfinance auto_adjust 누적 오류 + 짧은 상장 이력 (일부 2020~) 으로 신뢰도 낮음.
 
     -- ── STOCK (14) ──
     ('ST_NVDA',         'STOCK', 'NVIDIA',    'NVIDIA',           'NVIDIA Corp',            'US',    'USD', 'pct', 'yfinance', 'NVDA',      NULL, NULL, 300, TRUE),
@@ -293,11 +282,16 @@ INSERT INTO MKT000_MARKET_INDICATOR (
     ('ST_MEITUAN',      'STOCK', 'Meituan',   'Meituan(HKD)',     'Meituan (HK)',           'HK',    'HKD', 'pct', 'yfinance', '3690.HK',   NULL, NULL, 312, TRUE),
     ('ST_TENCENT',      'STOCK', 'Tencent',   'Tencent(HKD)',     'Tencent Holdings (HK)',  'HK',    'HKD', 'pct', 'yfinance', '0700.HK',   NULL, NULL, 313, TRUE);
 
+-- ※ STOCK 추가 (90종, display_order 320-360 + 380-428): KOSPI Top 50 + S&P 500 Top 50.
+--   정본 = collectors/stocks_universe.py (KR_TOP50, US_TOP50). 시드 INSERT 는 해당 모듈 또는
+--   `python -c "from collectors.stocks_universe import KR_TOP50, US_TOP50, EXISTING_IN_COLLECT_MARKET; ..."`
+--   로 dynamic 생성 (display_order/한글명 등 메타가 한 곳에서 관리됨).
+
 
 -- ============================================================
 -- 5-B. V005 확장 시드 — CSV 에 이미 수집중인 보조 지표 정식 등록
 --      (IX_KR_*: KOSPI200 GICS 섹터 지수, VAL_KR_*: KOSPI 밸류에이션,
---       EQ_TWSE: 대만 가권, SC_KR_* 확장: TIGER/KODEX 테마 ETF)
+--       EQ_TWSE: 대만 가권)
 -- ============================================================
 INSERT INTO MKT000_MARKET_INDICATOR (
     "지표코드", "카테고리", "티커", "지표명", "지표명_EN",
@@ -324,23 +318,9 @@ INSERT INTO MKT000_MARKET_INDICATOR (
     -- ── VALUATION (3): KOSPI 밸류에이션 지표 (pykrx) ──
     ('VAL_KR_PER',      'VALUATION', 'KOSPI PER',  'KOSPI PER',       'KOSPI PER',               'Korea', 'x',   'pct', 'pykrx', 'KOSPI:PER', NULL, 'pykrx stock.get_index_fundamental', 270, TRUE),
     ('VAL_KR_PBR',      'VALUATION', 'KOSPI PBR',  'KOSPI PBR',       'KOSPI PBR',               'Korea', 'x',   'pct', 'pykrx', 'KOSPI:PBR', NULL, NULL, 271, TRUE),
-    ('VAL_KR_DY',       'VALUATION', 'KOSPI DY',   'KOSPI 배당수익률', 'KOSPI Dividend Yield',    'Korea', '%',   'pct', 'pykrx', 'KOSPI:DY',  NULL, NULL, 272, TRUE),
+    ('VAL_KR_DY',       'VALUATION', 'KOSPI DY',   'KOSPI 배당수익률', 'KOSPI Dividend Yield',    'Korea', '%',   'pct', 'pykrx', 'KOSPI:DY',  NULL, NULL, 272, TRUE);
 
-    -- ── SECTOR_KR 확장 (14): TIGER/KODEX 테마 ETF (sector_country 사이클 미사용, 참조용) ──
-    ('SC_KR_SEMI',      'SECTOR_KR', 'TIGER Semi',     'TIGER 반도체',          'TIGER Semiconductor ETF',         'Korea', 'KRW', 'pct', 'yfinance', '277630.KS', NULL, NULL, 241, TRUE),
-    ('SC_KR_BIO',       'SECTOR_KR', 'TIGER Bio',      'TIGER 헬스케어',         'TIGER Health Care ETF',           'Korea', 'KRW', 'pct', 'yfinance', '166400.KS', NULL, NULL, 242, TRUE),
-    ('SC_KR_BATTERY',   'SECTOR_KR', 'TIGER Battery',  'TIGER 2차전지테마',      'TIGER Battery Theme ETF',         'Korea', 'KRW', 'pct', 'yfinance', '137610.KS', NULL, NULL, 243, TRUE),
-    ('SC_KR_BANK',      'SECTOR_KR', 'TIGER Bank',     'TIGER 은행',             'TIGER Banks ETF',                 'Korea', 'KRW', 'pct', 'yfinance', '261140.KS', NULL, NULL, 244, TRUE),
-    ('SC_KR_HEALTH',    'SECTOR_KR', 'TIGER MedDev',   'TIGER 의료기기',         'TIGER Medical Devices ETF',       'Korea', 'KRW', 'pct', 'yfinance', '400970.KS', NULL, 'TIGER 200 헬스케어와 구별 (SC_KR_HLTH)', 245, TRUE),
-    ('SC_KR_AUTO',      'SECTOR_KR', 'KODEX Auto',     'KODEX 자동차',           'KODEX Auto ETF',                  'Korea', 'KRW', 'pct', 'yfinance', '091180.KS', NULL, NULL, 246, TRUE),
-    ('SC_KR_TELECOM',   'SECTOR_KR', 'KODEX Telecom',  'KODEX 통신',             'KODEX Telecom ETF',               'Korea', 'KRW', 'pct', 'yfinance', '098560.KS', NULL, NULL, 247, TRUE),
-    ('SC_KR_INSUR',     'SECTOR_KR', 'KODEX Insur',    'KODEX 보험',             'KODEX Insurance ETF',             'Korea', 'KRW', 'pct', 'yfinance', '140700.KS', NULL, NULL, 248, TRUE),
-    ('SC_KR_TRANSPORT', 'SECTOR_KR', 'KODEX Trans',    'KODEX 운송',             'KODEX Transport ETF',             'Korea', 'KRW', 'pct', 'yfinance', '140710.KS', NULL, NULL, 249, TRUE),
-    ('SC_KR_MEDIA',     'SECTOR_KR', 'KODEX Media',    'KODEX 미디어&엔터',      'KODEX Media/Entertainment ETF',    'Korea', 'KRW', 'pct', 'yfinance', '108590.KS', NULL, NULL, 261, TRUE),
-    ('SC_KR_DEFENSE',   'SECTOR_KR', 'TIGER Defense',  'TIGER 경기방어',          'TIGER Defensive ETF',              'Korea', 'KRW', 'pct', 'yfinance', '174360.KS', NULL, NULL, 262, TRUE),
-    ('SC_KR_GAME',      'SECTOR_KR', 'KODEX Game',     'KODEX 게임&엔터',         'KODEX Game/Entertainment ETF',     'Korea', 'KRW', 'pct', 'yfinance', '228800.KS', NULL, NULL, 263, TRUE),
-    ('SC_KR_BIOTECH',   'SECTOR_KR', 'KODEX Biotech',  'KODEX 바이오테크',        'KODEX Biotech ETF',                'Korea', 'KRW', 'pct', 'yfinance', '278530.KS', NULL, NULL, 264, TRUE),
-    ('SC_KR_COSDAQ_IT', 'SECTOR_KR', 'KODEX KOSDAQ IT','KODEX 코스닥150IT',      'KODEX KOSDAQ150 IT ETF',           'Korea', 'KRW', 'pct', 'yfinance', '261240.KS', NULL, NULL, 265, TRUE);
+    -- ※ SECTOR_KR 확장 (14): TIGER/KODEX 테마 ETF 시드 제거 — 2026-05-07. KRX GICS (IX_KR_*) 로 일원화.
 
 
 -- ============================================================

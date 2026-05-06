@@ -121,22 +121,14 @@ FX/Commodity는 `needs_inv_fix = True` — yfinance 날짜가 1영업일 밀리�
 | FA_US_MOMENTUM | iShares MSCI USA Momentum | MTUM |
 | FA_US_LOWVOL | iShares MSCI USA Min Vol | USMV |
 
-#### KR Sector ETFs (10 티커 → 10 지표)
+#### KR Sectors (KRX GICS 지수 11종)
 
-| 지표코드 | ETF | KRX 티커 |
-|----------|-----|----------|
-| SC_KR_SEMI | TIGER 반도체 | 277630.KS |
-| SC_KR_BATTERY | TIGER 2차전지테마 | 137610.KS |
-| SC_KR_BIO | TIGER 헬스케어 | 166400.KS |
-| SC_KR_FIN | TIGER 200 금융 | 435420.KS |
-| SC_KR_BANK | TIGER 은행 | 261140.KS |
-| SC_KR_STEEL | TIGER 200 철강소재 | 494840.KS |
-| SC_KR_ENERGY | TIGER 200 에너지화학 | 472170.KS |
-| SC_KR_HEALTH | TIGER 의료기기 | 400970.KS |
-| SC_KR_CONSTR | TIGER 200 건설 | 139270.KS |
-| SC_KR_INDU | TIGER 200 산업재 | 227560.KS |
+KR 섹터 ETF (`SC_KR_*`) 는 2026-05-07 제거. KRX GICS 지수 (`IX_KR_*`, pykrx) 가 단일 정본.
+자세한 지표는 [collectors/krx_sectors.py](../collectors/krx_sectors.py) `GICS_SECTORS` 참조.
 
-#### Major Stocks (14 티커 → 14 지표)
+#### Major Stocks (104 티커 → 104 지표)
+
+**핵심 14종** (Story·Dashboard 양쪽 노출 — `ST_ORDER` + ADR/HK 부가): collect_market.py `TICKERS["stocks"]` 정의
 
 | 지표코드 | 종목 | 티커 |
 |----------|------|------|
@@ -154,6 +146,13 @@ FX/Commodity는 `needs_inv_fix = True` — yfinance 날짜가 1영업일 밀리�
 | ST_BABA | Alibaba | 9988.HK |
 | ST_MEITUAN | Meituan | 3690.HK |
 | ST_TENCENT | Tencent | 0700.HK |
+
+**KOSPI Top 50 (49 신규 + ST_SAMSUNG)** + **S&P 500 Top 50 (41 신규 + 9 핵심)**: [collectors/stocks_universe.py](../collectors/stocks_universe.py) `KR_TOP50` / `US_TOP50` 정의 (2026-05-07 시총 기준 fix).
+
+- KR 신규 코드: `ST_KR_<6자리>` 컨벤션 (예: ST_KR_000660 = SK하이닉스)
+- US 신규 코드: `ST_<TICKER>` 컨벤션 (예: ST_LLY, ST_BRK_B)
+- 백필: 2010-01-01 ~ (yfinance auto_adjust)
+- Dashboard 표시는 `ST_ORDER` 화이트리스트 10종으로 제한 — 백필분 90종은 Story 본문/검증/분석에서만 활용
 
 ### 소스 우선순위 & Fallback 체인
 

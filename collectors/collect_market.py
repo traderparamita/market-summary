@@ -258,19 +258,7 @@ TICKERS = {
         "iShares Momentum": "MTUM",
         "iShares LowVol":   "USMV",
     },
-    # KR Sector ETFs (TIGER, 미래에셋자산운용)
-    "sector_kr": {
-        "TIGER Semi":    "277630.KS",   # TIGER 반도체       → SC_KR_SEMI
-        "TIGER Battery": "137610.KS",   # TIGER 2차전지테마  → SC_KR_BATTERY
-        "TIGER Health":  "166400.KS",   # TIGER 헬스케어     → SC_KR_BIO
-        "TIGER Fin":     "435420.KS",   # TIGER 200 금융     → SC_KR_FIN
-        "TIGER Bank":    "261140.KS",   # TIGER 은행         → SC_KR_BANK
-        "TIGER Steel":   "494840.KS",   # TIGER 200 철강소재 → SC_KR_STEEL
-        "TIGER Energy":  "472170.KS",   # TIGER 200 에너지화학→ SC_KR_ENERGY
-        "TIGER Medtech": "400970.KS",   # TIGER 의료기기     → SC_KR_HEALTH
-        "TIGER Constr":  "139270.KS",   # TIGER 200 건설     → SC_KR_CONSTR
-        "TIGER Indu":    "227560.KS",   # TIGER 200 산업재   → SC_KR_INDU
-    },
+    # ※ KR 섹터 ETF 는 KRX GICS 지수 (IX_KR_*, krx_sectors.py) 로 일원화. 2026-05-07 제거.
     # Major stocks
     "stocks": {
         "NVIDIA":   "NVDA",
@@ -364,17 +352,7 @@ INDICATOR_CODES = {
     ("style_us", "iShares Quality"):  "FA_US_QUALITY",
     ("style_us", "iShares Momentum"): "FA_US_MOMENTUM",
     ("style_us", "iShares LowVol"):   "FA_US_LOWVOL",
-    # KR Sector ETFs (TIGER)
-    ("sector_kr", "TIGER Semi"):    "SC_KR_SEMI",
-    ("sector_kr", "TIGER Battery"): "SC_KR_BATTERY",
-    ("sector_kr", "TIGER Health"):  "SC_KR_BIO",
-    ("sector_kr", "TIGER Fin"):     "SC_KR_FIN",
-    ("sector_kr", "TIGER Bank"):    "SC_KR_BANK",
-    ("sector_kr", "TIGER Steel"):   "SC_KR_STEEL",
-    ("sector_kr", "TIGER Energy"):  "SC_KR_ENERGY",
-    ("sector_kr", "TIGER Medtech"): "SC_KR_HEALTH",
-    ("sector_kr", "TIGER Constr"):  "SC_KR_CONSTR",
-    ("sector_kr", "TIGER Indu"):    "SC_KR_INDU",
+    # ※ KR 섹터 ETF (SC_KR_*) 매핑 제거 — KRX GICS (IX_KR_*) 로 일원화
     ("stocks", "NVIDIA"):    "ST_NVDA",
     ("stocks", "Broadcom"):  "ST_AVGO",
     ("stocks", "Alphabet"):  "ST_GOOGL",

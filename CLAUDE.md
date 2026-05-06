@@ -38,8 +38,9 @@ collectors/
 ├── io_utils.py                   # CSV 공통 유틸 (load_csv_dedup, append_save_csv)
 ├── macro_indicators.yaml         # FRED + ECOS 매크로 지표 코드 정의
 ├── macro.py                      # 거시지표 수집 (FRED + ECOS)
-├── sector_etfs.py                # 섹터/스타일 ETF 이력 백필
-├── krx_sectors.py                # KOSPI 200 GICS 섹터 지수
+├── sector_etfs.py                # US 섹터/스타일/채권 ETF 이력 백필 (KR 섹터 ETF는 2026-05-07 제거)
+├── krx_sectors.py                # KOSPI 200 GICS 섹터 지수 (IX_KR_*, KR 섹터 단일 정본)
+├── stocks_universe.py            # KR 시총 Top50 + S&P500 Top50 종목 백필·dim 시드 (--seed-dim)
 └── valuation.py                  # KOSPI PER/PBR/배당수익률
 
 scripts/
@@ -79,15 +80,19 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - Macro View 만 `history/macro_indicators.csv` 사용
 - 파생 지표: US 10-2 Spread (`BD_US_10_2_SPREAD`), KR 10-3 Spread (`BD_KR_10_3_SPREAD`) — 수집 시 자동 계산·적재
 
-### 데이터 규모 (2026-04 기준)
+### 데이터 규모 (2026-05 기준)
 
 | 파일 | 행수 | 지표 수 | 기간 |
 |------|------|--------|------|
-| `history/market_data.csv` | 약 30만 6천 행 | 120개 | 2010~현재 |
+| `history/market_data.csv` | 약 58만 행 | 185개 | 2010~현재 |
 | `history/macro_indicators.csv` | 약 5만 7천 행 | 43개 | 2010~현재 |
 
-**market_data 카테고리 (120개 지표)**:
-- equity(19) · bond(16) · sector_kr(25) · sector_us(11) · index_kr(11) · stocks(14) · fx(8) · style_us(5) · commodity(6) · valuation(3) · risk(2)
+**market_data 카테고리 (185개 지표)**:
+- equity(19) · bond(16) · sector_us(11) · index_kr(11) · stocks(104, KR50+US50+ADR/HK 4) · fx(8) · style_us(5) · commodity(6) · valuation(3) · risk(2)
+- KR 섹터는 `index_kr` (KRX GICS 11종) 으로 일원화. 종전 `sector_kr` (TIGER/KODEX ETF 25종) 는 2026-05-07 제거.
+- `stocks` 는 KOSPI 시총 상위 50 + S&P500 시총 상위 50 + ADR/HK(TSMC·BABA·MEITUAN·TENCENT) 백필 (35.8만 행).
+- Dashboard 표시는 `ST_ORDER` 화이트리스트 10종으로 제한 — 백필 90종은 Story 본문/검증/분석에서만 활용.
+- 신규 종목 추가: `collectors/stocks_universe.py` 의 `KR_TOP50` / `US_TOP50` 수정 후 `--seed-dim` 으로 dim 등록, `--start` 로 백필.
 
 **macro_indicators 카테고리 (43개 지표)**:
 - inflation · employment · growth · policy · rates · credit · activity · liquidity · sentiment · fx · risk
