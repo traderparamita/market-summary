@@ -37,18 +37,22 @@ US_SECTORS = {
 }
 
 # ── TIGER 200 GICS 11개 (sector_country 사이클 기준) ─────────────────────
+# data_code: 모멘텀 계산용 인디케이터 (KOSPI200 GICS 지수 — pykrx 정합 데이터)
+# 카드 라벨은 TIGER 200 ETF 명을 유지하되, 모멘텀 데이터는 추적 대상 지수에서 직접 가져온다.
+# 2026-05 — yfinance 의 한국 ETF auto_adjust 누적 오류로 SC_KR_* 가 지수와 5~90pp 괴리되어
+# 모멘텀 카드 신뢰도가 무너졌음. ETF 추적 지수(IX_KR_*)로 데이터 소스 전환.
 KR_SECTORS = {
-    "SC_KR_CONSTR":  {"name": "건설",             "etf": "TIGER 200 건설",              "ticker": "139270.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_REIT"},
-    "SC_KR_DISCR":   {"name": "경기소비재",        "etf": "TIGER 200 경기소비재",        "ticker": "227540.KS", "cycle": ["Goldilocks", "Early"],              "us_peer": "SC_US_DISCR"},
-    "SC_KR_FIN":     {"name": "금융",             "etf": "TIGER 200 금융",              "ticker": "435420.KS", "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
-    "SC_KR_INDU":    {"name": "산업재",            "etf": "TIGER 200 산업재",            "ticker": "227560.KS", "cycle": ["Goldilocks", "Reflation", "Early"], "us_peer": "SC_US_INDU"},
-    "SC_KR_STAPLES": {"name": "생활소비재",        "etf": "TIGER 200 생활소비재",        "ticker": "227550.KS", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_STAPLES"},
-    "SC_KR_ENERGY":  {"name": "에너지화학",        "etf": "TIGER 200 에너지화학",        "ticker": "472170.KS", "cycle": ["Reflation", "Stagflation"],        "us_peer": "SC_US_ENERGY"},
-    "SC_KR_HEAVY":   {"name": "중공업",            "etf": "TIGER 200 중공업",            "ticker": "157490.KS", "cycle": ["Reflation", "Mid"],                "us_peer": "SC_US_MATL"},
-    "SC_KR_STEEL":   {"name": "철강소재",          "etf": "TIGER 200 철강소재",          "ticker": "494840.KS", "cycle": ["Reflation"],                       "us_peer": "SC_US_UTIL"},
-    "SC_KR_COMM":    {"name": "커뮤니케이션서비스","etf": "TIGER 200 커뮤니케이션서비스","ticker": "364990.KS", "cycle": ["Goldilocks"],                      "us_peer": "SC_US_COMM"},
-    "SC_KR_HLTH":    {"name": "헬스케어",          "etf": "TIGER 200 헬스케어",          "ticker": "227570.KS", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_HEALTH"},
-    "SC_KR_IT":      {"name": "IT",               "etf": "TIGER 200 IT",               "ticker": "364980.KS", "cycle": ["Goldilocks", "Mid"],              "us_peer": "SC_US_TECH"},
+    "SC_KR_CONSTR":  {"name": "건설",             "etf": "TIGER 200 건설",              "ticker": "139270.KS", "data_code": "IX_KR_CONSTR",  "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_REIT"},
+    "SC_KR_DISCR":   {"name": "경기소비재",        "etf": "TIGER 200 경기소비재",        "ticker": "227540.KS", "data_code": "IX_KR_DISCR",   "cycle": ["Goldilocks", "Early"],              "us_peer": "SC_US_DISCR"},
+    "SC_KR_FIN":     {"name": "금융",             "etf": "TIGER 200 금융",              "ticker": "435420.KS", "data_code": "IX_KR_FIN",     "cycle": ["Reflation", "Early"],              "us_peer": "SC_US_FIN"},
+    "SC_KR_INDU":    {"name": "산업재",            "etf": "TIGER 200 산업재",            "ticker": "227560.KS", "data_code": "IX_KR_INDU",    "cycle": ["Goldilocks", "Reflation", "Early"], "us_peer": "SC_US_INDU"},
+    "SC_KR_STAPLES": {"name": "생활소비재",        "etf": "TIGER 200 생활소비재",        "ticker": "227550.KS", "data_code": "IX_KR_STAPLES", "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_STAPLES"},
+    "SC_KR_ENERGY":  {"name": "에너지화학",        "etf": "TIGER 200 에너지화학",        "ticker": "472170.KS", "data_code": "IX_KR_ENERGY",  "cycle": ["Reflation", "Stagflation"],        "us_peer": "SC_US_ENERGY"},
+    "SC_KR_HEAVY":   {"name": "중공업",            "etf": "TIGER 200 중공업",            "ticker": "157490.KS", "data_code": "IX_KR_HEAVY",   "cycle": ["Reflation", "Mid"],                "us_peer": "SC_US_MATL"},
+    "SC_KR_STEEL":   {"name": "철강소재",          "etf": "TIGER 200 철강소재",          "ticker": "494840.KS", "data_code": "IX_KR_STEEL",   "cycle": ["Reflation"],                       "us_peer": "SC_US_UTIL"},
+    "SC_KR_COMM":    {"name": "커뮤니케이션서비스","etf": "TIGER 200 커뮤니케이션서비스","ticker": "364990.KS", "data_code": "IX_KR_COMM",    "cycle": ["Goldilocks"],                      "us_peer": "SC_US_COMM"},
+    "SC_KR_HLTH":    {"name": "헬스케어",          "etf": "TIGER 200 헬스케어",          "ticker": "227570.KS", "data_code": "IX_KR_HEALTH",  "cycle": ["Deflation", "Stagflation"],        "us_peer": "SC_US_HEALTH"},
+    "SC_KR_IT":      {"name": "IT",               "etf": "TIGER 200 IT",               "ticker": "364980.KS", "data_code": "IX_KR_IT",      "cycle": ["Goldilocks", "Mid"],              "us_peer": "SC_US_TECH"},
 }
 
 # 매크로 국면 → 선호 섹터 매핑
@@ -239,9 +243,9 @@ def _momentum_dispersion(sectors: list) -> dict:
 
 # ── Signal calculators ───────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, months: int) -> float:
+def _momentum(px: pd.Series, months: int, as_of: str | None = None) -> float:
     from ._shared import momentum
-    return momentum(px, months)
+    return momentum(px, months, as_of=as_of)
 
 
 def _trend_score(px: pd.Series) -> int:
@@ -265,10 +269,11 @@ def _trend_score(px: pd.Series) -> int:
         return -1
 
 
-def _relative_mom(px: pd.Series, px_bench: pd.Series, months: int = 3) -> float:
+def _relative_mom(px: pd.Series, px_bench: pd.Series, months: int = 3,
+                  as_of: str | None = None) -> float:
     """vs 벤치마크 초과수익."""
-    ret = _momentum(px, months)
-    bench = _momentum(px_bench, months)
+    ret = _momentum(px, months, as_of=as_of)
+    bench = _momentum(px_bench, months, as_of=as_of)
     if np.isnan(ret) or np.isnan(bench):
         return np.nan
     return ret - bench
@@ -289,18 +294,19 @@ def _composite_score(mom_1m, mom_3m, mom_6m, trend, rel_3m) -> float:
 
 # ── Main compute ─────────────────────────────────────────────────────────
 
-def _score_sector(code: str, prices: pd.DataFrame, bench: pd.Series) -> dict:
+def _score_sector(code: str, prices: pd.DataFrame, bench: pd.Series,
+                  as_of: str | None = None) -> dict:
     if code not in prices.columns:
         return None
     px = prices[code].dropna()
     if len(px) < 30:
         return None
 
-    mom_1m = _momentum(px, 1)
-    mom_3m = _momentum(px, 3)
-    mom_6m = _momentum(px, 6)
+    mom_1m = _momentum(px, 1, as_of=as_of)
+    mom_3m = _momentum(px, 3, as_of=as_of)
+    mom_6m = _momentum(px, 6, as_of=as_of)
     trend = _trend_score(px)
-    rel_3m = _relative_mom(px, bench, 3) if not bench.empty else np.nan
+    rel_3m = _relative_mom(px, bench, 3, as_of=as_of) if not bench.empty else np.nan
     comp = _composite_score(mom_1m, mom_3m, mom_6m, trend, rel_3m)
 
     last = float(px.iloc[-1])
@@ -333,7 +339,8 @@ def compute_sector_view(date: str) -> dict:
 
     us_results = []
     for code, info in US_SECTORS.items():
-        sig = _score_sector(code, prices, sp500)
+        data_code = info.get("data_code", code)
+        sig = _score_sector(data_code, prices, sp500, as_of=date)
         if sig is None:
             sig = {k: np.nan for k in ["last", "mom_1m", "mom_3m", "mom_6m", "trend", "rel_3m", "composite"]}
             sig["last_date"] = "—"
@@ -351,7 +358,8 @@ def compute_sector_view(date: str) -> dict:
 
     kr_results = []
     for code, info in KR_SECTORS.items():
-        sig = _score_sector(code, prices, kospi)
+        data_code = info.get("data_code", code)
+        sig = _score_sector(data_code, prices, kospi, as_of=date)
         if sig is None:
             sig = {k: np.nan for k in ["last", "mom_1m", "mom_3m", "mom_6m", "trend", "rel_3m", "composite"]}
             sig["last_date"] = "—"

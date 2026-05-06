@@ -415,8 +415,21 @@ def load_prices(date: str) -> "pd.DataFrame":
     return wide[wide.index <= target].sort_index()
 
 
-def momentum(px: "pd.Series", months: int) -> float:
-    """달력 기준 수익률 (소수점 반환). 데이터 부족 시 nan."""
+def momentum(px: "pd.Series", months: int,
+             as_of: "pd.Timestamp | str | None" = None,
+             max_stale_days: int = 3) -> float:
+    """달력 기준 수익률 (소수점 반환). 데이터 부족 시 nan.
+
+    as_of 가 지정되면 px 의 마지막 일자가 as_of 보다 max_stale_days 이상 뒤처졌을 때
+    NaN 을 반환해 stale-anchor 카드가 분석 일자로 위장되는 것을 막는다.
+    """
+    if px.empty:
+        return np.nan
+    if as_of is not None:
+        as_of_ts = pd.Timestamp(as_of)
+        anchor_ts = pd.Timestamp(px.index[-1])
+        if (as_of_ts - anchor_ts).days > max_stale_days:
+            return np.nan
     target = px.index[-1] - pd.DateOffset(months=months)
     past = px[px.index <= target]
     if past.empty:

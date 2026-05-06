@@ -156,15 +156,16 @@ def _latest_macro(macro_df: pd.DataFrame, code: str) -> float:
 
 # ── Signal calculators ───────────────────────────────────────────────────
 
-def _momentum(px: pd.Series, months: int) -> float:
+def _momentum(px: pd.Series, months: int, as_of: str | None = None) -> float:
     from ._shared import momentum
-    return momentum(px, months)
+    return momentum(px, months, as_of=as_of)
 
 
-def _vs_acwi(px_country: pd.Series, px_acwi: pd.Series, months: int = 6) -> float:
+def _vs_acwi(px_country: pd.Series, px_acwi: pd.Series, months: int = 6,
+             as_of: str | None = None) -> float:
     """ACWI 대비 초과수익 (달력 기준)."""
-    country_ret = _momentum(px_country, months)
-    acwi_ret = _momentum(px_acwi, months)
+    country_ret = _momentum(px_country, months, as_of=as_of)
+    acwi_ret = _momentum(px_acwi, months, as_of=as_of)
     if np.isnan(country_ret) or np.isnan(acwi_ret):
         return np.nan
     return country_ret - acwi_ret
@@ -451,14 +452,14 @@ def compute_country_view(date: str) -> dict:
         eq_px = prices[eq_c].dropna() if eq_c in prices.columns else pd.Series(dtype=float)
         fx_px = prices[fx_c].dropna() if (fx_c and fx_c in prices.columns) else pd.Series(dtype=float)
 
-        # Momentum
-        mom_3m = _momentum(eq_px, 3)
-        mom_6m = _momentum(eq_px, 6)
-        mom_12m = _momentum(eq_px, 12)
+        # Momentum (as_of guard: 분석일자보다 3일 이상 stale 한 시계열은 NaN 반환)
+        mom_3m = _momentum(eq_px, 3, as_of=date)
+        mom_6m = _momentum(eq_px, 6, as_of=date)
+        mom_12m = _momentum(eq_px, 12, as_of=date)
 
         # vs ACWI
-        excess_3m = _vs_acwi(eq_px, acwi, 3)
-        excess_6m = _vs_acwi(eq_px, acwi, 6)
+        excess_3m = _vs_acwi(eq_px, acwi, 3, as_of=date)
+        excess_6m = _vs_acwi(eq_px, acwi, 6, as_of=date)
 
         # FX
         if fx_c and not fx_px.empty and usd_based is not None:
