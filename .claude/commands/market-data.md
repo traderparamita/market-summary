@@ -1,4 +1,4 @@
----
+﻿---
 allowed-tools: Bash(.venv/bin/python:*), Bash(ls:*), Read
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
 description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (generate.py → collect_market.py 실행)"
@@ -7,8 +7,8 @@ description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (ge
 ## Context
 
 - 현재 날짜: !`date +%Y-%m-%d`
-- 최근 생성된 보고서: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*.html 2>/dev/null | head -5`
-- history CSV 마지막 날짜: !`tail -5 /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
+- 최근 생성된 보고서: !`ls -t output/summary/2026-*/2026-*-*.html 2>/dev/null | head -5`
+- history CSV 마지막 날짜: !`tail -5 history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
 
 ## Your task
 
@@ -21,13 +21,13 @@ description: "market_summary 일간 데이터 수집 + Data Dashboard 생성 (ge
 인자로 받은 날짜($ARGUMENTS)가 있으면:
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py $ARGUMENTS
+.venv/bin/python generate.py $ARGUMENTS
 ```
 
 **인자가 없으면** 날짜 없이 실행 (전 영업일 자동 선택):
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate.py
+.venv/bin/python generate.py
 ```
 
 **내부 동작 (참고용 — 별도로 실행하지 않는다)**:

@@ -1,15 +1,15 @@
----
+﻿---
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(cd:*)
 description: "market_summary 보고서 git commit + push → GitHub Pages 자동 배포"
 ---
 
 ## Context
 
-- 작업 디렉토리: /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary
-- 현재 git status: !`cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && git status --short`
-- 현재 브랜치: !`cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && git branch --show-current`
-- 최근 커밋 5개: !`cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && git log --oneline -5`
-- output/ 변경분: !`cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && git status --short output/ history/`
+- 작업 디렉토리: .
+- 현재 git status: !`git status --short`
+- 현재 브랜치: !`git branch --show-current`
+- 최근 커밋 5개: !`git log --oneline -5`
+- output/ 변경분: !`git status --short output/ history/`
 
 ## Your task
 

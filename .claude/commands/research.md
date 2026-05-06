@@ -1,4 +1,4 @@
----
+﻿---
 allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Bash(tail:*), Bash(awk:*), Bash(sort:*), Bash(cut:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (날짜 생략 시 전 영업일)"
 description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오늘의 3개 주제(US섹터+KR섹터+국가) Tavily 검색 → Story 주입"
@@ -7,9 +7,9 @@ description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오�
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 섹터·국가 보고서: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/research/daily/**/*.html 2>/dev/null | head -3`
-- 최근 증권 다이제스트: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/research/securities/*.html 2>/dev/null | head -2`
-- market_data.csv 마지막 날짜: !`tail -5 /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
+- 최근 섹터·국가 보고서: !`ls -t output/research/daily/**/*.html 2>/dev/null | head -3`
+- 최근 증권 다이제스트: !`ls -t output/research/securities/*.html 2>/dev/null | head -2`
+- market_data.csv 마지막 날짜: !`tail -5 history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
 
 ---
 
@@ -34,7 +34,7 @@ Load and follow `.claude/skills/sector-country/SKILL.md` (research 보고서 스
 사전 점검 통과 후 즉시 전송. 실패해도 계속 진행.
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+\
   .venv/bin/python notify_telegram.py {date} --start --label "섹터·국가"
 ```
 
@@ -43,7 +43,7 @@ cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
 ## Step 1 — Data Dashboard 생성 + 오늘의 주제 확인
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python generate_sector_country.py {date}
+.venv/bin/python generate_sector_country.py {date}
 ```
 
 CLI 출력에서 **섹터 Day N/11**, **국가 Day M/11**, **theme**, 3개 subjects를 기록한다.  
@@ -56,7 +56,7 @@ CLI 출력에서 **섹터 Day N/11**, **국가 Day M/11**, **theme**, 3개 subje
 ## Step 2 — 데이터 읽기
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -c "
+.venv/bin/python -c "
 from generate_sector_country import get_focus
 from views.sector_view import compute_sector_view
 from views.country_view import compute_country_view
@@ -231,7 +231,7 @@ grep "{indicator_code}" history/market_data.csv | grep "^2026" | sort | awk -F',
 ## Step 5 — Story 주입
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && .venv/bin/python -c "
+.venv/bin/python -c "
 from generate_sector_country import inject_story
 inject_story('{html_path}', '''
 {story_html}
@@ -262,7 +262,7 @@ grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
 Story 주입 및 `_story.html` 저장 완료 후 변경분을 커밋·푸시한다. 실패해도 Step 8로 계속 진행.
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+\
   git add output/research/ && \
   git commit -m "feat: {date} research 보고서 — 섹터 Day N/11 · 국가 Day M/11
 
@@ -281,7 +281,7 @@ Story 주입 성공 후 전송. 실패해도 계속.
 - `--uw`: UW 섹터/국가 목록 (없으면 생략)
 
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary && \
+\
   .venv/bin/python notify_telegram.py {date} --sc-complete \
     --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/11 — 오늘의 국가" \
     --ow "XLK, TIGER 200 IT, 미국" \

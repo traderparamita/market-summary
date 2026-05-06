@@ -1,4 +1,4 @@
----
+﻿---
 allowed-tools: Read, Edit, Bash(.venv/bin/python:*), Bash(grep:*), Bash(ls:*)
 argument-hint: "[YYYY-MM-DD] [period: daily|weekly|monthly]  (둘 다 생략 시 전 영업일·daily)"
 description: "market_summary CS Story 작성: 기존 Story에서 수치를 최대한 제거하고 맥락 중심으로 재작성 (Story 탭과 병행 운영되는 CS 탭)"
@@ -7,8 +7,8 @@ description: "market_summary CS Story 작성: 기존 Story에서 수치를 최�
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 일간 Story: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*_story.html 2>/dev/null | head -3`
-- 최근 CS 산출물: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*_cs.html 2>/dev/null | head -3`
+- 최근 일간 Story: !`ls -t output/summary/2026-*/2026-*-*_story.html 2>/dev/null | head -3`
+- 최근 CS 산출물: !`ls -t output/summary/2026-*/2026-*-*_cs.html 2>/dev/null | head -3`
 
 ---
 

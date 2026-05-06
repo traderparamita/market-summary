@@ -1,4 +1,4 @@
----
+﻿---
 allowed-tools: Read, Edit, Bash(.venv/bin/python:*), Bash(grep:*), Bash(ls:*)
 argument-hint: "[YYYY-MM-DD] [period: daily|weekly|monthly]  (둘 다 생략 시 전 영업일·daily)"
 description: "market_summary PM Story 작성: 기존 Market Story + _data.json 을 바탕으로 지역·자산군별 6개 섹션(한국·매크로·아시아및중국·미국·유럽·채권) 매니저 브리프 생성"
@@ -7,8 +7,8 @@ description: "market_summary PM Story 작성: 기존 Market Story + _data.json �
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 일간 Story: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*_story.html 2>/dev/null | head -3`
-- 최근 PM 산출물: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*_pm.html 2>/dev/null | head -3`
+- 최근 일간 Story: !`ls -t output/summary/2026-*/2026-*-*_story.html 2>/dev/null | head -3`
+- 최근 PM 산출물: !`ls -t output/summary/2026-*/2026-*-*_pm.html 2>/dev/null | head -3`
 
 ---
 

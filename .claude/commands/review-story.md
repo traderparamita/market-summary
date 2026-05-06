@@ -1,4 +1,4 @@
----
+﻿---
 allowed-tools: Read, Bash(ls:*), Bash(grep:*), Bash(head:*), Bash(tail:*), Bash(awk:*), Bash(sort:*), Bash(cut:*), Bash(date:*), Bash(.venv/bin/python:*), Agent
 argument-hint: "[YYYY-MM-DD] [period: daily|weekly|monthly]  (둘 다 생략 시 전 영업일·daily)"
 description: "market_summary Story 사후 점검: _data.json·CSV 와 본문 수치·종목·날짜 교차 대조. code-reviewer 서브에이전트로 체크리스트 리포트 생성 (수정은 승인 후 별도 진행)"
@@ -7,8 +7,8 @@ description: "market_summary Story 사후 점검: _data.json·CSV 와 본문 수
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 일간 Story: !`ls -t /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/2026-*/2026-*-*_story.html 2>/dev/null | head -3`
-- CSV 최종일: !`tail -3 /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u | tail -1`
+- 최근 일간 Story: !`ls -t output/summary/2026-*/2026-*-*_story.html 2>/dev/null | head -3`
+- CSV 최종일: !`tail -3 history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u | tail -1`
 
 ---
 

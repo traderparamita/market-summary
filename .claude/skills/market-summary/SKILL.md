@@ -1,4 +1,4 @@
----
+﻿---
 name: market-summary
 description: "market_summary 프로젝트의 Market Story(일간/주간/월간 시장 해설) 작성 스킬. 해당 날짜의 _data.json과 웹 검색을 기반으로 시간순 인과관계가 정확한 시장 해설을 작성하고 HTML에 주입한다. 사용 시점: 일간/주간/월간 보고서의 Story 탭을 작성·수정할 때, '4/8 스토리 써줘', '이번 주 주간 스토리 작성', '3월 월간 스토리' 같은 요청이 들어올 때."
 argument-hint: "[target_date: YYYY-MM-DD] [period: daily|weekly|monthly]"
@@ -22,7 +22,7 @@ metadata:
 ## 프로젝트 위치
 
 ```
-/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/
+
 ├── output/summary/YYYY-MM/YYYY-MM-DD.html          # 일간 보고서 (Story 주입 대상)
 ├── output/summary/YYYY-MM/YYYY-MM-DD_data.json     # 일간 원시 데이터 (Story 입력)
 ├── output/summary/YYYY-MM/YYYY-MM-DD_story.html    # 일간 Story 별도 저장
