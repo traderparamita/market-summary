@@ -79,6 +79,8 @@ CSS_WHITELIST = {
     # General layout (허용 — generate.py 생성 HTML의 기본 클래스)
     "tab-panel", "tab-content", "tab-nav", "tab-btn",
     "card", "metric", "kpi",
+    # 탭 활성화 modifier (default 탭 표시)
+    "active",
 }
 
 # story 섹션 블록 추출용 패턴
