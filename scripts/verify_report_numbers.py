@@ -573,6 +573,21 @@ PARA_BOUNDARIES = ('<br><br>', '<br /><br />', '<br/><br/>', '</p>', '</li>', '<
 # 일간 컨텍스트 시그널 — "4/8(수)" 같이 일자+한글요일 명시. 매칭되면 그 span은 일간 등락으로 간주 → 검증 스킵
 DAILY_HINT_PATTERN = re.compile(r'\d{1,2}/\d{1,2}\s*\([월화수목금토일]\)')
 
+# <h1>~<h6> 헤더 본문 추출 (PARA_BOUNDARIES 가 단락 경계로 헤더를 잘라버려도, span 직전 가장 가까운
+# 헤더의 텍스트는 그 섹션 컨텍스트로 보고 PERIOD_HINTS 검색에 추가 — "주간 누적", "월간 누적" 같은
+# h3 라벨이 채권 bp WTD/MTD 인식의 키.
+HEADING_TAG_RE = re.compile(r'<h[1-6][^>]*>(.*?)</h[1-6]>', re.IGNORECASE | re.DOTALL)
+
+
+def _nearest_heading_text(text: str, position: int, max_back: int = 2500) -> str:
+    """span 직전 가장 가까운 <h1>~<h6> 헤더 본문 (HTML 태그·엔티티는 그대로 반환).
+    PERIOD_HINTS 키워드("주간", "월간" 등) 매칭 용도로만 쓰이므로 마크업 제거 불필요."""
+    backward = text[max(0, position - max_back): position]
+    last_match = None
+    for m in HEADING_TAG_RE.finditer(backward):
+        last_match = m
+    return last_match.group(1) if last_match else ""
+
 
 def _trim_window_to_paragraph(text: str, span_start: int, span_end: int,
                                max_back: int = 400, max_forward: int = 80) -> str:
@@ -911,10 +926,21 @@ def verify(file_path: Path, prices) -> list[Violation]:
     #    윈도우(직전 300자)에 *명시* period 키워드가 있을 때만 검증.
     #    채권 bp는 명시 키워드 없어도 파일 종류에 따른 default 허용 (yield 변화는 무조건 기간 변화).
     #    % 단위는 명시 키워드 없으면 스킵 → 일간 등락 본문 인용 같은 false positive 회피.
+    #
+    # 본문(window) 매칭은 엄격 — "주간"/"월간" 단독은 본문 인용("주간 실업수당", "월간 PMI") 으로
+    # 자주 등장하므로 PERIOD_HINTS 에서 제외. 헤더(heading) 매칭은 관대 — <h3>주간 누적</h3> 같은
+    # 섹션 라벨은 그 박스 전체의 기간 컨텍스트.
     PERIOD_HINTS = {
-        "WTD": ("WTD", "주간", "Weekly", "전주 금요일", "5/5 영업일", "주간 수익률", "주간 통계"),
-        "MTD": ("MTD", "월간", "Monthly", "월초", "월말", "월간 수익률"),
-        "YTD": ("YTD", "연초", "Year-to-Date", "YearToDate", "연간 누적"),
+        "WTD": ("WTD", "주간 누적", "Weekly", "전주 금요일", "5/5 영업일",
+                "주간 수익률", "주간 통계", "주간 변동률", "주간 등락"),
+        "MTD": ("MTD", "월간 누적", "Monthly", "월초 대비", "월말 대비",
+                "월간 수익률", "월간 변동률", "월간 등락"),
+        "YTD": ("YTD", "연초 대비", "Year-to-Date", "YearToDate", "연간 누적", "연초 이후"),
+    }
+    HEADING_PERIOD_HINTS = {
+        "WTD": ("WTD", "주간", "Weekly"),
+        "MTD": ("MTD", "월간", "Monthly"),
+        "YTD": ("YTD", "연초", "Year-to-Date", "YearToDate"),
     }
 
     full = str(file_path)
@@ -938,12 +964,20 @@ def verify(file_path: Path, prices) -> list[Violation]:
         if DAILY_HINT_PATTERN.search(window):
             continue
 
-        # 명시 period 키워드 (잘린 단락 안에서)
+        # 명시 period 키워드: 본문(window) 은 엄격, 헤더(heading) 는 bp 단위에만 관대.
+        # 헤더 추가 사유: <h3>주간 누적</h3> 다음 <li>채권: ... <span>+0.9bp</span></li> 형태에서
+        # </h3>가 PARA_BOUNDARIES 의 </div> 등으로 차단되어 윈도우에 헤더가 들어오지 않으면 WTD/MTD 인식 불가.
+        # % 단위는 헤더 매칭 미적용 — _data.json.weekly 가 롤링 5영업일이라 verifier 의 ISO WTD 와
+        # 정의 차이가 있어 false positive 폭증 (4/29 등 회귀 보고서에서 확인).
+        heading = _nearest_heading_text(text, m.start()) if unit == "bp" else ""
         period = None
         for p, hints in PERIOD_HINTS.items():
             if p not in periods:
                 continue
             if any(h in window for h in hints):
+                period = p
+                break
+            if heading and any(h in heading for h in HEADING_PERIOD_HINTS[p]):
                 period = p
                 break
 
