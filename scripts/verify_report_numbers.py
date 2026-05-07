@@ -568,7 +568,10 @@ def _is_in_forward_container(text: str, position: int) -> bool:
 
 # 단락 경계 — HL_SPAN 윈도우를 다른 단락에서 차단
 # (heading 태그 </h1>~</h6>는 제외 — 헤더의 "WTD" 같은 라벨이 그 섹션의 컨텍스트를 제공해야 하므로)
-PARA_BOUNDARIES = ('<br><br>', '<br /><br />', '<br/><br/>', '</p>', '</li>', '</div>')
+# `<br>` 단독도 경계로 사용 — 의미적으로 줄 바꿈 = 단락 구분이며, 다음 항목의 키워드("MTD" 등)가
+# 윈도우에 끼어들면 false positive 발생 (NVIDIA 일변동률을 다음 라인 "NVIDIA MTD" 와 묶어버린 사례)
+PARA_BOUNDARIES = ('<br><br>', '<br /><br />', '<br/><br/>', '<br>', '<br/>', '<br />',
+                   '</p>', '</li>', '</div>')
 
 # 일간 컨텍스트 시그널 — "4/8(수)" 같이 일자+한글요일 명시. 매칭되면 그 span은 일간 등락으로 간주 → 검증 스킵
 DAILY_HINT_PATTERN = re.compile(r'\d{1,2}/\d{1,2}\s*\([월화수목금토일]\)')
@@ -807,8 +810,13 @@ def _periods_for_file(file_path: Path) -> dict[str, tuple[str, str]]:
         d_obj = date.fromisoformat(d_iso)
         prev = (d_obj - timedelta(days=1)).isoformat()
         out["일간"] = (prev, d_iso)
-        out["WTD"] = weekly_dates(*d_obj.isocalendar()[:2])
-        out["MTD"] = monthly_dates(d_obj.year, d_obj.month)
+        # 일간 보고서의 WTD/MTD end_date 는 보고서 일자로 cap — 그렇지 않으면 weekly_dates/
+        # monthly_dates 가 W/M 마지막 영업일을 반환하고 lookback 으로 미래 종가까지 가져와
+        # "현재 시점에서 작성된 본문 +9.30% MTD" 가 "월말 +10.42% MTD" 와 충돌하는 false positive 발생.
+        wtd_start, _ = weekly_dates(*d_obj.isocalendar()[:2])
+        mtd_start, _ = monthly_dates(d_obj.year, d_obj.month)
+        out["WTD"] = (wtd_start, d_iso)
+        out["MTD"] = (mtd_start, d_iso)
         out["YTD"] = ytd_dates(d_obj.year, d_iso)
         return out
 
