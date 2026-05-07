@@ -108,6 +108,30 @@ ST_ORDER = [
     "Apple", "Microsoft", "Tesla", "TSMC", "Samsung",
 ]
 
+# ── 시가총액 순 (collectors/stocks_universe.py 의 KR_TOP50/US_TOP50 순서) ──
+# Lazy import 로 순환참조 회피
+def _load_stock_orders():
+    try:
+        from collectors.stocks_universe import KR_TOP50, US_TOP50
+        kr = [t[2] for t in KR_TOP50]   # 'name' 필드 (data ticker)
+        us = [t[2] for t in US_TOP50]
+        kr_ko = {t[2]: t[4] for t in KR_TOP50}  # name → name_ko
+        us_en = {t[2]: t[4] for t in US_TOP50}  # name → name_en
+        return kr, us, kr_ko, us_en
+    except Exception:
+        return [], [], {}, {}
+
+
+KR_STOCK_ORDER, US_STOCK_ORDER, _KR_KO_LABELS, _US_EN_LABELS = _load_stock_orders()
+# 기본 표시 갯수 (시총 상위 N종)
+KR_STOCK_TOP_N = 20
+US_STOCK_TOP_N = 20
+
+# KO_LABELS 에 KR_TOP50 한글명 자동 등록 (덮어쓰지 않음)
+for _en, _ko in _KR_KO_LABELS.items():
+    KO_LABELS.setdefault(_en, _ko)
+
+
 DATA_SOURCES = {
     "주식(Equity)":           "yfinance · FinanceDataReader · investiny",
     "MSCI 지수":              "yfinance (ETF proxy)",
@@ -116,6 +140,9 @@ DATA_SOURCES = {
     "환율(FX)":               "investiny(investing.com) · FinanceDataReader",
     "원자재(Commodities)":    "investiny(investing.com) · yfinance · NYMEX/COMEX/ICE front-month 선물",
     "주요 종목(Major Stocks)": "yfinance",
+    "한국 주식": "FinanceDataReader · KOSPI 시총순",
+    "미국 주식": "yfinance · S&P500 시총순",
+    "기타 종목(ADR · HK)": "yfinance",
 }
 
 

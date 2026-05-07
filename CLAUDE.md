@@ -8,6 +8,7 @@
 /market-full [YYYY-MM-DD]    # 데이터 수집 → Dashboard → Story(일/주/월) → 배포
 /market-data [YYYY-MM-DD]    # 데이터 수집 + Data Dashboard만
 /market-deploy               # output/ 변경분 commit + push
+/weekly-pm [YYYY-MM-DD]      # 금요일 오전 발행용 Mon-Thu PM 브리프 + PDF 2종
 ```
 
 Story 작성 규칙은 `market-summary` 스킬에 있다 (Story 작업 시 자동 로드).
@@ -24,6 +25,7 @@ Story 작성 규칙은 `market-summary` 스킬에 있다 (Story 작업 시 자�
 ```
 generate.py               # HTML 보고서 생성 (collect_market import + Snowflake dual-write)
 generate_periodic.py      # 주간/월간/분기 집계 (--only {weekly|monthly|quarterly} --quarter N)
+generate_weekly_pm.py     # 금요일 오전 PM 브리프 (월~목 4영업일 윈도우 + Today Residual + W+1 Outlook)
 generate_sector_country.py # 섹터·국가 보고서 (11일 사이클)
 market_source.py         # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader 의 단일 진입점
 snowflake_loader.py       # CSV ↔ Snowflake 적재 유틸
@@ -57,6 +59,7 @@ scripts/
 ├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
 ├── generate_securities_index.py      # output/research/securities/index.html
 ├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
+├── html_to_pdf.py                    # HTML → PDF 변환 (Playwright Chromium, --tab/--exclude 옵션)
 ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
 ├── com.lifesailor.market-ocr.plist           # launchd: 일일 OCR Story
 └── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
@@ -91,7 +94,8 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - equity(19) · bond(16) · sector_us(11) · index_kr(11) · stocks(104, KR50+US50+ADR/HK 4) · fx(8) · style_us(5) · commodity(6) · valuation(3) · risk(2)
 - KR 섹터는 `index_kr` (KRX GICS 11종) 으로 일원화. 종전 `sector_kr` (TIGER/KODEX ETF 25종) 는 2026-05-07 제거.
 - `stocks` 는 KOSPI 시총 상위 50 + S&P500 시총 상위 50 + ADR/HK(TSMC·BABA·MEITUAN·TENCENT) 백필 (35.8만 행).
-- Dashboard 표시는 `ST_ORDER` 화이트리스트 10종으로 제한 — 백필 90종은 Story 본문/검증/분석에서만 활용.
+- Dashboard 표시 (2026-05-07 부): **한국 주식 Top 20** + **미국 주식 Top 20** + ADR/HK 4종으로 분리, 각각 시가총액 순 (`report_utils.KR_STOCK_ORDER` / `US_STOCK_ORDER` — `collectors/stocks_universe.KR_TOP50` / `US_TOP50` 직접 import). 표시 갯수는 `KR_STOCK_TOP_N` / `US_STOCK_TOP_N` 상수.
+- YTD 계산: 글로벌 ye_date(전년 마지막 영업일) 에 ticker 데이터가 없으면 그 ticker 가 가졌던 마지막 전년도 종가로 자동 fallback (예: KR Top50 백필이 2025-12-31 누락 시 2025-12-30 사용).
 - 신규 종목 추가: `collectors/stocks_universe.py` 의 `KR_TOP50` / `US_TOP50` 수정 후 `--seed-dim` 으로 dim 등록, `--start` 로 백필.
 
 **macro_indicators 카테고리 (43개 지표)**:
@@ -118,6 +122,37 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 
 `generate_sector_country.py`의 `get_focus(date)` 로 자동 계산. 기준일 2026-01-05, 영업일 기준 독립 순환.
 국가: KR(1)·US(2)·CN(3)·JP(4)·EU(5)·UK(6)·DE(7)·FR(8)·IN(9)·TW(10)·EM(11)
+
+## Weekly PM Brief (금요일 오전 발행)
+
+정식 weekly Summary (월~금 5영업일, 일요일 발행) 와 별개로, **그 주 월~목 4영업일 누적**을 매니저 톤으로 정리한 금요일 오전 브리프. `/weekly-pm YYYY-MM-DD` 한 줄로 발행.
+
+**산출물 (`output/weekly-pm/YYYY-MM-DD.{html,pdf,_no-data.pdf,_pm.html}`)**
+
+| 파일 | 구성 |
+|------|------|
+| `{date}.html` | Data Dashboard + PM Brief (회고 6 섹션 + Outlook) |
+| `{date}_pm.html` | PM 탭 sibling (PM 본문만) |
+| `{date}.pdf` | 풀 PDF (12p 내외, Data Dashboard 포함) |
+| `{date}_no-data.pdf` | PM 중심 PDF (5p 내외, Data 제외) |
+
+**워크플로우 5 단계** (스킬: `weekly-pm`)
+1. 영업일 검증 (`calendar_check.py` + 한국 공휴일 자동 제외)
+2. HTML skeleton 생성 (`generate_weekly_pm.py {date}`)
+3. PM Story 6 섹션 (한국·매크로·아시아·미국·유럽·채권) + Outlook 5 블록 (Today Residual / Bull·Base·Bear / 캘린더 / 리스크 Top 3 / 포지셔닝)
+4. HTML 주입 + `_pm.html` sibling 동기화
+5. PDF 2종 (`scripts/html_to_pdf.py {html}` + `--exclude data`)
+
+**4영업일 윈도우 특수성**
+- "Weekly" 컬럼 = 직전 금요일 종가 → 그 주 목요일 종가 (정식 5영업일 WTD 와 다름)
+- 한국 공휴일 끼면 자동 3영업일로 단축 (예: W19 어린이날 5/5 → 5/4·5/6·5/7)
+- Today Residual 박스만 forward-looking 허용 (당일 NFP·ECB·어닝 등 잔여 변수)
+- W+1 Outlook 도 forward-looking 화이트리스트 (`outlook-divider` / `scenario-grid` 클래스)
+
+**PDF 변환** (`scripts/html_to_pdf.py`)
+- Playwright headless Chromium (Chart.js·Spoqa 한글 폰트 호환)
+- 빈 탭(placeholder only) 자동 hide / 카드 page-break-inside 보호 / 마지막 가시 탭 break-after 해제
+- 옵션: `--tab pm` (특정 탭만), `--exclude data,sources` (탭 제외, 쉼표 구분), `--out PATH`
 
 ## 자동화 스케줄
 
@@ -178,8 +213,8 @@ logs/
 ## 관련 설정
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse, type: "prompt") + Stop 훅 (수치 자동 검증)
-- `.claude/skills/`: `market-summary`, `sector-country`, `macro-events`, `mali-etf-analysis`
-- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/market-pm`, `/market-cs`, `/research`, `/review-story`
+- `.claude/skills/`: `market-summary`, `sector-country`, `macro-events`, `mali-etf-analysis`, `weekly-pm`
+- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/weekly-pm`
 
 ## 상세 문서
 

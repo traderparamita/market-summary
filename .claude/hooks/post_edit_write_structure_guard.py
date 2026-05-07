@@ -97,9 +97,17 @@ def is_weekly_or_monthly(file_path: str) -> bool:
     return "/weekly/" in file_path or "/monthly/" in file_path
 
 
+def is_pm_brief(file_path: str) -> bool:
+    """Weekly-PM Brief: PM 탭이 본질이고 Story 탭은 placeholder/요약. 구조 검증 제외."""
+    return "/weekly-pm/" in file_path
+
+
 def needs_section_check(file_path: str) -> bool:
     """필수 섹션 체크 대상: 메인 일간 HTML + _story.html만.
-    _pm.html / _cs.html / _sources.html / _macro.html 은 구조가 다르므로 제외."""
+    _pm.html / _cs.html / _sources.html / _macro.html 은 구조가 다르므로 제외.
+    weekly-pm/ 경로는 PM 중심 브리프이므로 Story 섹션 강제 제외."""
+    if is_pm_brief(file_path):
+        return False
     name = file_path.rsplit("/", 1)[-1]
     return name.endswith("_story.html") or (
         name.endswith(".html")

@@ -14,6 +14,7 @@ from report_utils import (
     fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg,
     KO_LABELS, EQUITY_ORDER, MSCI_ORDER, BOND_RATE_ORDER, BOND_ETF_ORDER,
     FX_ORDER, CM_ORDER, ST_ORDER, DATA_SOURCES,
+    KR_STOCK_ORDER, US_STOCK_ORDER, KR_STOCK_TOP_N, US_STOCK_TOP_N,
     PERIODIC_TAB_SPECS, save_story_files, inject_existing_story, extract_tab,
     ordered,
 )
@@ -108,6 +109,9 @@ def aggregate_period(market_data, trading_days, date_list):
             ye_date = d
             break
 
+    # 전년 영업일 후보 (글로벌 ye_date 에 ticker 데이터가 없을 때 ticker-level fallback)
+    prev_year_days = [d for d in trading_days if d < f"{year}-01-01"]
+
     result = {"dates": available, "first": first_date, "last": last_date}
 
     last_day = market_data[last_date]
@@ -146,8 +150,16 @@ def aggregate_period(market_data, trading_days, date_list):
                 period_chg = 0
 
             # YTD: 전년 마지막 종가 → 기간 마지막 종가
+            # 글로벌 ye_date 에 해당 ticker 데이터 없으면 그 ticker가 가졌던 마지막 전년도 종가로 fallback
+            # (예: KR Top50 백필 누락으로 2025-12-31 데이터 없음 → 2025-12-30 사용)
             ytd = 0
             ye_close = ye_day.get(cat, {}).get(ticker)
+            if not ye_close:
+                for d in reversed(prev_year_days):
+                    candidate = market_data.get(d, {}).get(cat, {}).get(ticker)
+                    if candidate:
+                        ye_close = candidate
+                        break
             if ye_close and last_close and ye_close != 0:
                 ytd = (last_close - ye_close) / ye_close * 100
 
@@ -574,22 +586,46 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
         html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
     html += '</div>\n</div>\n'
 
-    # 히트맵 테이블
+    # 종목: 시가총액 순 (KR_TOP50 / US_TOP50 의 정렬 순서) Top N 만 표시
+    kr_stocks = {n: st[n] for n in KR_STOCK_ORDER[:KR_STOCK_TOP_N] if n in st}
+    us_stocks = {n: st[n] for n in US_STOCK_ORDER[:US_STOCK_TOP_N] if n in st}
+    # KR/US 어디에도 안 속한 잔여 (TSMC·BABA 등 ADR/HK)
+    other_stocks = {
+        n: d for n, d in st.items()
+        if n not in KR_STOCK_ORDER and n not in US_STOCK_ORDER
+    }
+
+    # 히트맵 테이블 (filter_to_order=True 면 order 화이트리스트만 표시)
     sections = [
-        ("주식(Equity)", eq_regional, False, False, EQUITY_ORDER),
-        ("MSCI 지수", eq_msci, False, False, MSCI_ORDER),
-        ("채권·금리(Bonds & Rates)", bd_rates, False, True, BOND_ORDER),
-        ("채권 ETF(Bond ETF)", bd_etf, True, False, ["AGG","TLT","IEI","SHY","TIP","LQD","HYG","EMB"]),
-        ("환율(FX)", fx, False, False, FX_ORDER),
-        ("원자재(Commodities)", cm, True, False, CM_ORDER),
-        ("주요 종목(Major Stocks)", st, True, False, ST_ORDER),
+        ("주식(Equity)", eq_regional, False, False, EQUITY_ORDER, False),
+        ("MSCI 지수", eq_msci, False, False, MSCI_ORDER, False),
+        ("채권·금리(Bonds & Rates)", bd_rates, False, True, BOND_ORDER, False),
+        ("채권 ETF(Bond ETF)", bd_etf, True, False, ["AGG","TLT","IEI","SHY","TIP","LQD","HYG","EMB"], False),
+        ("환율(FX)", fx, False, False, FX_ORDER, False),
+        ("원자재(Commodities)", cm, True, False, CM_ORDER, False),
+        (f"한국 주식(Korean Stocks · Top {KR_STOCK_TOP_N})",
+         kr_stocks, False, False, KR_STOCK_ORDER, True),
+        (f"미국 주식(US Stocks · Top {US_STOCK_TOP_N})",
+         us_stocks, True, False, US_STOCK_ORDER, True),
     ]
-    for sec_title, cat, dollar, as_bp, order in sections:
+    if other_stocks:
+        sections.append((
+            "기타 종목(ADR · HK)", other_stocks, True, False,
+            ["TSMC","Alibaba","Meituan","Tencent"], True,
+        ))
+
+    for sec_title, cat, dollar, as_bp, order, filter_to_order in sections:
         if not cat:
             continue
         idx = {n: i for i, n in enumerate(order)}
-        items = sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
-        src = DATA_SOURCES.get(sec_title, "")
+        if filter_to_order:
+            items = [(n, cat[n]) for n in order if n in cat]
+        else:
+            items = sorted(cat.items(), key=lambda x: idx.get(x[0], 999))
+        # DATA_SOURCES 키는 prefix 매칭 (Top N 변동 흡수)
+        src = DATA_SOURCES.get(sec_title) or next(
+            (v for k, v in DATA_SOURCES.items() if sec_title.startswith(k)), ""
+        )
         src_html = f' <span class="src-tag">{src}</span>' if src else ""
         html += f"""<div class="heatmap-section">
 <h2>{sec_title} <span class="badge">{len(items)}</span>{src_html}</h2>
