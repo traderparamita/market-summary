@@ -965,6 +965,11 @@ def verify(file_path: Path, prices) -> list[Violation]:
     else:
         bp_default = None
 
+    # WTD/MTD 누적 박스 헤더 — % 변동률은 _data.json.weekly/monthly (롤링 5/21영업일) 를
+    # 그대로 표시하는 보고서가 많아 verifier 의 ISO WTD/MTD 정의와 다른 case 가 흔함.
+    # 박스 헤더에 이 키워드가 있으면 % 검증 스킵 (채권 bp 는 % → bp 환산 정확도가 높아 계속 검증).
+    ROLLING_BOX_HEADING_KEYWORDS = ("주간 누적", "월간 누적", "WTD Progress", "MTD Progress")
+
     for m in HL_SPAN_PATTERN.finditer(text):
         asset, val, unit = m.group(1), m.group(2), m.group(3)
         # 단락 경계로 자른 윈도우 — 다른 단락의 키워드가 들어오지 않도록
@@ -973,6 +978,12 @@ def verify(file_path: Path, prices) -> list[Violation]:
         # 일간 컨텍스트 시그널 ("4/8(수)" 같은 일자+요일) — 일간 등락 인용으로 보고 검증 스킵
         if DAILY_HINT_PATTERN.search(window):
             continue
+
+        # WTD/MTD 박스 안 % 변동률 — _data.json 롤링 정의 vs ISO 정의 차이로 false-positive 폭증. 스킵.
+        if unit == "%":
+            heading_full = _nearest_heading_text(text, m.start())
+            if heading_full and any(kw in heading_full for kw in ROLLING_BOX_HEADING_KEYWORDS):
+                continue
 
         # 명시 period 키워드: 본문(window) 은 엄격, 헤더(heading) 는 bp 단위에만 관대.
         # 헤더 추가 사유: <h3>주간 누적</h3> 다음 <li>채권: ... <span>+0.9bp</span></li> 형태에서
@@ -1008,6 +1019,7 @@ def verify(file_path: Path, prices) -> list[Violation]:
     # 5b. T1 종목 일변동률 — Apple/삼성전자 등 14개 핵심 stocks (괄호 종가 없는 케이스)
     #     COMBO 와 중복 방지를 위해 STOCK_DAILY_PATTERN 자체에 negative lookahead 적용
     #     윈도우(직전 300자) 내 인용/forward 키워드 있으면 스킵
+    PERIOD_BOX_HEADING_KEYWORDS = ("주간", "월간", "WTD", "MTD", "Weekly", "Monthly", "누적")
     if "일간" in periods:
         _, target_iso = periods["일간"]
         for m in STOCK_DAILY_PATTERN.finditer(text):
@@ -1023,6 +1035,10 @@ def verify(file_path: Path, prices) -> list[Violation]:
                 continue
             # outlook/scenario/risk 컨테이너 안이면 스킵
             if _is_in_forward_container(text, m.start()):
+                continue
+            # WTD/MTD 박스(<h3>월간 누적</h3>) 안이면 스킵 — 일변동률이 아닌 누적 변동률
+            heading = _nearest_heading_text(text, m.start())
+            if heading and any(kw in heading for kw in PERIOD_BOX_HEADING_KEYWORDS):
                 continue
             v = _check_daily_pct(asset, target_iso, val, window, prices, file_path)
             if v:
