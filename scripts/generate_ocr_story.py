@@ -207,8 +207,8 @@ HTML로 재구성해 보존하는 1차 자료 편집자입니다.
   나 아시아 지수 수치(KOSPI/HSI/Nikkei) 를 **절대 만들어내지 않습니다**.
 - PDF 본문에 없는 지수의 KPI 카드는 "본 PDF 미수록" 으로 표기하거나 카드 자체를 생략.
 - 유럽/아시아 세션 블록은 PDF 본문에 해당 세션 데이터가 있을 때만 작성. 없으면
-  session-events 에 "본 브리핑은 {세션}을 별도 다루지 않습니다 — PDF 발간일 시점에서
-  {prev_us_dow} 미국 세션 마감 데이터에 집중" 같은 안내 한 줄로 처리.
+  session-events 에 "본 브리핑은 {세션}을 별도 다루지 않습니다 — PDF 본문 시점인
+  {target_date} 미국 세션 마감 데이터에 집중" 같은 안내 한 줄로 처리.
 
 ### ★ 시간대 표기 — 한국 KST 기준으로 통일
 - session-time 은 한국 KST 기준으로 표기 (현지 시간 표기 금지).
@@ -475,14 +475,14 @@ def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> st
             must_include_lines.append(f"  - {s}")
     must_include_block = "\n".join(must_include_lines) if must_include_lines else "(자동 추출 없음 — PDF 원문 전체 참고)"
 
-    # PDF 본문 시점 메타: 발간일 = target_date, 본문 시점 = 직전 미국 영업일
-    publish_dow = _DOW_KO[target_date.weekday()]
-    prev_us = _prev_biz(target_date)
-    prev_us_dow = _DOW_KO[prev_us.weekday()]
+    # PDF 본문 시점 메타: target_date = 장 기준일(=본문 시점), 발간일 = 익영업일 새벽 KST
+    target_dow   = _DOW_KO[target_date.weekday()]
+    publish_date = _next_biz(target_date)
+    publish_dow  = _DOW_KO[publish_date.weekday()]
     pdf_meta = (
-        f"PDF 발간일: {target_date} ({publish_dow}) 아침 KST\n"
-        f"PDF 본문 미국 세션 시점: {prev_us} ({prev_us_dow}) 마감 (직전 영업일)\n"
-        f"PDF 본문 아시아·유럽 세션이 있다면: 같은 {prev_us} 거래"
+        f"PDF 발간일: {publish_date} ({publish_dow}) 아침 KST\n"
+        f"PDF 본문 미국 세션 시점: {target_date} ({target_dow}) 마감\n"
+        f"PDF 본문 아시아·유럽 세션이 있다면: 같은 {target_date} 거래"
     )
 
     user_msg = f"""미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF 원본을 보존하는 1차 자료를 작성합니다.
@@ -659,15 +659,15 @@ def upload_pdf_to_s3(pdf_path: Path, target_date: date) -> str | None:
 def save_ocr_html(out_dir: Path, target_date: date, story_html: str) -> Path:
     """독립 _ocr.html 파일 저장 — 기존 .html / _story.html 은 건드리지 않는다.
 
-    date_long 은 'PDF 발간일' 과 'PDF 본문 시점(직전 영업일 미국 마감)' 둘 다 표기해
-    메인 Market Story 와의 시점 차이를 사용자가 즉시 인지하도록 한다.
+    date_long 은 'PDF 본문 시점(=target_date 미국 마감)' 과 'PDF 발간일(=익영업일 아침 KST)'
+    둘 다 표기해 메인 Market Story 와의 시점 차이를 사용자가 즉시 인지하도록 한다.
     """
-    dow = _DOW_KO[target_date.weekday()]
-    prev_us = _prev_biz(target_date)
-    prev_us_dow = _DOW_KO[prev_us.weekday()]
+    target_dow   = _DOW_KO[target_date.weekday()]
+    publish_date = _next_biz(target_date)
+    publish_dow  = _DOW_KO[publish_date.weekday()]
     date_long = (
-        f"PDF 발간 {target_date.strftime('%Y-%m-%d')} ({dow}) 아침 KST "
-        f"&middot; 본문 시점 {prev_us.strftime('%Y-%m-%d')} ({prev_us_dow}) 미국 마감"
+        f"PDF 발간 {publish_date.strftime('%Y-%m-%d')} ({publish_dow}) 아침 KST "
+        f"&middot; 본문 시점 {target_date.strftime('%Y-%m-%d')} ({target_dow}) 미국 마감"
     )
     html = OCR_HTML_TEMPLATE.format(
         date=str(target_date),
