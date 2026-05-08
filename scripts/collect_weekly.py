@@ -4,8 +4,9 @@
 2. MVP PRISM 보고서 (collect_prism_reports.py)
 3. 주간 리서치 다이제스트 (generate_securities_digest.py)
 4. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
-5. Research Index 갱신 (_update_sc_index) — digest 새 URL을 research/index.html에 반영
-6. Git push — 갱신된 파일 자동 배포
+5. Fund Index 재생성 (generate_fund_index.py) — pre-signed URL 7일 갱신
+6. Research Index 갱신 (_update_sc_index) — digest 새 URL을 research/index.html에 반영
+7. Git push — 갱신된 파일 자동 배포
 """
 from __future__ import annotations
 
@@ -31,6 +32,7 @@ COLLECTORS = [
     ("MVP PRISM", "collect_prism_reports.py"),
     ("주간 리서치 다이제스트", "generate_securities_digest.py"),
     ("Securities Index 재생성", "generate_securities_index.py"),
+    ("Fund Index 재생성", "generate_fund_index.py"),
 ]
 
 
@@ -94,12 +96,13 @@ def main() -> None:
         subprocess.run(
             ["git", "add",
              "output/research/index.html",
-             "output/research/securities/"],
+             "output/research/securities/",
+             "output/fund/index.html"],
             cwd=str(ROOT), check=True, capture_output=True
         )
         commit_result = subprocess.run(
             ["git", "commit", "-m",
-             f"chore: 주간 securities pre-signed URL 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
+             f"chore: 주간 securities/fund pre-signed URL 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
             cwd=str(ROOT), capture_output=True, text=True
         )
         if commit_result.returncode == 0:
