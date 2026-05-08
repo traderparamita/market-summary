@@ -101,6 +101,11 @@ def aggregate_period(market_data, trading_days, date_list):
     idx = trading_days.index(first_date) if first_date in trading_days else -1
     prev_date = trading_days[idx - 1] if idx > 0 else None
 
+    # 기간 시작일 직전 영업일 후보 (글로벌 prev_date 에 ticker 데이터 없을 때 ticker-level fallback)
+    # 예: W19 KOSPI — 5/1 KR Labor Day 휴장이라 5/4 가 first_date. prev_date=5/1 KR 데이터 없음.
+    #     ticker 별로 5/1 → 4/30 → 4/29 ... 거꾸로 탐색해 그 ticker 가 가졌던 마지막 종가 사용.
+    prev_period_days = [d for d in trading_days if d < first_date]
+
     # YTD 기준: 전년 마지막 영업일
     year = int(first_date[:4])
     ye_date = None
@@ -140,7 +145,15 @@ def aggregate_period(market_data, trading_days, date_list):
                 continue
 
             # period_chg: 직전 영업일 종가 → 기간 마지막 종가
+            # 글로벌 prev_date 에 ticker 데이터 없으면 그 ticker 가 가졌던 마지막 직전 종가로 fallback
+            # (예: W19 KOSPI — 5/1 KR 휴장이라 4/30 종가를 base 로 사용해야 정확한 Mon-Thu 누적)
             base_close = prev_day.get(cat, {}).get(ticker)
+            if not base_close:
+                for d in reversed(prev_period_days):
+                    candidate = market_data.get(d, {}).get(cat, {}).get(ticker)
+                    if candidate:
+                        base_close = candidate
+                        break
             if not base_close:
                 base_close = market_data[first_date].get(cat, {}).get(ticker)
 

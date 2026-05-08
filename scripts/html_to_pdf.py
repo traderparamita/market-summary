@@ -121,6 +121,91 @@ async def render_pdf(html_path: str, pdf_path: str, *, tab: str | None = None,
                 /* 헤더는 첫 페이지에만 임팩트 */
                 .header {{ break-after: avoid; }}
 
+                /* ── 가독성 향상 (PDF 인쇄 전용) ────────────────────────── */
+
+                /* 본문 base 살짝 키움 */
+                body {{ font-size: 14px !important; line-height: 1.7 !important; }}
+
+                /* PM Hero — 핵심 메시지 잘 보이게 */
+                .pm-hero {{ padding: 22px 26px !important; margin-bottom: 18px !important; }}
+                .pm-hero h2 {{ font-size: 14px !important; margin-bottom: 12px !important; }}
+                .pm-hero p {{ font-size: 14.5px !important; line-height: 1.95 !important; }}
+
+                /* PM Section — 6 섹션 한국·매크로·... */
+                .pm-section {{ padding: 18px 22px !important; margin-bottom: 12px !important; }}
+                .pm-section h3 {{ font-size: 16px !important; margin-bottom: 12px !important; padding-bottom: 6px !important; border-bottom: 1px solid var(--border); }}
+                .pm-section li {{ font-size: 13.5px !important; line-height: 1.85 !important; margin-bottom: 8px !important; padding-left: 14px !important; }}
+                .pm-section li::before {{ font-size: 14px !important; }}
+
+                /* 강조 컬러 강화 (인쇄 시 흐려지지 않게) */
+                .hl-up {{ color: #b91c1c !important; font-weight: 700 !important; }}
+                .hl-down {{ color: #1e40af !important; font-weight: 700 !important; }}
+                .hl-warn {{ color: #c2410c !important; font-weight: 700 !important; }}
+                .hl-accent {{ color: #c2410c !important; font-weight: 700 !important; }}
+                strong {{ color: #1a1d2e !important; }}
+
+                /* Outlook 박스들 — 가독성 향상 */
+                .outlook-divider h2 {{ font-size: 19px !important; margin-bottom: 18px !important; }}
+                .outlook-divider h3 {{ font-size: 15px !important; margin-bottom: 14px !important; }}
+                .outlook-divider ul {{ font-size: 13px !important; line-height: 1.85 !important; }}
+                .outlook-divider ul li {{ margin-bottom: 6px !important; }}
+
+                /* Today Residual / Risk Top 3 박스 */
+                [style*="background:#fff8e1"], [style*="background:#fdf2f4"] {{
+                  padding: 18px 20px !important;
+                }}
+                [style*="background:#fff8e1"] ul li,
+                [style*="background:#fdf2f4"] ol li {{
+                  font-size: 13px !important; line-height: 1.9 !important; margin-bottom: 6px !important;
+                }}
+
+                /* Bull/Base/Bear 시나리오 카드 */
+                .scenario-card {{ padding: 18px !important; }}
+                .scenario-card > div:first-child {{ font-size: 14px !important; margin-bottom: 10px !important; }}
+                .scenario-card > div:last-child {{ font-size: 12.5px !important; line-height: 1.8 !important; }}
+
+                /* 캘린더 그리드 박스 */
+                .outlook-divider div[style*="grid-template-columns:1fr 1fr"] > div {{
+                  padding: 18px !important;
+                }}
+                .outlook-divider div[style*="grid-template-columns:1fr 1fr"] ul li {{
+                  font-size: 12.5px !important; line-height: 1.85 !important; margin-bottom: 5px !important;
+                }}
+                .outlook-divider div[style*="font-weight:600"] {{ font-size: 14px !important; }}
+
+                /* Positioning 표 */
+                table[style*="border-collapse:collapse"] {{ font-size: 13px !important; }}
+                table[style*="border-collapse:collapse"] th {{ padding: 10px 8px !important; font-weight: 700 !important; }}
+                table[style*="border-collapse:collapse"] td {{ padding: 10px 8px !important; line-height: 1.7 !important; }}
+
+                /* Data Dashboard — KPI 카드 */
+                .kpi {{ padding: 14px 18px !important; }}
+                .kpi-label {{ font-size: 12px !important; }}
+                .kpi-value {{ font-size: 20px !important; }}
+                .kpi-chg {{ font-size: 13px !important; }}
+
+                /* Heatmap 표 — 가독성 향상 */
+                .heatmap-section h2 {{ font-size: 16px !important; margin-bottom: 10px !important; }}
+                .heatmap th {{ font-size: 12px !important; padding: 11px 12px !important; font-weight: 700 !important; }}
+                .heatmap td {{ font-size: 13px !important; padding: 9px 12px !important; }}
+                .heatmap .name-cell {{ font-size: 13px !important; font-weight: 600 !important; }}
+                .heatmap .close-cell {{ font-size: 12.5px !important; }}
+                .heatmap .heat-cell {{ font-size: 12.5px !important; font-weight: 700 !important; }}
+
+                /* Risk Dashboard 카드 */
+                .risk-card {{ padding: 18px !important; }}
+                .risk-card .label {{ font-size: 12.5px !important; }}
+                .risk-card .value {{ font-size: 26px !important; }}
+                .risk-card .desc {{ font-size: 12px !important; }}
+
+                /* 차트 타이틀 */
+                .chart-card .title {{ font-size: 14px !important; margin-bottom: 10px !important; font-weight: 700 !important; }}
+
+                /* 헤더 영역 */
+                .header-left h1 {{ font-size: 24px !important; }}
+                .header-left .date {{ font-size: 13px !important; }}
+                .mood-badge {{ font-size: 13px !important; padding: 8px 16px !important; }}
+
                 /* 푸터·면책고지: 한 줄로 압축, 직전 콘텐츠와 같은 페이지 */
                 .ai-disclaimer, .footer {{
                   break-before: avoid !important;

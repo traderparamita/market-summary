@@ -259,24 +259,48 @@ TICKERS = {
         "iShares LowVol":   "USMV",
     },
     # ※ KR 섹터 ETF 는 KRX GICS 지수 (IX_KR_*, krx_sectors.py) 로 일원화. 2026-05-07 제거.
-    # Major stocks
-    "stocks": {
-        "NVIDIA":   "NVDA",
-        "Broadcom": "AVGO",
-        "Alphabet": "GOOGL",
-        "Amazon":   "AMZN",
-        "META":     "META",
-        "Apple":    "AAPL",
-        "Microsoft":"MSFT",
-        "Tesla":    "TSLA",
-        "TSMC":     "TSM",
-        "Samsung":  "005930.KS",
-        "Palantir": "PLTR",
-        "Alibaba":  "9988.HK",
-        "Meituan":  "3690.HK",
-        "Tencent":  "0700.HK",
-    },
+    # Major stocks — 동적으로 KR_TOP50 + US_TOP50 + ADR/HK 로 채워짐 (collectors/stocks_universe.py)
+    "stocks": {},  # populated by _load_stocks_universe() below
 }
+
+
+def _load_stocks_universe():
+    """KR Top50 + US Top50 + ADR/HK = 104종 stocks ticker map.
+
+    매일 collect_market.py 실행 시 모든 시총 상위 종목을 한 번에 수집하기 위함.
+    - 단일 source of truth: collectors/stocks_universe.py (KR_TOP50 / US_TOP50)
+    - ADR/HK 4종 (TSMC·BABA·Meituan·Tencent) 만 collect_market 측에서 추가
+    """
+    try:
+        from collectors.stocks_universe import KR_TOP50, US_TOP50
+    except ImportError:
+        from stocks_universe import KR_TOP50, US_TOP50
+
+    tickers: dict[str, str] = {}
+    codes: dict[tuple[str, str], str] = {}
+
+    for code, yf_ticker, name, *_ in KR_TOP50:
+        tickers[name] = yf_ticker
+        codes[("stocks", name)] = code
+    for code, yf_ticker, name, *_ in US_TOP50:
+        tickers[name] = yf_ticker
+        codes[("stocks", name)] = code
+
+    # ADR/HK extras (S&P500/KOSPI Top50 미포함)
+    for name, yf_ticker, code in [
+        ("TSMC",    "TSM",     "ST_TSMC"),
+        ("Alibaba", "9988.HK", "ST_BABA"),
+        ("Meituan", "3690.HK", "ST_MEITUAN"),
+        ("Tencent", "0700.HK", "ST_TENCENT"),
+    ]:
+        tickers[name] = yf_ticker
+        codes[("stocks", name)] = code
+
+    return tickers, codes
+
+
+_STOCKS_TICKERS, _STOCKS_INDICATOR_CODES = _load_stocks_universe()
+TICKERS["stocks"] = _STOCKS_TICKERS
 
 # (category, ticker) -> Snowflake MKT000_MARKET_INDICATOR.지표코드
 # 56개 지표. TICKERS/fetch_kr_rates에 추가되는 항목은 여기도 함께 업데이트.
@@ -353,21 +377,9 @@ INDICATOR_CODES = {
     ("style_us", "iShares Momentum"): "FA_US_MOMENTUM",
     ("style_us", "iShares LowVol"):   "FA_US_LOWVOL",
     # ※ KR 섹터 ETF (SC_KR_*) 매핑 제거 — KRX GICS (IX_KR_*) 로 일원화
-    ("stocks", "NVIDIA"):    "ST_NVDA",
-    ("stocks", "Broadcom"):  "ST_AVGO",
-    ("stocks", "Alphabet"):  "ST_GOOGL",
-    ("stocks", "Amazon"):    "ST_AMZN",
-    ("stocks", "META"):      "ST_META",
-    ("stocks", "Apple"):     "ST_AAPL",
-    ("stocks", "Microsoft"): "ST_MSFT",
-    ("stocks", "Tesla"):     "ST_TSLA",
-    ("stocks", "TSMC"):      "ST_TSMC",
-    ("stocks", "Samsung"):   "ST_SAMSUNG",
-    ("stocks", "Palantir"):  "ST_PLTR",
-    ("stocks", "Alibaba"):   "ST_BABA",
-    ("stocks", "Meituan"):   "ST_MEITUAN",
-    ("stocks", "Tencent"):   "ST_TENCENT",
+    # stocks 카테고리 매핑은 _STOCKS_INDICATOR_CODES (KR_TOP50 + US_TOP50 + ADR/HK = 104종) 에서 자동 병합
 }
+INDICATOR_CODES.update(_STOCKS_INDICATOR_CODES)
 
 
 # ── Core functions ───────────────────────────────────────────────
