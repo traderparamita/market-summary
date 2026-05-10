@@ -218,6 +218,7 @@ logs/
 
 ## 상세 문서
 
+- [docs/operations.md](docs/operations.md) — 운영 매뉴얼·자동화 스케줄·누락 시 수동 복구 절차
 - [docs/data-sources.md](docs/data-sources.md) — 수집 대상·소스·CSV 스키마·Snowflake 연동
 - [docs/verify-numbers.md](docs/verify-numbers.md) — 보고서 수치 자동 검증 (패턴·가드·운영 가이드)
 - [docs/fund-analysis.md](docs/fund-analysis.md) — Fund S3 저장소·pre-signed URL·재생성
