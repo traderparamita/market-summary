@@ -11,7 +11,7 @@
 | Plist | 스크립트 | 스케줄 (KST) | 역할 |
 |-------|----------|-------------|------|
 | `com.lifesailor.market-summary` | `scripts/auto_market.py` | 일 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 |
-| `com.lifesailor.market-ocr` | `scripts/generate_ocr_story.py` | 일 08:30 + 화~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 |
+| `com.lifesailor.market-ocr` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) |
 | `com.lifesailor.securities-reports` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push |
 
 월·토는 실행 안 함 (auto_market.should_skip).
@@ -20,12 +20,11 @@
 
 ```
 ─ 일요일 ────────────────────────────────────────
-08:30 → market-ocr (금요일 보고서 OCR)
 18:50 → auto_market.py (금요일 보고서 = 일/주/월 + Snowflake drift 검증)
 19:30 → collect_weekly.py (주간 수집)
 
 ─ 월요일 ────────────────────────────────────────
-(자동화 없음 — 한국 휴장 다음 날일 수도, 미국 일요일 시장 열려 있지 않음)
+08:30 → market-ocr (금요일 발간분 PDF OCR)
 
 ─ 화·수·목·금 ──────────────────────────────────
 06:50 → auto_market.py (전 영업일 보고서)

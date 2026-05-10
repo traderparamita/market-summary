@@ -160,7 +160,7 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 |------|----------|------|
 | 일 18:50 KST | `auto_market.py` | 금요일 보고서 (market-full + Snowflake drift 검증) |
 | 화~금 06:50 KST | `auto_market.py` | 전날 보고서 (한국 공휴일 자동 건너뜀, `holidays` 라이브러리) |
-| 일+화~금 08:30 KST | `generate_ocr_story.py` | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (메인 Market Story 와 별트랙) |
+| 월~금 08:30 KST | `generate_ocr_story.py` | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일 발간분 처리, 메인 Market Story 와 별트랙) |
 | 일 19:30 KST | `collect_weekly.py` | ① 미래에셋증권 상세분석 → S3 ② MVP PRISM → S3 ③ Securities/Fund Index 재생성 (pre-signed URL 7일 갱신) |
 
 - 증권 보고서: `anthillia/miraeasset-securities/YYYY-MM/` (직전 영업주 스크래핑)
