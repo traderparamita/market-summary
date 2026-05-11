@@ -254,7 +254,9 @@ def main():
     try:
         import sys as _sys
         from pathlib import Path as _Path
-        _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent.parent))
+        # snowflake_loader.py 는 market_summary/ 프로젝트 루트에 있음
+        # collectors/macro.py 기준 parent.parent = market_summary/
+        _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
         from snowflake_loader import sync_macro_rows
 
         if not new_df.empty:
