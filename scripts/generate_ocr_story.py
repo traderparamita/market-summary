@@ -1,12 +1,21 @@
 """
-08:10 KST 자동 실행 — 미래에셋증권 AI 데일리 글로벌 마켓 브리핑 PDF를 찾아
-OpenAI Vision OCR로 Market Story를 생성하고 기존 _story.html + 메인 .html 을 덮어쓴다.
+08:10 KST 자동 실행 — 미래에셋증권 두 PDF를 OCR해 Market Story 1차 자료를 생성한다.
 
-PDF 탐색 규칙:
-  - target_date = 장 기준일 (06:50 generate.py 와 동일한 날짜)
-  - 보고서는 target_date 미국장 마감 후 익영업일 새벽에 사이트 게시
-  - 사이트 row_date = target_date + 1영업일
-  - 보고서 제목의 한글 날짜(예: "4월 29일") = target_date
+▶ 두 PDF 소스 (둘 다 같은 거래일 = target_date 를 다룸)
+  ① 한국/중국 마켓 클로징 (아시아 세션)
+     - target_date 당일 오후 (장 종료 후 ~15:30 KST 이후) 발간
+     - row_date = target_date
+     - 본문 = target_date KR/CN 아시아 장 마감 데이터
+  ② AI 데일리 글로벌 마켓 브리핑 (미국 세션)
+     - target_date 미국장 마감 후 익영업일 새벽 KST 발간
+     - row_date = target_date + 1영업일
+     - 본문 = target_date 미국 세션 마감 데이터
+
+▶ 결과
+  - 두 PDF 가 다 있으면: 아시아(①) + 미국(②) 풀 사이클 1차 자료 보존
+  - 미국(②) 만 있으면: 종전처럼 미국 세션 중심 (아시아는 한 줄 안내)
+  - 아시아(①) 만 있으면: 미국은 한 줄 안내 (target_date 이 오늘이라 아직 발간 전인 경우)
+  - 둘 다 없으면: 텔레그램 스킵 알림 + _ocr.html 미생성
 
 Usage:
     .venv/bin/python scripts/generate_ocr_story.py [--date YYYY-MM-DD] [--dry-run]
@@ -79,39 +88,34 @@ HEADERS = {
 }
 DOWNLOAD_RE = re.compile(r"downConfirm\('([^']+)'\s*,\s*'(\d+)'")
 DAILY_KEYWORDS = ["AI 데일리", "AI데일리", "글로벌 마켓 브리핑", "데일리 글로벌"]
+KR_CN_KEYWORDS = ["한국/중국 마켓 클로징", "한국/중국마켓 클로징", "마켓 클로징"]
 
 
 
 
-def find_daily_briefing_pdf(target_date: date) -> dict | None:
-    """target_date 장 기준 AI 데일리 브리핑 PDF를 찾는다.
+def _find_pdf_by_keywords(
+    target_date: date,
+    keywords: list[str],
+    valid_row_dates: set[str],
+    label: str,
+    max_pages: int = 10,
+) -> dict | None:
+    """미래에셋증권 일일자료 게시판에서 keywords / 게시일 후보로 PDF 1건 찾기.
 
-    매칭 기준 = 게시일(row_date). 제목의 한글 날짜는 발간일 기준일 때도
-    있고 대상장일 기준일 때도 있어 신뢰하지 않는다 (2026-05-06 이후 발간일
-    표기로 전환 확인).
-
-    유효 row_date 후보:
-      - target_date          : 미국장 마감 당일 새벽(한국시간) 발간
-      - next_business_day    : 익영업일 새벽 발간 (가장 흔함)
-      - target_date + 1day   : 캘린더 익일 (KR 휴장 끼는 경우 대비)
-    탐색은 최대 10페이지, row_date 가 target_date -3일 이전이면 중단.
+    매칭 기준 = 게시일(row_date) + 제목 키워드.
+    cutoff = target_date - 3일. 그보다 더 이전 페이지까지 가면 탐색 중단.
     """
     session = requests.Session()
-    valid_row_dates = {
-        target_date.strftime("%Y-%m-%d"),
-        _next_biz(target_date).strftime("%Y-%m-%d"),
-        (target_date + timedelta(days=1)).strftime("%Y-%m-%d"),
-    }
     cutoff = (target_date - timedelta(days=3)).strftime("%Y-%m-%d")
-    log.info(f"PDF 탐색: 장 기준일={target_date}, 게시일 후보={sorted(valid_row_dates)}")
+    log.info(f"PDF 탐색 [{label}]: 장 기준일={target_date}, 게시일 후보={sorted(valid_row_dates)}")
 
-    for page in range(1, 11):
+    for page in range(1, max_pages + 1):
         params = {"categoryId": CATEGORY_ID, "curPage": str(page)}
         try:
             resp = session.get(LIST_URL, params=params, headers=HEADERS, timeout=30)
             resp.encoding = "euc-kr"
         except Exception as e:
-            log.warning(f"스크래핑 오류 (page {page}): {e}")
+            log.warning(f"[{label}] 스크래핑 오류 (page {page}): {e}")
             break
 
         soup = BeautifulSoup(resp.text, "lxml")
@@ -132,14 +136,14 @@ def find_daily_briefing_pdf(target_date: date) -> dict | None:
             title = title_a.get_text(strip=True) if title_a else ""
 
             if row_date < cutoff:
-                log.info(f"탐색 범위 초과({row_date} < {cutoff}) → 중단")
+                log.info(f"[{label}] 탐색 범위 초과({row_date} < {cutoff}) → 중단")
                 return None
 
-            if not any(kw in title for kw in DAILY_KEYWORDS):
+            if not any(kw in title for kw in keywords):
                 continue
 
             if row_date not in valid_row_dates:
-                log.debug(f"게시일 불일치 스킵: row_date={row_date} title='{title[:60]}'")
+                log.debug(f"[{label}] 게시일 불일치 스킵: row_date={row_date} title='{title[:60]}'")
                 continue
 
             down_a = tds[2].find("a", href=re.compile(r"downConfirm"))
@@ -150,11 +154,37 @@ def find_daily_briefing_pdf(target_date: date) -> dict | None:
                 continue
 
             pdf_url, attach_id = m.group(1), m.group(2)
-            log.info(f"PDF 발견: row_date={row_date} | {title[:60]} | attachId={attach_id}")
+            log.info(f"[{label}] PDF 발견: row_date={row_date} | {title[:60]} | attachId={attach_id}")
             return {"title": title, "pdf_url": pdf_url, "attach_id": attach_id, "date": row_date}
 
-    log.info("AI 데일리 브리핑 PDF 미발견")
+    log.info(f"[{label}] PDF 미발견")
     return None
+
+
+def find_daily_briefing_pdf(target_date: date) -> dict | None:
+    """target_date 미국 세션을 다루는 AI 데일리 브리핑 PDF.
+
+    유효 row_date 후보:
+      - target_date          : 미국장 마감 당일 새벽(한국시간) 발간
+      - next_business_day    : 익영업일 새벽 발간 (가장 흔함)
+      - target_date + 1day   : 캘린더 익일 (KR 휴장 끼는 경우 대비)
+    """
+    valid_row_dates = {
+        target_date.strftime("%Y-%m-%d"),
+        _next_biz(target_date).strftime("%Y-%m-%d"),
+        (target_date + timedelta(days=1)).strftime("%Y-%m-%d"),
+    }
+    return _find_pdf_by_keywords(target_date, DAILY_KEYWORDS, valid_row_dates, label="AI 데일리(미국)")
+
+
+def find_kr_cn_closing_pdf(target_date: date) -> dict | None:
+    """target_date 아시아(KR/CN) 세션 마감을 다루는 한국/중국 마켓 클로징 PDF.
+
+    유효 row_date = target_date (당일 오후 발간) 만 허용.
+    KR/CN 휴장 등으로 발간이 다음 영업일로 밀리는 패턴은 관측되지 않아 단일 후보.
+    """
+    valid_row_dates = {target_date.strftime("%Y-%m-%d")}
+    return _find_pdf_by_keywords(target_date, KR_CN_KEYWORDS, valid_row_dates, label="KR/CN 클로징(아시아)")
 
 
 # ── PDF → OCR ────────────────────────────────────────────────────────────────
@@ -184,31 +214,38 @@ OCR_SYSTEM = """당신은 미래에셋증권 'AI 데일리 글로벌 마켓 브�
 - 원문 그대로 추출 (요약하지 말 것)
 """
 
-STORY_SYSTEM = """당신은 미래에셋증권의 'AI 데일리 글로벌 마켓 브리핑' PDF 원본을
-HTML로 재구성해 보존하는 1차 자료 편집자입니다.
-이 보고서는 메인 Market Story 와 별개로 운영되며, 증권사 권위 있는 PDF 의
-디테일(특히 종목별 정밀 변동률)을 빠짐없이 살리는 것이 최우선입니다.
+STORY_SYSTEM = """당신은 미래에셋증권의 두 PDF(① 한국/중국 마켓 클로징 = 아시아 세션,
+② AI 데일리 글로벌 마켓 브리핑 = 미국 세션) 원본을 HTML로 재구성해 보존하는
+1차 자료 편집자입니다. 이 보고서는 메인 Market Story 와 별개로 운영되며, 증권사
+권위 있는 PDF 의 디테일(특히 종목별 정밀 변동률)을 빠짐없이 살리는 것이 최우선입니다.
+
+### 출처와 본문 시점 (둘 다 같은 거래일 = target_date)
+- 아시아 세션 = [PDF ① 한국/중국 마켓 클로징] 만 사용. target_date 당일 KR/CN 장 마감.
+- 미국 세션  = [PDF ② AI 데일리 글로벌 마켓 브리핑] 만 사용. target_date 미국 장 마감.
+- 유럽 세션 = 둘 중 어느 PDF 에 언급이 있으면 인용, 없으면 한 줄 안내로 처리.
+- **세션별 출처를 절대 섞지 않습니다** — 미국 PDF 에 KOSPI 가 있어도 아시아 블록은
+  ①에서만, ①에 미국 지수가 있어도 미국 블록은 ②에서만 인용.
+- [PDF 시점 메타] 블록에 어느 PDF 가 들어왔는지 명시됩니다. 빠진 PDF 가 있으면 해당
+  세션 블록은 "본 자료에 해당 PDF 가 포함되지 않았습니다" 한 줄로 처리.
 
 ### 핵심 원칙 (절대 위반 금지)
 - **PDF 본문이 유일한 1차 자료**. 수치·종목·이벤트는 모두 [브리핑 원문]에서만 인용.
   외부 데이터로 추정·반올림·치환·보충하지 않습니다.
-- **PDF 본문 시점은 PDF 발간 전일의 미국 세션 마감**입니다 (PDF 발간 당일 아침 KST).
-  예: 5/4 발간 PDF 의 미국 세션 = 5/1 마감, 아시아 세션 = 5/1 (있다면).
-  메인 Market Story 와는 시점이 다르며, 그 차이를 헤더 헤드라인에 명시.
-- 아시아→유럽→미국 시간 순서 엄수.
 - **[필수 포함 종목·수치] 목록의 모든 종목 변동률을 PDF 그대로 인용** — 수치 한 자리도
   바꾸지 않고, 메인 Story 처럼 거시 일반론으로 압축하지 않습니다.
 - 일변동률·종가·bp 변화는 PDF 표기 자릿수 그대로 (예: 애플 +3.24%, ISM 물가 +6.3pt).
-- PDF 에 없는 사실(예: SK하이닉스 시총 1,000조, 한국 폭등 같은 PDF 발간 후 사건)은
-  절대 추가하지 않습니다 — 이 자료는 PDF 사진을 찍어 보존하는 역할입니다.
+- PDF 에 없는 사실(예: SK하이닉스 시총 1,000조 같은 PDF 발간 후 사건)은 절대 추가하지
+  않습니다 — 이 자료는 PDF 사진을 찍어 보존하는 역할입니다.
+- 아시아→유럽→미국 시간 순서 엄수.
 
 ### ★ 환각(hallucination) 절대 금지 — 가장 흔한 실수 패턴
-- PDF 가 미국 세션만 다루는 경우(대부분 그렇습니다): 유럽 지수 수치(FTSE/DAX/CAC)
-  나 아시아 지수 수치(KOSPI/HSI/Nikkei) 를 **절대 만들어내지 않습니다**.
+- KR/CN PDF 가 없을 때: 아시아 지수 수치(KOSPI/HSI/SHCOMP/SZSE/CSI300) 를 **절대
+  만들어내지 않습니다**. session-events 에 "본 자료에 한국/중국 마켓 클로징 PDF 가
+  포함되지 않았습니다" 한 줄로 처리.
+- AI Daily PDF 가 없을 때: 미국 지수 수치 (S&P/나스닥/다우) 를 **절대 만들어내지
+  않습니다**. session-events 에 같은 패턴의 한 줄 안내.
+- 유럽 PDF 본문에 데이터가 없을 때: FTSE/DAX/CAC 수치 만들지 말 것.
 - PDF 본문에 없는 지수의 KPI 카드는 "본 PDF 미수록" 으로 표기하거나 카드 자체를 생략.
-- 유럽/아시아 세션 블록은 PDF 본문에 해당 세션 데이터가 있을 때만 작성. 없으면
-  session-events 에 "본 브리핑은 {세션}을 별도 다루지 않습니다 — PDF 본문 시점인
-  {target_date} 미국 세션 마감 데이터에 집중" 같은 안내 한 줄로 처리.
 
 ### ★ 시간대 표기 — 한국 KST 기준으로 통일
 - session-time 은 한국 KST 기준으로 표기 (현지 시간 표기 금지).
@@ -262,16 +299,21 @@ HTML로 재구성해 보존하는 1차 자료 편집자입니다.
 ### 출력할 섹션 (순서 고정)
 
 1. Story Hero (★ 가장 풍부하게 작성 — 본 자료의 핵심 페이지)
-   - PDF 본문의 디테일을 압축하지 말고 풍부하게 살립니다.
-   - 헤드라인은 PDF 1면 헤드라인 + 핵심 수치 2~3개 (예: "S&P500/나스닥 사상 최고치
-     재경신 — 애플 +3.24%, 오라클 +6.47%, 다우는 −0.31% 차별화").
-   - 미국 세션 단락은 **6~9 문장**으로 가장 길게: 지수 마감(다우/S&P/나스닥/러셀2K
-     모두) + 빅테크 실적·주도주 (애플/MSFT/아마존/알파벳 변동률) + 반도체 동향
-     (엔비디아/마이크론/AMD/브로드컴/샌디스크) + 소프트웨어 (오라클/아틀라시안/
-     세일즈포스 등) + 제약 (일라이릴리/노보노디스크/암젠) + 거시·정책 (ISM 52.7,
-     물가지수 84.6, 미국-이란 협상, 유가 급락-반등) + VIX/채권/외환 핵심.
-   - 유럽·아시아 세션은 PDF 본문에 데이터가 있을 때만 작성, 없으면 한 줄 안내로
-     처리하고 미국 세션을 더 자세히.
+   - 두 PDF 의 디테일을 압축하지 말고 풍부하게 살립니다.
+   - 헤드라인은 [PDF ②] 1면 헤드라인 + 핵심 수치 2~3개를 메인으로 하되, [PDF ①]
+     이 함께 있으면 아시아 핵심 1개를 한 줄로 덧붙입니다 (예: "S&P500·나스닥 사상
+     최고치 재경신 — 애플 +3.24%·오라클 +6.47% / KOSPI +1.2% 반도체 주도").
+   - 아시아 세션 단락 (PDF ①이 있을 때): **5~7 문장** — KOSPI/KOSDAQ/SHCOMP/HSI 등
+     지수 마감 + 한국 주도주(삼성전자·SK하이닉스·현대차 등) 변동률 + 중국 정책·
+     섹터 흐름 + 외환(원/달러, 위안화) + 한국·중국 거시 이벤트. ①이 없으면 한 줄
+     안내로 처리 ("본 자료에 한국/중국 마켓 클로징 PDF 가 포함되지 않았습니다 —
+     아시아 세션 데이터는 메인 Market Story 를 참고하세요").
+   - 미국 세션 단락 (PDF ②가 있을 때): **6~9 문장**으로 가장 길게 — 지수 마감
+     (다우/S&P/나스닥/러셀2K 모두) + 빅테크 실적·주도주(애플/MSFT/아마존/알파벳)
+     + 반도체(엔비디아/마이크론/AMD/브로드컴/샌디스크) + 소프트웨어(오라클·
+     아틀라시안·세일즈포스) + 제약(일라이릴리·노보노디스크·암젠) + 거시·정책
+     (ISM/고용/물가/협상) + VIX/채권/외환 핵심. ②가 없으면 한 줄 안내.
+   - 유럽 세션은 두 PDF 어느 쪽이라도 데이터가 있을 때만 작성, 없으면 한 줄 안내.
 <div class="story-hero">
   <h2>오늘의 시장 이야기</h2>
   <div class="story-text">
@@ -416,13 +458,24 @@ def ocr_pdf(pdf_path: Path) -> str:
     return "\n\n".join(page_texts)
 
 
-def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> str:
-    """PDF OCR 원문 → HTML 스토리.
+def generate_story_html(
+    ocr_text: str,
+    data_json: dict,
+    target_date: date,
+    sources_present: dict[str, bool] | None = None,
+) -> str:
+    """PDF OCR 원문(두 소스 합본) → HTML 스토리.
 
-    data_json 인자는 호환성을 위해 받지만 사용하지 않습니다 (PDF가 1차 자료).
-    PDF 본문 시점(보통 PDF 발간 전일 미국 세션)에 충실하게 작성하기 위해서입니다.
+    Args:
+        ocr_text: 두 PDF (KR/CN 클로징 + AI 데일리) OCR 결과를 섹션 마커로 합친 본문.
+        data_json: 호환성용 (현재 사용하지 않음 — PDF 가 단일 ground truth).
+        target_date: 장 기준일.
+        sources_present: {"kr_cn": bool, "us_daily": bool}. None 이면 둘 다 있다고 간주.
     """
     from openai import OpenAI
+
+    if sources_present is None:
+        sources_present = {"kr_cn": True, "us_daily": True}
 
     client = OpenAI()
 
@@ -475,27 +528,42 @@ def generate_story_html(ocr_text: str, data_json: dict, target_date: date) -> st
             must_include_lines.append(f"  - {s}")
     must_include_block = "\n".join(must_include_lines) if must_include_lines else "(자동 추출 없음 — PDF 원문 전체 참고)"
 
-    # PDF 본문 시점 메타: target_date = 장 기준일(=본문 시점), 발간일 = 익영업일 새벽 KST
+    # PDF 본문 시점 메타: target_date = 장 기준일(=본문 시점)
     target_dow   = _DOW_KO[target_date.weekday()]
     publish_date = _next_biz(target_date)
     publish_dow  = _DOW_KO[publish_date.weekday()]
-    pdf_meta = (
-        f"PDF 발간일: {publish_date} ({publish_dow}) 아침 KST\n"
-        f"PDF 본문 미국 세션 시점: {target_date} ({target_dow}) 마감\n"
-        f"PDF 본문 아시아·유럽 세션이 있다면: 같은 {target_date} 거래"
-    )
+    kr_cn_ok = sources_present.get("kr_cn", False)
+    us_ok    = sources_present.get("us_daily", False)
+    src_lines = []
+    if kr_cn_ok:
+        src_lines.append(
+            f"[PDF ①] 한국/중국 마켓 클로징 — 발간 {target_date} ({target_dow}) 오후 KST · "
+            f"본문 = {target_date} ({target_dow}) 아시아(KR/CN) 마감"
+        )
+    else:
+        src_lines.append("[PDF ①] 한국/중국 마켓 클로징 — ❌ 본 자료에 포함되지 않음 (아시아 세션은 한 줄 안내)")
+    if us_ok:
+        src_lines.append(
+            f"[PDF ②] AI 데일리 글로벌 마켓 브리핑 — 발간 {publish_date} ({publish_dow}) 아침 KST · "
+            f"본문 = {target_date} ({target_dow}) 미국 세션 마감"
+        )
+    else:
+        src_lines.append("[PDF ②] AI 데일리 글로벌 마켓 브리핑 — ❌ 본 자료에 포함되지 않음 (미국 세션은 한 줄 안내)")
+    pdf_meta = "\n".join(src_lines)
 
-    user_msg = f"""미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF 원본을 보존하는 1차 자료를 작성합니다.
-PDF 본문에 있는 정보만 인용하세요. 외부 데이터·웹 검색·일반론 추가 절대 금지.
+    user_msg = f"""미래에셋증권 두 PDF(아시아 = 한국/중국 마켓 클로징, 미국 = AI 데일리 글로벌 마켓 브리핑)
+원본을 보존하는 1차 자료를 작성합니다. PDF 본문에 있는 정보만 인용하세요.
+외부 데이터·웹 검색·일반론 추가 절대 금지. 세션별 출처를 절대 섞지 마세요
+(아시아 블록은 PDF ①만, 미국 블록은 PDF ②만).
 출력은 Story HTML 섹션 1~5 만, 다른 텍스트 없이.
 
-[PDF 시점 메타 — 헤로 헤드라인에 반드시 명시]
+[PDF 시점 메타 — 헤로 헤드라인에 반드시 반영]
 {pdf_meta}
 
 [필수 포함 종목·수치 (PDF 그대로 인용)]
 {must_include_block}
 
---- PDF 본문 (1차 자료, 유일한 ground truth) ---
+--- PDF 본문 (1차 자료, 유일한 ground truth — 섹션 마커로 출처 구분) ---
 {ocr_text}
 """
 
@@ -682,12 +750,27 @@ def save_ocr_html(out_dir: Path, target_date: date, story_html: str) -> Path:
 
 # ── 메인 ─────────────────────────────────────────────────────────────────────
 
+def _download_pdf_to_tmp(pdf_info: dict) -> Path:
+    log.info(f"PDF 다운로드: {pdf_info['pdf_url']}")
+    resp = requests.get(pdf_info["pdf_url"], headers=HEADERS, timeout=60)
+    resp.raise_for_status()
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+        tmp.write(resp.content)
+        path = Path(tmp.name)
+    log.info(f"다운로드 완료: {len(resp.content)//1024}KB")
+    return path
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=None,
                         help="장 기준일 YYYY-MM-DD (기본: 직전 영업일)")
     parser.add_argument("--attach-id", default=None,
-                        help="미래에셋증권 attachId 직접 지정 (PDF 탐색 건너뜀)")
+                        help="AI 데일리 PDF attachId 직접 지정 (US PDF 탐색 건너뜀)")
+    parser.add_argument("--kr-cn-attach-id", default=None,
+                        help="한국/중국 마켓 클로징 PDF attachId 직접 지정 (KR/CN PDF 탐색 건너뜀)")
+    parser.add_argument("--skip-kr-cn", action="store_true",
+                        help="KR/CN 클로징 PDF 사용 안 함 (legacy 단일소스 모드)")
     parser.add_argument("--dry-run", action="store_true",
                         help="파일 저장 없이 흐름만 확인")
     args = parser.parse_args()
@@ -712,48 +795,87 @@ def main():
 
     out_dir = ROOT / "output" / "summary" / target_date.strftime("%Y-%m")
 
-    # ── PDF 탐색 ──
+    # ── PDF 탐색: ① KR/CN 클로징 (아시아) ──
+    kr_cn_info: dict | None = None
+    if not args.skip_kr_cn:
+        if args.kr_cn_attach_id:
+            kr_cn_info = {
+                "title": f"직접 지정 attachId={args.kr_cn_attach_id}",
+                "pdf_url": f"{BASE_URL}/bbs/download/{args.kr_cn_attach_id}.pdf?attachmentId={args.kr_cn_attach_id}",
+                "attach_id": args.kr_cn_attach_id,
+                "date": str(target_date),
+            }
+            log.info(f"KR/CN attachId 직접 지정: {args.kr_cn_attach_id}")
+        else:
+            kr_cn_info = find_kr_cn_closing_pdf(target_date)
+
+    # ── PDF 탐색: ② AI 데일리 (미국) ──
     if args.attach_id:
-        pdf_url = f"{BASE_URL}/bbs/download/{args.attach_id}.pdf?attachmentId={args.attach_id}"
-        pdf_info = {"title": f"직접 지정 attachId={args.attach_id}", "pdf_url": pdf_url, "attach_id": args.attach_id, "date": str(target_date)}
-        log.info(f"attachId 직접 지정: {args.attach_id}")
+        us_info: dict | None = {
+            "title": f"직접 지정 attachId={args.attach_id}",
+            "pdf_url": f"{BASE_URL}/bbs/download/{args.attach_id}.pdf?attachmentId={args.attach_id}",
+            "attach_id": args.attach_id,
+            "date": str(target_date),
+        }
+        log.info(f"AI Daily attachId 직접 지정: {args.attach_id}")
     else:
-        pdf_info = find_daily_briefing_pdf(target_date)
-    if not pdf_info:
-        msg = f"⚠️ *OCR Story 스킵* — {target_date}\n미래에셋증권 AI 데일리 브리핑 PDF를 찾지 못했습니다.\n_ocr.html 미생성."
-        log.info("PDF 없음 → _ocr.html 생성 건너뜀, 텔레그램 알림 발송")
+        us_info = find_daily_briefing_pdf(target_date)
+
+    if not kr_cn_info and not us_info:
+        msg = (
+            f"⚠️ *OCR Story 스킵* — {target_date}\n"
+            f"미래에셋증권 한국/중국 클로징 + AI 데일리 PDF 둘 다 찾지 못했습니다.\n_ocr.html 미생성."
+        )
+        log.info("두 PDF 모두 없음 → _ocr.html 생성 건너뜀, 텔레그램 알림 발송")
         notify_telegram.send(msg)
-        print(f"[SKIP] {target_date} PDF 미발견")
+        print(f"[SKIP] {target_date} PDF 미발견 (둘 다)")
         sys.exit(0)
 
-    # ── PDF 다운로드 ──
-    log.info(f"PDF 다운로드: {pdf_info['pdf_url']}")
-    resp = requests.get(pdf_info["pdf_url"], headers=HEADERS, timeout=60)
-    resp.raise_for_status()
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-        tmp.write(resp.content)
-        pdf_path = Path(tmp.name)
-    log.info(f"다운로드 완료: {len(resp.content)//1024}KB")
+    found_labels = []
+    if kr_cn_info: found_labels.append("KR/CN 클로징")
+    if us_info:    found_labels.append("AI 데일리")
+    log.info(f"PDF 발견 소스: {', '.join(found_labels)}")
 
-    # ── S3 업로드 ──
-    s3_key = upload_pdf_to_s3(pdf_path, target_date)
-    if s3_key:
-        log.info(f"PDF S3 보관: s3://{S3_BUCKET}/{s3_key}")
-        notify_telegram.send(
-            f"📥 *브리핑 PDF 저장* — {target_date}\n"
-            f"`s3://{S3_BUCKET}/{s3_key}`"
+    # ── PDF 다운로드 + OCR (있는 것만) ──
+    ocr_sections: list[str] = []
+    sources_present = {"kr_cn": False, "us_daily": False}
+
+    if kr_cn_info:
+        kr_cn_path = _download_pdf_to_tmp(kr_cn_info)
+        # S3 업로드는 미국 PDF 위주로 운영 (KR/CN 은 일단 로컬 OCR 만)
+        log.info("OCR 시작 [KR/CN 클로징] (gpt-4o Vision)...")
+        kr_cn_text = ocr_pdf(kr_cn_path)
+        ocr_sections.append(
+            f"=== [PDF ① 한국/중국 마켓 클로징] 아시아 세션 {target_date} 마감 ===\n{kr_cn_text}"
         )
+        sources_present["kr_cn"] = True
+        log.info(f"OCR 완료 [KR/CN]: {len(kr_cn_text)}자")
 
-    # ── OCR ──
-    log.info("OCR 시작 (gpt-4o Vision)...")
-    ocr_text = ocr_pdf(pdf_path)
+    if us_info:
+        us_path = _download_pdf_to_tmp(us_info)
+        s3_key = upload_pdf_to_s3(us_path, target_date)
+        if s3_key:
+            log.info(f"PDF S3 보관: s3://{S3_BUCKET}/{s3_key}")
+            notify_telegram.send(
+                f"📥 *브리핑 PDF 저장* — {target_date}\n"
+                f"`s3://{S3_BUCKET}/{s3_key}`"
+            )
+        log.info("OCR 시작 [AI 데일리 미국] (gpt-4o Vision)...")
+        us_text = ocr_pdf(us_path)
+        ocr_sections.append(
+            f"=== [PDF ② AI 데일리 글로벌 마켓 브리핑] 미국 세션 {target_date} 마감 ===\n{us_text}"
+        )
+        sources_present["us_daily"] = True
+        log.info(f"OCR 완료 [AI Daily]: {len(us_text)}자")
+
+    ocr_text = "\n\n".join(ocr_sections)
     ocr_cache = LOG_DIR / f"{target_date}_briefing_ocr.txt"
     ocr_cache.write_text(ocr_text, encoding="utf-8")
-    log.info(f"OCR 완료: {len(ocr_text)}자 → {ocr_cache.name}")
+    log.info(f"OCR 합본: {len(ocr_text)}자 → {ocr_cache.name}")
 
     # ── Story HTML 생성 ──
     log.info("Story HTML 생성 중 (gpt-4o)...")
-    story_html = generate_story_html(ocr_text, data_json, target_date)
+    story_html = generate_story_html(ocr_text, data_json, target_date, sources_present)
     log.info(f"Story 생성 완료: {len(story_html)}자")
 
     if args.dry_run:
@@ -763,8 +885,9 @@ def main():
 
     # ── _ocr.html 저장 (기존 .html / _story.html 은 건드리지 않음) ──
     ocr_path = save_ocr_html(out_dir, target_date, story_html)
-    log.info(f"=== 완료: {target_date} ===")
+    log.info(f"=== 완료: {target_date} (소스: {', '.join(found_labels)}) ===")
     print(f"✅ OCR HTML 생성: {ocr_path}")
+    print(f"   소스: {', '.join(found_labels)}")
 
 
 if __name__ == "__main__":
