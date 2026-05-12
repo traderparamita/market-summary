@@ -568,6 +568,40 @@ def _is_in_forward_container(text: str, position: int) -> bool:
         return True
     return False
 
+
+def _is_in_macro_block(text: str, position: int) -> bool:
+    """주어진 위치가 <div class="macro-block"> 안에 있는지.
+
+    Macro 탭은 직전 주(W##) narrative 로 주간 단위로 작성되어 일간 보고서에
+    그대로 주입된다. 따라서 일간 보고서의 macro-block 내부 WTD/MTD/bp 수치는
+    일간 rolling 값과 일치하지 않는 것이 정상 — 검증 대상에서 제외.
+
+    균형 카운트: macro-block 시작부터 position 까지 <div / </div> 갯수를 비교해
+    아직 닫히지 않은 상태이면 안에 있다고 판정.
+    """
+    backward = text[:position]
+    open_idx = backward.rfind('<div class="macro-block"')
+    if open_idx == -1:
+        open_idx = backward.rfind("<div class='macro-block'")
+    if open_idx == -1:
+        return False
+    segment = text[open_idx:position]
+    open_count = segment.count("<div")
+    close_count = segment.count("</div>")
+    # macro-block 자기 자신의 <div 가 1개 포함되어 있으므로 open_count > close_count 면 내부
+    return open_count > close_count
+
+
+def _is_daily_report_file(file_path: Path) -> bool:
+    """파일이 일간 보고서인지 — 2026-05-12.html / 2026-05-12_macro.html 등. weekly/monthly 제외."""
+    full = str(file_path)
+    name = file_path.name
+    if re.search(r"\d{4}-W\d{2}", full):
+        return False
+    if "monthly" in full and re.search(r"\d{4}-\d{2}(?:_|\.|$)", name):
+        return False
+    return bool(re.search(r"\d{4}-\d{2}-\d{2}", full))
+
 # 단락 경계 — HL_SPAN 윈도우를 다른 단락에서 차단
 # (heading 태그 </h1>~</h6>는 제외 — 헤더의 "WTD" 같은 라벨이 그 섹션의 컨텍스트를 제공해야 하므로)
 # `<br>` 단독도 경계로 사용 — 의미적으로 줄 바꿈 = 단락 구분이며, 다음 항목의 키워드("MTD" 등)가
@@ -1078,6 +1112,13 @@ def verify(file_path: Path, prices) -> list[Violation]:
 
     # NOTE: STANDALONE_CLOSE_PATTERN 은 정밀도 부족(누적 인용·시나리오 트리거·다른 일자 인용을
     # 모두 잡아 false positive 폭증)으로 Phase 2 에서 비활성. COMBO 형태로 작성 권장.
+
+    # 일간 보고서에서는 macro-block 내부 수치를 검증 대상에서 제외 — macro 탭은 주간 단위 narrative
+    if _is_daily_report_file(file_path):
+        violations = [
+            v for v in violations
+            if v.match_start < 0 or not _is_in_macro_block(text, v.match_start)
+        ]
 
     return violations
 
