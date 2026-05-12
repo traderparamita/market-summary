@@ -217,38 +217,45 @@ def collect_indicator(code: str, info: dict, start_date: str) -> pd.DataFrame:
     return df[CSV_COLUMNS]
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Collect macro indicators")
-    parser.add_argument("--start", default="2010-01-01", help="Start date (YYYY-MM-DD)")
-    parser.add_argument("--snowflake", action="store_true", help="Upload to Snowflake")
-    args = parser.parse_args()
+def run_collection(start_date: str = "2010-01-01", verbose: bool = True) -> int:
+    """Run macro collection: FRED/ECOS → CSV dedup append → MKT200 upsert.
 
+    Returns number of new rows appended to CSV. Snowflake upsert always runs
+    (idempotent). Safe to call daily — collect_macro 의 dedup + Snowflake upsert
+    가 모두 멱등이라 중복 호출 안전.
+    """
     indicators = load_indicators()
 
     existing, existing_keys = load_csv_dedup(HISTORY_CSV, CSV_COLUMNS)
-    print(f"Existing CSV: {len(existing)} rows" if not existing.empty else "Creating new CSV")
+    if verbose:
+        print(f"Existing CSV: {len(existing)} rows" if not existing.empty else "Creating new CSV")
 
     all_new = []
     for code, info in indicators.items():
-        df = collect_indicator(code, info, args.start)
+        df = collect_indicator(code, info, start_date)
         if df.empty:
             continue
 
         before = len(df)
         df = df[~df.apply(lambda r: (str(r["DATE"]), r["INDICATOR_CODE"]) in existing_keys, axis=1)]
-        print(f"    Fetched {before} rows, {len(df)} new")
+        if verbose:
+            print(f"    Fetched {before} rows, {len(df)} new")
         all_new.append(df)
 
     # CSV 업데이트
     new_dfs = [d for d in all_new if not d.empty]
     if new_dfs:
         new_df = pd.concat(new_dfs, ignore_index=True)
-        print(f"\nTotal new rows: {len(new_df)}")
+        if verbose:
+            print(f"\nTotal new rows: {len(new_df)}")
         n = append_save_csv(HISTORY_CSV, existing, new_df)
-        print(f"CSV updated: {len(existing) + n} total rows")
+        if verbose:
+            print(f"CSV updated: {len(existing) + n} total rows")
     else:
         new_df = pd.DataFrame(columns=CSV_COLUMNS)
-        print("\nNo new data to add.")
+        n = 0
+        if verbose:
+            print("\nNo new data to add.")
 
     # MKT200_MACRO_DAILY upsert — new rows 없어도 최신 날짜 데이터는 항상 적재
     try:
@@ -262,14 +269,16 @@ def main():
         if not new_df.empty:
             # 새 데이터가 있으면 그것만 upsert
             rows_to_sync = new_df.to_dict("records")
-            print(f"[SNOWFLAKE] Upserting {len(rows_to_sync)} new rows ...")
+            if verbose:
+                print(f"[SNOWFLAKE] Upserting {len(rows_to_sync)} new rows ...")
         else:
             # new rows 없으면 CSV에서 최신 날짜 행을 upsert (항상 Snowflake 동기화)
             full_csv = pd.read_csv(HISTORY_CSV)
             latest_date = full_csv["DATE"].max()
             latest_rows = full_csv[full_csv["DATE"] == latest_date]
             rows_to_sync = latest_rows.to_dict("records")
-            print(f"[SNOWFLAKE] No new rows — syncing latest date {latest_date} ({len(rows_to_sync)} rows) ...")
+            if verbose:
+                print(f"[SNOWFLAKE] No new rows — syncing latest date {latest_date} ({len(rows_to_sync)} rows) ...")
 
         sync_macro_rows(rows_to_sync, source="collect_macro")
     except Exception as e:
@@ -280,7 +289,28 @@ def main():
         except Exception:
             print(f"[SNOWFLAKE] FAILED source=collect_macro reason={str(e)[:200]}")
 
-    # Verify
+    return n
+
+
+def collect_macro(start: str = "2010-01-01", end: str | None = None) -> int:
+    """Aux-collector entrypoint (호환 시그니처).
+
+    generate.py:_run_aux_collectors() 가 (start, end) 키워드로 호출. macro 는
+    end_date 개념이 없어 (FRED/ECOS 가 항상 현재까지 반환) `end` 는 무시한다.
+    Returns: 새로 추가된 CSV 행 수.
+    """
+    return run_collection(start_date=start, verbose=False)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Collect macro indicators")
+    parser.add_argument("--start", default="2010-01-01", help="Start date (YYYY-MM-DD)")
+    parser.add_argument("--snowflake", action="store_true", help="Upload to Snowflake")
+    args = parser.parse_args()
+
+    run_collection(start_date=args.start, verbose=True)
+
+    # Verify (CLI 전용 — daily aux 호출에서는 생략하여 로그 노이즈 최소화)
     verify = pd.read_csv(HISTORY_CSV)
     print("\nIndicator coverage:")
     for code in sorted(verify["INDICATOR_CODE"].unique()):

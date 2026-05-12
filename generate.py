@@ -922,25 +922,38 @@ def _run_aux_collectors(target_date: str) -> None:
     - collect_krx_sectors:      IX_KR_* (KOSPI200 GICS 지수, pykrx)
     - collect_valuation:        VAL_KR_* (KOSPI PER/PBR/DY, pykrx)
     - collect_stocks_universe:  ST_KR_* / 신규 ST_<TICKER> (KR50 + US S&P50 종목, yfinance)
+    - collect_macro:            FRED + ECOS 거시지표 (history/macro_indicators.csv + MKT200 upsert)
 
     실패해도 메인 파이프라인은 계속 — 각 collector 는 [AUX] 마커로 결과 표시.
+
+    macro 만 lookback 윈도우가 다르다: FRED/ECOS 는 발표 시차가 있어 (예: CPI 익월,
+    실업률 익월 초) target_date 만 좁히면 새 데이터를 못 잡는다. 따라서 macro 는
+    target_date - 90일 부터 재조회해 dedup 으로 멱등 append.
     """
     print(f"\n=== Aux collectors (date={target_date}) ===")
 
     aux_tasks = [
-        ("sector_etfs",     "collectors.sector_etfs",     "collect_sector_etfs"),
-        ("krx_sectors",     "collectors.krx_sectors",     "collect_krx_sectors"),
-        ("valuation",       "collectors.valuation",       "collect_valuation"),
-        ("stocks_universe", "collectors.stocks_universe", "collect_stocks_universe"),
+        ("sector_etfs",     "collectors.sector_etfs",     "collect_sector_etfs",     "narrow"),
+        ("krx_sectors",     "collectors.krx_sectors",     "collect_krx_sectors",     "narrow"),
+        ("valuation",       "collectors.valuation",       "collect_valuation",       "narrow"),
+        ("stocks_universe", "collectors.stocks_universe", "collect_stocks_universe", "narrow"),
+        ("macro",           "collectors.macro",           "collect_macro",           "lookback90"),
     ]
 
-    for label, module_path, func_name in aux_tasks:
+    macro_start = (dt.datetime.strptime(target_date, "%Y-%m-%d").date()
+                   - dt.timedelta(days=90)).strftime("%Y-%m-%d")
+
+    for label, module_path, func_name, window in aux_tasks:
         try:
             import importlib
             mod = importlib.import_module(module_path)
             func = getattr(mod, func_name)
-            # 각 collector 가 dedup 하므로 start/end 를 target_date 로 좁혀 호출
-            added = func(start=target_date, end=target_date)
+            if window == "lookback90":
+                # macro: 발표 시차 흡수 위해 90일 룩백
+                added = func(start=macro_start, end=target_date)
+            else:
+                # 기타 collector 는 dedup 하므로 start/end 를 target_date 로 좁혀 호출
+                added = func(start=target_date, end=target_date)
             print(f"[AUX] OK collector={label} rows={added}")
         except Exception as e:
             reason = str(e).replace("\n", " ")[:200]
