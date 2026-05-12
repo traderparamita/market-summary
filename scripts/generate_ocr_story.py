@@ -53,15 +53,13 @@ LOG_DIR = ROOT / "logs"
 
 
 def _log_and_notify_usage(resp, label: str) -> None:
-    """GPT 응답에서 토큰 사용량을 추출해 로그 출력 + 텔레그램 전송."""
+    """GPT 응답에서 토큰 사용량을 로그에만 기록 (텔레그램 알림은 시작/종료만 전송)."""
     usage = getattr(resp, "usage", None)
     if not usage:
         return
     prompt = getattr(usage, "prompt_tokens", 0)
     completion = getattr(usage, "completion_tokens", 0)
     log.info(f"[GPT tokens] {label}: prompt={prompt:,} completion={completion:,} total={prompt+completion:,}")
-    msg = notify_telegram.build_gpt_usage_message("generate_ocr_story", label, prompt, completion)
-    notify_telegram.send(msg)
 LOG_DIR.mkdir(exist_ok=True)
 
 logging.basicConfig(
@@ -781,6 +779,7 @@ def main():
         target_date = _prev_biz(date.today())
 
     log.info(f"=== OCR Story 시작: {target_date} ===")
+    notify_telegram.send(f"🟢 *OCR 시작* — {target_date}\n미래에셋 브리핑 PDF OCR + Story 생성 시작")
 
     # _data.json 로드
     data_path = (ROOT / "output" / "summary"
@@ -856,10 +855,6 @@ def main():
         s3_key = upload_pdf_to_s3(us_path, target_date)
         if s3_key:
             log.info(f"PDF S3 보관: s3://{S3_BUCKET}/{s3_key}")
-            notify_telegram.send(
-                f"📥 *브리핑 PDF 저장* — {target_date}\n"
-                f"`s3://{S3_BUCKET}/{s3_key}`"
-            )
         log.info("OCR 시작 [AI 데일리 미국] (gpt-4o Vision)...")
         us_text = ocr_pdf(us_path)
         ocr_sections.append(
@@ -886,6 +881,11 @@ def main():
     # ── _ocr.html 저장 (기존 .html / _story.html 은 건드리지 않음) ──
     ocr_path = save_ocr_html(out_dir, target_date, story_html)
     log.info(f"=== 완료: {target_date} (소스: {', '.join(found_labels)}) ===")
+    notify_telegram.send(
+        f"✅ *OCR 완료* — {target_date}\n"
+        f"소스: {', '.join(found_labels)}\n"
+        f"`{ocr_path.name}` 생성"
+    )
     print(f"✅ OCR HTML 생성: {ocr_path}")
     print(f"   소스: {', '.join(found_labels)}")
 

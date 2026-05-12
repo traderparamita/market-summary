@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Story (OCR) | 2026-05-12</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
+  --gold:#b8860b; --oil:#d35400;
+}
+::selection{background:#F58220;color:#ffffff}
+.story-hero{border-left-color:#3b6ee6!important}
+.story-hero h2{color:#3b6ee6!important}
+.story-text .hl-accent{color:#3b6ee6!important}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
+}
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.header-right .source-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,130,32,0.1);color:var(--accent)}
+.story-hero{background:linear-gradient(135deg,#eef1f8,#e8e5f3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:32px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text strong{color:#1a1d2e}.story-text .hl-up{color:var(--up);font-weight:600}.story-text .hl-down{color:var(--down);font-weight:600}.story-text .hl-warn{color:var(--warn);font-weight:600}
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text)}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+.session-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.session-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.session-block::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.session-block.asia::before{background:linear-gradient(90deg,#d48b07,#e06818)}
+.session-block.europe::before{background:linear-gradient(90deg,#F58220,#043B72)}
+.session-block.us::before{background:linear-gradient(90deg,#043B72,#7F9FC3)}
+.session-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.session-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.session-icon.asia{background:rgba(212,139,7,0.1)}.session-icon.europe{background:rgba(59,110,230,0.1)}.session-icon.us{background:rgba(107,92,231,0.1)}
+.session-name{font-size:15px;font-weight:600;color:#1a1d2e}
+.session-time{font-size:11px;color:var(--muted)}
+.session-verdict{display:inline-block;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;margin-bottom:10px}
+.verdict-up{background:rgba(13,155,106,0.1);color:var(--up)}.verdict-down{background:rgba(217,48,79,0.1);color:var(--down)}.verdict-mixed{background:rgba(212,139,7,0.1);color:var(--warn)}.verdict-flat{background:rgba(124,130,152,0.1);color:var(--muted)}
+.session-events{list-style:none}.session-events li{font-size:12px;padding:6px 0 6px 12px;border-bottom:1px solid #f3f4f8;position:relative}
+.session-events li:last-child{border:none}.session-events li::before{content:'';position:absolute;left:0;top:12px;width:4px;height:4px;border-radius:50%;background:var(--muted)}
+.session-events .ev-time{color:var(--muted);font-size:10px;font-weight:600}
+.session-kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.s-kpi{text-align:center;padding:6px;border-radius:6px;background:var(--card2)}
+.s-kpi-label{font-size:10px;color:var(--muted)}.s-kpi-value{font-size:15px;font-weight:700}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}.metric-label{font-size:10px;color:var(--muted)}.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.cross-asset{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:28px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cross-asset h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:6px}
+.cross-asset .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.af-map{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:10px 6px}
+.af-node{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;min-width:120px}
+.af-node-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.af-node-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.af-node-chg{font-size:12px;font-weight:600}
+.af-arrow{text-align:center;color:var(--muted);font-size:12px;line-height:1.3}
+.af-arrow .arr{font-size:16px;display:block}.af-arrow .lbl{font-size:10px}
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:28px;margin-bottom:28px}
+.risk-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:12px;line-height:1.6}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}
+.risk-tag.high{background:rgba(217,48,79,0.15);color:var(--down)}.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+@media(max-width:900px){
+  .session-grid,.insight-grid{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .af-map{grid-template-columns:1fr}.risk-items{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>🏛 미래에셋 모닝 브리핑 (PDF 1차 자료)</h1>
+    <div class="date">PDF 발간 2026-05-13 (수) 아침 KST &middot; 본문 시점 2026-05-12 (화) 미국 마감</div>
+  </div>
+  <div class="header-right">
+    <span class="source-badge">PDF 1차 자료 보존</span>
+  </div>
+</div>
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>유가·금리 상승, 반도체주 하락..미국증시 숨 고르기 — 다우 +0.11%, 나스닥 -0.71% / KOSPI -2.29% 외국인 매도세</strong><br><br>
+    한국 증시는 외국인 매도세가 지속되며 KOSPI가 <span class="hl-down">-2.29%</span>로 마감했습니다. KODEX AI반도체는 <span class="hl-down">-3.06%</span> 하락했으며, 엑세스바이오 <span class="hl-up">+29.89%</span>, 녹십자엠에스 <span class="hl-up">+18.28%</span>, 씨티씨바이오 <span class="hl-up">+17.81%</span> 등 일부 바이오 종목이 강세를 보였습니다. 중국 시장에서는 상해종합지수가 <span class="hl-down">-0.25%</span>로 마감했으나, AI·반도체 중심의 성장주가 강세를 보였습니다.<br><br>
+    <strong>유럽 세션</strong> 본 자료에 유럽 세션 데이터가 포함되지 않았습니다.<br><br>
+    <strong>미국 세션</strong> 미국 증시는 혼조세로 마감했습니다. 다우는 <span class="hl-up">+0.11%</span> 상승했으나, 나스닥은 <span class="hl-down">-0.71%</span> 하락했습니다. 반도체주는 차익 매물 출회로 하락했으며, 마이크로 테크놀로지 <span class="hl-down">-3.62%</span>, AMD <span class="hl-down">-2.29%</span>, 인텔 <span class="hl-down">-6.82%</span> 등이 약세를 보였습니다. 필수소비재와 제약주는 강세를 보이며, 월마트 <span class="hl-up">+1.26%</span>, 코스트코 <span class="hl-up">+2.24%</span>, 일라이 릴리 <span class="hl-up">+2.37%</span> 등이 상승했습니다. 국제유가는 WTI가 배럴당 100달러를 재돌파하며 상승했습니다.
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 흐름 &mdash; 하나의 체인으로 이해하기</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">아시아 시장의 외국인 매도세가 미국 반도체주 하락으로 이어졌습니다.</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">아시아 오전</div>
+    <div class="node-title">KOSPI -2.29%</div>
+    <div class="node-detail">외국인 매도세로 KOSPI 하락, KODEX AI반도체 -3.06%</div>
+    <div class="node-impact down">한국 증시 약세</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">아시아 오후</div>
+    <div class="node-title">상해종합 -0.25%</div>
+    <div class="node-detail">AI·반도체 강세에도 차익 매물 출회</div>
+    <div class="node-impact mixed">중국 증시 혼조</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 오전</div>
+    <div class="node-title">반도체주 차익실현</div>
+    <div class="node-detail">마이크로 테크놀로지 -3.62%, AMD -2.29%</div>
+    <div class="node-impact down">미국 증시 하락 압력</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 오후</div>
+    <div class="node-title">WTI 100달러 돌파</div>
+    <div class="node-detail">유가 상승, 인플레 우려</div>
+    <div class="node-impact mixed">미국 증시 혼조</div>
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">아시아 시장의 외국인 매도세가 이어지며 글로벌 증시에 영향을 미쳤습니다.</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">&#127472;&#127479;</div>
+      <div><div class="session-name">아시아 세션</div><div class="session-time">한국 09:00 ~ 15:30</div></div>
+    </div>
+    <span class="session-verdict verdict-down">KOSPI·코스닥 하락 &middot; 외국인 매도세 지속</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> KOSPI 하락 출발 &mdash; 외국인 순매도 지속</li>
+      <li><span class="ev-time">11:00</span> KODEX AI반도체 <span class="hl-down">-3.06%</span> 하락</li>
+      <li><span class="ev-time">13:00</span> 엑세스바이오 <span class="hl-up">+29.89%</span> 급등</li>
+      <li><span class="ev-time">15:30</span> KOSPI <span class="hl-down">-2.29%</span>, 코스닥 <span class="hl-down">-2.32%</span> 마감</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value down">-2.29%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">HSI</div><div class="s-kpi-value down">-0.58%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">TWSE</div><div class="s-kpi-value down">-1.12%</div></div>
+    </div>
+  </div>
+  <div class="session-block europe">
+    <div class="session-header">
+      <div class="session-icon europe">&#127466;&#127482;</div>
+      <div><div class="session-name">유럽 세션</div><div class="session-time">한국 16:00 ~ 01:30</div></div>
+    </div>
+    <span class="session-verdict verdict-flat">본 자료에 유럽 세션 데이터가 포함되지 않았습니다</span>
+    <ul class="session-events">
+      <li><span class="ev-time">16:00</span> 본 자료에 유럽 세션 데이터가 포함되지 않았습니다</li>
+    </ul>
+  </div>
+  <div class="session-block usa">
+    <div class="session-header">
+      <div class="session-icon usa">&#127482;&#127480;</div>
+      <div><div class="session-name">미국 세션</div><div class="session-time">한국 22:30 ~ 06:00</div></div>
+    </div>
+    <span class="session-verdict verdict-mixed">다우 상승, 나스닥 하락 &middot; 반도체주 약세</span>
+    <ul class="session-events">
+      <li><span class="ev-time">22:30</span> 다우 <span class="hl-up">+0.11%</span> 상승 출발</li>
+      <li><span class="ev-time">01:00</span> 나스닥 <span class="hl-down">-0.71%</span> 하락</li>
+      <li><span class="ev-time">03:00</span> 반도체주 차익 매물 출회 &mdash; 마이크로 테크놀로지 <span class="hl-down">-3.62%</span></li>
+      <li><span class="ev-time">06:00</span> WTI 100달러 돌파 &mdash; 인플레 우려</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">S&P500</div><div class="s-kpi-value down">-0.16%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">NASDAQ</div><div class="s-kpi-value down">-0.71%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">DOW</div><div class="s-kpi-value up">+0.11%</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">알아두면 좋은 시장 상식 4가지</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">오늘의 뉴스를 이해하기 위해 꼭 알아야 할 개념들을 쉽게 설명합니다.</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(255,0,0,0.1);color:#ff0000">경제지표</span>
+    <h3>미국 소비자물가지수(CPI)</h3>
+    <p>
+      미국 노동통계국이 발표한 4월 소비자물가지수(CPI)는 전년 대비 3.8% 상승했습니다. 이는 시장 예상에 부합하는 수치로, 에너지 가격이 물가 상승의 주요 원인으로 작용했습니다.<br><br>
+      CPI는 소비자가 구매하는 상품과 서비스의 가격 변동을 측정하는 지표로, 인플레이션을 평가하는 데 중요한 역할을 합니다. 에너지 가격 상승은 전체 물가 상승의 40% 이상을 차지했습니다.<br><br>
+      CPI 상승은 연준의 금리 인상 가능성을 높이며, 이는 주식시장에 부담으로 작용할 수 있습니다. 특히 서비스 물가 상승세가 우려됩니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">CPI YoY</div><div class="metric-value up">+3.8%</div></div>
+      <div class="metric-item"><div class="metric-label">에너지 가격</div><div class="metric-value up">+17.9%</div></div>
+      <div class="metric-item"><div class="metric-label">근원 CPI MoM</div><div class="metric-value up">+0.4%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(0,0,255,0.1);color:#0000ff">반도체</span>
+    <h3>반도체주 차익실현</h3>
+    <p>
+      최근 급등했던 반도체주가 차익 매물 출회로 하락했습니다. 마이크로 테크놀로지 <span class="hl-down">-3.62%</span>, AMD <span class="hl-down">-2.29%</span>, 인텔 <span class="hl-down">-6.82%</span> 등 주요 종목이 약세를 보였습니다.<br><br>
+      반도체주는 기술 발전과 수요 증가로 주가가 상승세를 보였으나, 최근 인플레이션 우려와 금리 상승 가능성으로 인해 차익 실현 매물이 출회되었습니다.<br><br>
+      반도체주의 하락은 기술주 전반에 하방 압력을 가하며, 시장의 변동성을 증가시킬 수 있습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">마이크로 테크놀로지</div><div class="metric-value down">-3.62%</div></div>
+      <div class="metric-item"><div class="metric-label">AMD</div><div class="metric-value down">-2.29%</div></div>
+      <div class="metric-item"><div class="metric-label">인텔</div><div class="metric-value down">-6.82%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(0,255,0,0.1);color:#00ff00">에너지</span>
+    <h3>WTI 100달러 재돌파</h3>
+    <p>
+      국제유가가 상승하며 WTI가 배럴당 100달러를 재돌파했습니다. 이는 미국과 이란의 중재 협상이 교착 상태에 빠진 가운데 발생했습니다.<br><br>
+      유가 상승은 인플레이션을 가속화시키고, 금리 인상 가능성을 높입니다. 이는 주식시장에 부담으로 작용할 수 있습니다.<br><br>
+      에너지 가격 상승은 관련 기업의 수익성을 높일 수 있지만, 소비자 물가 상승으로 이어질 수 있습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">WTI</div><div class="metric-value up">+4.19%</div></div>
+      <div class="metric-item"><div class="metric-label">브렌트유</div><div class="metric-value up">+3.42%</div></div>
+      <div class="metric-item"><div class="metric-label">에너지 가격 상승</div><div class="metric-value up">+17.9%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(255,165,0,0.1);color:#ffa500">소비재</span>
+    <h3>필수소비재 강세</h3>
+    <p>
+      필수소비재와 제약주는 강세를 보였습니다. 월마트 <span class="hl-up">+1.26%</span>, 코스트코 <span class="hl-up">+2.24%</span>, 일라이 릴리 <span class="hl-up">+2.37%</span> 등이 상승했습니다.<br><br>
+      인플레이션 상승으로 인해 소비자들은 필수소비재에 대한 지출을 늘리고 있습니다. 이는 해당 업종의 주가 상승으로 이어졌습니다.<br><br>
+      필수소비재의 강세는 시장의 방어적 성격을 강화하며, 변동성 높은 시장에서 안정적인 투자처로 주목받고 있습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">월마트</div><div class="metric-value up">+1.26%</div></div>
+      <div class="metric-item"><div class="metric-label">코스트코</div><div class="metric-value up">+2.24%</div></div>
+      <div class="metric-item"><div class="metric-label">일라이 릴리</div><div class="metric-value up">+2.37%</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="risk-section">
+  <h2>앞으로 주의해야 할 점</h2>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">현재 시장은 인플레이션과 금리 상승 압력에 직면해 있습니다.</div>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>인플레이션 재가속 우려</strong><br>4월 CPI가 전년 대비 3.8% 상승하며 인플레이션이 재가속될 가능성이 있습니다. 이는 연준의 금리 인상 가능성을 높이고, 주식시장에 부담을 줄 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag high">높음</span><span><strong>국제유가 상승</strong><br>WTI가 배럴당 100달러를 돌파하며 유가 상승이 지속되고 있습니다. 이는 인플레이션을 가속화하고, 금리 인상 압력을 높일 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag med">보통</span><span><strong>반도체주 차익 매물</strong><br>반도체주가 차익 매물 출회로 하락세를 보이고 있습니다. 이는 기술주 전반에 하방 압력을 가할 수 있습니다.</span></li>
+  </ul>
+</div>
+<div class="footer">미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF &mdash; OpenAI Vision OCR 추출 후 HTML 재구성. 글로벌 풀 사이클 종합은 메인 Market Story 탭을 참고하세요.</div>
+<div class="ai-disclaimer">⚠️ 본 자료는 미래에셋증권 PDF 원본을 OCR 추출한 <strong>1차 자료 보존</strong>입니다. PDF 발간 시점(아침 KST) 기준으로 작성되어 메인 Market Story 와 시점·범위가 다릅니다. 수치는 PDF 본문 그대로이며, 투자 판단 시 PDF 원본을 확인하시기 바랍니다.</div>
+</body>
+</html>
