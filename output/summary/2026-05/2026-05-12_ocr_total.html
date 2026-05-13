@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Story (OCR Total) | 2026-05-12</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
+  --gold:#b8860b; --oil:#d35400;
+}
+::selection{background:#F58220;color:#ffffff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
+}
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.header-right .source-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,130,32,0.1);color:var(--accent)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+.hl-up{color:var(--up);font-weight:600}
+.hl-down{color:var(--down);font-weight:600}
+.hl-warn{color:var(--warn);font-weight:600}
+
+.tab-bar{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border)}
+.tab-btn{padding:12px 28px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* CS Story */
+.cs-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.cs-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.cs-hero .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+.cs-text{font-size:16px;color:#2d3148;line-height:1.9}
+.cs-text p{margin-bottom:14px}.cs-text p:last-child{margin-bottom:0}
+.cs-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.cs-section h3{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}
+.cs-section p{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+.cs-section p:last-child{margin-bottom:0}
+.cs-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+
+/* PM Story */
+.pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+.pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+.pm-tl p{margin-bottom:8px}.pm-tl p:last-child{margin-bottom:0}
+.pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+@media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+.pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.pm-section ul{list-style:none;padding:0;margin:0}
+.pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+.pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+.pm-section li:last-child{margin-bottom:0}
+.pm-section .pm-num{font-weight:600;color:#1a1d2e}
+.pm-section .pm-up{color:#d92b2b;font-weight:600}
+.pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+.pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+
+/* Macro */
+.macro-header{background:linear-gradient(135deg,#f0f4ff,#e8edf8);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:18px 24px;margin-bottom:20px}
+.macro-header h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.macro-header .mh-sub{font-size:12px;color:var(--muted)}
+.macro-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.macro-block h3{font-size:15px;font-weight:700;color:#1a1d2e;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid var(--border)}
+.macro-block ul{margin:0;padding-left:18px;font-size:13px;color:#2d3148;line-height:1.85}
+.macro-block li{margin-bottom:3px}
+.macro-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.macro-kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center}
+.macro-kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.macro-kpi-value{font-size:16px;font-weight:700;color:#1a1d2e}
+.macro-kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.event-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.event-table th{background:#f7f8fc;font-size:12px;font-weight:600;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.event-table td{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:#2d3148}
+.event-table tr:last-child td{border-bottom:none}
+.imp-high{color:var(--down);font-weight:700}.imp-med{color:#d47f00;font-weight:600}.imp-low{color:var(--muted)}
+
+
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
+  --gold:#b8860b; --oil:#d35400;
+}
+::selection{background:#F58220;color:#ffffff}
+.story-hero{border-left-color:#3b6ee6!important}
+.story-hero h2{color:#3b6ee6!important}
+.story-text .hl-accent{color:#3b6ee6!important}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
+}
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.header-right .source-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(245,130,32,0.1);color:var(--accent)}
+.story-hero{background:linear-gradient(135deg,#eef1f8,#e8e5f3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:32px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text strong{color:#1a1d2e}.story-text .hl-up{color:var(--up);font-weight:600}.story-text .hl-down{color:var(--down);font-weight:600}.story-text .hl-warn{color:var(--warn);font-weight:600}
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text)}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+.session-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.session-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.session-block::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.session-block.asia::before{background:linear-gradient(90deg,#d48b07,#e06818)}
+.session-block.europe::before{background:linear-gradient(90deg,#F58220,#043B72)}
+.session-block.us::before{background:linear-gradient(90deg,#043B72,#7F9FC3)}
+.session-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.session-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.session-icon.asia{background:rgba(212,139,7,0.1)}.session-icon.europe{background:rgba(59,110,230,0.1)}.session-icon.us{background:rgba(107,92,231,0.1)}
+.session-name{font-size:15px;font-weight:600;color:#1a1d2e}
+.session-time{font-size:11px;color:var(--muted)}
+.session-verdict{display:inline-block;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;margin-bottom:10px}
+.verdict-up{background:rgba(13,155,106,0.1);color:var(--up)}.verdict-down{background:rgba(217,48,79,0.1);color:var(--down)}.verdict-mixed{background:rgba(212,139,7,0.1);color:var(--warn)}.verdict-flat{background:rgba(124,130,152,0.1);color:var(--muted)}
+.session-events{list-style:none}.session-events li{font-size:12px;padding:6px 0 6px 12px;border-bottom:1px solid #f3f4f8;position:relative}
+.session-events li:last-child{border:none}.session-events li::before{content:'';position:absolute;left:0;top:12px;width:4px;height:4px;border-radius:50%;background:var(--muted)}
+.session-events .ev-time{color:var(--muted);font-size:10px;font-weight:600}
+.session-kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.s-kpi{text-align:center;padding:6px;border-radius:6px;background:var(--card2)}
+.s-kpi-label{font-size:10px;color:var(--muted)}.s-kpi-value{font-size:15px;font-weight:700}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}.metric-label{font-size:10px;color:var(--muted)}.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.cross-asset{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:28px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cross-asset h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:6px}
+.cross-asset .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.af-map{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:10px 6px}
+.af-node{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;min-width:120px}
+.af-node-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.af-node-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.af-node-chg{font-size:12px;font-weight:600}
+.af-arrow{text-align:center;color:var(--muted);font-size:12px;line-height:1.3}
+.af-arrow .arr{font-size:16px;display:block}.af-arrow .lbl{font-size:10px}
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:28px;margin-bottom:28px}
+.risk-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:12px;line-height:1.6}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}
+.risk-tag.high{background:rgba(217,48,79,0.15);color:var(--down)}.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+@media(max-width:900px){
+  .session-grid,.insight-grid{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .af-map{grid-template-columns:1fr}.risk-items{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>🏛 미래에셋 모닝 브리핑 — OCR 합본 (Story · CS · PM · Macro)</h1>
+    <div class="date">PDF 발간 기준 · 본문 시점 2026-05-12 (화) 미국 마감</div>
+  </div>
+  <div class="header-right">
+    <span class="source-badge">PDF 1차 자료 합본</span>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
+  <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
+  <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
+</div>
+
+
+<div id="tab-cs" class="tab-panel active">
+<div class="cs-hero">
+  <h2>CS Story — 고객 설명용</h2>
+  <div class="cs-subtitle">2026-05-12 (화요일) · 수치 대신 맥락·흐름 중심</div>
+  <div class="cs-text">
+    <p>아시아 증시는 미국 물가 발표를 앞두고 긴장감이 높아지면서 전반적으로 약세를 보였습니다. 한국 시장에서는 외국인 투자자들이 올해 들어 현물 70조 원, 비차익 40조 원이라는 대규모 자금을 빼내가며 <span class="hl-down">코스피가 2.29% 하락</span>했고, 코스닥도 비슷한 낙폭을 기록했습니다. 특히 최근 4거래일 동안만 현물 20조 원, 비차익 14조 원이 빠져나가는 '폭탄급' 매도세가 이어졌습니다. 반도체 섹터는 차익실현 매물이 쏟아지며 TIGER 반도체TOP10이 3.63% 급락했고, DRAM ETF에서는 상장 이후 처음으로 자금 유출이 발생했습니다. 반면 한타바이러스 관련 우려가 부각되며 엑세스바이오, 녹십자랩셀 등 진단·바이오 종목들은 두 자릿수 급등세를 보였습니다.</p>
+    <p>중국 시장은 상해종합이 0.25%, 심천성분이 0.47% 소폭 하락했지만, AI·반도체 중심의 성장주 쏠림 현상은 계속되며 과창판과 창업판 지수는 오히려 상승 마감했습니다. 항서제약이 글로벌 제약사 BMS와 최대 152억 달러 규모의 전략 협력 계약을 체결하며 중국 혁신약 기업의 글로벌 경쟁력을 재확인시켰고, 콰이쇼우는 AI 영상 생성 사업 'Kling'의 IPO 추진 소식에 기업가치 200억 달러 평가를 받으며 중국 AI 산업이 수익화 단계로 진입하고 있다는 평가를 받았습니다.</p>
+    <p>미국 증시는 혼조세로 마감했습니다. 다우지수는 0.11% 소폭 상승했지만, 나스닥은 0.71% 하락하며 기술주 중심의 조정을 받았습니다. 4월 소비자물가지수(CPI)가 전년 대비 3.8% 상승하며 3년 만에 최대 상승률을 기록했고, 특히 근원 CPI가 예상을 0.1%p 웃돌며 인플레이션 재가속 우려가 커졌습니다. 에너지 가격이 전체 물가 상승분의 40% 이상을 차지했는데, WTI 유가가 배럴당 100달러를 다시 돌파하면서 추가 물가 상승과 연준의 금리 인상 가능성에 대한 걱정이 시장을 압박했습니다. 최근 한 달간 50~70% 급등했던 마이크론, AMD, 퀄컴 등 반도체주들은 일제히 차익실현 매물이 나오며 하락했지만, 장 중 두 자릿수 낙폭을 보였던 종목들이 마감 무렵 낙폭을 크게 줄이며 저항력을 보였습니다. 반면 월마트, 코스트코, 코카콜라 등 필수소비재와 제이피모건, 웰스파고 등 금융주는 인플레이션과 금리 상승 환경에서 오히려 수혜를 볼 것이라는 기대에 강세를 보였습니다.</p>
+  </div>
+</div>
+
+<div class="cs-section">
+  <h3>🔥 뜨거운 물가, 식지 않는 인플레이션</h3>
+  <p>4월 미국 소비자물가가 전년 대비 <span class="hl-up">3.8% 상승</span>하며 2023년 5월 이후 3년 만에 최대 상승률을 기록했습니다. 시장 예상에는 부합했지만, 변동성이 큰 에너지·식품을 제외한 근원 CPI가 예상보다 0.1%p 높게 나오면서 인플레이션이 생각보다 끈질기다는 우려가 커졌습니다. 시카고 연은 총재는 "예상보다 더 나빴다. 연준 목표치 2%를 훨씬 웃돌고 있다"며 특히 에너지 가격 영향을 직접 받지 않는 서비스 물가 상승이 우려된다고 지적했습니다. 연방기금금리 선물 시장은 연내 금리 인상 가능성을 30% 중반대로 높게 반영하기 시작했고, 금리 인하 가능성은 2%대로 낮아졌습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🛢️ WTI 100달러 재돌파, 중동 긴장 재점화</h3>
+  <p>국제유가가 3거래일 연속 상승하며 WTI가 배럴당 <span class="hl-up">102.18달러</span>로 지난 5일 이후 처음으로 100달러를 다시 넘어섰습니다. 트럼프 대통령이 이란의 핵 개발을 100% 중단시키고 고농축 우라늄을 수거하겠다고 밝혔는데, 이는 이란이 강경하게 거부하는 사안이어서 휴전 협상이 교착 상태에 빠졌다는 우려가 커졌습니다. 미국 에너지정보청(EIA)은 호르무즈 해협이 사실상 폐쇄 상태를 유지할 것이며, 원유 생산과 교역량이 전쟁 이전 수준을 회복하려면 최소 올해 말이나 내년 초는 되어야 한다고 전망했습니다. 유가 상승은 인플레이션 추가 상승 우려로 직결되며 시장 심리를 압박하는 요인이 되고 있습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>💾 반도체주 차익실현, 그래도 저항력은 보여</h3>
+  <p>최근 한 달간 50~70% 급등하며 시장 상승을 주도했던 반도체주들이 일제히 조정을 받았습니다. 마이크론(-3.62%), AMD(-2.29%), 퀄컴(-11.46%) 등이 하락했고, VanEck 반도체 ETF(SMH)는 2.61%, RoundHill 메모리 ETF(DRAM)는 6.86% 떨어졌습니다. 다만 장 중 마이크론이 11% 이상, AMD가 7% 이상 급락했던 것에 비하면 마감 무렵 낙폭을 크게 줄이며 저항력을 보였습니다. 실적 발표를 앞둔 엔비디아는 장 중 2% 하락했다가 소폭 반등(+0.67%)에 성공했고, UBS·시스케나·씨티·웰스파고 등 주요 증권사들은 엔비디아 목표주가를 245~315달러로 유지하거나 상향하며 여전히 추가 상승 여력이 있다고 평가했습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🛡️ 필수소비재·금융주 강세, 방어 모드 가동</h3>
+  <p>인플레이션이 높아지면 실질 임금 상승이 제한되고 소비는 필수 소비재에 집중될 수밖에 없다는 관측에, 월마트(+2.16%), 코스트코(+2.24%), 펩시코(+1.63%), 코카콜라(+1.74%) 등 필수소비재 종목들이 강세를 보였습니다. 금리 상승이 은행의 순이자마진 확대와 보험사의 채권 투자 이자 수익 증가로 이어질 것이라는 기대에 제이피모건(+1.63%), 웰스파고(+2.17%), 유나이티드헬스(+3.11%) 등 금융·헬스케어 종목도 상승했습니다. 기술주 중심의 성장주 조정 국면에서 방어적 섹터로 자금이 이동하는 흐름이 뚜렷했습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🌏 한국 시장, 외국인 엑소더스 지속</h3>
+  <p>한국 증시에서는 외국인 투자자들의 대규모 자금 이탈이 계속되고 있습니다. 올해 들어 현물 70조 원, 비차익 40조 원이라는 엄청난 규모의 순매도가 발생했고, 최근 4거래일 동안만 현물 20조 원, 비차익 14조 원이 빠져나갔습니다. 고환율·고금리·고유가라는 '3종고' 상황 속에서 외국인들이 한국 시장에서 발을 빼는 흐름이 가속화되고 있으며, 이는 코스피가 7,600선 아래로 내려앉는 주요 원인이 되고 있습니다. 반도체 섹터도 글로벌 차익실현 흐름에 동조하며 DRAM ETF에서 상장 이후 처음으로 자금 유출이 발생하는 등 투자 심리가 크게 위축된 모습입니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>📅 이번 주 관전 포인트</h3>
+  <p>13일(수) 한국 4월 고용동향과 MSCI 반기 리뷰(반영은 29일)가 예정되어 있고, 미국에서는 에너지정보청(EIA) 단기에너지전망보고서와 국제에너지기구(IEA) 월간 보고서가 공개됩니다. SK이노베이션, HD현대, 한국전력 등 주요 기업 실적 발표도 이어지며, 인플레이션·유가·금리 흐름과 함께 기업 실적이 시장 방향을 좌우할 전망입니다.</p>
+  <p class="cs-footer">CS Story 는 Market Story 를 수치 대신 맥락·흐름 중심으로 재구성한 고객 설명용 버전입니다. 구체적 수치는 Market Story / Data Dashboard 탭을 참고하세요.</p>
+</div>
+</div>
+
+<div id="tab-pm" class="tab-panel">
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026-05-12 (화요일) · 지역·자산군별 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> 미국 4월 CPI 3.8% YoY로 3년래 최고치 기록, 에너지 가격 17.9% 급등이 주도. WTI 배럴당 102.18달러로 100달러 재돌파하며 인플레 재가속·금리 인상 우려 확산. 반도체주 차익실현 매물 출회로 나스닥 -0.71%, 필라델피아 반도체지수 -3.01% 하락.</p>
+    <p><strong>Key drivers:</strong> 근원 CPI 2.8% YoY로 예상 상회 (0.1%p); 미·이란 협상 교착으로 WTI 4.19% 급등; 반도체주 일제히 하락 (마이크론 -3.62%, AMD -2.29%, 퀄컴 -11.46%)</p>
+    <p><strong>Watch:</strong> 미 10년물 국채금리 4.463% (+5.1bp), 2년물 3.896% (+4.7bp)로 이틀 연속 상승; 연내 금리 인상 가능성 30% 중반대로 상승; MSCI 반기 리뷰 13일 예정 (반영 29일)</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">7,643.15</span> <span class="pm-dn">-2.29%</span> · KOSDAQ <span class="pm-num">1,179.29</span> <span class="pm-dn">-2.32%</span></li>
+      <li>외국인 올해 현물 <span class="pm-dn">70조 원</span> 순매도 · 비차익 <span class="pm-dn">40조 원</span> 순매도 기록</li>
+      <li>최근 4거래일 현물 <span class="pm-dn">20조 원</span> · 비차익 <span class="pm-dn">14조 원</span> 순매도 '폭탄'</li>
+      <li>TIGER 200 <span class="pm-dn">-2.11%</span> · TIGER 코스닥150 <span class="pm-dn">-2.47%</span></li>
+      <li>반도체: TIGER 반도체TOP10 <span class="pm-dn">-3.63%</span> · KODEX AI반도체 <span class="pm-dn">-3.06%</span> · DRAM ETF 첫 자금 유출</li>
+      <li>코로나19 테마: 엑세스바이오 <span class="pm-up">+29.89%</span> · 녹십자랩에스 <span class="pm-up">+18.28%</span> · 씨티씨바이오 <span class="pm-up">+17.81%</span></li>
+    </ul>
+    <div class="pm-note">3종고(고환율·고금리·고유가) 속 외국인 엑소더스 지속 — 균형잡힌 리스크 관리 필요</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>미국 4월 CPI <span class="pm-up">+3.8% YoY</span> (예상 부합, 3년래 최고) · 전월비 <span class="pm-up">+0.6%</span></li>
+      <li>근원 CPI <span class="pm-up">+2.8% YoY</span> · 전월비 <span class="pm-up">+0.4%</span> (각각 예상 0.1%p 상회)</li>
+      <li>에너지 가격 <span class="pm-up">+17.9% YoY</span> · 휘발유 <span class="pm-up">+28.4%</span> · 연료유 <span class="pm-up">+54.3%</span> (전체 물가 상승분 40% 이상 차지)</li>
+      <li>주거비 전월비 <span class="pm-up">+0.6%</span> · 서비스 물가 상승세 우려 (골스비 시카고 연은 총재)</li>
+      <li>WTI <span class="pm-num">$102.18</span> <span class="pm-up">+4.19%</span> · 브렌트유 <span class="pm-num">$107.77</span> <span class="pm-up">+3.42%</span> (100달러 재돌파)</li>
+      <li>미·이란 협상 교착 — 트럼프 "핵 개발 100% 중단·고농축 우라늄 수거" 발언으로 합의점 찾기 난항</li>
+    </ul>
+    <div class="pm-note">인플레 재가속 확인 + 유가 급등 → 연내 금리 인상 가능성 30% 중반대로 상승</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아·중국</h3>
+    <ul>
+      <li>상해종합 <span class="pm-num">4,214.49</span> <span class="pm-dn">-0.25%</span> · 심천성분 <span class="pm-num">15,824.92</span> <span class="pm-dn">-0.47%</span></li>
+      <li>대형지수 차익실현 매물 출회 속 하락 · 과창판·창업판 지수는 상승 (통신·반도체 업종 강세)</li>
+      <li>홍콩 증시 약세 — 전기차·반도체 업종 중심 차익매물</li>
+      <li>항서제약: BMS와 최대 <span class="pm-num">152억 달러</span> 규모 글로벌 전략 협력·라이선스 계약 체결 · 초기 핵심 신약 13개 공동개발</li>
+      <li>콰이쇼우: AI 영상 생성 'Kling' 론칭 및 내년 IPO 추진 보도 · 기업가치 <span class="pm-num">200억 달러</span> 수준 거론 · ARR <span class="pm-num">5억 달러</span> 기록 (론칭 후 2배 성장)</li>
+    </ul>
+    <div class="pm-note">중국 AI 산업 사용자 확보 단계 → 실제 수익화·상업화 구간 진입 평가</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>다우 <span class="pm-num">49,760.56</span> <span class="pm-up">+0.11%</span> · S&P500 <span class="pm-num">7,400.96</span> <span class="pm-dn">-0.16%</span> · 나스닥 <span class="pm-num">26,088.20</span> <span class="pm-dn">-0.71%</span> · 러셀2000 <span class="pm-dn">-0.97%</span></li>
+      <li>VIX <span class="pm-num">17.99</span> <span class="pm-dn">-2.12%</span> · 장 중 낙폭 축소로 S&P500 7,400·나스닥 26,000 지지 성공</li>
+      <li>반도체주 일제히 하락: 마이크론 <span class="pm-dn">-3.62%</span> (장 중 -11%) · AMD <span class="pm-dn">-2.29%</span> (장 중 -7%) · 퀄컴 <span class="pm-dn">-11.46%</span> · 브로드컴 <span class="pm-dn">-2.13%</span> · 인텔 <span class="pm-dn">-6.82%</span></li>
+      <li>필라델피아 반도체지수 <span class="pm-dn">-3.01%</span> (장 중 -6.8%) · VanEck 반도체ETF(SMH) <span class="pm-dn">-2.61%</span> · RoundHill 메모리ETF(DRAM) <span class="pm-dn">-6.86%</span></li>
+      <li>엔비디아 <span class="pm-up">+0.67%</span> (장 중 -2%에서 반등) — UBS 목표가 245달러로 12% 상향 · 씨티·번스타인 300달러 유지 · 웰스파고 315달러 유지</li>
+      <li>방어주 강세: 월마트 <span class="pm-up">+2.16%</span> · 코스트코 <span class="pm-up">+2.24%</span> · 타겟 <span class="pm-up">+2.84%</span> · 일라이 릴리 <span class="pm-up">+2.37%</span> · 유나이티드헬스 <span class="pm-up">+3.11%</span></li>
+      <li>금융주 강세: 제이피모건 <span class="pm-up">+1.63%</span> · 웰스파고 <span class="pm-up">+2.17%</span> · 휴마나 <span class="pm-up">+7.69%</span> (금리 상승 수혜)</li>
+      <li>특징주: 퀀텀컴퓨팅 <span class="pm-up">+15.72%</span> (1Q 매출 9,000% 급증) · 웬디스 <span class="pm-up">+16.86%</span> (트라이언 펀드 비상장 전환 추진) · 언더아머 <span class="pm-dn">-17%</span> (실적 부진)</li>
+    </ul>
+    <div class="pm-note">반도체주 차익실현 압력 속 장 중 낙폭 축소 — 방어주·금융주로 자금 이동</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>영국 정치 혼란 지속 — 지방선거 참패 후 스타머 총리 사퇴 압박 고조 (본인은 사퇴 거부)</li>
+      <li>영국 국채(길트) 금리 상승 → 미 국채 금리 동반 상승 압력</li>
+      <li>파운드-달러 환율 <span class="pm-dn">-0.573%</span> · 유로-달러 환율 <span class="pm-dn">-0.327%</span></li>
+      <li>12일 18:00 유로존·독일 5월 ZEW 경기기대지수 발표 예정</li>
+    </ul>
+    <div class="pm-note">영국 정치 리스크 → 파운드화 급락 → 달러 상대적 강세 기여</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권·환율</h3>
+    <ul>
+      <li>미 10년물 국채금리 <span class="pm-num">4.463%</span> <span class="pm-up">+5.1bp</span> · 2년물 <span class="pm-num">3.896%</span> <span class="pm-up">+4.7bp</span> (장 중 4% 돌파, 3/27 이후 첫)</li>
+      <li>30년물 금리 <span class="pm-num">5.029%</span> <span class="pm-up">+4.2bp</span> (5% 재돌파) · 10년물 입찰 수요 부진</li>
+      <li>CME 페드워치: 12월까지 금리 동결 가능성 <span class="pm-num">60% 초반</span> · 연내 25bp 이상 인상 가능성 <span class="pm-up">30% 중반</span> (전일 20% 중반) · 연내 인하 가능성 <span class="pm-dn">2%대</span></li>
+      <li>달러 인덱스(DXY) <span class="pm-num">98.294</span> <span class="pm-up">+0.342%</span> (이틀 연속 상승)</li>
+      <li>달러-원 환율 야간 거래 <span class="pm-num">1,490.90원</span> <span class="pm-up">+0.10원</span> 횡보 · NDF 1개월물 <span class="pm-num">1,492.30원</span> (현물환 대비 +3.50원)</li>
+      <li>금 선물 <span class="pm-num">$4,686/온스</span> <span class="pm-dn">-0.9%</span> (이틀째 하락) · 은 선물 <span class="pm-dn">-0.2%</span> (6거래일만에 하락 전환)</li>
+    </ul>
+    <div class="pm-note">국채금리 이틀 연속 상승 + 달러 강세 지속 — 연내 금리 인상 가능성 시장 반영 확대</div>
+  </div>
+</div>
+
+<div class="pm-footer">PM Story 는 Market Story 를 PM 의사결정 관점에서 재구성한 6 섹션 브리프입니다.</div>
+</div>
+
+<div id="tab-story" class="tab-panel">
+<div class="header-right">
+    <span class="source-badge">PDF 1차 자료 보존</span>
+  </div>
+</div>
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>미국 CPI 3.8% 재가속·WTI $102 돌파 — 반도체주 차익실현에 나스닥 −0.71% / KOSPI −2.29% 외국인 엑소더스</strong><br><br>
+    
+    <strong>아시아 세션 (2026-05-12 마감)</strong><br>
+    KOSPI는 <span class="hl-down">−2.29%</span> 하락한 7,643.15에, KOSDAQ은 <span class="hl-down">−2.32%</span> 하락한 1,179.29에 마감했습니다. 외국인은 올해 현물 70조 원·비차익 40조 원 순매도를 기록했으며, 최근 4거래일 동안 현물 20조 원·비차익 14조 원 순매도 '폭탄'이 이어졌습니다. TIGER 200 <span class="hl-down">−2.11%</span>, TIGER 코스닥150 <span class="hl-down">−2.47%</span> 하락했고, 반도체 ETF는 TIER 반도체TOP10 <span class="hl-down">−3.63%</span>, KODEX AI반도체 <span class="hl-down">−3.06%</span>로 DRAM ETF 첫 자금 유출을 기록했습니다. 코로나19 한타바이러스 영향으로 엑세스바이오 <span class="hl-up">+29.89%</span>, 녹십자랩에스 <span class="hl-up">+18.28%</span>, 씨티씨바이오 <span class="hl-up">+17.81%</span> 급등했습니다. 중국 상해종합은 <span class="hl-down">−0.25%</span>(4,214.49), 심천성분은 <span class="hl-down">−0.47%</span>(15,824.92) 하락했으나, AI·반도체 중심 성장주 쏠림 현상은 지속되며 과창판·창업판 지수는 상승 마감했습니다. 항서제약은 글로벌 빅파마 BMS와 최대 152억달러 규모 전략 협력 계약을 체결해 중국 혁신약 기업의 글로벌 기술 경쟁력을 재부각시켰고, 콰이쇼우는 AI 영상 생성 사업 'Kling' 론칭 및 내년 IPO 추진 보도로 기업가치 200억달러 수준이 거론되며 중국 AI 산업의 수익화 단계 진입을 시사했습니다.<br><br>
+    
+    <strong>유럽 세션</strong><br>
+    본 자료에 유럽 시장 상세 데이터가 포함되지 않았습니다 — 영국 길트 금리 상승(정치 혼란)과 파운드화 급락이 미국 달러 강세 요인으로 작용했다는 언급만 확인됩니다.<br><br>
+    
+    <strong>미국 세션 (2026-05-12 마감)</strong><br>
+    미국 증시는 혼조 마감 — 다우 <span class="hl-up">+0.11%</span>(49,760.56), S&P500 <span class="hl-down">−0.16%</span>(7,400.96), 나스닥 <span class="hl-down">−0.71%</span>(26,088.20), 러셀2000 <span class="hl-down">−0.97%</span>. 4월 CPI는 전년 대비 <span class="hl-warn">+3.8%</span>(3년 만에 최대), 전월 대비 <span class="hl-warn">+0.6%</span>로 시장 예상에 부합했으나, 근원 CPI는 전년 대비 <span class="hl-warn">+2.8%</span>, 전월 대비 <span class="hl-warn">+0.4%</span>로 예상을 각각 0.1%p 상회했습니다. 에너지 가격 지수는 전년 대비 <span class="hl-warn">+17.9%</span> 상승(에너지 상품 +29.2%, 휘발유 +28.4%, 연료유 +54.3%)해 전체 물가 상승분의 40% 이상을 차지했습니다. 시카고 연은 골스비 총재는 "예상보다 더 나빴다. 연준 목표치 2%를 훨씬 웃돈다"며 서비스 항목 물가 상승을 우려했습니다. WTI는 <span class="hl-up">+4.19%</span> 급등해 배럴당 $102.18로 5일 이후 처음 $100 재돌파, 브렌트유는 <span class="hl-up">+3.42%</span> 상승해 $107.77을 기록했습니다. 트럼프 대통령은 이란 핵 개발 100% 중단 및 고농축 우라늄 수거를 언급했고, 미 EIA는 호르무즈 해협 폐쇄가 이틀 더 지속될 것으로 예상했습니다. 반도체주는 일제히 하락 — 마이크론 테크놀로지 <span class="hl-down">−3.62%</span>(장중 −11% 이상 급락 후 낙폭 축소), AMD <span class="hl-down">−2.29%</span>(장중 −7% → −2%대로 축소), 퀄컴 <span class="hl-down">−11.46%</span>(장중 −15% 이상), 브로드컴 <span class="hl-down">−2.13%</span>, 인텔 <span class="hl-down">−6.82%</span>, 램 리서치 <span class="hl-down">−2.30%</span>, 샌디스크 <span class="hl-down">−6.17%</span>, 웨스턴 디지털 <span class="hl-down">−5.25%</span>, 어플라이드 머티어리얼즈 <span class="hl-down">−2.80%</span>. VanEck 반도체ETF(SMH) <span class="hl-down">−2.61%</span>, RoundHill 메모리ETF(DRAM) <span class="hl-down">−6.86%</span>, 필라델피아 반도체 지수 <span class="hl-down">−3.01%</span>(장중 −6.8% → 축소). 엔비디아는 <span class="hl-up">+0.67%</span> 소폭 반등(장중 −2%대 → 반등 성공) — UBS 목표가 $245로 12% 상향, 시스케나 $275, 웰스파고 $315 유지. 씨티는 브로드컴 목표가 $475 → $500 상향, 미즈호는 AMD $415 → $516, 인텔 $100 → $124 상향. 소프트웨어주도 동반 약세 — 오라클 <span class="hl-down">−3.62%</span>(오픈하이머 목표가 $210 → $235 상향에도 하락), 세일스포스 <span class="hl-down">−3.48%</span>, 서비스나우 <span class="hl-down">−2.72%</span>, 인튜이트 <span class="hl-down">−1.41%</span>. 필수소비재·제약은 방어적 강세 — 월마트 <span class="hl-up">+2.16%</span>, 코스트코 <span class="hl-up">+2.24%</span>, 펩시코 <span class="hl-up">+1.63%</span>, 코카콜라 <span class="hl-up">+1.74%</span>, 타겟 <span class="hl-up">+2.84%</span>, 일라이 릴리 <span class="hl-up">+2.37%</span>, 애브비 <span class="hl-up">+2.50%</span>, 유나이티드헬스 그룹 <span class="hl-up">+3.11%</span>, CVS <span class="hl-up">+3.18%</span>. 금융주는 금리 상승 수혜 — 제이피모건체이스 <span class="hl-up">+1.63%</span>, 웰스파고 <span class="hl-up">+2.17%</span>, 휴마나 <span class="hl-up">+7.69%</span>. 미 국채 2년물 금리 <span class="hl-warn">+4.7bp</span>(3.896%, 장중 4% 돌파), 10년물 <span class="hl-warn">+5.1bp</span>(4.463%), 30년물 <span class="hl-warn">+4.2bp</span>(5.029%로 5% 상회). CME 페드워치는 12월까지 금리 동결 가능성 60% 초반, 연내 25bp 이상 인상 가능성 20% 중반 → 30% 중반 상향, 연내 인하 가능성 2%대로 하락. 달러 인덱스(DXY) <span class="hl-up">+0.342%</span>(98.294), 파운드−달러 <span class="hl-down">−0.573%</span>, 유로−달러 <span class="hl-down">−0.327%</span>. 달러−원 환율 야간 거래 1,490.90원(+0.10원), NDF 1개월물 1,492.30원(+3.50원). 금 선물 <span class="hl-down">−0.9%</span>($4,686/온스, 이틀째 하락), 은 선물 <span class="hl-down">−0.2%</span>(6거래일 만에 하락 전환). VIX <span class="hl-down">−2.12%</span>(17.99). 특징 종목 — 퀀텀 컴퓨팅 <span class="hl-up">+15.72%</span>(1분기 매출 369만달러, 전년 대비 약 9,000% 급증), 웬디스 <span class="hl-up">+16.86%</span>(넬슨 펠츠 트라이언 펀드가 비상장 전환 자금 조달 추진 보도), 플러그 파워 <span class="hl-up">+1.14%</span>(1분기 손실 예상 하회), 이베이 <span class="hl-up">+2.10%</span>(게임스탑 인수 제안 거부), 언더 아머 <span class="hl-down">−17%</span>(부진한 전분기 실적), 게임스탑 <span class="hl-down">−3.45%</span>(이베이 인수 제안 거부 후), 힐스 앤드 힐스 헬스 <span class="hl-down">−14.10%</span>(부진한 가이던스), AST 스페이스모바일 <span class="hl-down">−11.62%</span>(1분기 손실 예상 초과), 깃랩 <span class="hl-down">−9.98%</span>(대규모 구조조정 계획), 클린스파크 <span class="hl-down">−5.80%</span>(실적 부진), 마라홀딩스 <span class="hl-down">−5.00%</span>(1분기 실적 부진).
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 흐름 &mdash; 하나의 체인으로 이해하기</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">외국인 엑소더스 → 미국 CPI 재가속 → 유가 $100 돌파 → 반도체주 차익실현 압력</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">아시아 오전 09:00~15:30</div>
+    <div class="node-title">KOSPI −2.29% 외국인 엑소더스</div>
+    <div class="node-detail">외국인 현물 70조·비차익 40조 원 순매도 기록. 최근 4거래일 현물 20조·비차익 14조 원 '폭탄'. KODEX AI반도체 −3.06%, TIER 반도체TOP10 −3.63% 급락.</div>
+    <div class="node-impact down">3종고(고환율·고금리·고유가) 속 리스크 회피 심화</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 오후 21:30 KST</div>
+    <div class="node-title">4월 CPI +3.8% 3년 만에 최대</div>
+    <div class="node-detail">근원 CPI +2.8%(예상 +0.1%p 상회). 에너지 +17.9%(휘발유 +28.4%, 연료유 +54.3%). 골스비 총재 "예상보다 더 나빴다. 서비스 물가 우려".</div>
+    <div class="node-impact warn">연내 금리 인상 가능성 20% 중반 → 30% 중반 상향</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 장중</div>
+    <div class="node-title">WTI $102.18 재돌파 (+4.19%)</div>
+    <div class="node-detail">트럼프 "이란 핵 100% 중단·고농축 우라늄 수거". 미 EIA "호르무즈 해협 이틀 더 폐쇄". 브렌트유 $107.77 (+3.42%).</div>
+    <div class="node-impact up">인플레 추가 상승 우려 → 국채금리 일제히 상승</div>
+  </div>
+  <div class="cause-arrow">&rarr;</div>
+  <div class="cause-node">
+    <div class="node-label">미국 마감 06:00 KST</div>
+    <div class="node-title">반도체주 차익실현 — 나스닥 −0.71%</div>
+    <div class="node-detail">마이크론 −3.62%(장중 −11% → 축소), AMD −2.29%, 퀄컴 −11.46%. SMH −2.61%, DRAM ETF −6.86%, 필라델피아 반도체 −3.01%.</div>
+    <div class="node-impact mixed">엔비디아 +0.67% 반등 성공 — 목표가 일제히 상향</div>
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">외국인 엑소더스로 시작된 아시아 약세가 미국 CPI 재가속·유가 급등과 맞물려 반도체주 차익실현 압력으로 이어진 하루</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">&#127472;&#127479;</div>
+      <div><div class="session-name">아시아 세션</div><div class="session-time">한국 09:00 ~ 15:30</div></div>
+    </div>
+    <span class="session-verdict verdict-down">KOSPI·KOSDAQ 동반 −2.3% 급락 &middot; 외국인 현물 70조·비차익 40조 원 순매도 기록</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> KOSPI 약세 출발 — 전일 미국장 반도체주 급락 여파로 KODEX AI반도체 <span class="hl-down">−3.06%</span>, TIER 반도체TOP10 <span class="hl-down">−3.63%</span> 급락하며 DRAM ETF 첫 자금 유출 기록</li>
+      <li><span class="ev-time">10:30</span> 외국인 순매도 가속 — 최근 4거래일 현물 20조·비차익 14조 원 '폭탄' 매도. TIGER 200 <span class="hl-down">−2.11%</span>, TIGER 코스닥150 <span class="hl-down">−2.47%</span></li>
+      <li><span class="ev-time">13:00</span> 코로나19 한타바이러스 테마주 급등 — 엑세스바이오 <span class="hl-up">+29.89%</span>, 녹십자랩에스 <span class="hl-up">+18.28%</span>, 씨티씨바이오 <span class="hl-up">+17.81%</span></li>
+      <li><span class="ev-time">15:30</span> KOSPI 7,643.15(<span class="hl-down">−2.29%</span>), KOSDAQ 1,179.29(<span class="hl-down">−2.32%</span>) 마감. 중국 상해종합 <span class="hl-down">−0.25%</span>(4,214.49), 심천성분 <span class="hl-down">−0.47%</span>(15,824.92) — 항서제약 BMS와 152억달러 계약, 콰이쇼우 AI 'Kling' IPO 추진(기업가치 200억달러)</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value down">−2.29%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">KOSDAQ</div><div class="s-kpi-value down">−2.32%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">상해종합</div><div class="s-kpi-value down">−0.25%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">심천성분</div><div class="s-kpi-value down">−0.47%</div></div>
+    </div>
+  </div>
+
+  <div class="session-block europe">
+    <div class="session-header">
+      <div class="session-icon europe">&#127466;&#127482;</div>
+      <div><div class="session-name">유럽 세션</div><div class="session-time">한국 16:00 ~ 01:30</div></div>
+    </div>
+    <span class="session-verdict verdict-mixed">본 브리핑 미수록 &middot; 영국 정치 혼란·길트 금리 상승만 언급</span>
+    <ul class="session-events">
+      <li><span class="ev-time">16:00</span> 본 자료에 유럽 시장 상세 데이터가 포함되지 않았습니다 — 영국 스타머 총리 사퇴 압박 속 길트 금리 상승, 파운드화 급락이 미국 달러 강세 요인으로 작용했다는 언급만 확인됩니다</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">FTSE 100</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">CAC 40</div><div class="s-kpi-value flat">본 PDF 미수록</div></div>
+    </div>
+  </div>
+
+  <div class="session-block us">
+    <div class="session-header">
+      <div class="session-icon us">&#127482;&#127480;</div>
+      <div><div class="session-name">미국 세션</div><div class="session-time">한국 22:30 ~ 06:00</div></div>
+    </div>
+    <span class="session-verdict verdict-mixed">다우 +0.11% 소폭 상승 &middot; 나스닥 −0.71% 반도체 차익실현 &middot; CPI 3.8%·WTI $102 돌파</span>
+    <ul class="session-events">
+      <li><span class="ev-time">22:30</span> 4월 CPI 발표 — 전년 대비 <span class="hl-warn">+3.8%</span>(3년 만에 최대), 근원 CPI <span class="hl-warn">+2.8%</span>(예상 +0.1%p 상회). 에너지 +17.9%(휘발유 +28.4%, 연료유 +54.3%)가 전체 물가 상승분 40% 이상 차지. 골스비 시카고 연은 총재 "예상보다 더 나빴다. 서비스 물가 우려"</li>
+      <li><span class="ev-time">23:30</span> 반도체주 일제히 급락 — 마이크론 <span class="hl-down">−3.62%</span>(장중 −11% → 축소), AMD <span class="hl-down">−2.29%</span>(장중 −7% → 축소), 퀄컴 <span class="hl-down">−11.46%</span>(장중 −15% 이상), 브로드컴 <span class="hl-down">−2.13%</span>, 인텔 <span class="hl-down">−6.82%</span>, 램 리서치 <span class="hl-down">−2.30%</span>, 샌디스크 <span class="hl-down">−6.17%</span>, 웨스턴 디지털 <span class="hl-down">−5.25%</span>, 어플라이드 머티어리얼즈 <span class="hl-down">−2.80%</span>. SMH <span class="hl-down">−2.61%</span>, DRAM ETF <span class="hl-down">−6.86%</span>, 필라델피아 반도체 <span class="hl-down">−3.01%</span>. 엔비디아 <span class="hl-up">+0.67%</span> 반등(UBS 목표가 $245 상향, 웰스파고 $315 유지)</li>
+      <li><span class="ev-time">01:00</span> WTI 유가 <span class="hl-up">+4.19%</span> 급등해 $102.18 재돌파(5일 이후 첫 $100 상회), 브렌트유 <span class="hl-up">+3.42%</span>($107.77). 트럼프 "이란 핵 100% 중단·고농축 우라늄 수거". 미 EIA "호르무즈 해협 이틀 더 폐쇄, 원유 생산 전쟁 이전 수준 회복은 올해 말~내년 초"</li>
+      <li><span class="ev-time">06:00</span> 다우 <span class="hl-up">+0.11%</span>(49,760.56), S&P500 <span class="hl-down">−0.16%</span>(7,400.96), 나스닥 <span class="hl-down">−0.71%</span>(26,088.20), 러셀2000 <span class="hl-down">−0.97%</span> 마감. 필수소비재·제약 방어적 강세 — 월마트 <span class="hl-up">+2.16%</span>, 코스트코 <span class="hl-up">+2.24%</span>, 펩시코 <span class="hl-up">+1.63%</span>, 코카콜라 <span class="hl-up">+1.74%</span>, 타겟 <span class="hl-up">+2.84%</span>, 일라이 릴리 <span class="hl-up">+2.37%</span>, 애브비 <span class="hl-up">+2.50%</span>, 유나이티드헬스 <span class="hl-up">+3.11%</span>, CVS <span class="hl-up">+3.18%</span>. 금융주 금리 상승 수혜 — 제이피모건 <span class="hl-up">+1.63%</span>, 웰스파고 <span class="hl-up">+2.17%</span>, 휴마나 <span class="hl-up">+7.69%</span>. 국채 2년물 +4.7bp(3.896%), 10년물 +5.1bp(4.463%), 30년물 +4.2bp(5.029%). CME 페드워치 연내 금리 인상 가능성 30% 중반 상향. 달러 인덱스 <span class="hl-up">+0.342%</span>(98.294), 달러−원 1,490.90원(+0.10원). VIX <span class="hl-down">−2.12%</span>(17.99)</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">다우</div><div class="s-kpi-value up">+0.11%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">S&P500</div><div class="s-kpi-value down">−0.16%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">나스닥</div><div class="s-kpi-value down">−0.71%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">러셀2K</div><div class="s-kpi-value down">−0.97%</div></div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">알아두면 좋은 시장 상식 4가지</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">오늘의 뉴스를 이해하기 위해 꼭 알아야 할 개념들을 쉽게 설명합니다.</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626;">거시·물가</span>
+    <h3>근원 CPI가 예상을 웃돌면 왜 문제일까?</h3>
+    <p>
+      오늘 발표된 4월 근원 CPI는 전년 대비 +2.8%, 전월 대비 +0.4%로 시장 예상을 각각 0.1%p 상회했습니다. 전체 CPI +3.8%는 예상에 부합했지만, 에너지·식품을 제외한 근원 지표가 예상보다 높다는 것은 물가 상승이 일시적 에너지 충격이 아니라 서비스·주거비 등 구조적 영역으로 확산되고 있음을 의미합니다. 골스비 시카고 연은 총재는 "관세나 에너지 가격의 영향을 직접 받지 않는 서비스 항목 물가가 상승하고 있으며 적정 수준을 웃돌고 있다는 것이 우려된다"고 지적했습니다.<br><br>
+      
+      근원 물가가 높으면 연준은 에너지 가격이 안정되더라도 금리를 쉽게 내릴 수 없습니다. 에너지 가격 지수는 전년 대비 +17.9%(휘발유 +28.4%, 연료유 +54.3%) 상승해 전체 물가 상승분의 40% 이상을 차지했지만, 주거비도 전월 대비 +0.6% 상승하며 구조적 압력을 가했습니다. 이는 연준이 인플레 목표치 2%로 회귀하는 경로가 예상보다 험난함을 시사하며, 시장은 연내 금리 인상 가능성을 20% 중반에서 30% 중반으로 상향 조정했습니다.<br><br>
+      
+      근원 물가 상승은 금리 민감 자산(성장주·부동산)에 부담으로 작용합니다. 오늘 러셀2000 지수가 −0.97%로 주요 지수 중 가장 큰 낙폭을 기록한 것은 중소형주가 금리 변동에 민감하기 때문입니다. 국채 2년물 금리는 +4.7bp 상승해 3.896%를 기록했고, 장중 3월 27일 이후 처음으로 4%를 상회하기도 했습니다. 10년물 금리는 +5.1bp 상승해 4.463%, 30년물은 +4.2bp 상승해 5.029%로 시장이 주시하는 5% 선을 넘어섰습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">4월 근원 CPI (YoY)</div><div class="metric-value warn">+2.8%</div></div>
+      <div class="metric-item"><div class="metric-label">에너지 가격 (YoY)</div><div class="metric-value up">+17.9%</div></div>
+      <div class="metric-item"><div class="metric-label">연내 금리 인상 가능성</div><div class="metric-value warn">30% 중반</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(234,179,8,0.1);color:#ca8a04;">에너지·지정학</span>
+    <h3>WTI $100 재돌파 — 호르무즈 해협 폐쇄 장기화 시나리오</h3>
+    <p>
+      WTI 유가는 오늘 +4.19% 급등해 배럴당 $102.18을 기록하며 지난 5일 이후 처음으로 종가 기준 $100을 재돌파했습니다. 브렌트유도 +3.42% 상승해 $107.77을 기록했습니다. 트럼프 대통령은 이란과의 휴전 상황을 "생방 연장 장치를 달고 있는 것과 같은 취약한 상태"라고 표현했고, 이날 라디오 인터뷰에서 "이란의 핵 개발을 100% 중단시킬 것이며 고농축 우라늄도 수거할 것"이라고 밝혔습니다. 이는 이란이 강경하게 거부하고 있는 사안으로, 양측의 합의점 찾기가 쉽지 않음을 재차 확인시켰습니다.<br><br>
+      
+      미 에너지정보청(EIA)은 호르무즈 해협이 이틀 더 사실상 폐쇄 상태를 유지할 것으로 예상했으며, 해협 통과가 재개되더라도 원유 생산과 교역량이 전쟁 이전 수준을 회복하려면 최소 올해 말 또는 내년 초는 돼야 한다고 전망했습니다. 호르무즈 해협은 전 세계 원유 교역량의 약 20%가 통과하는 전략적 요충지로, 장기 폐쇄는 글로벌 공급망에 구조적 충격을 가합니다. 앞서 전일 인터넷 매체 악시오스는 "군사 행동 재개 옵션이 테이블 위에 다시 오르고 있다"고 보도하며 협상 교착 상태를 전했습니다.<br><br>
+      
+      유가 급등은 인플레 재가속 우려를 증폭시킵니다. 오늘 발표된 4월 CPI에서 에너지 가격 지수가 전년 대비 +17.9% 상승(휘발유 +28.4%, 연료유 +54.3%)해 전체 물가 상승분의 40% 이상을 차지한 상황에서, WTI가 $100을 재돌파하자 시장은 5월 CPI가 더 높아질 가능성을 우려하기 시작했습니다. 이는 연준의 금리 인상 압력으로 이어져 국채금리가 일제히 상승했고, 금리 민감 성장주(반도체·소프트웨어)의 차익실현 압력으로 작용했습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">WTI (배럴)</div><div class="metric-value up">$102.18</div></div>
+      <div class="metric-item"><div class="metric-label">브렌트유 (배럴)</div><div class="metric-value up">$107.77</div></div>
+      <div class="metric-item"><div class="metric-label">4월 에너지 가격 (YoY)</div><div class="metric-value up">+17.9%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(59,130,246,0.1);color:#2563eb;">반도체·기술주</span>
+    <h3>반도체주 차익실현 — 장중 낙폭 축소의 의미</h3>
+    <p>
+      오늘 반도체주는 일제히 하락했지만, 장중 저점에서 낙폭을 크게 줄이는 흐름을 보였습니다. 최근 한 달 사이 50% 급등한 마이크론 테크놀로지는 장중 −11% 이상 급락했다가 −3.62%로 낙폭을 대폭 축소해 마감했고, 같은 기간 70% 이상 상승한 AMD도 장중 −7%를 넘겼던 낙폭을 −2.29%로 줄였습니다. 퀄컴은 장중 −15% 이상 하락했다가 −11.46%로 마감했지만 여전히 두 자릿수 낙폭으로 상대적으로 부진했습니다. VanEck 반도체ETF(SMH)는 −2.61%, 지난 4월 초 상장 이후 거의 두 배 가량 상승한 RoundHill 메모리ETF(DRAM)는 −6.86%, 올해 들어 60% 이상 상승했던 필라델피아 반도체 지수는 −3.01% 하락했지만 장중 −6.8%까지 확대했던 낙폭은 축소했습니다.<br><br>
+      
+      장중 낙폭 축소는 시장이 반도체주의 펀더멘털(실적 모멘텀)은 여전히 견고하다고 판단하고 있음을 시사합니다. 실적 발표를 앞둔 엔비디아는 장중 −2%대 약세를 보였지만 +0.67% 소폭 반등에 성공했습니다. UBS는 엔비디아의 추가 상승 여력이 여전히 존재한다며 목표주가를 $245로 12% 상향했고, 시스케나는 $250에서 $275로 상향, 번스타인과 씨티는 $300, 웨스파고는 $315를 유지하고 있습니다. 씨티는 브로드컴 목표가를 $475에서 $500으로, 미즈호는 AMD를 $415에서 $516으로, 인텔을 $100에서 $124로 상향 조정했습니다.<br><br>
+      
+      오늘의 하락은 높은 물가·에너지 가격 상승·금리 상승 우려에 예민하게 반응한 일시적 차익실현으로 해석됩니다. 최근 이들 종목의 시발실적 모멘텀에 힘입은 주가 상승세가 강하게 이어졌던 가운데, 단기 과열 조정 성격이 강합니다. 다만 소프트웨어주(오라클 −3.62%, 세일스포스 −3.48%, 서비스나우 −2.72%, 인튜이트 −1.41%)는 금리 상승 부담에 동반 약세를 보였으며, 오라클은 오픈하이머가 목표가를 $210에서 $235로 상향했음에도 약세권에 머물렀습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">마이크론 (장중 → 마감)</div><div class="metric-value down">−11% → −3.62%</div></div>
+      <div class="metric-item"><div class="metric-label">AMD (장중 → 마감)</div><div class="metric-value down">−7% → −2.29%</div></div>
+      <div class="metric-item"><div class="metric-label">엔비디아</div><div class="metric-value up">+0.67%</div></div>
+    </div>
+  </div>
+
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(16,185,129,0.1);color:#059669;">외국인·자금 흐름</span>
+    <h3>한국 증시 외국인 엑소더스 — 70조 원 순매도의 배경</h3>
+    <p>
+      오늘 KOSPI는 −2.29% 하락한 7,643.15에, KOSDAQ은 −2.32% 하락한 1,179.29에 마감했습니다. 외국인은 올해 현물 70조 원·비차익 40조 원 순매도를 기록했으며, 최근 4거래일 동안 현물 20조 원·비차익 14조 원 순매도 '폭탄'이 이어졌습니다. TIGER 200은 −2.11%, TIGER 코스닥150은 −2.47% 하락했고, 반도체 ETF는 TIER 반도체TOP10 −3.63%, KODEX AI반도체 −3.06%로 DRAM ETF 첫 자금 유출을 기록했습니다. 이는 3종고(고환율·고금리·고유가) 속 외국인의 리스크 회피 심리가 극대화되고 있음을 보여줍니다.<br><br>
+      
+      외국인 엑소더스의 배경에는 글로벌 금리 상승 우려가 자리하고 있습니다. 미국 4월 CPI가 +3.8%(3년 만에 최대)를 기록하고 WTI 유가가 $100을 재돌파하자, 연준의 금리 인상 가능성이 20% 중반에서 30% 중반으로 높아졌습니다. 이는 신흥국 자산에서 선진국 안전자산(미국 국채·달러)으로의 자금 이동을 촉발합니다. 달러 인덱스는 +0.342% 상승해 98.294를 기록했고, 달러−원 환율은 야간 거래에서 1,490.90원(+0.10원), NDF 1개월물은 1,492.30원(+3.50원)을 기록하며 원화 약세 압력이 지속되고 있습니다.<br><br>
+      
+      한국 증시는 반도체 비중이 높아 글로벌 반도체주 조정에 취약합니다. 전일 미국장에서 반도체주가 급락한 여파가 오늘 아시아장으로 이어지며 KODEX AI반도체·TIER 반도체TOP10이 일제히 하락했고, DRAM ETF는 첫 자금 유출을 기록했습니다. 다만 코로나19 한타바이러스 테마주는 엑세스바이오 +29.89%, 녹십자랩에스 +18.28%, 씨티씨바이오 +17.81% 급등하며 일부 방어적 수요를 흡수했습니다. 중국 시장은 상해종합 −0.25%, 심천성분 −0.47% 소폭 하락했지만, AI·반도체 중심 성장주 쏠림 현상은 지속되며 과창판·창업판 지수는 상승 마감했습니다.
+    </p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">외국인 현물 순매도 (올해)</div><div class="metric-value down">70조 원</div></div>
+      <div class="metric-item"><div class="metric-label">최근 4거래일 현물</div><div class="metric-value down">20조 원</div></div>
+      <div class="metric-item"><div class="metric-label">달러−원 (NDF 1M)</div><div class="metric-value warn">1,492.30원</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="risk-section">
+  <h2>앞으로 주의해야 할 점</h2>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">CPI 재가속·유가 $100 돌파·금리 상승 압력이 동시에 작용하는 3중 리스크 국면</div>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high">높음</span>
+      <span><strong>연준 금리 인상 시나리오 — 연내 25bp 이상 가능성 30% 중반</strong><br>
+        4월 근원 CPI가 +2.8%(예상 +0.1%p 상회)를 기록하며 서비스·주거비 등 구조적 물가 압력이 확인되었습니다. 골스비 시카고 연은 총재는 "예상보다 더 나빴다. 서비스 물가 우려"라고 지적했고, CME 페드워치는 연내 금리 인상 가능성을 20% 중반에서 30% 중반으로 상향했습니다. WTI가 $100을 재돌파하며 5월 CPI가 더 높아질 가능성이 커지고 있어, 연준이 금리 동결을 유지하기 어려운 상황입니다. 국채 2년물 금리는 장중 4%를 돌파했고, 10년물은 4.463%, 30년물은 5.029%로 5% 선을 넘어섰습니다.
+      </span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag high">높음</span>
+      <span><strong>호르무즈 해협 장기 폐쇄 — WTI $120 돌파 시나리오</strong><br>
+        트럼프 대통령이 "이란 핵 개발 100% 중단·고농축 우라늄 수거"를 언급하며 이란이 강경 거부하는 사안을 재차 확인했습니다. 미 EIA는 호르무즈 해협이 이틀 더 폐쇄 상태를 유지할 것으로 예상했고, 해협 통과 재개 후에도 원유 생산이 전쟁 이전 수준을 회복하려면 최소 올해 말~내년 초는 걸릴 것으로 전망했습니다. WTI가 오늘 $102.18을 기록한 가운데, 협상 교착이 장기화되면 $120 → $130 시나리오까지 열립니다. 이는 인플레 재가속 → 금리 추가 인상 → 글로벌 경기 둔화의 악순환을 촉발할 수 있습니다.
+      </span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">보통</span>
+      <span><strong>한국 증시 외국인 엑소더스 지속 — 원화 약세·밸류에이션 부담</strong><br>
+        외국인은 올해 현물 70조 원·비차익 40조 원 순매도를 기록했고, 최근 4거래일 동안 현물 20조 원·비차익 14조 원 '폭탄' 매도가 이어졌습니다. 달러−원 환율은 NDF 1개월물 기준 1,492.30원(+3.50원)을 기록하며 원화 약세 압력이 지속되고 있습니다. 미국 금리 상승 → 달러 강세 → 신흥국 자금 이탈 경로가 작동하는 가운데, KOSPI의 반도체 비중이 높아 글로벌 반도체주 조정에 취약합니다. KODEX AI반도체 −3.06%, TIER 반도체TOP10 −3.63%로 DRAM ETF 첫 자금 유출을 기록했으며, 3종고(고환율·고금리·고유가) 속 균형 잡힌 리스크 관리가 필요합니다.
+      </span>
+    </li>
+  </ul>
+</div>
+</div>
+
+<div id="tab-macro" class="tab-panel">
+<style>
+  .macro-header{background:linear-gradient(135deg,#f0f4ff,#e8edf8);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:18px 24px;margin-bottom:20px}
+  .macro-header h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+  .macro-header .mh-sub{font-size:12px;color:var(--muted)}
+  .macro-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .macro-block h3{font-size:15px;font-weight:700;color:#1a1d2e;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid var(--border)}
+  .macro-block ul{margin:0;padding-left:18px;font-size:13px;color:#2d3148;line-height:1.85}
+  .macro-block li{margin-bottom:3px}
+  .macro-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .macro-kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center}
+  .macro-kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+  .macro-kpi-value{font-size:16px;font-weight:700;color:#1a1d2e}
+  .macro-kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .event-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+  .event-table th{background:#f7f8fc;font-size:12px;font-weight:600;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}
+  .event-table td{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:#2d3148}
+  .event-table tr:last-child td{border-bottom:none}
+  .imp-high{color:var(--down);font-weight:700}
+  .imp-med{color:#d47f00;font-weight:600}
+  .imp-low{color:var(--muted)}
+</style>
+
+<div class="macro-header">
+  <h2>Macro &amp; Events — W19 주간 거시지표 + W20 이벤트 캘린더</h2>
+  <div class="mh-sub">2026-05-04 ~ 2026-05-08 · 기준 시점 2026-05-08 장 마감</div>
+</div>
+
+<!-- ── 블록 1: KPI 카드 그리드 ── -->
+<div class="macro-kpi-grid">
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">미국 4월 NFP</div>
+    <div class="macro-kpi-value" style="color:var(--up)">+115K</div>
+    <div class="macro-kpi-sub">예상 +62K 거의 2배 상회 · 실업률 4.3% 유지</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">FOMC 기준금리</div>
+    <div class="macro-kpi-value">3.50~3.75%</div>
+    <div class="macro-kpi-sub">4월 동결 유지 · 연내 인하 기대 후퇴</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">US 10Y</div>
+    <div class="macro-kpi-value">4.364%</div>
+    <div class="macro-kpi-sub">WTD <span style="color:var(--up)">−1.4bp</span> · 강한 NFP에도 하락</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Brent 원유</div>
+    <div class="macro-kpi-value" style="color:var(--down)">$101.29</div>
+    <div class="macro-kpi-sub">WTD <span style="color:var(--down)">−6.36%</span> · 호르무즈 사이클</div>
+  </div>
+</div>
+
+<!-- ── 블록 2: 이번 주 핵심 매크로 이벤트 ── -->
+<div class="macro-block">
+  <h3>🇺🇸 미국 — 노동시장 깜짝 강세 (W19)</h3>
+  <ul>
+    <li><strong>5/8(금) 4월 비농업 고용 +115K</strong> — 시장 예상(+62K)을 거의 두 배 상회. 보건·운송·창고·소매 중심 서비스업 주도</li>
+    <li><strong>5/8(금) 4월 실업률 4.3%</strong> 유지 — 실업자 +13.4만 증가했지만 전체 비율 변동 없음</li>
+    <li><strong>5/7(목) 주간 신규 실업수당 200K</strong>(예상 205K 하회) · 계속수당 1.77M로 2년 래 최저</li>
+    <li>해석: 강한 고용 → 채권금리 동반 하락(US 10Y −1.4bp WTD) → 위험·안전자산 동반 강세 골디락스 시나리오 정수</li>
+    <li>다만 임금 상승률은 컨센서스 부근으로 인플레 동반 가속 신호는 부재 — 5/13 CPI에서 추가 검증 필요</li>
+  </ul>
+</div>
+
+<div class="macro-block">
+  <h3>🇪🇺 유럽 — ECB 매파 시그널 + 통상 압박 (W19)</h3>
+  <ul>
+    <li><strong>5/8(금) 라가르드 ECB 총재</strong> "인플레이션 상승에 대응할 준비" 매파적 발언 — 인하 사이클 종료 시그널 가능성</li>
+    <li><strong>5/8(금) 슈나벨 ECB 집행이사</strong> 미·이란 충돌발 인플레 위험 경고</li>
+    <li><strong>5/4(월) 트럼프 EU 자동차·트럭 관세 15→25% 인상 위협</strong>(트루스소셜 5/1 발표 후 첫 거래일 충격) — 독일 자동차주 일제 약세</li>
+    <li><strong>5/8(금) 트럼프 EU 관세 위협 재개 보도</strong> — DAX·CAC 약세 가속</li>
+    <li>EUR/USD 1.179 WTD +0.60% 강세 — 매파 ECB 시그널 + 달러 약세 동시 영향</li>
+  </ul>
+</div>
+
+<div class="macro-block">
+  <h3>🌐 통상·지정학 — 호르무즈 사이클 (W19)</h3>
+  <ul>
+    <li><strong>5/4(월) UAE OAPEC 탈퇴</strong> 보도 — WTI 단일 세션 +2.99%, Brent +5.80%</li>
+    <li><strong>5/6(수) 미 국방부 장관 미·이란 휴전 유지 확인</strong> — Brent 단일 세션 −7.67%, WTI −7.03%</li>
+    <li><strong>5/8(금) 호르무즈 미·이란 직접 교전 보도</strong> — 그러나 OPEC+ 증산 가능성에 유가 추가 하락은 제한적</li>
+    <li>주간 결산: WTI −6.40%·Brent −6.36% 큰 폭 하락 — 지정학 프리미엄 vs 수요 둔화·증산 기대 줄다리기</li>
+  </ul>
+</div>
+
+<div class="macro-block">
+  <h3>🇰🇷 한국 — 정책·수급 (W19)</h3>
+  <ul>
+    <li>한은 기준금리 2.50% 유지 — 5월 회의 예정, 인하 시그널 보류</li>
+    <li>외국인 W19 누적 순매도(5/8 단일 −5조 5,662억) vs 개인 +3조 9,754억·기관 +1조 5,475억 흡수 — 시장 구조 변곡점</li>
+    <li>KOSPI200 정보기술 WTD +18.84% — 반도체 슈퍼사이클 한국 직접 수혜, 삼성전자 1조달러 클럽 진입</li>
+    <li>USD/KRW WTD −0.65%(1,461.8) 원화 강세 / KR 10Y WTD −3.2bp(3.748%) / KR 3Y −2.6bp</li>
+    <li>KOSPI PER 28.55, PBR 2.29 — 단기 과열 신호 누적</li>
+  </ul>
+</div>
+
+<!-- ── 블록 3: 다음 주(W20) 캘린더 ── -->
+<div class="macro-block">
+  <h3>📅 다음 주(W20, 2026-05-11 ~ 2026-05-15) 이벤트 캘린더</h3>
+  <table class="event-table">
+    <thead>
+      <tr><th>일자</th><th>지역</th><th>이벤트</th><th>중요도</th><th>전망 / 관점</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>5/12(월)</td><td>🇨🇳 중국</td><td>4월 CPI / PPI</td><td><span class="imp-med">M</span></td><td>디플레 우려 vs 안정 — 항셍·상하이 영향</td></tr>
+      <tr><td>5/13(화)</td><td>🇺🇸 미국</td><td>4월 CPI 발표</td><td><span class="imp-high">H</span></td><td>★ 핵심 이벤트. 컨센서스 상회 시 멀티플 압축, 하회 시 추가 사상 최고 시나리오</td></tr>
+      <tr><td>5/14(수)</td><td>🇺🇸 미국</td><td>4월 PPI 발표</td><td><span class="imp-high">H</span></td><td>도매 물가 — 코어 인플레 트렌드 확인</td></tr>
+      <tr><td>5/14(수)</td><td>🇩🇪 독일</td><td>5월 ZEW 경제심리</td><td><span class="imp-med">M</span></td><td>EU 관세 위협 후 심리 변화 가늠</td></tr>
+      <tr><td>5/15(목)</td><td>🇯🇵 일본</td><td>1Q GDP 잠정치</td><td><span class="imp-med">M</span></td><td>닛케이 62,000 안착 여부 영향</td></tr>
+      <tr><td>5/15(목)</td><td>🇪🇺 유로존</td><td>1Q GDP 잠정치</td><td><span class="imp-med">M</span></td><td>유럽 디커플링 지속 vs 회복 가늠</td></tr>
+      <tr><td>5/15(목)</td><td>🇺🇸 미국</td><td>주간 신규 실업수당</td><td><span class="imp-med">M</span></td><td>2년 최저 기조 유지 여부</td></tr>
+      <tr><td>5/16(금)</td><td>🇺🇸 미국</td><td>5월 미시간 소비자 심리(예비)</td><td><span class="imp-med">M</span></td><td>소비 심리 회복 vs 둔화</td></tr>
+      <tr><td>주중</td><td>🇺🇸 미국</td><td>1Q 어닝 시즌 마지막 주(소매·기술 일부)</td><td><span class="imp-med">M</span></td><td>월마트·홈디포 등 소비 동향</td></tr>
+      <tr><td>주중</td><td>🌐 글로벌</td><td>연준 위원 발언 및 의사록</td><td><span class="imp-med">M</span></td><td>인하 경로 재가늠</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="macro-block">
+  <h3>🎯 W20 매크로 관점 요약</h3>
+  <ul>
+    <li><strong>핵심 분기점은 5/13 미국 4월 CPI</strong>입니다. 컨센서스 부근 또는 하회 시 골디락스 구도가 재확인되며 코스피 7,500 안착 + S&amp;P 추가 사상 최고 시나리오로 이어질 가능성</li>
+    <li>컨센서스를 +0.2%P 이상 상회하면 연준 인하 기대 후퇴 + 그로스/모멘텀 멀티플 압축이 동시 발생할 수 있어 6주 연속 주간 상승 후 첫 조정 트리거 가능</li>
+    <li>호르무즈 긴장 추이 + OPEC+ 증산 결정 시그널이 유가 박스권을 결정 — 본격 봉쇄 시 인플레 재가속 경로</li>
+    <li>트럼프 EU 자동차 관세 본격 시행 여부가 유럽 디커플링 지속 vs 해소를 판가름</li>
+    <li>한국은 외국인 매도 누적 vs 개인·기관 흡수의 한계점 모니터링 — KOSPI 7,500 안착이 분수령</li>
+  </ul>
+</div>
+</div>
+
+<div class="footer">미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' + '한국/중국 마켓 클로징' PDF &mdash; Bedrock Claude Sonnet 4.5 OCR + 4 탭(Story · CS · PM · Macro) 합본.</div>
+<div class="ai-disclaimer">⚠️ 본 자료는 미래에셋증권 PDF 원본을 OCR 추출한 <strong>1차 자료 보존</strong>입니다. PDF 발간 시점(아침 KST) 기준으로 작성되어 메인 Market Story 와 시점·범위가 다릅니다. 수치는 PDF 본문 그대로이며, 투자 판단 시 PDF 원본을 확인하시기 바랍니다.</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
