@@ -49,17 +49,33 @@ import notify_telegram
 S3_PDF_PREFIX = "anthillia/miraeasset-daily"
 S3_REGION = os.getenv("AWS_REGION", "ap-northeast-2")
 
+# Bedrock 설정 — BEDROCK_API_KEY (bearer token) 로 인증. boto3 가 AWS_BEARER_TOKEN_BEDROCK 환경변수 사용.
+# Sonnet 4.5 는 jp.* (Tokyo, ap-northeast-1) 인퍼런스 프로파일로만 노출됨 — ap-northeast-2(Seoul) 에는 미배포.
+os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", os.environ.get("BEDROCK_API_KEY", ""))
+BEDROCK_MODEL = os.environ.get(
+    "BEDROCK_MODEL",
+    "jp.anthropic.claude-sonnet-4-5-20250929-v1:0",  # Tokyo inference profile, Vision 지원
+)
+BEDROCK_REGION = os.environ.get("BEDROCK_REGION", "ap-northeast-1")
+
 LOG_DIR = ROOT / "logs"
 
 
+def _get_bedrock_client():
+    """AnthropicBedrock 클라이언트 생성 (lazy import)."""
+    from anthropic import AnthropicBedrock
+    return AnthropicBedrock(aws_region=BEDROCK_REGION)
+
+
 def _log_and_notify_usage(resp, label: str) -> None:
-    """GPT 응답에서 토큰 사용량을 로그에만 기록 (텔레그램 알림은 시작/종료만 전송)."""
+    """Bedrock 응답에서 토큰 사용량을 로그에만 기록 (텔레그램 알림은 시작/종료만 전송)."""
     usage = getattr(resp, "usage", None)
     if not usage:
         return
-    prompt = getattr(usage, "prompt_tokens", 0)
-    completion = getattr(usage, "completion_tokens", 0)
-    log.info(f"[GPT tokens] {label}: prompt={prompt:,} completion={completion:,} total={prompt+completion:,}")
+    # Anthropic SDK: input_tokens / output_tokens (OpenAI 의 prompt/completion 과 다름)
+    prompt = getattr(usage, "input_tokens", 0)
+    completion = getattr(usage, "output_tokens", 0)
+    log.info(f"[Bedrock tokens] {label}: input={prompt:,} output={completion:,} total={prompt+completion:,}")
 LOG_DIR.mkdir(exist_ok=True)
 
 logging.basicConfig(
@@ -400,18 +416,18 @@ STORY_SYSTEM = """당신은 미래에셋증권의 두 PDF(① 한국/중국 마�
 
 def ocr_pdf(pdf_path: Path) -> str:
     from pdf2image import convert_from_path
-    from openai import OpenAI
 
-    client = OpenAI()
+    client = _get_bedrock_client()
     images = convert_from_path(str(pdf_path), dpi=300)  # 200 → 300: 소수점·소형 숫자 인식 개선
     log.info(f"PDF → {len(images)}페이지 변환 (dpi=300)")
 
-    # gpt-4o가 이미지를 거부할 때 반환하는 패턴
+    # Claude 가 이미지를 거부할 때 반환하는 패턴
     REFUSAL_PATTERNS = [
         "I'm sorry, I can't",
         "I'm sorry, I cannot",
         "I can't assist",
         "I cannot assist",
+        "I cannot help",
         "죄송하지만",
         "제공할 수 없습니다",
     ]
@@ -426,24 +442,30 @@ def ocr_pdf(pdf_path: Path) -> str:
         finally:
             os.unlink(tmp.name)
 
-        resp = client.chat.completions.create(
-            model="gpt-4o",
+        resp = client.messages.create(
+            model=BEDROCK_MODEL,
+            max_tokens=2048,
+            temperature=0,
+            system=OCR_SYSTEM,
             messages=[
-                {"role": "system", "content": OCR_SYSTEM},
                 {"role": "user", "content": [
+                    {
+                        "type": "image",
+                        "source": {"type": "base64", "media_type": "image/png", "data": b64},
+                    },
                     {"type": "text", "text": (
                         f"[페이지 {i+1}/{len(images)}] "
                         "이 금융 보고서 페이지에 인쇄된 한국어·영어 텍스트와 수치를 있는 그대로 모두 추출하세요. "
                         "차트·그래프가 있으면 축 레이블·범례·수치만 텍스트로 옮기세요."
                     )},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}", "detail": "high"}},
                 ]},
             ],
-            max_tokens=2048,
-            temperature=0,
         )
         _log_and_notify_usage(resp, f"ocr_pdf_p{i+1}")
-        page_text = resp.choices[0].message.content.strip()
+        # Anthropic SDK: resp.content 는 ContentBlock 리스트, text 블록의 .text 추출
+        page_text = "".join(
+            getattr(blk, "text", "") for blk in resp.content if getattr(blk, "type", "") == "text"
+        ).strip()
 
         # 거부 응답이면 스킵
         if any(pat in page_text for pat in REFUSAL_PATTERNS) and len(page_text) < 200:
@@ -470,12 +492,10 @@ def generate_story_html(
         target_date: 장 기준일.
         sources_present: {"kr_cn": bool, "us_daily": bool}. None 이면 둘 다 있다고 간주.
     """
-    from openai import OpenAI
-
     if sources_present is None:
         sources_present = {"kr_cn": True, "us_daily": True}
 
-    client = OpenAI()
+    client = _get_bedrock_client()
 
     # OCR 원문에서 종목명+수치 패턴을 미리 추출해 "필수 포함" 목록으로 만든다
     import re as _re
@@ -565,18 +585,20 @@ def generate_story_html(
 {ocr_text}
 """
 
-    resp = client.chat.completions.create(
-        model="gpt-4o",
+    resp = client.messages.create(
+        model=BEDROCK_MODEL,
+        max_tokens=16000,
+        temperature=0.3,
+        system=STORY_SYSTEM,
         messages=[
-            {"role": "system", "content": STORY_SYSTEM},
             {"role": "user", "content": user_msg},
         ],
-        max_tokens=12000,
-        temperature=0.3,
     )
     _log_and_notify_usage(resp, "generate_story_html")
-    story = resp.choices[0].message.content
-    # GPT가 ```html ... ``` 코드블록으로 감싸는 경우 제거
+    story = "".join(
+        getattr(blk, "text", "") for blk in resp.content if getattr(blk, "type", "") == "text"
+    )
+    # Claude 가 ```html ... ``` 코드블록으로 감싸는 경우 제거
     story = re.sub(r'^```(?:html)?\s*', '', story.strip())
     story = re.sub(r'\s*```$', '', story)
     return story.strip()
@@ -690,7 +712,7 @@ body{{
   </div>
 </div>
 {story_html}
-<div class="footer">미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF &mdash; OpenAI Vision OCR 추출 후 HTML 재구성. 글로벌 풀 사이클 종합은 메인 Market Story 탭을 참고하세요.</div>
+<div class="footer">미래에셋증권 'AI 데일리 글로벌 마켓 브리핑' PDF &mdash; Bedrock Claude Vision OCR 추출 후 HTML 재구성. 글로벌 풀 사이클 종합은 메인 Market Story 탭을 참고하세요.</div>
 <div class="ai-disclaimer">⚠️ 본 자료는 미래에셋증권 PDF 원본을 OCR 추출한 <strong>1차 자료 보존</strong>입니다. PDF 발간 시점(아침 KST) 기준으로 작성되어 메인 Market Story 와 시점·범위가 다릅니다. 수치는 PDF 본문 그대로이며, 투자 판단 시 PDF 원본을 확인하시기 바랍니다.</div>
 </body>
 </html>
@@ -842,7 +864,7 @@ def main():
     if kr_cn_info:
         kr_cn_path = _download_pdf_to_tmp(kr_cn_info)
         # S3 업로드는 미국 PDF 위주로 운영 (KR/CN 은 일단 로컬 OCR 만)
-        log.info("OCR 시작 [KR/CN 클로징] (gpt-4o Vision)...")
+        log.info("OCR 시작 [KR/CN 클로징] (Bedrock Claude Vision)...")
         kr_cn_text = ocr_pdf(kr_cn_path)
         ocr_sections.append(
             f"=== [PDF ① 한국/중국 마켓 클로징] 아시아 세션 {target_date} 마감 ===\n{kr_cn_text}"
@@ -855,7 +877,7 @@ def main():
         s3_key = upload_pdf_to_s3(us_path, target_date)
         if s3_key:
             log.info(f"PDF S3 보관: s3://{S3_BUCKET}/{s3_key}")
-        log.info("OCR 시작 [AI 데일리 미국] (gpt-4o Vision)...")
+        log.info("OCR 시작 [AI 데일리 미국] (Bedrock Claude Vision)...")
         us_text = ocr_pdf(us_path)
         ocr_sections.append(
             f"=== [PDF ② AI 데일리 글로벌 마켓 브리핑] 미국 세션 {target_date} 마감 ===\n{us_text}"
@@ -869,7 +891,7 @@ def main():
     log.info(f"OCR 합본: {len(ocr_text)}자 → {ocr_cache.name}")
 
     # ── Story HTML 생성 ──
-    log.info("Story HTML 생성 중 (gpt-4o)...")
+    log.info(f"Story HTML 생성 중 ({BEDROCK_MODEL})...")
     story_html = generate_story_html(ocr_text, data_json, target_date, sources_present)
     log.info(f"Story 생성 완료: {len(story_html)}자")
 
