@@ -14,7 +14,8 @@ from report_utils import (
     fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg,
     KO_LABELS, EQUITY_ORDER, MSCI_ORDER, BOND_RATE_ORDER, BOND_ETF_ORDER,
     FX_ORDER, CM_ORDER, ST_ORDER, DATA_SOURCES,
-    KR_STOCK_ORDER, US_STOCK_ORDER, KR_STOCK_TOP_N, US_STOCK_TOP_N,
+    KR_STOCK_ORDER, US_STOCK_ORDER, ASIA_STOCK_ORDER,
+    KR_STOCK_TOP_N, US_STOCK_TOP_N, ASIA_STOCK_TOP_N,
     PERIODIC_TAB_SPECS, save_story_files, inject_existing_story, extract_tab,
     ordered,
 )
@@ -599,15 +600,17 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
         html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
     html += '</div>\n</div>\n'
 
-    # 종목: 시가총액 순 (KR_TOP50 / US_TOP50 의 정렬 순서) Top N 만 표시
+    # 종목: 시가총액 순 (KR_TOP50 / US_TOP50 / ASIA_TOP50 순서) Top N 만 표시
     kr_stocks = {n: st[n] for n in KR_STOCK_ORDER[:KR_STOCK_TOP_N] if n in st}
     us_stocks = {n: st[n] for n in US_STOCK_ORDER[:US_STOCK_TOP_N] if n in st}
-    # KR/US 어디에도 안 속한 잔여 (TSMC·BABA 등 ADR/HK)
+    asia_stocks = {n: st[n] for n in ASIA_STOCK_ORDER[:ASIA_STOCK_TOP_N] if n in st}
+    # KR/US/ASIA 어디에도 안 속한 잔여 (안전망)
     other_stocks = {
         n: d for n, d in st.items()
-        if n not in KR_STOCK_ORDER and n not in US_STOCK_ORDER
+        if n not in KR_STOCK_ORDER and n not in US_STOCK_ORDER and n not in ASIA_STOCK_ORDER
     }
 
+    # 아시아 종목 통화 표기: HK/CN/IN/JP/TW/AU 는 비-USD 라 $ 기호 부적절 → False
     # 히트맵 테이블 (filter_to_order=True 면 order 화이트리스트만 표시)
     sections = [
         ("주식(Equity)", eq_regional, False, False, EQUITY_ORDER, False),
@@ -620,11 +623,13 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
          kr_stocks, False, False, KR_STOCK_ORDER, True),
         (f"미국 주식(US Stocks · Top {US_STOCK_TOP_N})",
          us_stocks, True, False, US_STOCK_ORDER, True),
+        (f"아시아 종목(Asian Stocks · Top {ASIA_STOCK_TOP_N})",
+         asia_stocks, False, False, ASIA_STOCK_ORDER, True),
     ]
     if other_stocks:
         sections.append((
-            "기타 종목(ADR · HK)", other_stocks, True, False,
-            ["TSMC","Alibaba","Meituan","Tencent"], True,
+            "기타 종목(ETC)", other_stocks, True, False,
+            list(other_stocks.keys()), True,
         ))
 
     for sec_title, cat, dollar, as_bp, order, filter_to_order in sections:

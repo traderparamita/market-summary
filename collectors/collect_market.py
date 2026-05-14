@@ -265,16 +265,17 @@ TICKERS = {
 
 
 def _load_stocks_universe():
-    """KR Top50 + US Top50 + ADR/HK = 104종 stocks ticker map.
+    """KR Top50 + US Top50 + ASIA Top50 = 약 150종 stocks ticker map.
 
     매일 collect_market.py 실행 시 모든 시총 상위 종목을 한 번에 수집하기 위함.
-    - 단일 source of truth: collectors/stocks_universe.py (KR_TOP50 / US_TOP50)
-    - ADR/HK 4종 (TSMC·BABA·Meituan·Tencent) 만 collect_market 측에서 추가
+    - 단일 source of truth: collectors/stocks_universe.py (KR_TOP50 / US_TOP50 / ASIA_TOP50)
+    - TSMC/Tencent/Alibaba/Meituan 4종은 ASIA_TOP50 에 포함되어 있고 기존 ST_TSMC/ST_TENCENT/
+      ST_BABA/ST_MEITUAN 코드와 yf_ticker (TSM/0700.HK/9988.HK/3690.HK) 를 그대로 재사용.
     """
     try:
-        from collectors.stocks_universe import KR_TOP50, US_TOP50
+        from collectors.stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP50
     except ImportError:
-        from stocks_universe import KR_TOP50, US_TOP50
+        from stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP50
 
     tickers: dict[str, str] = {}
     codes: dict[tuple[str, str], str] = {}
@@ -285,14 +286,7 @@ def _load_stocks_universe():
     for code, yf_ticker, name, *_ in US_TOP50:
         tickers[name] = yf_ticker
         codes[("stocks", name)] = code
-
-    # ADR/HK extras (S&P500/KOSPI Top50 미포함)
-    for name, yf_ticker, code in [
-        ("TSMC",    "TSM",     "ST_TSMC"),
-        ("Alibaba", "9988.HK", "ST_BABA"),
-        ("Meituan", "3690.HK", "ST_MEITUAN"),
-        ("Tencent", "0700.HK", "ST_TENCENT"),
-    ]:
+    for code, yf_ticker, name, *_ in ASIA_TOP50:
         tickers[name] = yf_ticker
         codes[("stocks", name)] = code
 
@@ -377,7 +371,7 @@ INDICATOR_CODES = {
     ("style_us", "iShares Momentum"): "FA_US_MOMENTUM",
     ("style_us", "iShares LowVol"):   "FA_US_LOWVOL",
     # ※ KR 섹터 ETF (SC_KR_*) 매핑 제거 — KRX GICS (IX_KR_*) 로 일원화
-    # stocks 카테고리 매핑은 _STOCKS_INDICATOR_CODES (KR_TOP50 + US_TOP50 + ADR/HK = 104종) 에서 자동 병합
+    # stocks 카테고리 매핑은 _STOCKS_INDICATOR_CODES (KR_TOP50 + US_TOP50 + ASIA_TOP50 = 150종) 에서 자동 병합
 }
 INDICATOR_CODES.update(_STOCKS_INDICATOR_CODES)
 

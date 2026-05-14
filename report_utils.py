@@ -108,24 +108,26 @@ ST_ORDER = [
     "Apple", "Microsoft", "Tesla", "TSMC", "Samsung",
 ]
 
-# ── 시가총액 순 (collectors/stocks_universe.py 의 KR_TOP50/US_TOP50 순서) ──
+# ── 시가총액 순 (collectors/stocks_universe.py 의 KR_TOP50/US_TOP50/ASIA_TOP50 순서) ──
 # Lazy import 로 순환참조 회피
 def _load_stock_orders():
     try:
-        from collectors.stocks_universe import KR_TOP50, US_TOP50
+        from collectors.stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP50
         kr = [t[2] for t in KR_TOP50]   # 'name' 필드 (data ticker)
         us = [t[2] for t in US_TOP50]
+        asia = [t[2] for t in ASIA_TOP50]
         kr_ko = {t[2]: t[4] for t in KR_TOP50}  # name → name_ko
         us_en = {t[2]: t[4] for t in US_TOP50}  # name → name_en
-        return kr, us, kr_ko, us_en
+        return kr, us, asia, kr_ko, us_en
     except Exception:
-        return [], [], {}, {}
+        return [], [], [], {}, {}
 
 
-KR_STOCK_ORDER, US_STOCK_ORDER, _KR_KO_LABELS, _US_EN_LABELS = _load_stock_orders()
+KR_STOCK_ORDER, US_STOCK_ORDER, ASIA_STOCK_ORDER, _KR_KO_LABELS, _US_EN_LABELS = _load_stock_orders()
 # 기본 표시 갯수 (시총 상위 N종)
 KR_STOCK_TOP_N = 20
 US_STOCK_TOP_N = 20
+ASIA_STOCK_TOP_N = 20
 
 # KO_LABELS 에 KR_TOP50 한글명 자동 등록 (덮어쓰지 않음)
 for _en, _ko in _KR_KO_LABELS.items():

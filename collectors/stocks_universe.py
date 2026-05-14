@@ -150,6 +150,79 @@ US_TOP50: list[tuple[str, str, str, int, str]] = [
     ("ST_TMUS",     "TMUS",  "T-Mobile",        360, "T-Mobile US"),
 ]
 
+# 아시아 시총 상위 50 (history/아시아종목.xlsx 2026-05-14 기준, 비중 0.23% 이상)
+# 기존 ST_TSMC/ST_TENCENT/ST_BABA/ST_MEITUAN 4종은 ADR/HK 코드 재사용 (yf_ticker 도 기존 유지).
+# 나머지 46종은 ST_AS_<safe_ticker> 신규 코드. .SH 거래소는 yfinance .SS 로 매핑.
+ASIA_TOP50: list[tuple[str, str, str, int, str, str]] = [
+    # (indicator_code, yf_ticker, ticker_name, display_order, country, name_en)
+    ("ST_TSMC",            "TSM",          "TSMC",                  450, "Taiwan",    "Taiwan Semiconductor"),   # 기존 (ADR USD)
+    ("ST_TENCENT",         "0700.HK",      "Tencent",               451, "China",     "Tencent Holdings"),       # 기존 (HK)
+    ("ST_AS_688256_SS",    "688256.SS",    "Cambricon Tech",        452, "China",     "Cambricon Technologies"),
+    ("ST_BABA",            "9988.HK",      "Alibaba",               453, "China",     "Alibaba Group"),          # 기존 (HK)
+    ("ST_AS_0981_HK",      "0981.HK",      "SMIC",                  454, "China",     "Semiconductor Manufacturing International"),
+    ("ST_AS_300750_SZ",    "300750.SZ",    "CATL",                  455, "China",     "Contemporary Amperex Technology"),
+    ("ST_AS_1211_HK",      "1211.HK",      "BYD",                   456, "China",     "BYD Company"),
+    ("ST_AS_2318_HK",      "2318.HK",      "Ping An Insurance",     457, "China",     "Ping An Insurance"),
+    ("ST_AS_002371_SZ",    "002371.SZ",    "NAURA Tech",            458, "China",     "NAURA Technology Group"),
+    ("ST_AS_688041_SS",    "688041.SS",    "Hygon Info Tech",       459, "China",     "Hygon Information Technology"),
+    ("ST_AS_603986_SS",    "603986.SS",    "GigaDevice",            460, "China",     "GigaDevice Semiconductor"),
+    ("ST_AS_688012_SS",    "688012.SS",    "AMEC",                  461, "China",     "Advanced Micro-Fabrication Equipment"),
+    ("ST_AS_HDFCBANK_NS",  "HDFCBANK.NS",  "HDFC Bank",             462, "India",     "HDFC Bank"),
+    ("ST_AS_ICICIBANK_NS", "ICICIBANK.NS", "ICICI Bank",            463, "India",     "ICICI Bank"),
+    ("ST_AS_688008_SS",    "688008.SS",    "Montage Tech",          464, "China",     "Montage Technology"),
+    ("ST_AS_1810_HK",      "1810.HK",      "Xiaomi",                465, "China",     "Xiaomi"),
+    ("ST_AS_BHARTIARTL_NS","BHARTIARTL.NS","Bharti Airtel",         466, "India",     "Bharti Airtel"),
+    ("ST_AS_1347_HK",      "1347.HK",      "Hua Hong Semi",         467, "China",     "Hua Hong Semiconductor"),
+    ("ST_AS_RELIANCE_NS",  "RELIANCE.NS", "Reliance",               468, "India",     "Reliance Industries"),
+    ("ST_AS_300308_SZ",    "300308.SZ",    "Zhongji Innolight",     469, "China",     "Zhongji Innolight"),
+    ("ST_AS_TITAN_NS",     "TITAN.NS",     "Titan",                 470, "India",     "Titan Company"),
+    ("ST_AS_002028_SZ",    "002028.SZ",    "Sieyuan Electric",      471, "China",     "Sieyuan Electric"),
+    ("ST_AS_2308_TW",      "2308.TW",      "Delta Electronics",     472, "Taiwan",    "Delta Electronics"),
+    ("ST_AS_FUTU",         "FUTU",         "Futu Holdings",         473, "China",     "Futu Holdings"),
+    ("ST_AS_688525_SS",    "688525.SS",    "Biwin Storage",         474, "China",     "Biwin Storage Technology"),
+    ("ST_AS_300604_SZ",    "300604.SZ",    "Hangzhou Chang Chuan",  475, "China",     "Hangzhou Chang Chuan Technology"),
+    ("ST_AS_9660_HK",      "9660.HK",      "Horizon Robotics",      476, "China",     "Horizon Robotics"),
+    ("ST_AS_8411_T",       "8411.T",       "Mizuho FG",             477, "Japan",     "Mizuho Financial Group"),
+    ("ST_AS_INFY_NS",      "INFY.NS",      "Infosys",               478, "India",     "Infosys"),
+    ("ST_AS_8035_T",       "8035.T",       "Tokyo Electron",        479, "Japan",     "Tokyo Electron"),
+    ("ST_AS_BHP_AX",       "BHP.AX",       "BHP Group",             480, "Australia", "BHP Group"),
+    ("ST_AS_6857_T",       "6857.T",       "Advantest",             481, "Japan",     "Advantest"),
+    ("ST_AS_8802_T",       "8802.T",       "Mitsubishi Estate",     482, "Japan",     "Mitsubishi Estate"),
+    ("ST_AS_6503_T",       "6503.T",       "Mitsubishi Electric",   483, "Japan",     "Mitsubishi Electric"),
+    ("ST_AS_POWERGRID_NS", "POWERGRID.NS", "Power Grid",            484, "India",     "Power Grid Corporation of India"),
+    ("ST_AS_688072_SS",    "688072.SS",    "Piotech",               485, "China",     "Piotech"),
+    ("ST_AS_601869_SS",    "601869.SS",    "Yangtze Optical",       486, "China",     "Yangtze Optical Fibre and Cable"),
+    ("ST_AS_AXISBANK_NS",  "AXISBANK.NS",  "Axis Bank",             487, "India",     "Axis Bank"),
+    ("ST_AS_APOLLOHOSP_NS","APOLLOHOSP.NS","Apollo Hospitals",      488, "India",     "Apollo Hospitals Enterprise"),
+    ("ST_AS_301308_SZ",    "301308.SZ",    "Longsys",               489, "China",     "Shenzhen Longsys Electronics"),
+    ("ST_AS_SBILIFE_NS",   "SBILIFE.NS",   "SBI Life",              490, "India",     "SBI Life Insurance"),
+    ("ST_AS_002156_SZ",    "002156.SZ",    "TongFu",                491, "China",     "Tongfu Microelectronics"),
+    ("ST_AS_688120_SS",    "688120.SS",    "Hwatsing",              492, "China",     "Hwatsing Technology"),
+    ("ST_AS_6146_T",       "6146.T",       "Disco",                 493, "Japan",     "Disco Corporation"),
+    ("ST_AS_300316_SZ",    "300316.SZ",    "Jingsheng Mech",        494, "China",     "Zhejiang Jingsheng Mechanical & Electrical"),
+    ("ST_AS_7013_T",       "7013.T",       "IHI",                   495, "Japan",     "IHI Corporation"),
+    ("ST_MEITUAN",         "3690.HK",      "Meituan",               496, "China",     "Meituan"),                # 기존 (HK)
+    ("ST_AS_MM_NS",        "M&M.NS",       "M&M",                   497, "India",     "Mahindra & Mahindra"),
+    ("ST_AS_2317_TW",      "2317.TW",      "Hon Hai/Foxconn",       498, "Taiwan",    "Hon Hai Precision (Foxconn)"),
+    ("ST_AS_ETERNAL_NS",   "ETERNAL.NS",   "Eternal/Zomato",        499, "India",     "Eternal (Zomato)"),
+]
+
+
+# yfinance 통화 매핑 (티커 접미사 → ISO 4217)
+_SUFFIX_TO_CCY = {
+    ".TW": "TWD", ".HK": "HKD", ".SS": "CNY", ".SZ": "CNY",
+    ".NS": "INR", ".T":  "JPY", ".AX": "AUD",
+}
+
+
+def _ccy_for(yf_ticker: str) -> str:
+    """yfinance ticker 접미사로 통화 추론. 접미사 없으면 USD (US ADR)."""
+    for suf, ccy in _SUFFIX_TO_CCY.items():
+        if yf_ticker.endswith(suf):
+            return ccy
+    return "USD"
+
+
 # 기존 collect_market.py TICKERS["stocks"] 에 이미 있어 stocks_universe 가 백필하지 않는 코드 set
 EXISTING_IN_COLLECT_MARKET: set[str] = {
     "ST_NVDA", "ST_AVGO", "ST_GOOGL", "ST_AMZN", "ST_META",
@@ -159,19 +232,27 @@ EXISTING_IN_COLLECT_MARKET: set[str] = {
 
 
 def _backfill_targets() -> list[tuple[str, str, str]]:
-    """KR + US 신규 종목만. 기존 collect_market.py 가 다루는 14개는 제외.
+    """KR + US + ASIA 신규 종목만. 기존 collect_market.py 가 다루는 14개는 제외.
 
     returns: [(indicator_code, yf_ticker, ticker_name), ...]
     """
     out: list[tuple[str, str, str]] = []
+    seen: set[str] = set()
     for code, ticker, name, _order, _name_ko, _name_en in KR_TOP50:
-        if code in EXISTING_IN_COLLECT_MARKET:
+        if code in EXISTING_IN_COLLECT_MARKET or code in seen:
             continue
         out.append((code, ticker, name))
+        seen.add(code)
     for code, ticker, name, _order, _name_en in US_TOP50:
-        if code in EXISTING_IN_COLLECT_MARKET:
+        if code in EXISTING_IN_COLLECT_MARKET or code in seen:
             continue
         out.append((code, ticker, name))
+        seen.add(code)
+    for code, ticker, name, _order, _country, _name_en in ASIA_TOP50:
+        if code in EXISTING_IN_COLLECT_MARKET or code in seen:
+            continue
+        out.append((code, ticker, name))
+        seen.add(code)
     return out
 
 
@@ -199,6 +280,7 @@ def collect_stocks_universe(
     end: str = "9999-12-31",
     kr_only: bool = False,
     us_only: bool = False,
+    asia_only: bool = False,
 ) -> int:
     market_cols = ["DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
                    "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE"]
@@ -208,7 +290,9 @@ def collect_stocks_universe(
     if kr_only:
         targets = [t for t in targets if t[0].startswith("ST_KR_")]
     elif us_only:
-        targets = [t for t in targets if not t[0].startswith("ST_KR_")]
+        targets = [t for t in targets if not t[0].startswith(("ST_KR_", "ST_AS_"))]
+    elif asia_only:
+        targets = [t for t in targets if t[0].startswith("ST_AS_")]
 
     new_rows: list[dict] = []
     for code, ticker, name in targets:
@@ -260,7 +344,7 @@ def collect_stocks_universe(
 
 
 def upsert_mkt000_seed() -> int:
-    """MKT000_MARKET_INDICATOR 에 KR_TOP50 + US_TOP50 신규 90종 dim 행 등록.
+    """MKT000_MARKET_INDICATOR 에 KR_TOP50 + US_TOP50 + ASIA_TOP50 신규 종목 dim 행 등록.
 
     이미 등록된 코드는 건너뜀 (idempotent). 신규 환경 셋업·재현용.
     """
@@ -271,16 +355,25 @@ def upsert_mkt000_seed() -> int:
         return 0
 
     rows: list[tuple] = []
+    seen: set[str] = set()
     for code, yf_ticker, name, order, name_ko, name_en in KR_TOP50:
-        if code in EXISTING_IN_COLLECT_MARKET:
+        if code in EXISTING_IN_COLLECT_MARKET or code in seen:
             continue
         rows.append((code, "STOCK", name, name_ko, name_en, "Korea", "KRW", "pct",
                      "yfinance", yf_ticker, None, None, order, True))
+        seen.add(code)
     for code, yf_ticker, name, order, name_en in US_TOP50:
-        if code in EXISTING_IN_COLLECT_MARKET:
+        if code in EXISTING_IN_COLLECT_MARKET or code in seen:
             continue
         rows.append((code, "STOCK", name, name, name_en, "US", "USD", "pct",
                      "yfinance", yf_ticker, None, None, order, True))
+        seen.add(code)
+    for code, yf_ticker, name, order, country, name_en in ASIA_TOP50:
+        if code in EXISTING_IN_COLLECT_MARKET or code in seen:
+            continue
+        rows.append((code, "STOCK", name, name, name_en, country, _ccy_for(yf_ticker), "pct",
+                     "yfinance", yf_ticker, None, None, order, True))
+        seen.add(code)
 
     conn = get_connection()
     cur = conn.cursor()
@@ -300,17 +393,21 @@ def upsert_mkt000_seed() -> int:
     conn.commit()
     n = cur.rowcount
     cur.close(); conn.close()
-    print(f"[SEED] MKT000 INSERT {n}행 (KR{sum(1 for r in new_rows if r[5]=='Korea')} + US{sum(1 for r in new_rows if r[5]=='US')})")
+    kr_n = sum(1 for r in new_rows if r[5] == "Korea")
+    us_n = sum(1 for r in new_rows if r[5] == "US")
+    as_n = sum(1 for r in new_rows if r[5] not in ("Korea", "US"))
+    print(f"[SEED] MKT000 INSERT {n}행 (KR{kr_n} + US{us_n} + ASIA{as_n})")
     return n
 
 
 def main():
     today = pd.Timestamp.today().strftime("%Y-%m-%d")
-    parser = argparse.ArgumentParser(description="KR Top50 + US S&P500 Top50 종목 수집")
+    parser = argparse.ArgumentParser(description="KR Top50 + US S&P500 Top50 + ASIA Top50 종목 수집")
     parser.add_argument("--start", default="2010-01-01")
     parser.add_argument("--end",   default=today)
-    parser.add_argument("--kr-only", action="store_true")
-    parser.add_argument("--us-only", action="store_true")
+    parser.add_argument("--kr-only",   action="store_true")
+    parser.add_argument("--us-only",   action="store_true")
+    parser.add_argument("--asia-only", action="store_true")
     parser.add_argument("--seed-dim", action="store_true",
                         help="MKT000 dim seed 만 적재하고 종료 (백필 안 함)")
     args = parser.parse_args()
@@ -320,7 +417,10 @@ def main():
         return
 
     print(f"Stocks Universe 수집: {args.start} ~ {args.end}")
-    n = collect_stocks_universe(args.start, args.end, args.kr_only, args.us_only)
+    n = collect_stocks_universe(args.start, args.end,
+                                kr_only=args.kr_only,
+                                us_only=args.us_only,
+                                asia_only=args.asia_only)
     print(f"완료: {n}행")
 
 
