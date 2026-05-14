@@ -300,10 +300,57 @@ def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
         return 0
 
 
+def download_csv(out_path: Optional[str] = None) -> int:
+    """Snowflake MKT100_MARKET_DAILY → history/market_data.csv 덤프.
+
+    Snowflake 가 단일 정본이므로 git 에 CSV 를 추적하지 않는 환경에서
+    clone 후 한 번 실행해 로컬 CSV 를 생성한다 (simulate.py fallback / legacy
+    경로용). 컬럼 순서·이름은 collect_market.py 가 쓰는 형식 (10컬럼 대문자).
+
+    Args:
+        out_path: 저장 경로. None 이면 history/market_data.csv.
+
+    Returns:
+        다운로드한 행 수.
+    """
+    if out_path is None:
+        out_path = os.path.join(BASE_DIR, "history", "market_data.csv")
+
+    print(f"[DOWNLOAD] {TABLE} → {out_path} ...")
+    conn = get_connection()
+    try:
+        # COL_MAP 역매핑으로 Snowflake → CSV 컬럼 복원
+        rev = {v: k for k, v in COL_MAP.items()}
+        cols_sf = list(COL_MAP.values())   # ["일자","지표코드", ...]
+        select_sql = ", ".join(f'"{c}"' for c in cols_sf)
+        sql = f'SELECT {select_sql} FROM FDE_DB.PUBLIC.{TABLE} ORDER BY "지표코드", "일자"'
+        df = pd.read_sql(sql, conn)
+    finally:
+        conn.close()
+
+    # pd.read_sql 은 컬럼명을 그대로 가져옴 (한글 그대로). rename to CSV 표기.
+    df = df.rename(columns=rev)
+    # 컬럼 순서 보장
+    ordered = ["DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
+               "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE"]
+    df = df[ordered]
+    # VOLUME 정수화 (NaN 은 빈 셀로)
+    df["VOLUME"] = df["VOLUME"].astype("Int64")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    df.to_csv(out_path, index=False)
+    print(f"[DOWNLOAD] {len(df):,}행 → {out_path}")
+    return len(df)
+
+
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="market_data.csv → Snowflake MKT100_MARKET_DAILY")
+    parser = argparse.ArgumentParser(description="market_data.csv ↔ Snowflake MKT100_MARKET_DAILY")
     parser.add_argument("csv", nargs="?", default=os.path.join(BASE_DIR, "history", "market_data.csv"))
-    parser.add_argument("--truncate", action="store_true", help="적재 전 TRUNCATE")
+    parser.add_argument("--truncate", action="store_true", help="업로드 전 TRUNCATE (CSV → Snowflake)")
+    parser.add_argument("--download", action="store_true",
+                        help="Snowflake → CSV 덤프 (clone 후 로컬 CSV 재생성용)")
     args = parser.parse_args()
-    bulk_load_csv(args.csv, truncate=args.truncate)
+    if args.download:
+        download_csv(args.csv)
+    else:
+        bulk_load_csv(args.csv, truncate=args.truncate)

@@ -83,6 +83,13 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - Macro View 만 `history/macro_indicators.csv` 사용
 - 파생 지표: US 10-2 Spread (`BD_US_10_2_SPREAD`), KR 10-3 Spread (`BD_KR_10_3_SPREAD`) — 수집 시 자동 계산·적재
 
+### Clone 후 1회 셋업 (2026-05-14~)
+`history/market_data.csv` 는 git 추적 제외 (GitHub 50MB 한계). 새 환경에서는 Snowflake 에서 재생성:
+```
+.venv/bin/python snowflake_loader.py --download
+```
+일일 자동화는 dual-write 로 CSV/Snowflake 동기 유지되므로 1회만 실행하면 됨.
+
 ### 데이터 규모 (2026-05 기준)
 
 | 파일 | 행수 | 지표 수 | 기간 |
