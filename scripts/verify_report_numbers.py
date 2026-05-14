@@ -237,6 +237,73 @@ ASSET_ALIASES: dict[str, str] = {
     "PepsiCo": "ST_PEP", "PEP": "ST_PEP",
     "IBM": "ST_IBM",
     "T-Mobile": "ST_TMUS", "T-Mobile US": "ST_TMUS", "TMUS": "ST_TMUS",
+    # ── ASIA Top 65 + ADR 1종 신규 (2026-05-14) ──
+    # 일본 — 영문 + 한글 음역 + yfinance ticker
+    "Toyota": "ST_AS_7203_T", "토요타": "ST_AS_7203_T", "7203.T": "ST_AS_7203_T",
+    "Sony": "ST_AS_6758_T", "소니": "ST_AS_6758_T", "6758.T": "ST_AS_6758_T",
+    "Keyence": "ST_AS_6861_T", "키엔스": "ST_AS_6861_T", "6861.T": "ST_AS_6861_T",
+    "Tokyo Electron": "ST_AS_8035_T", "도쿄일렉트론": "ST_AS_8035_T", "8035.T": "ST_AS_8035_T",
+    "Advantest": "ST_AS_6857_T", "어드밴테스트": "ST_AS_6857_T", "6857.T": "ST_AS_6857_T",
+    "Mizuho FG": "ST_AS_8411_T", "미즈호": "ST_AS_8411_T", "8411.T": "ST_AS_8411_T",
+    "Hitachi": "ST_AS_6501_T", "히타치": "ST_AS_6501_T", "6501.T": "ST_AS_6501_T",
+    "Lasertec": "ST_AS_6920_T", "레이저텍": "ST_AS_6920_T", "6920.T": "ST_AS_6920_T",
+    "Renesas": "ST_AS_6723_T", "르네사스": "ST_AS_6723_T", "6723.T": "ST_AS_6723_T",
+    "Takeda": "ST_AS_4502_T", "다케다": "ST_AS_4502_T", "4502.T": "ST_AS_4502_T",
+    "Resonac": "ST_AS_4004_T", "레조낙": "ST_AS_4004_T", "4004.T": "ST_AS_4004_T",
+    "Seven & i": "ST_AS_3382_T", "세븐앤아이": "ST_AS_3382_T", "3382.T": "ST_AS_3382_T",
+    "SCREEN": "ST_AS_7735_T", "스크린홀딩스": "ST_AS_7735_T", "7735.T": "ST_AS_7735_T",
+    "Rohm": "ST_AS_6963_T", "롬": "ST_AS_6963_T", "6963.T": "ST_AS_6963_T",
+    "SUMCO": "ST_AS_3436_T", "섬코": "ST_AS_3436_T", "3436.T": "ST_AS_3436_T",
+    "Kokusai Electric": "ST_AS_6525_T", "고쿠사이일렉트릭": "ST_AS_6525_T", "6525.T": "ST_AS_6525_T",
+    "Mitsubishi Electric": "ST_AS_6503_T", "미쓰비시전기": "ST_AS_6503_T", "6503.T": "ST_AS_6503_T",
+    "Mitsubishi Estate": "ST_AS_8802_T", "미쓰비시지소": "ST_AS_8802_T", "8802.T": "ST_AS_8802_T",
+    "Disco": "ST_AS_6146_T", "디스코": "ST_AS_6146_T", "6146.T": "ST_AS_6146_T",
+    "IHI": "ST_AS_7013_T", "7013.T": "ST_AS_7013_T",
+    # 중국 (HK · A주). Tencent/Alibaba/Meituan 은 위쪽에 이미 등록 — 새 ST_AS_ 코드 추가만.
+    "Baidu": "ST_AS_9888_HK", "바이두": "ST_AS_9888_HK", "9888.HK": "ST_AS_9888_HK",
+    "NetEase": "ST_AS_9999_HK", "넷이즈": "ST_AS_9999_HK", "9999.HK": "ST_AS_9999_HK",
+    "Zijin Gold Intl": "ST_AS_2259_HK", "쯔진광업": "ST_AS_2259_HK", "2259.HK": "ST_AS_2259_HK",
+    "BYD": "ST_AS_1211_HK", "비야디": "ST_AS_1211_HK", "1211.HK": "ST_AS_1211_HK",
+    "CATL": "ST_AS_300750_SZ", "닝더스다이": "ST_AS_300750_SZ", "300750.SZ": "ST_AS_300750_SZ",
+    "SMIC": "ST_AS_0981_HK", "0981.HK": "ST_AS_0981_HK",
+    "Xiaomi": "ST_AS_1810_HK", "샤오미": "ST_AS_1810_HK", "1810.HK": "ST_AS_1810_HK",
+    "Ping An Insurance": "ST_AS_2318_HK", "핑안보험": "ST_AS_2318_HK", "2318.HK": "ST_AS_2318_HK",
+    "Hua Hong Semi": "ST_AS_1347_HK", "화훙반도체": "ST_AS_1347_HK", "1347.HK": "ST_AS_1347_HK",
+    "Cambricon Tech": "ST_AS_688256_SS", "캄브리콘": "ST_AS_688256_SS", "688256.SS": "ST_AS_688256_SS",
+    "NAURA Tech": "ST_AS_002371_SZ", "북방화창": "ST_AS_002371_SZ", "002371.SZ": "ST_AS_002371_SZ",
+    "Hygon Info Tech": "ST_AS_688041_SS", "688041.SS": "ST_AS_688041_SS",
+    "GigaDevice": "ST_AS_603986_SS", "603986.SS": "ST_AS_603986_SS",
+    "AMEC": "ST_AS_688012_SS", "688012.SS": "ST_AS_688012_SS",
+    "Montage Tech": "ST_AS_688008_SS", "688008.SS": "ST_AS_688008_SS",
+    "Zhongji Innolight": "ST_AS_300308_SZ", "300308.SZ": "ST_AS_300308_SZ",
+    "Sieyuan Electric": "ST_AS_002028_SZ", "002028.SZ": "ST_AS_002028_SZ",
+    "Futu Holdings": "ST_AS_FUTU", "푸투": "ST_AS_FUTU",
+    "Biwin Storage": "ST_AS_688525_SS", "688525.SS": "ST_AS_688525_SS",
+    "Hangzhou Chang Chuan": "ST_AS_300604_SZ", "300604.SZ": "ST_AS_300604_SZ",
+    "Horizon Robotics": "ST_AS_9660_HK", "9660.HK": "ST_AS_9660_HK",
+    "Piotech": "ST_AS_688072_SS", "688072.SS": "ST_AS_688072_SS",
+    "Yangtze Optical": "ST_AS_601869_SS", "601869.SS": "ST_AS_601869_SS",
+    "Longsys": "ST_AS_301308_SZ", "301308.SZ": "ST_AS_301308_SZ",
+    "TongFu": "ST_AS_002156_SZ", "002156.SZ": "ST_AS_002156_SZ",
+    "Hwatsing": "ST_AS_688120_SS", "688120.SS": "ST_AS_688120_SS",
+    "Jingsheng Mech": "ST_AS_300316_SZ", "300316.SZ": "ST_AS_300316_SZ",
+    # 대만 — TSMC TW (대만 상장) 와 TSMC (ADR, 위쪽 ST_TSMC) 분리
+    "TSMC TW": "ST_AS_2330_TW", "TSMC 대만": "ST_AS_2330_TW", "2330.TW": "ST_AS_2330_TW",
+    "Hon Hai/Foxconn": "ST_AS_2317_TW", "Hon Hai": "ST_AS_2317_TW", "폭스콘": "ST_AS_2317_TW", "2317.TW": "ST_AS_2317_TW",
+    "Delta Electronics": "ST_AS_2308_TW", "델타전자": "ST_AS_2308_TW", "2308.TW": "ST_AS_2308_TW",
+    "ASE Tech": "ST_AS_3711_TW", "ASE": "ST_AS_3711_TW", "3711.TW": "ST_AS_3711_TW",
+    "AVC": "ST_AS_3017_TW", "3017.TW": "ST_AS_3017_TW",
+    # 인도
+    "HDFC Bank": "ST_AS_HDFCBANK_NS", "HDFC뱅크": "ST_AS_HDFCBANK_NS", "HDFCBANK.NS": "ST_AS_HDFCBANK_NS",
+    "ICICI Bank": "ST_AS_ICICIBANK_NS", "ICICI뱅크": "ST_AS_ICICIBANK_NS", "ICICIBANK.NS": "ST_AS_ICICIBANK_NS",
+    "Reliance": "ST_AS_RELIANCE_NS", "릴라이언스": "ST_AS_RELIANCE_NS", "RELIANCE.NS": "ST_AS_RELIANCE_NS",
+    "Infosys": "ST_AS_INFY_NS", "인포시스": "ST_AS_INFY_NS", "INFY.NS": "ST_AS_INFY_NS",
+    "Bharti Airtel": "ST_AS_BHARTIARTL_NS", "바티에어텔": "ST_AS_BHARTIARTL_NS", "BHARTIARTL.NS": "ST_AS_BHARTIARTL_NS",
+    "Titan": "ST_AS_TITAN_NS", "타이탄": "ST_AS_TITAN_NS", "TITAN.NS": "ST_AS_TITAN_NS",
+    "Power Grid": "ST_AS_POWERGRID_NS", "파워그리드": "ST_AS_POWERGRID_NS", "POWERGRID.NS": "ST_AS_POWERGRID_NS",
+    "Axis Bank": "ST_AS_AXISBANK_NS", "악시스뱅크": "ST_AS_AXISBANK_NS", "AXISBANK.NS": "ST_AS_AXISBANK_NS",
+    "Apollo Hospitals": "ST_AS_APOLLOHOSP_NS", "아폴로병원": "ST_AS_APOLLOHOSP_NS", "APOLLOHOSP.NS": "ST_AS_APOLLOHOSP_NS",
+    "SBI Life": "ST_AS_SBILIFE_NS", "SBI생명": "ST_AS_SBILIFE_NS", "SBILIFE.NS": "ST_AS_SBILIFE_NS",
 }
 
 # 채권 = bp 단위, 그 외 = % 단위
@@ -316,6 +383,74 @@ PRICE_RANGE: dict[str, tuple[float, float]] = {
     "ST_RTX": (19, 318), "ST_KLAC": (11, 2903), "ST_LIN": (38, 766),
     "ST_AXP": (20, 574), "ST_C": (12, 199), "ST_PEP": (25, 266),
     "ST_IBM": (47, 470), "ST_TMUS": (6, 402),
+    # ── ASIA Top 65 + ADR 1종 (2026-05-14) — history min × 0.7 ~ max × 1.5 ──
+    # 일본 (JPY)
+    "ST_AS_7203_T": (218, 5829),       # Toyota
+    "ST_AS_6758_T": (101, 7022),       # Sony
+    "ST_AS_6861_T": (2601, 126255),    # Keyence
+    "ST_AS_8035_T": (527, 78675),      # Tokyo Electron
+    "ST_AS_6857_T": (97, 47250),       # Advantest
+    "ST_AS_8411_T": (383, 11666),      # Mizuho FG
+    "ST_AS_6501_T": (146, 8677),       # Hitachi
+    "ST_AS_6920_T": (46, 68655),       # Lasertec
+    "ST_AS_6723_T": (137, 5625),       # Renesas
+    "ST_AS_4502_T": (1179, 8835),      # Takeda
+    "ST_AS_4004_T": (501, 26722),      # Resonac
+    "ST_AS_3382_T": (311, 3822),       # Seven & i
+    "ST_AS_7735_T": (258, 17621),      # SCREEN
+    "ST_AS_6963_T": (289, 6000),       # Rohm
+    "ST_AS_3436_T": (275, 5640),       # SUMCO
+    "ST_AS_6525_T": (1207, 11037),     # Kokusai Electric
+    "ST_AS_6503_T": (293, 9702),       # Mitsubishi Electric
+    "ST_AS_8802_T": (656, 7920),       # Mitsubishi Estate
+    "ST_AS_6146_T": (593, 119321),     # Disco
+    "ST_AS_7013_T": (97, 6730),        # IHI
+    # 중국 HK (HKD)
+    "ST_AS_9888_HK": (52.6, 378.0),    # Baidu
+    "ST_AS_9999_HK": (58.8, 368.9),    # NetEase
+    "ST_AS_2259_HK": (84.4, 379.8),    # Zijin Gold Intl
+    "ST_AS_1211_HK": (2.4, 230.1),     # BYD
+    "ST_AS_0981_HK": (1.7, 136.6),     # SMIC
+    "ST_AS_1810_HK": (5.8, 90.2),      # Xiaomi
+    "ST_AS_2318_HK": (8.6, 117.3),     # Ping An Insurance
+    "ST_AS_1347_HK": (3.6, 212.1),     # Hua Hong Semi
+    "ST_AS_9660_HK": (2.3, 16.2),      # Horizon Robotics
+    # 중국 A주 (CNY)
+    "ST_AS_300750_SZ": (12.9, 690.0),  # CATL
+    "ST_AS_688256_SS": (22, 1975),     # Cambricon
+    "ST_AS_002371_SZ": (4.9, 872.2),   # NAURA
+    "ST_AS_688041_SS": (26.4, 523.8),  # Hygon
+    "ST_AS_603986_SS": (4.1, 547.5),   # GigaDevice
+    "ST_AS_688012_SS": (42.8, 608.4),  # AMEC
+    "ST_AS_688008_SS": (29.5, 388.2),  # Montage
+    "ST_AS_300308_SZ": (1, 1573),      # Zhongji Innolight
+    "ST_AS_002028_SZ": (4.1, 350.3),   # Sieyuan
+    "ST_AS_688525_SS": (10.9, 492.7),  # Biwin
+    "ST_AS_300604_SZ": (1.7, 342.0),   # Hangzhou Chang Chuan
+    "ST_AS_688072_SS": (42.3, 772.5),  # Piotech
+    "ST_AS_601869_SS": (14.3, 618.0),  # Yangtze Optical
+    "ST_AS_301308_SZ": (33.5, 917.8),  # Longsys
+    "ST_AS_002156_SZ": (1.8, 91.8),    # TongFu
+    "ST_AS_688120_SS": (46.4, 376.1),  # Hwatsing
+    "ST_AS_300316_SZ": (1.2, 120.8),   # Jingsheng Mech
+    "ST_AS_FUTU": (5.6, 293.9),        # Futu (US ADR USD)
+    # 대만 (TWD)
+    "ST_AS_2330_TW": (24, 3465),       # TSMC TW
+    "ST_AS_2308_TW": (29, 3420),       # Delta Electronics
+    "ST_AS_2317_TW": (21.0, 393.0),    # Hon Hai/Foxconn
+    "ST_AS_3711_TW": (12.8, 832.5),    # ASE Tech
+    "ST_AS_3017_TW": (6, 4417),        # AVC
+    # 인도 (INR)
+    "ST_AS_HDFCBANK_NS": (48, 1519),
+    "ST_AS_ICICIBANK_NS": (71, 2215),
+    "ST_AS_BHARTIARTL_NS": (142, 3244),
+    "ST_AS_RELIANCE_NS": (97, 2388),
+    "ST_AS_TITAN_NS": (45, 6788),
+    "ST_AS_INFY_NS": (132, 2913),
+    "ST_AS_POWERGRID_NS": (21.0, 517.3),
+    "ST_AS_AXISBANK_NS": (103, 2104),
+    "ST_AS_APOLLOHOSP_NS": (209, 12145),
+    "ST_AS_SBILIFE_NS": (352, 3160),
     # 원자재
     "CM_WTI": (20, 250),
     "CM_BRENT": (20, 250),
