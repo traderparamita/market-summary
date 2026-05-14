@@ -373,13 +373,14 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
 </div>
 
 <!-- ── 7. WTD / MTD Progress ── -->
+<!-- 채권 bp 누적 줄은 의도적으로 제외. 일변동값을 WTD/MTD 자리에 재인용하는 패턴이 반복돼 verify gate 가 막아왔다.
+     채권 누적 정보는 PM Story 의 💵 채권 섹션에서 충분히 다룬다. -->
 <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
     <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W## · 전주 금요일 종가 대비 · MM/DD 기준)</h3>
     <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
       <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
       <li>원자재: [상품] [%], [상품] [%], ...</li>
-      <li>채권: US 10Y [bp], US 2Y [bp], KR 10Y [bp]</li>
       <li>FX: DXY [%], 원/달러 [%]</li>
     </ul>
   </div>
@@ -389,7 +390,6 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
     <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
       <li>핵심 지수: KOSPI [%], S&P500 [%], ...</li>
       <li>원자재: [상품] [%], [상품] [%], ...</li>
-      <li>채권: US 10Y [bp], KR 10Y [bp]</li>
       <li>FX: DXY [%], 원/달러 [%]</li>
     </ul>
   </div>
@@ -399,7 +399,7 @@ Story는 **정확히 6개 섹션**을 이 순서대로 구성합니다:
 
 1. **카드 스타일 적용**: 배경색, 테두리, 그림자로 시각적 구분
 2. **제목 간결화**: "전주 금요일 종가 기준" 같은 중복 설명 제거
-3. **데이터 정렬**: 핵심 지수 → 원자재 → 채권 → FX 순서 유지
+3. **데이터 정렬**: 핵심 지수 → 원자재 → FX 순서 유지 (채권 bp 누적은 PM Story 채권 섹션에서 다룬다)
 4. **간격 개선**: `line-height:1.7`, `gap:16px`로 가독성 향상
 
 **스타일 필수 요소**:
