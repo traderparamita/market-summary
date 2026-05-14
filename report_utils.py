@@ -108,14 +108,14 @@ ST_ORDER = [
     "Apple", "Microsoft", "Tesla", "TSMC", "Samsung",
 ]
 
-# ── 시가총액 순 (collectors/stocks_universe.py 의 KR_TOP50/US_TOP50/ASIA_TOP50 순서) ──
+# ── 시가총액 순 (collectors/stocks_universe.py 의 KR_TOP50/US_TOP50/ASIA_TOP 순서) ──
 # Lazy import 로 순환참조 회피
 def _load_stock_orders():
     try:
-        from collectors.stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP50
+        from collectors.stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP
         kr = [t[2] for t in KR_TOP50]   # 'name' 필드 (data ticker)
         us = [t[2] for t in US_TOP50]
-        asia = [t[2] for t in ASIA_TOP50]
+        asia = [t[2] for t in ASIA_TOP]
         kr_ko = {t[2]: t[4] for t in KR_TOP50}  # name → name_ko
         us_en = {t[2]: t[4] for t in US_TOP50}  # name → name_en
         return kr, us, asia, kr_ko, us_en

@@ -600,7 +600,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 
         html += f'<div class="mover-item"><span class="mover-name">{disp}</span><span class="mover-val {cls}">{chg_sign(d["period_chg"])}</span></div>\n'
     html += '</div>\n</div>\n'
 
-    # 종목: 시가총액 순 (KR_TOP50 / US_TOP50 / ASIA_TOP50 순서) Top N 만 표시
+    # 종목: 시가총액 순 (KR_TOP50 / US_TOP50 / ASIA_TOP 순서) Top N 만 표시
     kr_stocks = {n: st[n] for n in KR_STOCK_ORDER[:KR_STOCK_TOP_N] if n in st}
     us_stocks = {n: st[n] for n in US_STOCK_ORDER[:US_STOCK_TOP_N] if n in st}
     asia_stocks = {n: st[n] for n in ASIA_STOCK_ORDER[:ASIA_STOCK_TOP_N] if n in st}

@@ -265,17 +265,19 @@ TICKERS = {
 
 
 def _load_stocks_universe():
-    """KR Top50 + US Top50 + ASIA Top50 = 약 150종 stocks ticker map.
+    """KR Top50 + US Top50 + ASIA Top65 + ASIA_EXTRAS = 약 166종 stocks ticker map.
 
     매일 collect_market.py 실행 시 모든 시총 상위 종목을 한 번에 수집하기 위함.
-    - 단일 source of truth: collectors/stocks_universe.py (KR_TOP50 / US_TOP50 / ASIA_TOP50)
-    - TSMC/Tencent/Alibaba/Meituan 4종은 ASIA_TOP50 에 포함되어 있고 기존 ST_TSMC/ST_TENCENT/
-      ST_BABA/ST_MEITUAN 코드와 yf_ticker (TSM/0700.HK/9988.HK/3690.HK) 를 그대로 재사용.
+    - 단일 source of truth: collectors/stocks_universe.py (KR_TOP50 / US_TOP50 / ASIA_TOP / ASIA_EXTRAS)
+    - Tencent/Alibaba/Meituan 3종은 ASIA_TOP 에 포함, 기존 ST_TENCENT/ST_BABA/ST_MEITUAN 코드 재사용.
+    - TSMC 는 두 종목 분리 수집:
+        ASIA_TOP: ST_AS_2330_TW (2330.TW, TWD) — 대만 거래소 원본, 아시아 시간대 마감
+        ASIA_EXTRAS: ST_TSMC (TSM, USD) — NYSE ADR, 미국 시간대 마감 (ST_ORDER dashboard)
     """
     try:
-        from collectors.stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP50
+        from collectors.stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP, ASIA_EXTRAS
     except ImportError:
-        from stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP50
+        from stocks_universe import KR_TOP50, US_TOP50, ASIA_TOP, ASIA_EXTRAS
 
     tickers: dict[str, str] = {}
     codes: dict[tuple[str, str], str] = {}
@@ -286,7 +288,10 @@ def _load_stocks_universe():
     for code, yf_ticker, name, *_ in US_TOP50:
         tickers[name] = yf_ticker
         codes[("stocks", name)] = code
-    for code, yf_ticker, name, *_ in ASIA_TOP50:
+    for code, yf_ticker, name, *_ in ASIA_TOP:
+        tickers[name] = yf_ticker
+        codes[("stocks", name)] = code
+    for code, yf_ticker, name, *_ in ASIA_EXTRAS:
         tickers[name] = yf_ticker
         codes[("stocks", name)] = code
 
@@ -371,7 +376,7 @@ INDICATOR_CODES = {
     ("style_us", "iShares Momentum"): "FA_US_MOMENTUM",
     ("style_us", "iShares LowVol"):   "FA_US_LOWVOL",
     # ※ KR 섹터 ETF (SC_KR_*) 매핑 제거 — KRX GICS (IX_KR_*) 로 일원화
-    # stocks 카테고리 매핑은 _STOCKS_INDICATOR_CODES (KR_TOP50 + US_TOP50 + ASIA_TOP50 = 150종) 에서 자동 병합
+    # stocks 카테고리 매핑은 _STOCKS_INDICATOR_CODES (KR_TOP50 + US_TOP50 + ASIA_TOP + ASIA_EXTRAS = 166종) 에서 자동 병합
 }
 INDICATOR_CODES.update(_STOCKS_INDICATOR_CODES)
 
