@@ -16,7 +16,7 @@ description: "market_summary CS Story 작성: 기존 Story에서 수치를 최�
 
 **Arguments**: $ARGUMENTS (형식: `YYYY-MM-DD [daily|weekly|monthly]`, 둘 다 생략 시 전 영업일·daily)
 
-Load and follow `.claude/skills/market-summary/SKILL.md` 의 **"CS Story 작성 절차"** 섹션.
+Load `.claude/skills/market-summary/SKILL.md` (공통 규칙) + `.claude/skills/market-summary/references/cs.md` (CS Story 작성 절차) 를 읽고 따른다.
 
 ---
 
@@ -41,7 +41,7 @@ Load and follow `.claude/skills/market-summary/SKILL.md` 의 **"CS Story 작성 
 
 ## Step 2 — 수치 제거 + 맥락 재작성
 
-SKILL.md "CS Story 작성 절차" Step 2·3 의 규칙을 적용:
+`references/cs.md` Step 2·3 의 규칙을 적용:
 
 **제거**: 퍼센트·가격·지수·거래량·시가총액·섹터 퍼센트 나열·KPI 블록 내부 숫자  
 **유지**: 종목명·지수명·ETF·이벤트·정책·날짜·요일·심리 앵커(정수 이정표만)  
@@ -100,7 +100,7 @@ HTML 골격은 **cs-hero + cs-section 블록 조합** 을 사용한다. Market S
 
 ## Step 3 — HTML 주입
 
-**방법**: Edit 도구로 `tab-cs` 블록 직접 치환 (Skill 의 "Step 4: HTML 주입" 규칙 준수. `_inject_existing_story()` 외부 호출 금지).
+**방법**: Edit 도구로 `tab-cs` 블록 직접 치환 (`references/daily.md` Step 4 의 HTML 주입 규칙 준수. `_inject_existing_story()` 외부 호출 금지).
 
 1. 대상 HTML Read (`{date}.html`)
 2. `<div id="tab-cs" class="tab-panel">` ~ `</div><!-- /tab-cs -->` 사이 블록을 새 CS 본문으로 Edit

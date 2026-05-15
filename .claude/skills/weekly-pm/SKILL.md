@@ -11,7 +11,7 @@ metadata:
 
 매주 **금요일 오전(보통 08:00 KST 전후)** 에 발행하는 PM 브리프. 그 주 월~목 4영업일 누적 변동을 매니저 톤으로 정리하고, 오늘(금) 잔여 변수 + 다음 주(W+1) Outlook 까지 포함한다.
 
-PM Story 본문은 `.claude/skills/market-summary/SKILL.md` 의 **"PM Story 작성 절차"** + **"PM Outlook 작성 절차"** 를 그대로 따른다. 이 스킬은 그 위에 **4영업일 윈도우 특수성** + **PDF 2종 산출** 을 얹는다.
+PM Story 본문은 `.claude/skills/market-summary/references/pm.md` + forward Outlook 블록은 `.claude/skills/market-summary/references/pm-outlook.md` 를 그대로 따른다 (공통 규칙은 `.claude/skills/market-summary/SKILL.md`). 이 스킬은 그 위에 **4영업일 윈도우 특수성** + **PDF 2종 산출** 을 얹는다.
 
 ## When to Use
 
@@ -109,7 +109,7 @@ print('latest:', df['DATE'].astype(str).max())
 
 ### Step 3 — PM Story 6 섹션 + Outlook 작성
 
-`market-summary` 스킬의 **"PM Story 작성 절차"** Step 1~3 + **"PM Outlook 작성 절차"** 그대로 적용.
+`market-summary` 스킬 `references/pm.md` Step 1~3 + `references/pm-outlook.md` 그대로 적용.
 
 추가 4영업일 특수성:
 - **수치 직접 검증**: `history/market_data.csv` 또는 `market_source.load_long()` 으로 D-4(금) → D-1(목) 종가 조회. `_data.json` 의 weekly 는 롤링 5영업일이라 사용 금지.
@@ -238,4 +238,6 @@ grep -oE '[0-9]+\.[0-9]+%|[0-9]{3,}\.[0-9]{2}|[+-][0-9]+ ?bp' output/weekly-pm/{
 - `generate_weekly_pm.py` — 4영업일 윈도우 + HTML skeleton 생성기
 - `scripts/html_to_pdf.py` — Playwright Chromium PDF 변환 (`--exclude` 옵션 포함)
 - `.claude/hooks/post_edit_write_structure_guard.py` — `/weekly-pm/` 경로 Story 섹션 검증 자동 면제
-- `.claude/skills/market-summary/SKILL.md` — PM Story / PM Outlook 작성 절차 (재사용)
+- `.claude/skills/market-summary/SKILL.md` — 공통 규칙 (forward-looking, 세션 시각, 표기)
+- `.claude/skills/market-summary/references/pm.md` — PM Story 6 섹션 (재사용)
+- `.claude/skills/market-summary/references/pm-outlook.md` — PM Outlook Hybrid 4 파트 (재사용)

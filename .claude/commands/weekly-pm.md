@@ -18,7 +18,7 @@ description: "Weekly PM Brief: 그 주 월~목 4영업일 누적 + Today Residua
 
 Load and follow `.claude/skills/weekly-pm/SKILL.md` 의 작성 절차 5 단계.
 
-PM Story 본문 톤·6 섹션 구조는 `.claude/skills/market-summary/SKILL.md` 의 **"PM Story 작성 절차"** + **"PM Outlook 작성 절차"** 를 그대로 적용.
+PM Story 본문 톤·6 섹션 구조는 `.claude/skills/market-summary/references/pm.md` + forward Outlook 블록은 `.claude/skills/market-summary/references/pm-outlook.md` 를 그대로 적용 (공통 규칙은 `.claude/skills/market-summary/SKILL.md`).
 
 ---
 

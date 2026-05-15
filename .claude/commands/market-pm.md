@@ -16,7 +16,7 @@ description: "market_summary PM Story 작성: 기존 Market Story + _data.json �
 
 **Arguments**: $ARGUMENTS (형식: `YYYY-MM-DD [daily|weekly|monthly]`, 둘 다 생략 시 전 영업일·daily)
 
-Load and follow `.claude/skills/market-summary/SKILL.md` 의 **"PM Story 작성 절차"** 섹션.
+Load `.claude/skills/market-summary/SKILL.md` (공통 규칙) + `.claude/skills/market-summary/references/pm.md` (PM Story 작성 절차) 를 읽고 따른다.
 
 ---
 
@@ -42,7 +42,7 @@ Load and follow `.claude/skills/market-summary/SKILL.md` 의 **"PM Story 작성 
 
 ## Step 2 — 6개 섹션 구성
 
-SKILL.md "PM Story 작성 절차" Step 2·3 의 규칙을 적용:
+`references/pm.md` Step 2·3 의 규칙을 적용:
 
 고정 순서 — 🇰🇷 **한국** → 🌐 **매크로** → 🌏 **아시아 및 중국** → 🇺🇸 **미국** → 🇪🇺 **유럽** → 💵 **채권**
 
@@ -55,7 +55,7 @@ SKILL.md "PM Story 작성 절차" Step 2·3 의 규칙을 적용:
 **방법**: Edit 도구로 `tab-pm` 블록 직접 치환. `_inject_existing_story()` 외부 호출 금지.
 
 1. 대상 HTML Read (`{date}.html`)
-2. `<div id="tab-pm" class="tab-panel">` ~ `</div><!-- /tab-pm -->` 블록을 SKILL.md 의 PM 골격(`pm-hero` + `pm-grid` + 6개 `pm-section`) 으로 Edit
+2. `<div id="tab-pm" class="tab-panel">` ~ `</div><!-- /tab-pm -->` 블록을 `references/pm.md` 의 PM 골격(`pm-hero` + `pm-grid` + 6개 `pm-section`) 으로 Edit
 3. 같은 내용으로 `{date}_pm.html` 파일을 Edit (두 파일 동기화)
 
 **placeholder 만 있는 경우**: 정상. 치환하면 됨.

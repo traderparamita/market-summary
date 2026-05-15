@@ -87,7 +87,7 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 
 ### Step 3: 일간 Market Story 작성
 
-`market-summary` **스킬**의 "일간 Story 작성 절차"를 따른다.
+`market-summary` **스킬** (SKILL.md 공통 규칙) + `references/daily.md` (일간 Story 작성 절차) 를 따른다.
 
 핵심:
 1. `output/summary/YYYY-MM/YYYY-MM-DD_data.json` Read → 수치·holiday 확인
@@ -103,7 +103,7 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 
 ### Step 3-B: 일간 CS Story 작성
 
-Step 3 완료 **직후** `market-summary` 스킬의 **"CS Story 작성 절차"** 섹션 규칙으로 CS 버전을 작성한다.
+Step 3 완료 **직후** `market-summary` 스킬 `references/cs.md` 규칙으로 CS 버전을 작성한다.
 
 핵심:
 1. 방금 저장한 `YYYY-MM-DD_story.html` Read
@@ -115,7 +115,7 @@ Step 3 완료 **직후** `market-summary` 스킬의 **"CS Story 작성 절차"**
 
 ### Step 3-C: 일간 PM Story 작성
 
-Step 3 완료 **후** `market-summary` 스킬의 **"PM Story 작성 절차"** 섹션 규칙으로 PM 버전을 작성한다. (Step 3-B 와 독립 — CS 실패해도 PM 은 시도)
+Step 3 완료 **후** `market-summary` 스킬 `references/pm.md` 규칙으로 PM 버전을 작성한다. (Step 3-B 와 독립 — CS 실패해도 PM 은 시도)
 
 핵심:
 1. `YYYY-MM-DD_story.html` + `YYYY-MM-DD_data.json` Read
@@ -134,7 +134,7 @@ Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 �
 
 대상 날짜가 해당 주의 **마지막 영업일**(보통 금요일)인 경우에만 작성. 중간 영업일이면 **건너뛴다**.
 
-- `market-summary` 스킬의 "주간 Story 작성 절차" 따름
+- `market-summary` 스킬 `references/weekly-monthly.md` 의 주간 Story 절차 따름
 - 해당 주의 일간 `_story.html`들을 모두 읽어 종합
 - `output/summary/weekly/YYYY-WNN.html`에 주입
 
@@ -144,7 +144,7 @@ Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 �
 
 ### Step 5-B: 주간 CS Story 작성 (마지막 영업일만)
 
-Step 5 완료 직후 `market-summary` 스킬의 **"CS Story 작성 절차" — 주간/월간 CS Story 적용 가이드** 섹션 규칙으로 주간 CS 버전을 작성한다.
+Step 5 완료 직후 `market-summary` 스킬 `references/cs.md` 의 **"주간 / 월간 CS Story 적용 가이드"** 규칙으로 주간 CS 버전을 작성한다.
 
 핵심:
 1. 방금 저장한 `output/summary/weekly/YYYY-WNN_story.html` Read
@@ -156,14 +156,14 @@ Step 5 완료 직후 `market-summary` 스킬의 **"CS Story 작성 절차" — �
 
 ### Step 5-C: 주간 PM Story + Outlook 작성 (마지막 영업일만)
 
-Step 5 완료 후 (Step 5-B 와 독립) `market-summary` 스킬의 **"PM Story 작성 절차" — 주간/월간 PM Story 적용 가이드** + **"PM Outlook 작성 절차"** 섹션 규칙으로 주간 PM 버전을 작성한다.
+Step 5 완료 후 (Step 5-B 와 독립) `market-summary` 스킬 `references/pm.md` 의 **"주간 / 월간 PM Story 적용 가이드"** + `references/pm-outlook.md` 규칙으로 주간 PM 버전을 작성한다.
 
 핵심:
 1. `output/summary/weekly/YYYY-WNN_story.html` + 일간 5개 `_data.json` (해당 주) Read
 2. **회고 PM Story 6 섹션** 작성:
    - 🇰🇷 한국 · 🌐 매크로 · 🌏 아시아 및 중국 · 🇺🇸 미국 · 🇪🇺 유럽 · 💵 채권
    - 각 섹션 4~6 불릿. WTD 수익률 + 주중 최대 상승·하락일 + 핵심 이벤트
-3. **회고 직후 Outlook 블록 추가** (스킬 "PM Outlook 작성 절차"):
+3. **회고 직후 Outlook 블록 추가** (`references/pm-outlook.md`):
    - 시나리오 3카드 (Bull · Base · Bear) — 다음 주 시각 (W{N+1})
    - 6섹션 Watch & Trigger (다음 주 핵심 이벤트 + Watch points + If-Then 트리거)
    - 통합 리스크 3개
@@ -206,7 +206,7 @@ Step 1~2에서 자동 갱신됨. 별도 실행 불필요.
 
 대상 날짜가 해당 월의 **마지막 영업일**인 경우에만 작성. 아니면 **건너뛴다**.
 
-- `market-summary` 스킬의 "월간 Story 작성 절차" 따름
+- `market-summary` 스킬 `references/weekly-monthly.md` 의 월간 Story 절차 따름
 - `output/summary/monthly/YYYY-MM.html`에 주입
 
 **완료 보고**:
@@ -215,7 +215,7 @@ Step 1~2에서 자동 갱신됨. 별도 실행 불필요.
 
 ### Step 7-B: 월간 CS Story 작성 (마지막 영업일만)
 
-Step 7 완료 직후 `market-summary` 스킬의 **"CS Story 작성 절차" — 주간/월간 CS Story 적용 가이드** 규칙으로 월간 CS 버전을 작성한다.
+Step 7 완료 직후 `market-summary` 스킬 `references/cs.md` 의 **"주간 / 월간 CS Story 적용 가이드"** 규칙으로 월간 CS 버전을 작성한다.
 
 핵심:
 1. `output/summary/monthly/YYYY-MM_story.html` Read
@@ -226,12 +226,12 @@ Step 7 완료 직후 `market-summary` 스킬의 **"CS Story 작성 절차" — �
 
 ### Step 7-C: 월간 PM Story + Outlook 작성 (마지막 영업일만)
 
-Step 7 완료 후 (Step 7-B 와 독립) `market-summary` 스킬의 **"PM Story 작성 절차" — 주간/월간 PM Story 적용 가이드** + **"PM Outlook 작성 절차"** 규칙으로 월간 PM 버전을 작성한다.
+Step 7 완료 후 (Step 7-B 와 독립) `market-summary` 스킬 `references/pm.md` 의 **"주간 / 월간 PM Story 적용 가이드"** + `references/pm-outlook.md` 규칙으로 월간 PM 버전을 작성한다.
 
 핵심:
 1. `output/summary/monthly/YYYY-MM_story.html` + 일간 `_data.json` (해당 월) Read
 2. **회고 PM Story 6 섹션**: 각 섹션 5~7 불릿. 월말 종가 + MTD + YTD + 월간 최대 상승·하락일 + 주차별 리듬 + 주요 이벤트
-3. **회고 직후 Outlook 블록 추가** (스킬 "PM Outlook 작성 절차"):
+3. **회고 직후 Outlook 블록 추가** (`references/pm-outlook.md`):
    - 시나리오 3카드 — 다음 달 시각 (시나리오 카드 8~10줄)
    - 6섹션 Watch & Trigger (다음 달 핵심 이벤트 4~5 / Watch points / If-Then)
    - 통합 리스크 4개
