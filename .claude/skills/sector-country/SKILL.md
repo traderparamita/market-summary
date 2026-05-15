@@ -15,23 +15,25 @@ type: skill
 ## 0. 사이클 구조
 
 매일 아침 **섹터 2개(US + KR) + 국가 1개 = 3개 주제**를 심층 분석한다.  
-섹터 사이클(11일)과 국가 사이클(10일)은 **독립적으로** 순환한다.
+섹터 사이클(11일)과 국가 사이클(11일)은 **독립적으로** 순환한다.
 
 ### 섹터 11일 사이클 (기준일: 2026-01-05)
 
-| 섹터 Day | 테마 | US 섹터 (SPDR) | KR 섹터 (TIGER 200) |
+KR 섹터는 **KRX GICS 공식 지수 (`IX_KR_*` / 코드 `SC_KR_*`)** 가 정본이다. 종전 TIGER/KODEX ETF 25종 시계열은 2026-05-07 제거되었다.
+
+| 섹터 Day | 테마 | US 섹터 (SPDR) | KR 섹터 (KRX GICS 지수) |
 |---------|------|--------------|-------------------|
-| 1 | 기술·IT | XLK (Technology) | TIGER 200 IT (364980.KS) |
-| 2 | 통신·커뮤니케이션 | XLC (Communication) | TIGER 200 커뮤니케이션서비스 (364990.KS) |
-| 3 | 금융 | XLF (Financials) | TIGER 200 금융 (435420.KS) |
-| 4 | 에너지·화학 | XLE (Energy) | TIGER 200 에너지화학 (472170.KS) |
-| 5 | 헬스케어 | XLV (Health Care) | TIGER 200 헬스케어 (227570.KS) |
-| 6 | 산업재 | XLI (Industrials) | TIGER 200 산업재 (227560.KS) |
-| 7 | 소재·중공업 | XLB (Materials) | TIGER 200 중공업 (157490.KS) |
-| 8 | 경기소비재 | XLY (Consumer Discr.) | TIGER 200 경기소비재 (227540.KS) |
-| 9 | 생활소비재 | XLP (Consumer Staples) | TIGER 200 생활소비재 (227550.KS) |
-| 10 | 유틸리티·철강소재 | XLU (Utilities) | TIGER 200 철강소재 (494840.KS) |
-| 11 | 부동산·건설 | XLRE (Real Estate) | TIGER 200 건설 (139270.KS) |
+| 1 | 기술·IT | XLK (Technology) | KOSPI200 정보기술 |
+| 2 | 통신·커뮤니케이션 | XLC (Communication) | KOSPI200 커뮤니케이션 |
+| 3 | 금융 | XLF (Financials) | KOSPI200 금융 |
+| 4 | 에너지·화학 | XLE (Energy) | KOSPI200 에너지/화학 |
+| 5 | 헬스케어 | XLV (Health Care) | KOSPI200 헬스케어 |
+| 6 | 산업재 | XLI (Industrials) | KOSPI200 산업재 |
+| 7 | 소재·중공업 | XLB (Materials) | KOSPI200 중공업 |
+| 8 | 경기소비재 | XLY (Consumer Discr.) | KOSPI200 경기소비재 |
+| 9 | 생활소비재 | XLP (Consumer Staples) | KOSPI200 생활소비재 |
+| 10 | 유틸리티·철강소재 | XLU (Utilities) | KOSPI200 철강/소재 |
+| 11 | 부동산·건설 | XLRE (Real Estate) | KOSPI200 건설 |
 
 ### 국가 11일 사이클 (섹터와 독립, 기준일: 2026-01-05)
 
@@ -61,13 +63,13 @@ type: skill
 - 당일에 국한하지 않고 **최근 1~2주** 뉴스를 참조해 섹터·국가 포지셔닝의 배경을 설명한다
 - 단, {date} 이후 미래 뉴스는 사용하지 않는다
 
-### KR 섹터 검색 원칙: TIGER ETF = 업종 proxy
+### KR 섹터 검색 원칙: KRX GICS 지수 = 업종 정본
 
-**TIGER ETF는 그 업종 전체의 proxy다.** ETF 자체를 분석하는 것이 아니라, ETF가 대표하는 **업종·산업의 동향**을 검색한다.
+**KR 섹터는 KRX 가 산출하는 KOSPI200 GICS 공식 지수다.** 지수 자체를 분석하는 것이 아니라, 지수가 대표하는 **업종·산업의 동향**을 검색한다.
 
-- 검색 키워드에 TIGER ETF 이름/티커를 포함시켜도 되지만, 핵심은 **업종 키워드**다
-- ETF 수치(모멘텀 신호)는 `compute_sector_view()`에서 이미 계산됨 → 검색은 **"왜 이 업종인가"** 맥락 파악에 집중
-- 예: TIGER 2차전지테마(137610.KS) 검색 시 → LG에너지솔루션·삼성SDI 실적, EV/ESS 수요, 소재 가격 등 업종 내 기업·정책·수요 뉴스가 핵심
+- 검색 키워드는 지수명/티커가 아니라 **업종 키워드**(반도체·은행·바이오 등)와 **대표주**가 핵심
+- 지수 수치(모멘텀 신호)는 `compute_sector_view()`에서 이미 계산됨 → 검색은 **"왜 이 업종인가"** 맥락 파악에 집중
+- 예: 헬스케어(Day 5) 검색 시 → 셀트리온·삼성바이오로직스 실적, 신약 임상, 약가 정책 등 업종 내 기업·정책·수요 뉴스가 핵심
 
 ### 검색 키워드 예시
 
