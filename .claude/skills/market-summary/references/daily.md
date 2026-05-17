@@ -336,6 +336,16 @@ wtd = (tue_close/fri_close - 1) * 100
 
 ---
 
+## Step 3-S: Sources 탭 주입 (필수 — 절대 생략 금지)
+
+Story HTML 주입 직후, **같은 Edit 세션 안에서** `tab-sources` 탭을 채운다. Story 만 쓰고 Sources 를 비워두면 안 된다.
+
+- 작성 규칙·HTML 구조는 `references/sources.md` 참조
+- **최소 링크 수**: 일간 5건, 주간 10건, 월간 15건 (CSV/매크로 데이터 소스 라인은 별도)
+- 사이블링 파일 `YYYY-MM-DD_sources.html` 도 동기 저장
+- 검증: `scripts/verify_report_numbers.py` 가 자동으로 빈 sources 를 catch (Stop 훅). placeholder 만 남거나 링크 3건 미만이면 위반으로 보고
+- 검증 통과 기준: `tab-sources` 블록 안에 `<a href` 링크가 3건 이상, `SOURCES_PLACEHOLDER` 텍스트 없음
+
 ## Step 4: HTML 주입
 
 ### (A) 신규 일간 생성 — `generate.py`가 자동 처리

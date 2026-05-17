@@ -147,6 +147,15 @@
 
 ---
 
+## Sources 탭 주입 (필수 — 주간/월간/분기 공통)
+
+Story 본문 완성 직후 **반드시** `tab-sources` 탭을 채운다. 별도 단계로 미루지 않는다.
+
+- 작성 규칙·HTML 구조: `references/sources.md`
+- **최소 링크 수**: 주간 10건, 월간 15건, 분기 20건 (그룹: 한국·미국·유럽·아시아·원자재·캘린더·데이터)
+- 사이블링 파일 `YYYY-WNN_sources.html` / `YYYY-MM_sources.html` 동기 저장
+- 검증: `scripts/verify_report_numbers.py` 가 자동으로 빈 sources catch — 링크 3건 미만 또는 SOURCES_PLACEHOLDER 잔존 시 위반
+
 ## 검증 체크리스트 (일간/주간/월간 공통)
 
 작성 후 **반드시** 다음을 확인:
@@ -158,6 +167,7 @@
 - [ ] **CSS 클래스**: 사용한 모든 클래스가 화이트리스트에 있는가?
 - [ ] **수치 일치**: WTD/MTD 직접 계산 결과와 일치하는가?
 - [ ] **파일 동기화**: `YYYY-MM-DD.html` + `YYYY-MM-DD_story.html` 내용 동일한가?
+- [ ] **Sources 탭 채움**: `tab-sources` 가 비어있지 않고, 사이블링 `_sources.html` 동기화 완료
 
 ---
 

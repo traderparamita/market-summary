@@ -94,11 +94,11 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 2. 시간순 웹 검색 (아시아 → 유럽 → 미국) — 검색 결과의 URL·제목·매체·날짜를 sources 용으로 수집
 3. Story 작성 (훅이 forward-looking·세션 간 참조 등 자동 검증)
 4. `output/summary/YYYY-MM/YYYY-MM-DD.html`의 Story 탭에 주입 + `_story.html` 저장
-5. 수집한 출처를 `tab-sources` 탭에 주입 + `_sources.html` 저장
+5. **Sources 주입 (필수, 절대 생략 금지)**: 수집한 출처를 `tab-sources` 탭에 주입 + `_sources.html` 사이블링 저장. 최소 5건. `references/sources.md` 형식. **Step 7.7 의 `verify_report_numbers.py` 가 빈 sources 자동 catch — 누락 시 검증 실패로 Step 8 진행 차단.**
 
 **완료 보고**:
 ```
-✅ [Step 3] 일간 Market Story 작성 완료
+✅ [Step 3] 일간 Market Story 작성 완료 (Sources: N건 주입)
 ```
 
 ### Step 3-B: 일간 CS Story 작성
@@ -137,9 +137,10 @@ Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 �
 - `market-summary` 스킬 `references/weekly-monthly.md` 의 주간 Story 절차 따름
 - 해당 주의 일간 `_story.html`들을 모두 읽어 종합
 - `output/summary/weekly/YYYY-WNN.html`에 주입
+- **Sources 주입 (필수)**: 그 주의 일간 sources + 주간 추가 검색 출처를 `tab-sources` 탭에 주입 + `YYYY-WNN_sources.html` 사이블링 저장. 최소 10건. **빈 sources 는 Step 7.7 검증에서 자동 실패.**
 
 **완료 보고**:
-- 마지막 영업일: `✅ [Step 5] 주간 Market Story 작성 완료`
+- 마지막 영업일: `✅ [Step 5] 주간 Market Story 작성 완료 (Sources: N건)`
 - 중간 영업일: `⊘ [Step 5] 스킵 (주간 보고서는 마지막 영업일에만 작성)`
 
 ### Step 5-B: 주간 CS Story 작성 (마지막 영업일만)
@@ -208,9 +209,10 @@ Step 1~2에서 자동 갱신됨. 별도 실행 불필요.
 
 - `market-summary` 스킬 `references/weekly-monthly.md` 의 월간 Story 절차 따름
 - `output/summary/monthly/YYYY-MM.html`에 주입
+- **Sources 주입 (필수)**: 월 단위 핵심 출처를 `tab-sources` 탭에 주입 + `YYYY-MM_sources.html` 사이블링 저장. 최소 15건. **빈 sources 는 Step 7.7 검증에서 자동 실패.**
 
 **완료 보고**:
-- 마지막 영업일: `✅ [Step 7] 월간 Market Story 작성 완료`
+- 마지막 영업일: `✅ [Step 7] 월간 Market Story 작성 완료 (Sources: N건)`
 - 중간 영업일: `⊘ [Step 7] 스킵 (월간 보고서는 마지막 영업일에만 작성)`
 
 ### Step 7-B: 월간 CS Story 작성 (마지막 영업일만)
@@ -275,6 +277,7 @@ Step 1~7.6에서 작성·갱신된 일간/주간/월간 보고서의 종가·등
 - HL span 인라인 (`<span class="hl-up/down">±N%</span>`) — 윈도우 300자 내 "WTD/MTD/YTD/주간/월간/연초" 등 키워드가 있을 때
 - 채권 yield bp 변화 (HL span — bp 단위는 키워드 없어도 파일 종류 기반 default 적용)
 - 마크다운 표 3컬럼(시작/종료/등락) 산술 자체 모순
+- **빈 Sources 탭**: 일간/주간/월간 메인 HTML 의 `tab-sources` 가 비어있거나 `SOURCES_PLACEHOLDER` 잔존, 또는 `<a href` 링크 3건 미만이면 위반. Step 3/5/7 의 Sources 주입 누락을 자동 catch.
 
 검증 기준: 보고서 표시 자릿수에 맞춰 반올림한 CSV 계산값과 **정확 일치**. 마크다운 표는 정수 반올림 누적을 흡수하기 위해 ±0.1%P 마진만 허용.
 

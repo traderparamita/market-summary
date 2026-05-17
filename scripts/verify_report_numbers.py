@@ -1001,12 +1001,63 @@ def _periods_for_file(file_path: Path) -> dict[str, tuple[str, str]]:
     return out
 
 
+# ── 빈 Sources 탭 검출 ────────────────────────────────────────────
+# 일간/주간/월간 메인 HTML 의 tab-sources 블록이 비어있거나 placeholder/링크 3건 미만이면 위반.
+# 사이블링(_story/_pm/_cs/_macro/_sources)은 건너뛴다.
+_SOURCES_BLOCK_RE = re.compile(
+    r'<div\s+id=["\']tab-sources["\'][^>]*>(.*?)</div><!--\s*/tab-sources\s*-->',
+    re.DOTALL,
+)
+_SOURCES_LINK_RE = re.compile(r'<a\s+href=', re.IGNORECASE)
+_MIN_SOURCES_LINKS = 3
+
+
+def _is_main_report_html(file_path: Path) -> bool:
+    name = file_path.name
+    if not name.endswith(".html"):
+        return False
+    SIBLING_SUFFIXES = ("_story.html", "_pm.html", "_cs.html",
+                        "_macro.html", "_sources.html", "_ocr.html",
+                        "_no-data.pdf", "_no-data.html")
+    if any(name.endswith(s) for s in SIBLING_SUFFIXES):
+        return False
+    parts = file_path.parts
+    return "summary" in parts  # only output/summary/* daily/weekly/monthly
+
+
+def _check_sources_empty(file_path: Path, text: str) -> list[Violation]:
+    """tab-sources 가 비어있거나 링크 3건 미만이면 Violation 반환."""
+    if not _is_main_report_html(file_path):
+        return []
+    m = _SOURCES_BLOCK_RE.search(text)
+    if not m:
+        return []  # 탭 자체가 없는 보고서 (예: 일부 레거시) — 강제하지 않음
+    inner = m.group(1)
+    inner_stripped = re.sub(r'<!--.*?-->', '', inner, flags=re.DOTALL).strip()
+    link_count = len(_SOURCES_LINK_RE.findall(inner))
+    if not inner_stripped or "SOURCES_PLACEHOLDER" in inner or link_count < _MIN_SOURCES_LINKS:
+        ctx = (inner_stripped[:120] + "...") if inner_stripped else "(empty)"
+        return [Violation(
+            file=str(file_path),
+            asset="tab-sources",
+            period="빈 Sources",
+            reported=f"링크 {link_count}건",
+            expected=f"링크 ≥ {_MIN_SOURCES_LINKS}건 (skill: references/sources.md)",
+            diff=f"부족 {_MIN_SOURCES_LINKS - link_count}건",
+            context=ctx,
+        )]
+    return []
+
+
 def verify(file_path: Path, prices) -> list[Violation]:
     if not file_path.exists():
         return []
     text = file_path.read_text(errors="replace")
     periods = _periods_for_file(file_path)
     violations: list[Violation] = []
+
+    # 0. 빈 Sources 탭 검출 (메인 HTML 만; 사이블링 제외)
+    violations.extend(_check_sources_empty(file_path, text))
 
     # 1. 표 자체 일관성 (마크다운, 3컬럼: 시작/종료/등락) — CSV 없이 산술 검증
     for m in MD_TABLE_3COL.finditer(text):

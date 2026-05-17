@@ -184,3 +184,4 @@ grep "EQ_KOSPI" history/market_data.csv | grep "^2026" | sort | awk -F',' '{prin
 - [ ] (일간) WTD/MTD 단락에 "N/M 영업일 경과" 표기가 있고, 수치가 `_data.json`의 `weekly`/`monthly` 필드와 일치하는가?
 - [ ] "연내 신고점", "YTD 최고", "52주 고점", "사상 최고" 등 기간 고점 표현을 쓴 경우, `history/market_data.csv`를 실제 조회해 해당일 종가가 해당 기간 1위인지 확인했는가?
 - [ ] `_story.html` 파일이 정상 생성·갱신되었는가?
+- [ ] **Sources 탭** 이 비어있지 않은가? 같은 세션에 `tab-sources` + `_sources.html` 채웠는가? (`references/sources.md`) — Stop 훅의 `verify_report_numbers.py` 가 자동 catch.
