@@ -229,6 +229,86 @@ ASIA_TOP: list[tuple[str, str, str, int, str, str]] = [
     ("ST_AS_AXISBANK_NS",  "AXISBANK.NS",  "Axis Bank",             562, "India",  "Axis Bank"),
     ("ST_AS_APOLLOHOSP_NS","APOLLOHOSP.NS","Apollo Hospitals",      563, "India",  "Apollo Hospitals Enterprise"),
     ("ST_AS_SBILIFE_NS",   "SBILIFE.NS",   "SBI Life",              564, "India",  "SBI Life Insurance"),
+
+    # === asia-weekly 확장 (2026-05-18 기준) — 미매칭 65종목 추가 ============================
+    # 출처: history/아시아종목.xlsx — 운용 유니버스 보강
+    # yfinance test 통과 종목만 (Tata Motors TATAMOTORS.NS · OOIL 은 yf 미지원으로 제외)
+    # --- Vietnam Top 10 (비중 ~0.36%) ---
+    ("ST_AS_HPG_VN",       "HPG.VN",       "Hoa Phat",              600, "Vietnam",  "Hoa Phat Group"),
+    ("ST_AS_CTG_VN",       "CTG.VN",       "Vietinbank",            601, "Vietnam",  "VietinBank"),
+    ("ST_AS_MBB_VN",       "MBB.VN",       "MB Bank",               602, "Vietnam",  "Military Commercial Joint Stock Bank"),
+    ("ST_AS_MWG_VN",       "MWG.VN",       "Mobile World",          603, "Vietnam",  "Mobile World Investment"),
+    ("ST_AS_MSN_VN",       "MSN.VN",       "Masan Group",           604, "Vietnam",  "Masan Group"),
+    ("ST_AS_TCB_VN",       "TCB.VN",       "Techcombank",           605, "Vietnam",  "Techcombank"),
+    ("ST_AS_BVH_VN",       "BVH.VN",       "BaoViet",               606, "Vietnam",  "BaoViet Holdings"),
+    ("ST_AS_VPB_VN",       "VPB.VN",       "VPBank",                607, "Vietnam",  "VPBank"),
+    ("ST_AS_VPL_VN",       "VPL.VN",       "Vinpearl",              608, "Vietnam",  "Vinpearl"),
+    ("ST_AS_VCB_VN",       "VCB.VN",       "Vietcombank",           609, "Vietnam",  "Vietcombank"),
+
+    # --- India 확장 18종 (NIFTY 추가 + 컨슈머·자동차·인프라) ---
+    ("ST_AS_INDHOTEL_NS",  "INDHOTEL.NS",  "Indian Hotels",         610, "India",  "Indian Hotels (Tata)"),
+    ("ST_AS_HINDUNILVR_NS","HINDUNILVR.NS","HUL",                   611, "India",  "Hindustan Unilever"),
+    ("ST_AS_MARUTI_NS",    "MARUTI.NS",    "Maruti Suzuki",         612, "India",  "Maruti Suzuki"),
+    ("ST_AS_BAJAJ_AUTO_NS","BAJAJ-AUTO.NS","Bajaj Auto",            613, "India",  "Bajaj Auto"),
+    ("ST_AS_VBL_NS",       "VBL.NS",       "Varun Beverages",       614, "India",  "Varun Beverages"),
+    ("ST_AS_NESTLEIND_NS", "NESTLEIND.NS", "Nestle India",          615, "India",  "Nestle India"),
+    ("ST_AS_EICHERMOT_NS", "EICHERMOT.NS", "Eicher Motors",         616, "India",  "Eicher Motors"),
+    ("ST_AS_TVSMOTOR_NS",  "TVSMOTOR.NS",  "TVS Motor",             617, "India",  "TVS Motor"),
+    ("ST_AS_TATACONSUM_NS","TATACONSUM.NS","Tata Consumer",         618, "India",  "Tata Consumer Products"),
+    ("ST_AS_BRITANNIA_NS", "BRITANNIA.NS", "Britannia",             619, "India",  "Britannia Industries"),
+    ("ST_AS_HEROMOTOCO_NS","HEROMOTOCO.NS","Hero MotoCorp",         621, "India",  "Hero MotoCorp"),
+    ("ST_AS_BEL_NS",       "BEL.NS",       "Bharat Electronics",    622, "India",  "Bharat Electronics"),
+    ("ST_AS_LT_NS",        "LT.NS",        "L&T",                   623, "India",  "Larsen & Toubro"),
+    ("ST_AS_SBIN_NS",      "SBIN.NS",      "SBI",                   624, "India",  "State Bank of India"),
+    ("ST_AS_MMYT",         "MMYT",         "MakeMyTrip",            625, "India",  "MakeMyTrip"),
+    ("ST_AS_ITC_NS",       "ITC.NS",       "ITC",                   626, "India",  "ITC Limited"),
+    ("ST_AS_KOTAKBANK_NS", "KOTAKBANK.NS", "Kotak Mahindra",        627, "India",  "Kotak Mahindra Bank"),
+    ("ST_AS_BAJFINANCE_NS","BAJFINANCE.NS","Bajaj Finance",         628, "India",  "Bajaj Finance"),
+
+    # --- Indonesia 1종 ---
+    ("ST_AS_BMRI_JK",      "BMRI.JK",      "Bank Mandiri",          629, "Indonesia", "Bank Mandiri"),
+
+    # --- Japan 확장 12종 (대형 산업·반도체·IT) ---
+    ("ST_AS_6098_T",       "6098.T",       "Recruit",               630, "Japan",  "Recruit Holdings"),
+    ("ST_AS_6981_T",       "6981.T",       "Murata",                631, "Japan",  "Murata Manufacturing"),
+    ("ST_AS_7974_T",       "7974.T",       "Nintendo",              632, "Japan",  "Nintendo"),
+    ("ST_AS_6701_T",       "6701.T",       "NEC",                   633, "Japan",  "NEC Corporation"),
+    ("ST_AS_6954_T",       "6954.T",       "Fanuc",                 634, "Japan",  "Fanuc"),
+    ("ST_AS_7011_T",       "7011.T",       "MHI",                   635, "Japan",  "Mitsubishi Heavy Industries"),
+    ("ST_AS_6702_T",       "6702.T",       "Fujitsu",               636, "Japan",  "Fujitsu"),
+    ("ST_AS_6752_T",       "6752.T",       "Panasonic",             637, "Japan",  "Panasonic"),
+    ("ST_AS_6762_T",       "6762.T",       "TDK",                   638, "Japan",  "TDK Corporation"),
+    ("ST_AS_7012_T",       "7012.T",       "Kawasaki Heavy",        639, "Japan",  "Kawasaki Heavy Industries"),
+    ("ST_AS_8058_T",       "8058.T",       "Mitsubishi Corp",       640, "Japan",  "Mitsubishi Corporation"),
+    ("ST_AS_8031_T",       "8031.T",       "Mitsui",                641, "Japan",  "Mitsui & Co"),
+
+    # --- China 확장 22종 (HK + A주: 빅테크·EV·반도체) ---
+    ("ST_AS_0992_HK",      "0992.HK",      "Lenovo",                642, "China",  "Lenovo Group"),
+    ("ST_AS_9618_HK",      "9618.HK",      "JD.com",                643, "China",  "JD.com (HK listing)"),
+    ("ST_AS_PDD",          "PDD",          "PDD Holdings",          644, "China",  "PDD Holdings (Pinduoduo)"),
+    ("ST_AS_1024_HK",      "1024.HK",      "Kuaishou",              645, "China",  "Kuaishou Technology"),
+    ("ST_AS_603019_SS",    "603019.SS",    "Dawning Info",          646, "China",  "Dawning Information Industry"),
+    ("ST_AS_002008_SZ",    "002008.SZ",    "Han's Laser",           647, "China",  "Han's Laser Technology"),
+    ("ST_AS_0020_HK",      "0020.HK",      "SenseTime",             648, "China",  "SenseTime Group"),
+    ("ST_AS_1276_HK",      "1276.HK",      "Jiangsu Hengrui",       649, "China",  "Jiangsu Hengrui Pharma"),
+    ("ST_AS_2359_HK",      "2359.HK",      "WuXi AppTec",           650, "China",  "WuXi AppTec"),
+    ("ST_AS_9961_HK",      "9961.HK",      "Trip.com",              651, "China",  "Trip.com Group"),
+    ("ST_AS_9868_HK",      "9868.HK",      "XPeng",                 652, "China",  "XPeng Motors"),
+    ("ST_AS_2015_HK",      "2015.HK",      "Li Auto",               653, "China",  "Li Auto"),
+    ("ST_AS_300502_SZ",    "300502.SZ",    "Eoptolink",             654, "China",  "Eoptolink Technology"),
+    ("ST_AS_002475_SZ",    "002475.SZ",    "Luxshare",              655, "China",  "Luxshare Precision"),
+    ("ST_AS_002415_SZ",    "002415.SZ",    "Hikvision",             656, "China",  "Hangzhou Hikvision"),
+    ("ST_AS_000988_SZ",    "000988.SZ",    "Huagong Tech",          657, "China",  "Huagong Tech"),
+    ("ST_AS_601100_SS",    "601100.SS",    "Hengli Hydraulic",      658, "China",  "Hengli Hydraulic"),
+    ("ST_AS_002050_SZ",    "002050.SZ",    "Sanhua Intelligent",    659, "China",  "Sanhua Intelligent Controls"),
+    ("ST_AS_002384_SZ",    "002384.SZ",    "Suzhou Dongshan",       660, "China",  "Suzhou Dongshan Precision"),
+    ("ST_AS_000333_SZ",    "000333.SZ",    "Midea Group",           661, "China",  "Midea Group"),
+    ("ST_AS_002230_SZ",    "002230.SZ",    "iFlytek",               662, "China",  "iFlytek"),
+    ("ST_AS_300124_SZ",    "300124.SZ",    "Inovance",              663, "China",  "Inovance Technology"),
+
+    # --- Australia / Hong Kong 추가 ---
+    ("ST_AS_ANZ_AX",       "ANZ.AX",       "ANZ",                   664, "Australia", "ANZ Banking Group"),
+    ("ST_AS_1299_HK",      "1299.HK",      "AIA",                   665, "HK",     "AIA Group"),
 ]
 
 # ASIA 안전망 — TSM (TSMC ADR, USD, NYSE 상장) 은 ST_TSMC 코드 유지.
@@ -242,6 +322,7 @@ ASIA_EXTRAS: list[tuple[str, str, str, int, str, str]] = [
 _SUFFIX_TO_CCY = {
     ".TW": "TWD", ".HK": "HKD", ".SS": "CNY", ".SZ": "CNY",
     ".NS": "INR", ".T":  "JPY", ".AX": "AUD",
+    ".VN": "VND", ".JK": "IDR",
 }
 
 

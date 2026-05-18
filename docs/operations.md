@@ -6,13 +6,14 @@
 
 ## 1. 자동화 개요
 
-세 개의 launchd plist가 macOS에서 백그라운드로 동작한다. 모두 `~/Library/LaunchAgents/`에 심볼릭 링크된 상태에서 동작.
+네 개의 launchd plist가 macOS에서 백그라운드로 동작한다. 모두 `~/Library/LaunchAgents/`에 심볼릭 링크된 상태에서 동작.
 
-| Plist | 스크립트 | 스케줄 (KST) | 역할 |
-|-------|----------|-------------|------|
-| `com.lifesailor.market-summary` | `scripts/auto_market.py` | 일 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 |
-| `com.lifesailor.market-ocr` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) |
-| `com.lifesailor.securities-reports` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push |
+| Plist | 스크립트 | 스케줄 (KST) | 역할 | 상태 |
+|-------|----------|-------------|------|------|
+| `com.lifesailor.market-summary` | `scripts/auto_market.py` | 일 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ✅ Active |
+| `com.lifesailor.market-ocr` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) | ✅ Active |
+| `com.lifesailor.securities-reports` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
+| `com.lifesailor.asia-weekly` | `scripts/generate_asia_weekly.py` | 일 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active (2026-05-18 설치) |
 
 월·토는 실행 안 함 (auto_market.should_skip).
 
@@ -20,11 +21,13 @@
 
 ```
 ─ 일요일 ────────────────────────────────────────
-18:50 → auto_market.py (금요일 보고서 = 일/주/월 + Snowflake drift 검증)
-19:30 → collect_weekly.py (주간 수집)
+18:50 → auto_market.py        (금요일 보고서 = 일/주/월 + Snowflake drift 검증)
+19:30 → collect_weekly.py     (주간 증권사 수집)
+20:00 → generate_asia_weekly  (아시아 주간 브리프 스켈레톤)
 
 ─ 월요일 ────────────────────────────────────────
 08:30 → market-ocr (금요일 발간분 PDF OCR)
+  + (수동) Asia Weekly Story 본문 작성 → `/asia-weekly` 또는 자연어 트리거
 
 ─ 화·수·목·금 ──────────────────────────────────
 06:50 → auto_market.py (전 영업일 보고서)
@@ -33,6 +36,16 @@
 ─ 토요일 ────────────────────────────────────────
 (자동화 없음)
 ```
+
+### 1.4 asia-weekly plist 설치 (1회)
+
+```bash
+ln -sf "$(pwd)/scripts/com.lifesailor.asia-weekly.plist" ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.lifesailor.asia-weekly.plist
+launchctl list | grep asia-weekly   # 등록 확인
+```
+
+설치 후 일요일 20:00에 자동 실행. `logs/asia_weekly.log` 에 출력 누적.
 
 ### 1.2 auto_market.py 내부 동작
 

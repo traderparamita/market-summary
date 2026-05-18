@@ -154,6 +154,20 @@ KR 섹터 ETF (`SC_KR_*`) 는 2026-05-07 제거. KRX GICS 지수 (`IX_KR_*`, pyk
 - 백필: 2010-01-01 ~ (yfinance auto_adjust)
 - Dashboard 표시는 `ST_ORDER` 화이트리스트 10종으로 제한 — 백필분 90종은 Story 본문/검증/분석에서만 활용
 
+**ASIA_TOP 130종목** (2026-05-18 확장): [collectors/stocks_universe.py](../collectors/stocks_universe.py) `ASIA_TOP` 정의. `history/아시아종목.xlsx` 운용 유니버스(180종)와 매핑.
+
+- 코드 컨벤션: `ST_AS_<티커>` (예: `ST_AS_0700_HK` = Tencent, `ST_AS_2330_TW` = TSMC TW)
+- 국가 분포: 중국 52 · 일본 32 · 인도 28 · 베트남 10 · 대만 5 · 호주 2 · 인도네시아 1 · 홍콩 1 · ADR 1 (`ST_TSMC`)
+- 통화 매핑: `.HK`→HKD, `.T`→JPY, `.NS`→INR, `.SS/.SZ`→CNY, `.TW`→TWD, `.AX`→AUD, `.VN`→VND, `.JK`→IDR
+- 백필: 2025-01-01 ~ (확장분 65종목, 약 21,500행), 기존 65종목은 2024-01-01부터 보존
+- 활용: `asia-weekly` 스킬 + `/asia-weekly` 커맨드 (글로벌 보고서와 별개로 아시아 중심 주간 시황)
+
+**아시아종목.xlsx 매칭 한계** (2026-05-18 기준):
+- 180종목 중 CSV 매칭 133종목 (74%)
+- 미매칭 47종목 중 45개는 xlsx에 티커가 비어있음 (MiniMax · 홍콩 부동산 5종 · Horiba · Fanuc 등 일부)
+- yfinance 미지원 2종목: Tata Motors `TATAMOTORS.NS`, Orient Overseas `OOIL`
+- 보강 워크플로우: xlsx 티커 컬럼 채우기 → `ASIA_TOP` 에 추가 → `--start 2025-01-01` 백필 → 매칭 재확인
+
 ### 소스 우선순위 & Fallback 체인
 
 ```

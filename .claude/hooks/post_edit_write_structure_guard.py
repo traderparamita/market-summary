@@ -81,6 +81,18 @@ CSS_WHITELIST = {
     "card", "metric", "kpi",
     # 탭 활성화 modifier (default 탭 표시)
     "active",
+    # asia-weekly 전용 클래스 (generate_asia_weekly.py 생성 + Country/Themes/Data 탭에서 사용)
+    "country-section", "country-head", "country-flag", "country-title", "country-sub",
+    "cn", "jp", "tw", "in", "hk", "kr",
+    "stock-table", "gain", "loss",
+    "theme-card", "theme-tag", "theme-grid", "theme-side",
+    "outlook-card", "outlook-grid", "scenario",
+    "heatmap", "name-cell", "close-cell", "heat-cell", "spark-cell",
+    "placeholder", "ai-disclaimer", "footer",
+    # KPI / header / mood (자동 생성)
+    "header", "header-left", "header-right",
+    "mood-badge", "kpi-strip", "kpi-label", "kpi-value", "kpi-chg",
+    "back-link", "tab-bar",
 }
 
 # story 섹션 블록 추출용 패턴
