@@ -776,7 +776,7 @@ def generate_index():
     weekly_by_month = {}
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*.html")), reverse=True):
         fname = os.path.basename(path)
-        if any(s in fname for s in ("_story", "_macro", "_cs", "_pm")):
+        if any(s in fname for s in ("_story", "_macro", "_cs", "_pm", "_stocks", "_sources", "_asia")):
             continue
         week_label = fname.replace(".html", "")  # e.g. "2026-W02"
 
@@ -820,7 +820,7 @@ def generate_index():
         weekly_panels += f'      <div class="sub-panel{active}" id="weekly-{m}"><ul>\n{items}      </ul></div>\n'
 
     # ── 월간 보고서 수집 ──
-    SIBLING_SUFFIXES = ("_story.html", "_pm.html", "_cs.html", "_macro.html")
+    SIBLING_SUFFIXES = ("_story.html", "_pm.html", "_cs.html", "_macro.html", "_stocks.html", "_sources.html", "_asia.html")
 
     monthly_items = ""
     for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "monthly", "*.html")), reverse=True):
