@@ -126,6 +126,23 @@ Step 3 완료 **후** `market-summary` 스킬 `references/pm.md` 규칙으로 PM
 
 실패 시 경고 후 계속 진행 (Step 4 중단 없음). PM 은 Story / CS 와 독립된 매니저용 트랙.
 
+### Step 3-D: 일간 Stocks Story 작성
+
+Step 3 완료 **후** `market-summary` 스킬 `references/stocks.md` 규칙으로 종목 단위 해설을 작성한다. (Step 3-B / 3-C 와 독립)
+
+`tab-stocks` 탭은 두 영역으로 구성:
+- **자동**: `generate.py` 가 한국 Top 20 + 미국 Top 20 + 아시아 Top 20 + 기타 4섹션 표 생성
+- **수동**: Claude 가 `<!-- STOCKS_STORY_PLACEHOLDER -->` 위치에 Hero 1단락 + 4~5 단락 종목 해설 주입
+
+핵심:
+1. 그날 종목 변동 데이터 추출 (PREV D-1 → curr D 의 % 변동, history/market_data.csv 기준)
+2. 폭등 Top 10 + 폭락 Top 10 식별 → 가장 놀라운/시그너처 종목 1~2 선정
+3. 본문 구조: 총괄 1단락 → 🇯🇵 일본 → 🇨🇳 중국 → 🇰🇷🇹🇼 한국·대만 → (선택) 🇮🇳 인도 / 🇻🇳 베트남 / 🇭🇰 홍콩
+4. 각 단락에 인과 채널 1개 명시 (실적·정책·매크로·테마·이벤트)
+5. `YYYY-MM-DD.html` 의 `<div id="tab-stocks">` 블록 Edit + `YYYY-MM-DD_stocks.html` 동기화
+
+실패 시 경고 후 계속 진행 (Step 4 중단 없음). Stocks 는 Story / CS / PM 와 독립된 종목 트랙.
+
 ### Step 4: 주간 Data Dashboard
 
 Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 실행 불필요. `output/summary/weekly/` 해당 주 파일이 존재하는지만 확인.

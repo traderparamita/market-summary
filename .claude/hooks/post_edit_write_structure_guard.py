@@ -116,7 +116,7 @@ def is_pm_brief(file_path: str) -> bool:
 
 def needs_section_check(file_path: str) -> bool:
     """필수 섹션 체크 대상: 메인 일간 HTML + _story.html만.
-    _pm.html / _cs.html / _sources.html / _macro.html 은 구조가 다르므로 제외.
+    _pm.html / _cs.html / _sources.html / _macro.html / _stocks.html / _asia.html 은 구조가 다르므로 제외.
     weekly-pm/ 경로는 PM 중심 브리프이므로 Story 섹션 강제 제외."""
     if is_pm_brief(file_path):
         return False
@@ -124,7 +124,7 @@ def needs_section_check(file_path: str) -> bool:
     return name.endswith("_story.html") or (
         name.endswith(".html")
         and not any(name.endswith(sfx) for sfx in (
-            "_pm.html", "_cs.html", "_sources.html", "_macro.html"
+            "_pm.html", "_cs.html", "_sources.html", "_macro.html", "_stocks.html", "_asia.html"
         ))
     )
 

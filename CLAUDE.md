@@ -137,7 +137,9 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 
 ## 주의사항
 
-- HTML 보고서는 Data 탭 + Story 탭 구성. Story 없으면 placeholder 유지
+- 일간 HTML 보고서는 **7개 탭** 구성: CS Story · PM Story · Market Story · **Stocks (신규)** · Data Dashboard · Macro & Events · Sources
+- **Stocks 탭**: `generate.py` 가 한국 Top 20 + 미국 Top 20 + 아시아 Top 20 + 기타 4섹션 표를 자동 생성. 그 위에 `STOCKS_STORY_PLACEHOLDER` 영역을 Claude 가 3~5 단락 종목 해설로 채움. Major Stocks 10종은 Data 탭에서 제거되어 Stocks 탭으로 이관 (2026-05-19)
+- Story 없으면 placeholder 유지
 - `generate.py` dual-write 는 `--start` 없이 실행한 일간 수집에만 작동. 전체 재수집은 `snowflake_loader.py --truncate`
 
 ## 섹터·국가 사이클
@@ -276,8 +278,8 @@ logs/
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse, type: "prompt") + Stop 훅 (수치 자동 검증)
 - `.claude/hooks/post_edit_write_structure_guard.py`: HTML 구조·CSS 화이트리스트 검증 (필수 섹션 5개 + tab-story 블록 클래스 검사)
-- `.claude/skills/`: `market-summary`, `sector-country`, `macro-events`, `mali-etf-analysis`, `weekly-pm`, **`asia-weekly`** (신규)
-- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full`, `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/weekly-pm`, **`/asia-weekly`** (신규)
+- `.claude/skills/`: `market-summary` (+ **`references/stocks.md`** 신규), `sector-country`, `macro-events`, `mali-etf-analysis`, `weekly-pm`, **`asia-weekly`** (신규)
+- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full` (**Step 3-D Stocks Story** 신규), `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/weekly-pm`, **`/asia-weekly`** (신규)
 
 ## 상세 문서
 

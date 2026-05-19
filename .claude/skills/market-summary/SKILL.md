@@ -42,6 +42,7 @@ metadata:
 | CS Story 작성 (`tab-cs`) | `references/cs.md` |
 | PM Story 회고 6 섹션 (`tab-pm`) | `references/pm.md` |
 | PM Outlook (주간/월간/분기 forward 블록) | `references/pm-outlook.md` (+ `references/pm.md`) |
+| **Stocks Story 작성 (`tab-stocks`, 일간)** | **`references/stocks.md`** |
 | Sources 탭 (`tab-sources`) | `references/sources.md` |
 
 본 SKILL.md 의 핵심 규칙(아래 §1~§7) 은 **모든 워크플로우에 공통 적용** 되므로 어떤 references 를 읽든 함께 준수한다.

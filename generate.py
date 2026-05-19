@@ -60,6 +60,8 @@ from report_utils import (
     fmt, chg_class, chg_sign, heat_color, heat_text, spark_svg,
     KO_LABELS, EQUITY_ORDER, MSCI_ORDER, BOND_RATE_ORDER, BOND_ETF_ORDER,
     FX_ORDER, CM_ORDER, ST_ORDER, DATA_SOURCES,
+    KR_STOCK_ORDER, US_STOCK_ORDER, ASIA_STOCK_ORDER,
+    KR_STOCK_TOP_N, US_STOCK_TOP_N, ASIA_STOCK_TOP_N,
     DAILY_TAB_SPECS, extract_tab, save_story_files, inject_existing_story,
     ordered,
 )
@@ -407,6 +409,7 @@ body{{
   <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
   <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
   <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
+  <button class="tab-btn" onclick="switchTab('stocks')">Stocks</button>
   <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
   <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
   <button class="tab-btn" onclick="switchTab('sources')">Sources</button>
@@ -473,7 +476,7 @@ body{{
     eq_regional = {k: v for k, v in eq.items() if k not in msci_names}
     eq_msci = {k: v for k, v in eq.items() if k in msci_names}
 
-    # ── Heatmap Tables ──
+    # ── Heatmap Tables ── (종목은 Stocks 탭으로 이동)
     sections = [
         ("주식(Equity)",           eq_regional, False, False, EQUITY_ORDER),
         ("MSCI 지수",              eq_msci,     False, False, MSCI_ORDER),
@@ -481,7 +484,6 @@ body{{
         ("채권 ETF(Bond ETF)",     bd_etf,      True,  False, BOND_ETF_ORDER),
         ("환율(FX)",               fx,          False, False, FX_ORDER),
         ("원자재(Commodities)",    cm,          True,  False, CM_ORDER),
-        ("주요 종목(Major Stocks)", st,         True,  False, ST_ORDER),
     ]
     for title, cat, dollar, as_bp, order in sections:
         if not cat:
@@ -567,6 +569,15 @@ body{{
 
 
 </div><!-- /tab-data -->
+
+<!-- ══════ TAB: STOCKS ══════ -->
+<div id="tab-stocks" class="tab-panel">
+
+<!-- STOCKS_STORY_PLACEHOLDER -->
+
+<!-- STOCKS_TABLES_PLACEHOLDER -->
+
+</div><!-- /tab-stocks -->
 
 <!-- ══════ TAB 2: STORY ══════ -->
 <div id="tab-story" class="tab-panel">
@@ -669,6 +680,46 @@ new Chart(document.getElementById('cmChart'),{{
 </script>
 </body>
 </html>"""
+
+    # ── tab-stocks 4섹션 inject (전체 stocks 데이터 활용) ──
+    kr_stocks = {n: st_all[n] for n in KR_STOCK_ORDER[:KR_STOCK_TOP_N] if n in st_all}
+    us_stocks = {n: st_all[n] for n in US_STOCK_ORDER[:US_STOCK_TOP_N] if n in st_all}
+    asia_stocks = {n: st_all[n] for n in ASIA_STOCK_ORDER[:ASIA_STOCK_TOP_N] if n in st_all}
+    other_stocks = {
+        n: d for n, d in st_all.items()
+        if n not in KR_STOCK_ORDER and n not in US_STOCK_ORDER and n not in ASIA_STOCK_ORDER
+    }
+
+    stocks_sections = [
+        (f"한국 주식(Korean Stocks · Top {KR_STOCK_TOP_N})", kr_stocks, False, KR_STOCK_ORDER),
+        (f"미국 주식(US Stocks · Top {US_STOCK_TOP_N})", us_stocks, True, US_STOCK_ORDER),
+        (f"아시아 종목(Asian Stocks · Top {ASIA_STOCK_TOP_N})", asia_stocks, False, ASIA_STOCK_ORDER),
+    ]
+    if other_stocks:
+        stocks_sections.append(
+            ("기타 종목(ADR · HK · 기타)", other_stocks, True, list(other_stocks.keys()))
+        )
+
+    stocks_html = ""
+    for title, cat, dollar, order in stocks_sections:
+        if not cat:
+            continue
+        items = [(n, cat[n]) for n in order if n in cat]
+        src = DATA_SOURCES.get(title) or next(
+            (v for k, v in DATA_SOURCES.items() if title.startswith(k)), ""
+        )
+        src_html = f' <span class="src-tag">{src}</span>' if src else ""
+        stocks_html += f"""<div class="heatmap-section">
+<h2>{title} <span class="badge">{len(items)}</span>{src_html}</h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+"""
+        for name, d in items:
+            stocks_html += heatmap_row(name, d, dollar, False)
+        stocks_html += "</tbody></table></div>\n"
+
+    html = html.replace("<!-- STOCKS_TABLES_PLACEHOLDER -->", stocks_html)
 
     return html, report_date
 

@@ -144,6 +144,7 @@ DATA_SOURCES = {
     "주요 종목(Major Stocks)": "yfinance",
     "한국 주식": "FinanceDataReader · KOSPI 시총순",
     "미국 주식": "yfinance · S&P500 시총순",
+    "아시아 종목": "yfinance · 아시아종목.xlsx 운용 유니버스 (중국·일본·대만·인도·홍콩·베트남·호주·인니)",
     "기타 종목(ADR · HK)": "yfinance",
 }
 
@@ -154,6 +155,7 @@ DAILY_TAB_SPECS = [
     ("story", "STORY_CONTENT_PLACEHOLDER", "_story"),
     ("cs",    "CS_STORY_PLACEHOLDER",      "_cs"),
     ("pm",    "PM_STORY_PLACEHOLDER",      "_pm"),
+    ("stocks", "STOCKS_STORY_PLACEHOLDER", "_stocks"),
     ("macro", "MACRO_EVENTS_PLACEHOLDER",  "_macro"),
     ("sources", "SOURCES_PLACEHOLDER",     "_sources"),
 ]
