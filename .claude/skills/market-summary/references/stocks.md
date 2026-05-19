@@ -52,20 +52,24 @@ PY
 - 그룹별 흐름 (KR/US/Asia/EV/반도체·SPE/은행 등 클러스터)
 - 그날의 핵심 1~2 테마
 
-### 2. 구조: Hero + 4~5 단락
+### 2. 구조: Hero + 5~7 단락 (글로벌 커버리지)
 
 ```html
 <div class="story-hero">
   <h2>오늘의 종목 이야기</h2>
   <div class="story-text">
     <p>[총괄 1단락 — 그날의 큰 그림 + 가장 강한 시그너처 종목 1~2]</p>
-    <p><strong>🇯🇵 일본</strong>: [일본 종목 흐름 단락]</p>
-    <p><strong>🇨🇳 중국</strong>: [중국 종목 흐름 단락 + 반도체 자립 vs EV 디스퍼션]</p>
-    <p><strong>🇰🇷 한국 + 🇹🇼 대만</strong>: [한국·대만 종목 + ADR/외국시장 거래 시 컨텍스트]</p>
+    <p><strong>🇰🇷 한국</strong>: [한국 종목 + KOSPI/KOSDAQ 회복·하락 + K자 분기·반도체·자동차 등 그룹별 흐름]</p>
+    <p><strong>🇺🇸 미국</strong>: [미국 종목 + S&P500/NASDAQ/VIX + 반도체·빅테크·디펜시브 로테이션 + 한국과의 디커플링/연동 여부]</p>
+    <p><strong>🇯🇵 일본</strong>: [일본 종목 + 시그너처 단독 폭등주 + 매크로주(메가뱅크·종합상사·자동차) 흐름]</p>
+    <p><strong>🇨🇳 중국</strong>: [중국 종목 + 반도체 자립 베팅 + EV/빅테크 디스퍼션]</p>
+    <p><strong>🇹🇼 대만</strong>: [TSMC + OSAT/서버 전원 + 미·중 마찰 노출 평가]</p>
     <p>[선택] <strong>🇮🇳 인도 / 🇻🇳 베트남 / 🇭🇰 홍콩</strong>: [신흥 아시아 종목 흐름]</p>
   </div>
 </div>
 ```
+
+**핵심**: 🇰🇷 한국 + 🇺🇸 미국 + 🌏 아시아 3 블록은 **반드시 포함** (Stocks 탭의 4섹션 표가 KR Top 20 + US Top 20 + Asia Top 20이므로 본문도 동일 커버리지). 선택적으로 신흥 아시아 보강.
 
 ### 3. 본문 톤
 
@@ -110,14 +114,17 @@ W20 보고서의 핵심 패턴이었던 "**중국 반도체 자립주 +15~36% vs
 
 ### 클러스터 예시
 
-- **반도체 SPE** (Tokyo Electron, Disco, Lasertec, Advantest, SUMCO, NAURA, AMEC, Hwatsing)
+- **반도체 SPE** (Tokyo Electron, Disco, Lasertec, Advantest, SUMCO, NAURA, AMEC, Hwatsing, Applied Materials, KLA, Lam Research)
 - **HBM·메모리 모듈** (SK하이닉스, Samsung, Micron, Longsys, Biwin Storage, Montage Tech, GigaDevice)
 - **광통신 인프라** (Zhongji Innolight, Yangtze Optical, Eoptolink)
-- **빅테크** (Tencent, Alibaba, Meituan, Baidu, NetEase)
+- **AI 빅테크 (미국)** (NVIDIA, Microsoft, Alphabet, Meta, Oracle, Broadcom)
+- **빅테크 (중국)** (Tencent, Alibaba, Meituan, Baidu, NetEase, PDD)
 - **EV·배터리** (BYD, CATL, Li Auto, XPeng, Tesla, Hyundai Motor, Kia)
-- **메가뱅크** (Mizuho FG, KB Financial, ICICI, HDFC, BOA, JPM)
-- **방산** (Hanwha Aerospace, IHI, Lockheed)
-- **콩글로머릿** (Reliance, Hitachi, Mitsubishi Corp, Mitsui, Samsung)
+- **메가뱅크** (Mizuho FG, KB Financial, ICICI, HDFC, BOA, JPM, Wells Fargo, Citigroup)
+- **결제·구독·디펜시브 (미국)** (Visa, Mastercard, Costco, T-Mobile, Netflix, Walmart)
+- **방산** (Hanwha Aerospace, IHI, RTX, GE Aerospace, Lockheed)
+- **에너지** (Chevron, ExxonMobil, WTI/Brent 연동)
+- **콩글로머릿** (Reliance, Hitachi, Mitsubishi Corp, Mitsui, Samsung, Berkshire)
 
 ---
 
