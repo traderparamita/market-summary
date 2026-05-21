@@ -1268,4 +1268,10 @@ if __name__ == "__main__":
                         help="수집 시작일 YYYY-MM-DD (전체 재수집 용)")
     args = parser.parse_args()
     path = main(target_date=args.target_date, start_date=args.start_date)
-    _log(f"\nDone! Open: file://{path}")
+    # NOTE: 이 메시지는 generate.py(데이터 수집 + HTML 생성) 자체의 종료 신호다.
+    # /market-full 워크플로우 입장에서는 Step 1~2 가 끝난 것일 뿐이며, Story 작성
+    # (Step 3-A/B/C/D) + 검증(7.7) + 커밋(8) + Sector-Country(10~13) 가 남아 있다.
+    # Claude 가 이 메시지를 보고 워크플로우 전체가 종료된 것으로 오인하지 않도록
+    # 메시지를 의도적으로 'Step 1~2'로 명시한다.
+    _log(f"\n[Step 1~2 완료 — Data Dashboard 생성됨. 후속 Step 3+ 계속 진행]")
+    _log(f"Output: file://{path}")

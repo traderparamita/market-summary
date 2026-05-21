@@ -133,8 +133,29 @@ def run_market_full(date_str: str) -> bool:
     # OAuth 로 폴백시킨다.
     clean_env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
 
+    # /market-full 은 Step 1~2(데이터) + Step 3-A/B/C/D(Story 4트랙) + Step 7.7 검증
+    # + Step 8 커밋 + Step 10~13(Sector-Country) 까지 다단계 워크플로우.
+    # 5/20~ 부터 Step 1~2 직후 Claude 가 조기 종료되는 패턴이 반복되어 진단/완주
+    # 확률을 높이기 위해:
+    #   --append-system-prompt: generate.py 의 "Step 1~2 완료" 메시지는 워크플로우
+    #     전체 종료가 아니라 1~2 단계만 끝났다는 신호임을 명시
+    #   --verbose: turn/도구 호출 로그를 stdout 에 상세 출력 (auto_market.log 진단용)
+    # 주의: --max-turns 같은 turn 한도 옵션은 현재 claude CLI 에 존재하지 않음.
+    persist_prompt = (
+        "/market-full 워크플로우 진행 중 generate.py 가 출력하는 "
+        "'[Step 1~2 완료 …]' 또는 'Done!' 메시지는 데이터 수집/HTML 생성 단계의 "
+        "종료 신호일 뿐, 워크플로우 전체가 끝난 것이 아니다. 반드시 Step 3-A "
+        "(Market Story) → 3-B(CS) → 3-C(PM) → 3-D(Stocks) → 7.7(검증) → 8(커밋) "
+        "→ Sector-Country 블록(10~13)을 모두 완수한 뒤에만 응답을 종료하라."
+    )
     result = subprocess.run(
-        [claude_bin, "--dangerously-skip-permissions", "-p", prompt],
+        [
+            claude_bin,
+            "--dangerously-skip-permissions",
+            "--verbose",
+            "--append-system-prompt", persist_prompt,
+            "-p", prompt,
+        ],
         cwd=str(ROOT),
         capture_output=True,
         text=True,
