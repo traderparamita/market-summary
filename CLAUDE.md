@@ -63,10 +63,21 @@ scripts/
 ├── generate_securities_index.py      # output/research/securities/index.html
 ├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
 ├── html_to_pdf.py                    # HTML → PDF 변환 (Playwright Chromium, --tab/--exclude 옵션)
-├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
-├── com.lifesailor.market-ocr.plist           # launchd: 일일 OCR Story
-├── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
-└── com.lifesailor.asia-weekly.plist          # launchd: 주간 아시아 브리프 (일 20:00 KST)
+├── windows/                          # Windows Task Scheduler 자동화
+│   ├── run_auto_market.ps1           # 일일 보고서 PS1 래퍼
+│   ├── run_ocr_story.ps1             # OCR Story PS1 래퍼
+│   ├── run_collect_weekly.ps1        # 주간 수집 PS1 래퍼
+│   ├── run_asia_weekly.ps1           # 아시아 주간 PS1 래퍼
+│   ├── market_summary_task.xml       # 태스크 정의: 일 18:50 + 화~금 06:50
+│   ├── market_ocr_task.xml           # 태스크 정의: 월~금 08:30
+│   ├── securities_reports_task.xml   # 태스크 정의: 일 19:30
+│   ├── asia_weekly_task.xml          # 태스크 정의: 일 20:00
+│   └── setup_windows_tasks.ps1       # 4개 태스크 일괄 등록 스크립트
+└── macos/                            # macOS launchd 자동화
+    ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
+    ├── com.lifesailor.market-ocr.plist           # launchd: 일일 OCR Story
+    ├── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
+    └── com.lifesailor.asia-weekly.plist          # launchd: 주간 아시아 브리프
 
 db/
 ├── MKT.sql              # Snowflake MKT100/MKT200 DDL (정본)

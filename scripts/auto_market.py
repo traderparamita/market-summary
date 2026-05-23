@@ -42,9 +42,14 @@ KST = ZoneInfo("Asia/Seoul")
 # nvm 기본 노드 버전의 claude 경로 (launchd는 nvm PATH를 모름)
 NVM_NODE_DEFAULT = Path.home() / ".nvm" / "alias" / "default"
 CLAUDE_CANDIDATES = [
+    # macOS / Linux
     Path("/usr/local/bin/claude"),
     Path("/opt/homebrew/bin/claude"),
     Path.home() / ".local" / "bin" / "claude",
+    # Windows
+    Path.home() / ".local" / "bin" / "claude.exe",
+    Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "claude" / "claude.exe",
+    Path(os.environ.get("APPDATA", "")) / "npm" / "claude.cmd",
 ]
 
 # 핵심 지표: (섹션, 이름, 표시라벨, 이모지)
@@ -148,6 +153,25 @@ def run_market_full(date_str: str) -> bool:
         "(Market Story) → 3-B(CS) → 3-C(PM) → 3-D(Stocks) → 7.7(검증) → 8(커밋) "
         "→ Sector-Country 블록(10~13)을 모두 완수한 뒤에만 응답을 종료하라."
     )
+    import platform as _platform
+    _sep = ";" if _platform.system() == "Windows" else ":"
+    if _platform.system() == "Windows":
+        _path_extra = str(Path(claude_bin).parent)
+        _extra_env = {
+            "PYTHONUTF8": "1",
+            "PYTHONIOENCODING": "utf-8",
+        }
+    else:
+        _path_extra = (
+            str(Path(claude_bin).parent)
+            + ":/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            + ":/opt/homebrew/bin"
+        )
+        _extra_env = {
+            "HOME": str(Path.home()),
+            "LANG": "ko_KR.UTF-8",
+        }
+
     result = subprocess.run(
         [
             claude_bin,
@@ -162,14 +186,8 @@ def run_market_full(date_str: str) -> bool:
         timeout=3600,   # Story 작성 + 웹 검색 포함 최대 1시간
         env={
             **clean_env,
-            # nvm PATH 보강
-            "PATH": (
-                str(Path(claude_bin).parent)
-                + ":/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-                + ":/opt/homebrew/bin"
-            ),
-            "HOME":     str(Path.home()),
-            "LANG":     "ko_KR.UTF-8",
+            "PATH": _path_extra + _sep + clean_env.get("PATH", ""),
+            **_extra_env,
         },
     )
 
