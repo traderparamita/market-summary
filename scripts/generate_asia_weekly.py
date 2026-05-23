@@ -755,6 +755,7 @@ def main():
 
     # PM 랜딩 페이지 갱신
     generate_pm_index()
+    generate_pm_hub()
     print(f"[asia-weekly] Done. Open: {html_path}")
 
 
@@ -838,6 +839,77 @@ def generate_pm_index():
     pm_index = pm_dir / "index.html"
     pm_index.write_text(html, encoding="utf-8")
     print(f"[asia-weekly] PM index → {pm_index}")
+
+
+def generate_pm_hub():
+    """output/pm/index.html — PM 허브 (모든 PM 페이지 진입점)"""
+    pm_dir = PROJECT_ROOT / "output" / "pm"
+    pm_dir.mkdir(parents=True, exist_ok=True)
+
+    # 등록된 PM 섹션 (향후 weekly, daily 추가 시 여기에 append)
+    sections = [
+        {
+            "href": "asia_weekly/",
+            "icon": "🌏",
+            "title": "Asia Weekly",
+            "desc": "아시아 주간 시황 브리프 — 매주 일요일 발행",
+        },
+    ]
+
+    cards_html = ""
+    for s in sections:
+        cards_html += f"""    <li>
+      <a href="{s['href']}">
+        <span class="icon">{s['icon']}</span>
+        <span class="info">
+          <span class="title">{s['title']}</span>
+          <span class="desc">{s['desc']}</span>
+        </span>
+      </a>
+    </li>\n"""
+
+    html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM Hub | Market Summary</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+  body {{ font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:640px; margin:0 auto; }}
+  h1 {{ font-size:26px; font-weight:700; margin-bottom:4px; }}
+  .sub {{ font-size:14px; color:#7c8298; margin-bottom:32px; }}
+  ul {{ list-style:none; padding:0; margin:0; }}
+  li {{ margin-bottom:12px; }}
+  li a {{
+    display:flex; align-items:center; gap:16px;
+    padding:16px 20px; background:#fff; border:1px solid #e0e3ed;
+    border-radius:12px; text-decoration:none; color:#2d3148;
+    transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }}
+  li a:hover {{ border-color:#F58220; transform:translateX(4px); }}
+  .icon {{ font-size:28px; line-height:1; flex-shrink:0; }}
+  .info {{ display:flex; flex-direction:column; gap:3px; }}
+  .title {{ font-size:15px; font-weight:700; color:#2d3148; }}
+  li a:hover .title {{ color:#F58220; }}
+  .desc {{ font-size:13px; color:#7c8298; }}
+  .back {{ font-size:13px; color:#7c8298; text-decoration:none; display:inline-block; margin-bottom:24px; }}
+  .back:hover {{ color:#F58220; }}
+</style>
+</head>
+<body>
+  <a href="../summary/index.html" class="back">← Market Summary</a>
+  <h1>PM Hub</h1>
+  <p class="sub">포트폴리오 매니저를 위한 시황 브리핑 모음</p>
+  <ul>
+{cards_html}  </ul>
+</body>
+</html>"""
+
+    hub_path = pm_dir / "index.html"
+    hub_path.write_text(html, encoding="utf-8")
+    print(f"[asia-weekly] PM hub → {hub_path}")
 
 
 if __name__ == "__main__":
