@@ -752,7 +752,92 @@ def main():
     html_path = OUTPUT_DIR / f"{week_label}_asia.html"
     html_path.write_text(html, encoding="utf-8")
     print(f"[asia-weekly] HTML → {html_path}")
+
+    # PM 랜딩 페이지 갱신
+    generate_pm_index()
     print(f"[asia-weekly] Done. Open: {html_path}")
+
+
+def generate_pm_index():
+    """output/pm/asia_weekly/index.html — PM 전용 Asia Weekly 랜딩 페이지"""
+    import glob
+    import re as _re
+
+    pm_dir = PROJECT_ROOT / "output" / "pm" / "asia_weekly"
+    pm_dir.mkdir(parents=True, exist_ok=True)
+
+    # *_asia.html 수집 (최신순)
+    asia_files = sorted(
+        glob.glob(str(OUTPUT_DIR / "*_asia.html")), reverse=True
+    )
+
+    items_html = ""
+    for i, path in enumerate(asia_files):
+        fname = Path(path).name
+        week_label = fname.replace("_asia.html", "")  # e.g. "2026-W20"
+
+        # HTML에서 날짜 범위 추출
+        date_range = ""
+        try:
+            head = Path(path).read_text(encoding="utf-8")[:20000]
+            m = _re.search(r'class="date">\s*([\d-]+)\s*~\s*([\d-]+)', head)
+            if m:
+                date_range = f"{m.group(1)} ~ {m.group(2)}"
+        except Exception:
+            pass
+
+        label = f"{week_label}  {date_range}" if date_range else week_label
+        badge = '<span class="badge">Latest</span> ' if i == 0 else ""
+        # 상대 경로: pm/asia_weekly/ → summary/weekly/
+        href = f"../../summary/weekly/{fname}"
+        items_html += f'    <li><a href="{href}">{badge}{label}</a></li>\n'
+
+    if not items_html:
+        items_html = '    <li style="color:#7c8298;font-style:italic;padding:12px 18px">No Asia Weekly reports yet.</li>\n'
+
+    html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asia Weekly PM | Market Summary</title>
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+  body {{ font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',sans-serif; background:#f4f5f9; color:#2d3148; padding:40px 24px; max-width:640px; margin:0 auto; }}
+  h1 {{ font-size:26px; font-weight:700; margin-bottom:4px; }}
+  .sub {{ font-size:14px; color:#7c8298; margin-bottom:32px; }}
+  ul {{ list-style:none; padding:0; margin:0; }}
+  li {{ margin-bottom:10px; }}
+  li a {{
+    display:block; padding:14px 20px; background:#fff; border:1px solid #e0e3ed;
+    border-radius:10px; text-decoration:none; color:#2d3148; font-size:14px; font-weight:500;
+    transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,0.04);
+    font-family:'JetBrains Mono','Spoqa Han Sans Neo',monospace;
+  }}
+  li a:hover {{ border-color:#F58220; color:#F58220; transform:translateX(4px); }}
+  .badge {{
+    display:inline-block; background:#F58220; color:#fff; font-size:11px; font-weight:700;
+    padding:2px 8px; border-radius:10px; margin-right:8px; vertical-align:middle;
+    font-family:'Spoqa Han Sans Neo',sans-serif;
+  }}
+  .back {{ font-size:13px; color:#7c8298; text-decoration:none; display:inline-block; margin-bottom:24px; }}
+  .back:hover {{ color:#F58220; }}
+</style>
+</head>
+<body>
+  <a href="../../summary/index.html" class="back">← Market Summary</a>
+  <h1>🌏 Asia Weekly</h1>
+  <p class="sub">아시아 주간 시황 브리프 — 매주 일요일 발행</p>
+  <ul>
+{items_html}  </ul>
+</body>
+</html>"""
+
+    pm_index = pm_dir / "index.html"
+    pm_index.write_text(html, encoding="utf-8")
+    print(f"[asia-weekly] PM index → {pm_index}")
 
 
 if __name__ == "__main__":
