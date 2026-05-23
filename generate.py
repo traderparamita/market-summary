@@ -332,6 +332,23 @@ body{{
 .ai-disclaimer{{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}}
 
 /* ── Macro Tab ── */
+.macro-header{{background:linear-gradient(135deg,#f0f4ff,#e8edf8);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:18px 24px;margin-bottom:20px}}
+.macro-header h2{{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}}
+.macro-header .mh-sub{{font-size:12px;color:var(--muted)}}
+.macro-block{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}}
+.macro-block h3{{font-size:15px;font-weight:700;color:#1a1d2e;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid var(--border)}}
+.macro-block ul{{margin:0;padding-left:18px;font-size:13px;color:#2d3148;line-height:1.85}}
+.macro-block li{{margin-bottom:3px}}
+.macro-kpi-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}}
+.macro-kpi{{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center}}
+.macro-kpi-label{{font-size:11px;color:var(--muted);margin-bottom:4px}}
+.macro-kpi-value{{font-size:16px;font-weight:700;color:#1a1d2e}}
+.macro-kpi-sub{{font-size:11px;color:var(--muted);margin-top:2px}}
+.event-table{{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}}
+.event-table th{{background:#f7f8fc;font-size:12px;font-weight:600;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}}
+.event-table td{{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:#2d3148}}
+.event-table tr:last-child td{{border-bottom:none}}
+.imp-high{{color:var(--down);font-weight:700}}.imp-med{{color:#d47f00;font-weight:600}}.imp-low{{color:var(--muted)}}
 .macro-section{{margin-bottom:32px}}
 .macro-section h2{{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border)}}
 
