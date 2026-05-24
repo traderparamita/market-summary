@@ -357,12 +357,21 @@ def filter_week(rows: list[dict], start: datetime, end: datetime) -> list[dict]:
     return [r for r in rows if r["date"] and start <= r["date"] <= end]
 
 
+_POPPLER_PATH: str | None = (
+    r"C:\poppler\poppler-26.02.0\Library\bin"
+    if os.name == "nt" else None
+)
+
+
 def pdf_to_images_b64(s3_client, s3_key: str, n_pages: int = PDF_PAGES) -> list[str]:
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as f:
         s3_client.download_fileobj(S3_BUCKET, s3_key, f)
         tmp = f.name
     try:
-        images = convert_from_path(tmp, dpi=150, first_page=1, last_page=n_pages)
+        images = convert_from_path(
+            tmp, dpi=150, first_page=1, last_page=n_pages,
+            poppler_path=_POPPLER_PATH,
+        )
         result = []
         for img in images:
             buf = io.BytesIO()
