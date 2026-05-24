@@ -163,6 +163,18 @@ PM 스타일은 **차가운 블루/네이비 계열** (CS 의 오렌지와 시�
 - 섹션당 3~5 불릿. 과도하게 길어지면 압축.
 - 해당일 휴장 섹션(예: 한국 공휴일)은 첫 불릿에 `{KOSPI 휴장 (공휴일)}` 명시 후 빈 자리 남기지 말고 FX·관련 이슈로 채움.
 
+**색상 스팬 일관성 (반드시 준수)**:
+- 같은 불릿 안의 수익률/등락률 수치는 **전부** `pm-up`/`pm-dn` 적용. 일부만 적용하는 혼용 금지.
+- **bp 변화는 반드시 스팬 적용** — plain text `(약 +5bp)` 패턴 금지.
+  ```html
+  <!-- ✅ -->
+  미국 10년물 <span class="pm-num">4.558%</span> (<span class="pm-dn">+5.2bp</span>)
+  <!-- ❌ -->
+  미국 10년물 4.558% (약 +5bp 상승)
+  ```
+- **채권 방향 컨벤션**: 금리 상승(bp+) → `pm-dn`(파란색), 금리 하락(bp−) → `pm-up`(빨간색). 주식과 반대 방향.
+- 지수 줄 예시: `KOSPI <span class="pm-num">6,690</span> <span class="pm-up">+0.75%</span> · WTD <span class="pm-up">+3.1%</span>`
+
 ## Step 5: HTML 주입
 
 1. `output/summary/YYYY-MM/YYYY-MM-DD.html` Read

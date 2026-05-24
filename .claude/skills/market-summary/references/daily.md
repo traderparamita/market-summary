@@ -334,6 +334,43 @@ wtd = (tue_close/fri_close - 1) * 100
 - 세션별 서술에서 해당 세션 마감 이후 이벤트를 참조하지 않았는가?
 - 요일·휴일이 `_data.json`과 일치하는가?
 
+### Step 3-3: 색상 스팬(Color Span) 일관성 규칙
+
+같은 문장·단락 안에서 수익률/등락률/bp 값은 **전부 색상 스팬을 적용하거나 전부 plain text로 통일**한다. 일부만 색상 스팬을 쓰는 혼용은 금지.
+
+**Story 탭 (`tab-story`)**: `hl-up` / `hl-down` 사용
+```html
+<!-- ✅ 올바른 예 — 같은 문장 내 모두 스팬 적용 -->
+DAX <span class="hl-up">+1.15%</span>, CAC40 <span class="hl-up">+0.37%</span>, FTSE100 <span class="hl-up">+0.22%</span>로 마감
+
+<!-- ❌ 잘못된 예 — 혼용 -->
+DAX <span class="hl-up">+1.15%</span>, CAC40 +0.37%, FTSE100 +0.22%로 마감
+```
+
+**PM 탭 (`tab-pm`)**: `pm-up` / `pm-dn` 사용
+```html
+<!-- ✅ 올바른 예 -->
+<span class="pm-dn">+3.07bp</span> 상승 마감
+
+<!-- ❌ 잘못된 예 — bp 변화 plain text -->
+약 +0.3bp 상승 마감
+```
+
+**채권 금리 방향 컨벤션**:
+- 금리 상승(bp+) → 주식에 부정 → **`hl-down`** / **`pm-dn`** (파란색)
+- 금리 하락(bp−) → 주식에 긍정 → **`hl-up`** / **`pm-up`** (빨간색)
+
+**PM 채권 섹션 필수 패턴** (plain text bp 금지):
+```html
+<!-- ✅ -->
+미국 10년물 <span class="pm-num">4.558%</span> (<span class="pm-dn">+5.2bp</span>)
+<!-- ❌ — bp 변화 괄호 안에 plain text로 쓰는 패턴 금지 -->
+미국 10년물 4.558% (약 +5bp 상승)
+```
+
+**적용 범위**: Story Hero, Session Grid `<li>` 항목, WTD/MTD 불릿, PM 6개 섹션 불릿 모두 동일 규칙.
+단, Causal Chain `node-detail`·Insight Card 본문은 서술형이므로 수치를 강조할 때만 선택적 적용 허용.
+
 ---
 
 ## Step 3-S: Sources 탭 주입 (필수 — 절대 생략 금지)

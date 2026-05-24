@@ -353,15 +353,16 @@ body{{
 .macro-section h2{{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border)}}
 
 /* ── Sources ── */
-.sources-header{{margin-bottom:20px}}
-.sources-header h2{{font-size:15px;font-weight:700;color:#1a1d2e;margin-bottom:4px}}
-.sources-header .sources-sub{{font-size:12px;color:var(--muted)}}
-.sources-section{{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px}}
-.sources-section h3{{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}}
-.sources-list{{margin:0;padding-left:18px;font-size:13px;line-height:1.8}}
-.sources-list a{{color:var(--accent);text-decoration:none}}
+.sources-header{{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}}
+.sources-header h2{{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}}
+.sources-sub{{font-size:12px;color:var(--muted)}}
+.sources-section{{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 22px;margin-bottom:12px}}
+.sources-section h3{{font-size:14px;font-weight:700;color:#1a1d2e;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}}
+.sources-list{{list-style:none;padding-left:0;margin:0;font-size:13px;line-height:1.85}}
+.sources-list li{{padding:4px 0;color:#2d3148}}
+.sources-list a{{color:#043B72;text-decoration:none}}
 .sources-list a:hover{{text-decoration:underline}}
-.source-meta{{font-size:11px;color:var(--muted)}}
+.source-meta{{color:var(--muted);font-size:12px}}
 
 /* ── CS Story ── */
 .cs-hero{{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}}
@@ -840,39 +841,6 @@ def generate_index():
             items += f'          <li><a href="weekly/{fname}">{display}</a></li>\n'
         weekly_panels += f'      <div class="sub-panel{active}" id="weekly-{m}"><ul>\n{items}      </ul></div>\n'
 
-    # ── 아시아 주간 보고서 수집 (*_asia.html) ──
-    asia_by_month = {}
-    for path in sorted(glob.glob(os.path.join(OUTPUT_DIR, "weekly", "*_asia.html")), reverse=True):
-        fname = os.path.basename(path)
-        week_label = fname.replace("_asia.html", "")  # e.g. "2026-W20"
-
-        # 월 판단
-        try:
-            year = int(week_label[:4])
-            week_num = int(week_label.split("W")[1])
-            monday = dt.datetime.strptime(f"{year}-W{week_num:02d}-1", "%Y-W%W-%w").date()
-            month_key = monday.strftime("%Y-%m")
-        except Exception:
-            month_key = week_label[:7]
-
-        if month_key not in asia_by_month:
-            asia_by_month[month_key] = []
-        asia_by_month[month_key].append((week_label, fname))
-
-    sorted_asia_months = sorted(asia_by_month.keys(), reverse=True)
-    latest_asia_month = sorted_asia_months[0] if sorted_asia_months else ""
-
-    asia_month_btns = ""
-    asia_panels = ""
-    for m in sorted_asia_months:
-        active = " active" if m == latest_asia_month else ""
-        label = dt.datetime.strptime(m, "%Y-%m").strftime("%Y %b")
-        asia_month_btns += f'      <button class="month-btn{active}" onclick="showSub(\'asia\',\'{m}\')">{label}</button>\n'
-        items = ""
-        for week_label, fname in asia_by_month[m]:
-            items += f'          <li><a href="weekly/{fname}">{week_label} Asia Weekly</a></li>\n'
-        asia_panels += f'      <div class="sub-panel{active}" id="asia-{m}"><ul>\n{items}      </ul></div>\n'
-
     # ── 월간 보고서 수집 ──
     SIBLING_SUFFIXES = ("_story.html", "_pm.html", "_cs.html", "_macro.html", "_stocks.html", "_sources.html", "_asia.html")
 
@@ -964,7 +932,6 @@ def generate_index():
   <div class="main-tabs">
     <button class="main-tab active" onclick="showTab('daily')">Daily</button>
     <button class="main-tab" onclick="showTab('weekly')">Weekly</button>
-    <button class="main-tab" onclick="showTab('asia-weekly')">Asia Weekly</button>
     <button class="main-tab" onclick="showTab('monthly')">Monthly</button>
     <button class="main-tab" onclick="showTab('quarterly')">Quarterly</button>
   </div>
@@ -979,10 +946,6 @@ def generate_index():
     <div class="month-bar">
 {weekly_month_btns}    </div>
 {weekly_panels}
-  </div>
-
-  <div id="tab-asia-weekly" class="tab-content">
-    {'<div class="month-bar">' + chr(10) + asia_month_btns + '    </div>' + chr(10) + asia_panels if asia_panels else '    <p style="color:#7c8298;font-style:italic">No Asia Weekly reports yet.</p>'}
   </div>
 
   <div id="tab-monthly" class="tab-content">

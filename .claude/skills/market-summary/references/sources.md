@@ -8,10 +8,12 @@ Story 작성을 위한 웹 검색(Tavily/WebSearch) 수행 시, 각 결과의 **
 
 ## HTML 구조
 
+**인라인 스타일 사용 금지** — 모든 스타일은 아래 CSS 클래스로 처리한다. `generate.py` 글로벌 CSS에 정의되어 있음.
+
 ```html
 <div id="tab-sources" class="tab-panel">
   <div class="sources-header">
-    <h2>참조 출처</h2>
+    <h2>참조 출처 — YYYY-MM-DD 일간</h2>
     <div class="sources-sub">본 보고서 작성에 참조된 뉴스 및 데이터 소스 목록입니다.</div>
   </div>
 
@@ -32,7 +34,7 @@ Story 작성을 위한 웹 검색(Tavily/WebSearch) 수행 시, 각 결과의 **
   <div class="sources-section">
     <h3>🇺🇸 미국 세션</h3>
     <ul class="sources-list">
-      <li><a href="URL" target="_blank">매체명 · YYYY-MM-DD</span></li>
+      <li><a href="URL" target="_blank">기사 제목</a> — <span class="source-meta">매체명 · YYYY-MM-DD</span></li>
     </ul>
   </div>
 
@@ -41,10 +43,18 @@ Story 작성을 위한 웹 검색(Tavily/WebSearch) 수행 시, 각 결과의 **
     <ul class="sources-list">
       <li>history/market_data.csv — Snowflake MKT100_MARKET_DAILY</li>
       <li>history/macro_indicators.csv — FRED · ECOS</li>
+      <li>output/summary/YYYY-MM/YYYY-MM-DD_data.json — generate.py 산출 메트릭</li>
     </ul>
   </div>
 </div><!-- /tab-sources -->
 ```
+
+**허용 CSS 클래스** (이외 커스텀 클래스·인라인 스타일 금지):
+- `.sources-header` — 그라디언트 헤더 + 파란색 border-left
+- `.sources-sub` — 헤더 부제목 (muted 색상)
+- `.sources-section` — 각 섹션 카드 (border, radius)
+- `.sources-list` — 링크 목록 (list-style:none, padding-left:0)
+- `.source-meta` — 매체명·날짜 메타데이터 (muted, 12px)
 
 ## 작성 규칙
 
