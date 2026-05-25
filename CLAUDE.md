@@ -73,7 +73,7 @@ scripts/
 │   ├── securities_reports_task.xml   # 태스크 정의: 일 19:30
 │   ├── asia_weekly_task.xml          # 태스크 정의: 일 20:00
 │   └── setup_windows_tasks.ps1       # 4개 태스크 일괄 등록 스크립트
-└── macos/                            # macOS launchd 자동화
+└── macos/                            # macOS launchd 자동화 (레거시 참고용 — 현재 운영은 Windows Task Scheduler)
     ├── com.lifesailor.market-summary.plist       # launchd: 일일 보고서
     ├── com.lifesailor.market-ocr.plist           # launchd: 일일 OCR Story
     ├── com.lifesailor.securities-reports.plist   # launchd: 주간 수집
@@ -191,22 +191,24 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 
 ## 자동화 스케줄
 
-| 시간 | 스크립트 | plist | 내용 |
-|------|----------|-------|------|
-| 일 18:50 KST | `auto_market.py` | `market-summary` ✅ | 금요일 보고서 (market-full + Snowflake drift 검증) |
-| 화~금 06:50 KST | `auto_market.py` | `market-summary` ✅ | 전날 보고서 (한국 공휴일 자동 건너뜀, `holidays` 라이브러리) |
-| 월~금 08:30 KST | `generate_ocr_story.py` | `market-ocr` ✅ | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일 발간분 처리, 메인 Market Story 와 별트랙) |
-| 일 19:30 KST | `collect_weekly.py` | `securities-reports` ✅ | ① 미래에셋증권 상세분석 → S3 ② MVP PRISM → S3 ③ Securities/Fund Index 재생성 (pre-signed URL 7일 갱신) |
-| 일 20:00 KST | `generate_asia_weekly.py` | `asia-weekly` ✅ | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (`collect_weekly` 30분 마진). Story 본문은 Claude 수동 작성 |
+| 시간 | 스크립트 | 태스크 (Windows) | 내용 |
+|------|----------|-----------------|------|
+| 일 18:50 KST | `auto_market.py` | `MarketSummary-Daily` ✅ | 금요일 보고서 (market-full + Snowflake drift 검증) |
+| 화~금 06:50 KST | `auto_market.py` | `MarketSummary-Daily` ✅ | 전날 보고서 (한국 공휴일 자동 건너뜀, `holidays` 라이브러리) |
+| 월~금 08:30 KST | `generate_ocr_story.py` | `MarketSummary-OCR` ✅ | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일 발간분 처리, 메인 Market Story 와 별트랙) |
+| 일 19:30 KST | `collect_weekly.py` | `MarketSummary-WeeklyCollect` ✅ | ① 미래에셋증권 상세분석 → S3 ② MVP PRISM → S3 ③ Securities/Fund Index 재생성 (pre-signed URL 7일 갱신) |
+| 일 20:00 KST | `generate_asia_weekly.py` | `MarketSummary-AsiaWeekly` ✅ | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (`collect_weekly` 30분 마진). Story 본문은 Claude 수동 작성 |
 
-**plist 설치 상태** (2026-05-18 기준):
-- ✅ Active 4개: `market-summary`, `market-ocr`, `securities-reports`, `asia-weekly` (모두 `~/Library/LaunchAgents/` 심링크 + `launchctl load` 완료)
+**Windows Task Scheduler 상태** (2026-05-26 기준):
+- ✅ Active 4개: `MarketSummary-Daily`, `MarketSummary-OCR`, `MarketSummary-WeeklyCollect`, `MarketSummary-AsiaWeekly`
+- 태스크 정의: `scripts/windows/*.xml` / PS1 래퍼: `scripts/windows/run_*.ps1`
+- 상태 확인: `Get-ScheduledTask | Where-Object { $_.TaskName -like "MarketSummary*" } | Get-ScheduledTaskInfo`
 
 **기타 운영 정보**:
 - 증권 보고서: `anthillia/miraeasset-securities/YYYY-MM/` (직전 영업주 스크래핑)
 - PRISM 보고서: `prism/<카테고리>/YYYY/MM/` (증분 스캔, `logs/prism_last_page.txt` 추적)
 - 수동: `--week-of YYYY-MM-DD` (증권), `--full` (PRISM 전체 재스캔)
-- launchd Weekday 컨벤션: 0=Sun, 1=Mon, ..., 5=Fri, 6=Sat (Apple plist 표준)
+- Windows Task Scheduler DaysOfWeek 비트마스크: Sun=1, Mon=2, Tue=4, Wed=8, Thu=16, Fri=32, Sat=64
 
 ## Asia Weekly Brief (일요일 오후 발행)
 
@@ -240,7 +242,7 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - 미매칭 종목 (xlsx 티커 없음 또는 yfinance 미지원) 은 Sources 탭에 한계 명시
 - 2026-05-18 기준 매칭률: 133/180 (74%) — collectors 확장 후
 
-**자동화**: `com.lifesailor.asia-weekly.plist` 가 매주 일요일 20:00 KST 호출 (collect_weekly 30분 마진). 데이터 준비만 자동, Story 본문은 Claude 수동.
+**자동화**: `MarketSummary-AsiaWeekly` 태스크가 매주 일요일 20:00 KST 호출 (collect_weekly 30분 마진). 데이터 준비만 자동, Story 본문은 Claude 수동.
 
 ## 품질 자동 검증 (이중 구조)
 
@@ -248,7 +250,7 @@ market-full 워크플로우는 두 개의 독립 검증 레이어를 거친다:
 
 ### 1. Story 시간 정확성 검증 (PostToolUse 훅, type: "prompt")
 
-Story 작성 중 Edit/Write 직후 자동 실행. 검증 실패 시 `reason`을 Claude에게 피드백 → **자동 수정 재시도 루프** (사용자 개입 없이 자동 교정, launchd 완전 자동화 가능).
+Story 작성 중 Edit/Write 직후 자동 실행. 검증 실패 시 `reason`을 Claude에게 피드백 → **자동 수정 재시도 루프** (사용자 개입 없이 자동 교정, Task Scheduler 완전 자동화 가능).
 
 - Check 1: Forward-looking 금지 (D+1 08:00 KST 이후 데이터 사용 금지)
 - Check 2: 세션 간 시간 정확성 (아시아 서술에 유럽 데이터 사용 금지 등)
@@ -276,7 +278,7 @@ turn 종료 시마다 자동 호출. Story 본문의 종가·등락률·bp 변�
 ```
 logs/
 ├── market-full-YYYY-MM-DD.log   # generate.py + generate_sector_country.py Step 메시지
-├── auto_market.log              # launchd 자동 실행 로그
+├── auto_market.log              # Task Scheduler 자동 실행 로그
 ├── ocr_story.log                # OCR Story 생성 로그
 ├── verify_numbers.log           # 수치 검증 상세 로그
 └── securities_reports.log       # 증권 보고서 수집 로그

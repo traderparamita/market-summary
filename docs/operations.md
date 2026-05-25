@@ -1,19 +1,19 @@
 # Operations Runbook
 
-`market_summary` 프로젝트의 일상 운영·자동화·복구 매뉴얼. 컴퓨터가 꺼져 있었거나 launchd가 실행되지 않은 상황에서 수동으로 보고서를 생성·배포할 때 참조한다.
+`market_summary` 프로젝트의 일상 운영·자동화·복구 매뉴얼. 컴퓨터가 꺼져 있었거나 Task Scheduler가 실행되지 않은 상황에서 수동으로 보고서를 생성·배포할 때 참조한다.
 
 ---
 
 ## 1. 자동화 개요
 
-네 개의 launchd plist가 macOS에서 백그라운드로 동작한다. 모두 `~/Library/LaunchAgents/`에 심볼릭 링크된 상태에서 동작.
+네 개의 Windows Task Scheduler 태스크가 백그라운드로 동작한다. 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`.
 
-| Plist | 스크립트 | 스케줄 (KST) | 역할 | 상태 |
-|-------|----------|-------------|------|------|
-| `com.lifesailor.market-summary` | `scripts/auto_market.py` | 일 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ✅ Active |
-| `com.lifesailor.market-ocr` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) | ✅ Active |
-| `com.lifesailor.securities-reports` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
-| `com.lifesailor.asia-weekly` | `scripts/generate_asia_weekly.py` | 일 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active (2026-05-18 설치) |
+| 태스크 | 스크립트 | 스케줄 (KST) | 역할 | 상태 |
+|--------|----------|-------------|------|------|
+| `MarketSummary-Daily` | `scripts/auto_market.py` | 일 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ✅ Active |
+| `MarketSummary-OCR` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) | ✅ Active |
+| `MarketSummary-WeeklyCollect` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
+| `MarketSummary-AsiaWeekly` | `scripts/generate_asia_weekly.py` | 일 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active |
 
 월·토는 실행 안 함 (auto_market.should_skip).
 
@@ -37,15 +37,18 @@
 (자동화 없음)
 ```
 
-### 1.4 asia-weekly plist 설치 (1회)
+### 1.4 태스크 일괄 등록 (새 환경 1회)
 
-```bash
-ln -sf "$(pwd)/scripts/com.lifesailor.asia-weekly.plist" ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.lifesailor.asia-weekly.plist
-launchctl list | grep asia-weekly   # 등록 확인
+```powershell
+# 관리자 권한 PowerShell에서 실행
+cd scripts\windows
+.\setup_windows_tasks.ps1
+
+# 등록 확인
+Get-ScheduledTask | Where-Object { $_.TaskName -like "MarketSummary*" } | Select-Object TaskName, State
 ```
 
-설치 후 일요일 20:00에 자동 실행. `logs/asia_weekly.log` 에 출력 누적.
+설치 후 각 태스크가 정해진 시간에 자동 실행. `logs/auto_market.log` 등에 출력 누적.
 
 ### 1.2 auto_market.py 내부 동작
 
@@ -96,18 +99,23 @@ claude --dangerously-skip-permissions -p "/market-full 2026-05-08"
 
 **주의**: 다음 날 06:50까지 기다리면 안 된다. 다음 날 자동화는 다음 영업일 보고서를 만들기 때문에 누락분이 자동 복구되지 않는다.
 
-### 2.3 케이스: 전체 자동화 데몬이 멎었음
+### 2.3 케이스: 전체 자동화 태스크가 멎었음
 
-(launchd plist 자체가 unload 됨)
+(Task Scheduler 태스크가 Disabled 또는 오류 상태)
 
-```bash
+```powershell
 # 상태 확인
-launchctl list | grep -E "market-summary|market-ocr|securities"
+Get-ScheduledTask | Where-Object { $_.TaskName -like "MarketSummary*" } | Get-ScheduledTaskInfo | Select-Object TaskName, LastRunTime, LastTaskResult, NextRunTime
 
-# 재시작
-launchctl unload  ~/Library/LaunchAgents/com.lifesailor.market-summary.plist
-launchctl load -w ~/Library/LaunchAgents/com.lifesailor.market-summary.plist
-# (다른 plist 도 동일 패턴)
+# 특정 태스크 즉시 실행
+Start-ScheduledTask -TaskName "MarketSummary-Daily"
+
+# 태스크 활성화 (Disabled 상태인 경우)
+Enable-ScheduledTask -TaskName "MarketSummary-Daily"
+
+# 전체 재등록 (XML 정의 기준)
+cd scripts\windows
+.\setup_windows_tasks.ps1
 ```
 
 ### 2.4 케이스: 보고서는 생성됐는데 git push 실패
@@ -163,7 +171,7 @@ upsert_market_daily('2026-05-08')
 
 ```
 logs/
-├── auto_market.log              # launchd 자동 실행 (전체 stdout/err)
+├── auto_market.log              # Task Scheduler 자동 실행 (전체 stdout/err)
 ├── market-full-YYYY-MM-DD.log   # /market-full Step별 진행 상태
 ├── ocr_story.log                # OCR Story 생성
 ├── verify_numbers.log           # 수치 검증 누적 로그
