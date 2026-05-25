@@ -1027,10 +1027,10 @@ def _run_aux_collectors(target_date: str) -> None:
             else:
                 # 기타 collector 는 dedup 하므로 start/end 를 target_date 로 좁혀 호출
                 added = func(start=target_date, end=target_date)
-            print(f"[AUX] OK collector={label} rows={added}")
+            _log(f"[AUX] OK collector={label} rows={added}")
         except Exception as e:
             reason = str(e).replace("\n", " ")[:200]
-            print(f"[AUX] FAILED collector={label} reason={reason}")
+            _log(f"[AUX] FAILED collector={label} reason={reason}")
 
 
 def main(target_date=None, start_date=None):
