@@ -102,19 +102,22 @@ def existing_filenames(keys: set[str]) -> set[str]:
 
 def scan_page(page_id: int) -> dict | None:
     """게시글에서 다운로드 토큰 추출 (curl). PDF 없으면 None."""
-    cookie_file = f"/tmp/imweb_prism_{page_id}.txt"
+    import tempfile
+    tmp = tempfile.gettempdir()
+    cookie_file = os.path.join(tmp, f"imweb_prism_{page_id}.txt")
     try:
         r = subprocess.run(
             ["curl", "-s", "-b", "", "-c", cookie_file,
              f"{BASE_URL}/{page_id}"],
-            capture_output=True, text=True, timeout=15,
+            capture_output=True, timeout=15,
         )
         if r.returncode != 0:
             return None
+        html = r.stdout.decode("utf-8", errors="replace")
     except Exception:
         return None
 
-    tk_match = re.search(r"/?download\.cm\?tk=([^\"'&\s]+)", r.stdout)
+    tk_match = re.search(r"/?download\.cm\?tk=([^\"'&\s]+)", html)
     if not tk_match:
         return None
 
@@ -127,7 +130,8 @@ def scan_page(page_id: int) -> dict | None:
 
 def get_filename_and_download(info: dict, dest: Path) -> str | None:
     """curl로 PDF 다운로드 + Content-Disposition에서 파일명 추출."""
-    header_file = f"/tmp/imweb_prism_headers_{info['page_id']}.txt"
+    import tempfile
+    header_file = os.path.join(tempfile.gettempdir(), f"imweb_prism_headers_{info['page_id']}.txt")
     try:
         r = subprocess.run(
             ["curl", "-s",
