@@ -268,12 +268,16 @@ def render_html(data: dict) -> str:
         )
     kpi_strip = "\n  ".join(kpi_html)
 
-    # Data tab — index table
-    idx_rows = []
+    # Data tab — index table (WTD% 내림차순)
+    idx_entries = []
     for code, (label, region) in INDEX_LABELS.items():
         d = data["indices"].get(code)
         if not d:
             continue
+        idx_entries.append((label, region, d))
+    idx_entries.sort(key=lambda x: x[2]["pct"], reverse=True)
+    idx_rows = []
+    for label, region, d in idx_entries:
         pct = d["pct"]
         cls = "up" if pct > 0.05 else ("down" if pct < -0.05 else "flat")
         sign = "+" if pct > 0 else "−" if pct < 0 else ""
@@ -329,10 +333,14 @@ def render_html(data: dict) -> str:
     top20_rows = "\n      ".join(stock_row(i + 1, s) for i, s in enumerate(top20))
     bot20_rows = "\n      ".join(stock_row(i + 1, s) for i, s in enumerate(bot20))
 
-    # Country summary table
-    country_order = ["중국", "일본", "인도", "대만", "홍콩", "베트남", "호주", "인도네시아"]
+    # Country summary table (단순평균 WTD% 내림차순)
     country_flag = {"중국": "🇨🇳", "일본": "🇯🇵", "인도": "🇮🇳", "대만": "🇹🇼",
                     "홍콩": "🇭🇰", "베트남": "🇻🇳", "호주": "🇦🇺", "인도네시아": "🇮🇩"}
+    country_order = sorted(
+        [c for c, info in data["countries"].items() if info and info["n_matched"] > 0],
+        key=lambda c: data["countries"][c]["simple_avg"],
+        reverse=True,
+    )
     country_rows = []
     for c in country_order:
         info = data["countries"].get(c)
