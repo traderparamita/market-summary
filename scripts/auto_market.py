@@ -333,8 +333,7 @@ def main() -> None:
         print(f"  → 스킵 (일요일만 실행, 오늘 weekday={today_wd})")
     else:
         cardnews_sh = Path(
-            "/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/"
-            "malife_ai_board/scripts/run_weekly_cardnews.sh"
+            "/Users/kosmos/project/malife-ai-board/scripts/run_weekly_cardnews.sh"
         )
         if not cardnews_sh.exists():
             print(f"  [skip] wrapper 없음: {cardnews_sh}")
