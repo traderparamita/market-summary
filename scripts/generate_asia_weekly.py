@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Generate Asia Weekly Brief skeleton + data tabs.
+"""Generate Asia Weekly Brief — data skeleton + Claude AI narrative tabs.
 
 Usage:
-    .venv/bin/python scripts/generate_asia_weekly.py [YYYY-MM-DD]
+    .venv/bin/python scripts/generate_asia_weekly.py [YYYY-MM-DD] [--no-ai]
 
 If date is omitted, uses the most recent Friday.
+--no-ai: skip Claude API calls, write skeleton only (for testing).
 
 Outputs:
-    output/summary/weekly/YYYY-WNN_asia.html       — main report (skeleton + data)
-    output/summary/weekly/YYYY-WNN_asia_data.json  — extracted data for Claude
+    output/summary/weekly/YYYY-WNN_asia.html       — full report (data + AI narrative)
+    output/summary/weekly/YYYY-WNN_asia_data.json  — extracted data
 
 Skill: .claude/skills/asia-weekly/SKILL.md
 """
@@ -690,12 +691,332 @@ function switchTab(id){{
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# AI Tab Generation (Claude API)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_AI_MODEL = "sonnet"  # claude CLI --model 값
+
+_RULES_PREAMBLE = """당신은 아시아 주식 시장 전문 애널리스트입니다. 아래 규칙을 반드시 준수하십시오.
+1. 문체: 합니다체 (했습니다, 됐습니다, 입니다). 반말 금지.
+2. Forward-looking 금지: 보고서 기간 금요일 종가 이후 데이터 사용 금지. "~할 수 있다", "~가능성이 있다"만 허용.
+3. 수치 정확성: 제공된 데이터의 수치만 사용. 임의 추측 금지.
+4. 인과관계 방향: 과거→미래 순서만 허용.
+5. HTML만 출력: 지정 CSS 클래스만 사용. Markdown·설명 불필요.
+6. 종목명: 데이터에 있는 영문명 그대로 사용.
+"""
+
+def _build_data_brief(data: dict) -> str:
+    """데이터를 Claude 프롬프트용 텍스트 요약으로 변환."""
+    lines = [
+        f"## 대상 기간: {data['week']} ({data['monday']} ~ {data['friday']})",
+        f"기준 종가: {data['ref_date']} → {data['friday']}",
+        f"유니버스 매칭: {data['n_matched']}/{data['n_universe']}종목",
+        "",
+        "## 아시아 지수 WTD%",
+    ]
+    for code, label_region in {
+        "KOSPI": "코스피(한국)", "KOSDAQ": "코스닥(한국)", "Nikkei225": "Nikkei225(일본)",
+        "HSI": "HSI항셍(홍콩)", "Shanghai": "상하이종합(중국)", "TWSE": "TWSE가권(대만)",
+        "NIFTY50": "NIFTY50(인도)", "MSCI EM": "MSCI EM(신흥국)",
+    }.items():
+        d = data["indices"].get(code)
+        if d:
+            lines.append(f"  {label_region}: {d['pct']:+.2f}% ({d['start']:,.2f}→{d['end']:,.2f})")
+
+    lines += ["", "## FX WTD%"]
+    for code in ["USD/KRW", "USD/JPY", "USD/INR", "USD/CNY", "DXY"]:
+        d = data["fx"].get(code)
+        if d:
+            lines.append(f"  {code}: {d['pct']:+.2f}% ({d['start']:.4f}→{d['end']:.4f})")
+
+    lines += ["", "## 국가별 종합 (단순평균 WTD% | 가중평균 WTD% | 매칭/유니버스)"]
+    for c, info in data["countries"].items():
+        if info["n_matched"] > 0:
+            lines.append(
+                f"  {c}: 단순{info['simple_avg']:+.2f}% | 가중{info['weighted_avg']:+.2f}%"
+                f" | {info['n_matched']}/{info['n_universe']} | 비중합{info['weight_total_matched']:.1f}%"
+            )
+            # Top 3 / Bottom 3
+            stocks = info.get("stocks", [])
+            top3 = sorted(stocks, key=lambda x: x["pct"], reverse=True)[:3]
+            bot3 = sorted(stocks, key=lambda x: x["pct"])[:3]
+            if top3:
+                lines.append("    TOP: " + ", ".join(f"{s['name']} {s['pct']:+.1f}%" for s in top3))
+            if bot3:
+                lines.append("    BOT: " + ", ".join(f"{s['name']} {s['pct']:+.1f}%" for s in bot3))
+
+    return "\n".join(lines)
+
+
+def _find_digest_info(week_label: str) -> str:
+    """최신 securities digest 파일 4건 정보 수집."""
+    import re as _re
+    research_dir = PROJECT_ROOT / "output" / "research" / "securities"
+    digests = sorted(research_dir.glob("digest_2026-W*.html"), reverse=True)
+    # 현재 주 포함 최대 4건
+    items = []
+    for p in digests[:4]:
+        m = _re.search(r"digest_(2026-W\d+)\.html", p.name)
+        if not m:
+            continue
+        wk = m.group(1)
+        # Extract theme names from HTML
+        try:
+            txt = p.read_text(encoding="utf-8", errors="ignore")[:8000]
+            themes = _re.findall(r'class="theme-name">(.*?)</h2>', txt)
+            theme_str = " · ".join(themes) if themes else "테마 미확인"
+        except Exception:
+            theme_str = "읽기 실패"
+        rel = f"../../research/securities/digest_{wk}.html"
+        items.append(f'<li><a href="{rel}"><strong>{wk} Digest</strong></a> — {theme_str}</li>')
+    return "\n      ".join(items) if items else '<li>Digest 파일 없음</li>'
+
+
+def _replace_tab(html: str, tab_id: str, new_inner: str) -> str:
+    """탭 div 내부 content를 교체. <!-- /tab-{id} --> 마커 기준."""
+    import re as _re
+    pat = (
+        rf'(<div id="tab-{tab_id}"[^>]*>)'  # opening tag
+        rf'.*?'                              # existing content
+        rf'(</div><!-- /tab-{tab_id} -->)'  # closing marker
+    )
+    repl = rf'\1\n{new_inner}\n\2'
+    result, n = _re.subn(pat, repl, html, count=1, flags=_re.DOTALL)
+    if n == 0:
+        print(f"[asia-weekly][ai] WARNING: tab-{tab_id} 교체 실패 (마커 없음)")
+    return result
+
+
+def _call_claude_cli(prompt: str, label: str = "") -> str:
+    """claude CLI를 subprocess로 호출하여 결과 반환."""
+    import subprocess
+    tag = f"[asia-weekly][ai]{f'[{label}]' if label else ''}"
+    print(f"{tag} 호출 중...")
+    result = subprocess.run(
+        ["claude", "-p", prompt, "--model", _AI_MODEL],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=300,
+    )
+    if result.returncode != 0:
+        err = (result.stderr or "").strip()[:300]
+        raise RuntimeError(f"claude CLI 오류 (exit {result.returncode}): {err}")
+    out = result.stdout.strip()
+    print(f"{tag} 완료 ({len(out)}자)")
+    return out
+
+
+def _fill_ai_tabs(html: str, data: dict) -> str:
+    """claude CLI로 5개 내러티브 탭을 생성하여 skeleton HTML에 주입."""
+    brief = _build_data_brief(data)
+    week_label = data["week"]
+    next_week_num = int(week_label.split("-W")[1]) + 1
+    next_week = f"{week_label.split('-W')[0]}-W{next_week_num}"
+    digest_items = _find_digest_info(week_label)
+
+    # ── CALL 1: Story Tab ──────────────────────────────────────────────────
+    story_prompt = f"""{_RULES_PREAMBLE}
+다음 데이터를 바탕으로 Asia Weekly 보고서의 Story 탭 HTML을 작성하십시오.
+
+{brief}
+
+## 출력 규칙
+- HTML만 출력 (설명·마크다운 코드블록 없이)
+- 아래 세 블록을 순서대로 출력
+
+## 블록 1: story-hero
+<div class="story-hero">
+  <h2>[한 줄 핵심 요약 15자 이내]</h2>
+  <div class="story-text">
+    <p>[이 주를 관통한 핵심 테마. hl-up/hl-down/hl-warn/hl-accent 스팬 활용. 2~3문장.]</p>
+    <p>[국가별 명암: 강한 국가·약한 국가, 핵심 종목 수치 포함. 2~3문장.]</p>
+    <p>[매크로 컨텍스트: 금리·환율·지정학 2문장.]</p>
+  </div>
+</div>
+
+## 블록 2: causal-chain (요일별 5노드, cause-arrow로 연결)
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">월요일</div>
+    <div class="node-title">[트리거]</div>
+    <div class="node-detail">[2문장]</div>
+    <div class="node-impact up">[한 줄 영향]</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  [화요일, 수요일, 목요일, 금요일 동일 구조]
+</div>
+
+## 블록 3: insight-grid (6개 insight-card)
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge">[테마명]</span>
+    <h3>[인사이트 제목]</h3>
+    <p>[2~3문장]</p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">[종목]</div><div class="metric-value up">[수치]</div></div>
+      <div class="metric-item"><div class="metric-label">[종목]</div><div class="metric-value down">[수치]</div></div>
+    </div>
+  </div>
+  [6개 총합]
+</div>
+
+node-impact / metric-value 클래스: up=상승, down=하락, flat=보합. 데이터에 없는 수치 사용 금지."""
+
+    story_html = _call_claude_cli(story_prompt, "Story")
+    html = _replace_tab(html, "story", story_html)
+
+    # ── CALL 2: Country + Themes + Outlook + Sources ───────────────────────
+    narrative_prompt = f"""{_RULES_PREAMBLE}
+다음 데이터를 바탕으로 Asia Weekly 보고서의 4개 탭 HTML을 작성하십시오.
+
+{brief}
+
+## 출력 규칙
+- HTML만 출력 (설명 없이)
+- 반드시 아래 4개의 XML 태그(<TAB_COUNTRY>...</TAB_COUNTRY> 등)로 구분하여 출력
+- 각 태그 안에 해당 탭의 HTML 내부 콘텐츠만 작성
+
+<TAB_COUNTRY>
+각 국가를 <div class="country-section cn|jp|tw|in|hk|kr"> 로 작성.
+- country-head (country-flag + country-title + country-sub) 포함
+- 2~3단락 서술, 상위/하위 종목 stock-table 포함
+- 국가 순서: 단순평균 WTD% 내림차순
+- 한국은 class="kr" 컨텍스트 섹션으로 포함 (유니버스 외이지만 KOSPI/KOSDAQ 수치 사용)
+</TAB_COUNTRY>
+
+<TAB_THEMES>
+4~5개 theme-card. 각 카드:
+<div class="theme-card">
+  <h3><span class="theme-tag">Theme N</span> 제목</h3>
+  <p>본문 2~3단락</p>
+  <div class="theme-grid">
+    <div class="theme-side"><h5>제목</h5><ul><li>...</li></ul></div>
+    <div class="theme-side"><h5>제목</h5><ul><li>...</li></ul></div>
+  </div>
+</div>
+</TAB_THEMES>
+
+<TAB_OUTLOOK>
+<div class="outlook-card">
+  <h3>{week_label} → {next_week} 시나리오</h3>
+  <p>핵심 미결 변수 2~3개</p>
+  <div class="outlook-grid">
+    <div class="scenario bull"><h4>🐂 Bull (NN%)</h4><p>시나리오</p></div>
+    <div class="scenario base"><h4>📊 Base (NN%)</h4><p>시나리오</p></div>
+    <div class="scenario bear"><h4>🐻 Bear (NN%)</h4><p>시나리오</p></div>
+  </div>
+</div>
+<div class="risk-section">
+  <h2>⚠️ 주목 리스크 TOP 5</h2>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">高</span><div>제목 + 한 문장</div></li>
+    <li class="risk-item"><span class="risk-tag high">高</span><div>...</div></li>
+    <li class="risk-item"><span class="risk-tag high">高</span><div>...</div></li>
+    <li class="risk-item"><span class="risk-tag med">中</span><div>...</div></li>
+    <li class="risk-item"><span class="risk-tag med">中</span><div>...</div></li>
+  </ul>
+</div>
+<div class="theme-card">
+  <h3><span class="theme-tag">W+1 캘린더</span> 다음 주 모니터링</h3>
+  <table class="stock-table">
+    <thead><tr><th>날짜</th><th>이벤트</th><th>시장 영향</th></tr></thead>
+    <tbody>[5~7개 이벤트 행]</tbody>
+  </table>
+</div>
+</TAB_OUTLOOK>
+
+<TAB_SOURCES>
+<div class="sources-section">
+  <h3>2. 미래에셋증권 Research Digest — 최근 4주</h3>
+  <ul class="sources-list">
+    {digest_items}
+  </ul>
+</div>
+<div class="sources-section">
+  <h3>3. 미래에셋증권 핵심 단편 보고서</h3>
+  <ul class="sources-list">
+    [이번 주 데이터와 관련된 보고서 제목 3~4건, 핵심 메시지 한 줄]
+  </ul>
+</div>
+<div class="sources-section">
+  <h3>4. 외부 참고 자료</h3>
+  <ul class="sources-list">
+    [주요 이벤트 출처 3~4건 (기관명 + 설명)]
+  </ul>
+</div>
+</TAB_SOURCES>
+
+데이터에 없는 수치 사용 금지. 합니다체 유지."""
+
+    raw2 = _call_claude_cli(narrative_prompt, "Country+Themes+Outlook+Sources")
+
+    import re as _re
+    for tab_id, tag in [("country", "TAB_COUNTRY"), ("themes", "TAB_THEMES"),
+                        ("outlook", "TAB_OUTLOOK"), ("sources", "TAB_SOURCES")]:
+        m = _re.search(rf"<{tag}>(.*?)</{tag}>", raw2, _re.DOTALL)
+        if m:
+            content = m.group(1).strip()
+            if tab_id == "sources":
+                html = _inject_sources(html, data, content)
+            else:
+                html = _replace_tab(html, tab_id, content)
+        else:
+            print(f"[asia-weekly][ai] WARNING: {tag} 파싱 실패")
+
+    return html
+
+
+def _inject_sources(html: str, data: dict, ai_sections: str) -> str:
+    """Sources 탭: 자동 생성 섹션 1·5 + AI 생성 섹션 2~4 조합."""
+    week_label = data["week"]
+    period_label = f"{data['monday']} ~ {data['friday']}"
+    # 국가별 매칭 현황
+    country_match_lines = []
+    for c, info in data["countries"].items():
+        if info["n_matched"] > 0:
+            country_match_lines.append(
+                f"{c} {info['n_matched']}/{info['n_universe']}"
+                f"({100*info['n_matched']/info['n_universe']:.0f}%)"
+            )
+    match_summary = " · ".join(country_match_lines)
+
+    sources_inner = f"""  <div class="sources-section">
+    <h3>1. 시장 데이터 (Quotes)</h3>
+    <ul class="sources-list">
+      <li><strong>history/market_data.csv</strong> — Snowflake MKT100 정본 미러 <span class="source-meta">아시아 종목·지수·환율 {data['ref_date']}~{data['friday']} 시계열</span></li>
+      <li><strong>history/아시아종목.xlsx</strong> — 운용 유니버스 {data['n_universe']}종목</li>
+      <li><strong>매칭 현황</strong>: {data['n_matched']}/{data['n_universe']} ({100*data['n_matched']/data['n_universe']:.1f}%) — {match_summary}</li>
+    </ul>
+  </div>
+  {ai_sections}
+  <div class="sources-section">
+    <h3>5. 본 보고서 산출 방법론</h3>
+    <ul class="sources-list" style="list-style:none;padding-left:0">
+      <li><strong>기간 정의</strong>: {week_label} = {period_label} ({data['n_business_days']}영업일)</li>
+      <li><strong>WTD 변동률</strong>: {data['ref_date']} 종가 → {data['friday']} 종가</li>
+      <li><strong>가중평균</strong>: Σ(비중 × WTD%) / Σ(비중)</li>
+      <li><strong>유니버스 매칭</strong>: {data['n_matched']}/{data['n_universe']} ({100*data['n_matched']/data['n_universe']:.1f}%) — 종목명 정확 일치</li>
+      <li><strong>제한</strong>: 미매칭 종목은 가중평균에서 제외</li>
+      <li><strong>생성 도구</strong>: scripts/generate_asia_weekly.py + Claude {_AI_MODEL}</li>
+    </ul>
+  </div>
+  <div class="ai-disclaimer">
+    ⚠️ 본 보고서는 미래에셋증권 다이제스트 및 history/market_data.csv를 기반으로 Claude AI가 생성했습니다.
+    수치·해석은 작성 시점({data['generated_at']}) 기준이며, 투자 권유가 아닙니다.
+  </div>"""
+
+    return _replace_tab(html, "sources", sources_inner)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    ap = argparse.ArgumentParser(description="Generate Asia Weekly Brief skeleton.")
+    ap = argparse.ArgumentParser(description="Generate Asia Weekly Brief — data + AI narrative.")
     ap.add_argument("target_date", nargs="?", help="YYYY-MM-DD (any business day of the target week). Default: most recent Friday.")
+    ap.add_argument("--no-ai", action="store_true", help="Skip Claude API calls; write skeleton only.")
     args = ap.parse_args()
 
     if args.target_date:
@@ -755,8 +1076,20 @@ def main():
     json_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[asia-weekly] Data → {json_path}")
 
-    # Render HTML
+    # Render HTML skeleton
     html = render_html(data)
+
+    # Claude AI 내러티브 탭 생성
+    if not args.no_ai:
+        print("[asia-weekly] Claude AI 탭 생성 시작 (Story / Country / Themes / Outlook / Sources)...")
+        try:
+            html = _fill_ai_tabs(html, data)
+            print("[asia-weekly] AI 탭 생성 완료")
+        except Exception as exc:
+            print(f"[asia-weekly][ai] ERROR: {exc} — 스켈레톤으로 저장")
+    else:
+        print("[asia-weekly] --no-ai: 스켈레톤만 저장")
+
     html_path = OUTPUT_DIR / f"{week_label}_asia.html"
     html_path.write_text(html, encoding="utf-8")
     print(f"[asia-weekly] HTML → {html_path}")

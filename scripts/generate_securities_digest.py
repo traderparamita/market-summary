@@ -1,12 +1,12 @@
 """주간 증권 리서치 다이제스트 생성기.
 
-이번 주 미래에셋증권 상세분석 보고서를 OpenAI GPT-4o로 분석해
+이번 주 미래에셋증권 상세분석 보고서를 Bedrock Claude로 분석해
 3개 핵심 투자 테마를 선정하고, PDF 본문 기반 상세 분석과 출처를 포함한 HTML 리포트를 생성.
 
 흐름:
   1. S3 스캔 → 이번 주 보고서 목록
-  2. GPT-4o: 제목 기반 테마 3개 + 관련 보고서 인덱스 선정 (function calling)
-  3. GPT-4o Vision: 테마별 PDF 앞 2페이지 이미지 →
+  2. Claude: 제목 기반 테마 3개 + 관련 보고서 인덱스 선정 (tool use)
+  3. Claude Vision: 테마별 PDF 앞 2페이지 이미지 →
      { overview, points: [...], insight } 구조 JSON 반환
   4. HTML 렌더링 → output/research/securities/
 
@@ -30,7 +30,6 @@ from pathlib import Path
 import boto3
 from botocore.config import Config
 from dotenv import load_dotenv
-from openai import OpenAI
 from pdf2image import convert_from_path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,8 +40,21 @@ from _utils import S3_BUCKET
 from generate_securities_index import scan_s3  # noqa: E402
 
 OUTPUT_DIR = ROOT / "output" / "research" / "securities"
-MODEL = "gpt-4o"
 S3_REGION = "ap-northeast-2"
+
+# Bedrock 설정 — generate_ocr_story.py 와 동일한 Tokyo inference profile 사용
+os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", os.environ.get("BEDROCK_API_KEY", ""))
+BEDROCK_MODEL = os.environ.get(
+    "BEDROCK_MODEL",
+    "jp.anthropic.claude-sonnet-4-5-20250929-v1:0",
+)
+BEDROCK_REGION = os.environ.get("BEDROCK_REGION", "ap-northeast-1")
+MODEL = BEDROCK_MODEL  # HTML footer 표시용
+
+
+def _get_bedrock_client():
+    from anthropic import AnthropicBedrock
+    return AnthropicBedrock(aws_region=BEDROCK_REGION)
 MAX_PDFS_PER_THEME = 4
 PDF_PAGES = 4
 
@@ -265,16 +277,17 @@ _token_totals: dict[str, int] = {"prompt": 0, "completion": 0}
 def _track_usage(resp) -> None:
     usage = getattr(resp, "usage", None)
     if usage:
-        _token_totals["prompt"] += getattr(usage, "prompt_tokens", 0)
-        _token_totals["completion"] += getattr(usage, "completion_tokens", 0)
+        # Anthropic SDK: input_tokens / output_tokens
+        _token_totals["prompt"] += getattr(usage, "input_tokens", 0)
+        _token_totals["completion"] += getattr(usage, "output_tokens", 0)
 
 
-# ── function schemas ──────────────────────────────────────────────────────────
+# ── tool schemas (Anthropic format: input_schema 대신 parameters 아님) ─────────
 
-THEME_FUNCTION = {
+THEME_TOOL = {
     "name": "set_weekly_themes",
     "description": "이번 주 핵심 투자 테마 목록 설정",
-    "parameters": {
+    "input_schema": {
         "type": "object",
         "properties": {
             "themes": {
@@ -299,10 +312,10 @@ THEME_FUNCTION = {
     },
 }
 
-DETAIL_FUNCTION = {
+DETAIL_TOOL = {
     "name": "set_theme_detail",
     "description": "테마 상세 분석 내용 설정",
-    "parameters": {
+    "input_schema": {
         "type": "object",
         "properties": {
             "overview": {
@@ -382,36 +395,32 @@ def pdf_to_images_b64(s3_client, s3_key: str, n_pages: int = PDF_PAGES) -> list[
         Path(tmp).unlink(missing_ok=True)
 
 
-# ── GPT calls ─────────────────────────────────────────────────────────────────
+# ── Bedrock Claude calls ──────────────────────────────────────────────────────
 
 
-def select_themes(client: OpenAI, reports: list[dict], week_label: str) -> list[dict]:
+def select_themes(client, reports: list[dict], week_label: str) -> list[dict]:
     """제목 목록 → 테마 3개 + 관련 보고서 인덱스."""
     lines = [f"이번 주({week_label}) 미래에셋증권 보고서 {len(reports)}건:\n"]
     for i, r in enumerate(reports):
         date_str = r["date"].strftime("%m/%d") if r["date"] else "??"
         lines.append(f"{i}. [{date_str}] {r['title']}")
 
-    resp = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "증권 리서치 편집장으로서, 보고서 제목 목록을 보고 "
-                    "이번 주 핵심 투자 테마를 최대 3개 선정하고 "
-                    "각 테마에 가장 관련성 높은 보고서 번호를 최대 4개 지정하세요."
-                ),
-            },
-            {"role": "user", "content": "\n".join(lines)},
-        ],
-        tools=[{"type": "function", "function": THEME_FUNCTION}],
-        tool_choice={"type": "function", "function": {"name": "set_weekly_themes"}},
+    resp = client.messages.create(
+        model=BEDROCK_MODEL,
+        max_tokens=1024,
+        system=(
+            "증권 리서치 편집장으로서, 보고서 제목 목록을 보고 "
+            "이번 주 핵심 투자 테마를 최대 3개 선정하고 "
+            "각 테마에 가장 관련성 높은 보고서 번호를 최대 4개 지정하세요."
+        ),
+        messages=[{"role": "user", "content": "\n".join(lines)}],
+        tools=[THEME_TOOL],
+        tool_choice={"type": "tool", "name": "set_weekly_themes"},
     )
     _track_usage(resp)
-    msg = resp.choices[0].message
-    if msg.tool_calls:
-        return json.loads(msg.tool_calls[0].function.arguments).get("themes", [])
+    for block in resp.content:
+        if getattr(block, "type", "") == "tool_use" and block.name == "set_weekly_themes":
+            return block.input.get("themes", [])
     return []
 
 
@@ -467,7 +476,7 @@ def _load_week_market_context(end_date: datetime) -> str:
 
 
 def analyze_theme_detail(
-    client: OpenAI,
+    client,
     theme_name: str,
     reports_subset: list[dict],
     s3_client,
@@ -496,9 +505,10 @@ def analyze_theme_detail(
                 "text": f"\n[보고서: {r['title']} / {r['date'].strftime('%m/%d') if r['date'] else ''}]",
             })
             for b64 in images_b64:
+                # Anthropic 이미지 형식 (OpenAI image_url 대신)
                 content.append({
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{b64}", "detail": "high"},
+                    "type": "image",
+                    "source": {"type": "base64", "media_type": "image/jpeg", "data": b64},
                 })
             loaded += 1
         except Exception as e:
@@ -511,36 +521,31 @@ def analyze_theme_detail(
             "insight": "",
         }
 
-    resp = client.chat.completions.create(
-        model=MODEL,
+    resp = client.messages.create(
+        model=BEDROCK_MODEL,
         max_tokens=2500,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "변액보험 상담사가 고객에게 설명할 수 있도록, 이번 주 시장 맥락에서 "
-                    "이 테마가 왜 중요한지 분석하세요.\n"
-                    "규칙:\n"
-                    "- 보고서에 나온 구체적 수치·종목명·목표가를 반드시 인용\n"
-                    "- 일반론('지속적 성장이 예상됨', '주목해야 할 시기') 절대 금지\n"
-                    "- 이번 주 특유의 이벤트·실적·정책과 연결하여 서술\n"
-                    "- 투자 권유 표현('매수하세요', '추천합니다') 금지, 팩트와 인과관계만\n\n"
-                    "추가 — related_funds 선정:\n"
-                    "아래 변액보험 펀드 목록에서 이 테마에 직접 영향받는 펀드를 1~8개 선정하세요.\n"
-                    "선정 기준: 테마의 투자 대상(국가·섹터·자산군)과 펀드의 투자 대상이 일치.\n"
-                    "간접적·광범위한 연결(예: '글로벌 성장이니까 모든 주식 펀드')은 포함 금지.\n\n"
-                    f"[변액보험 펀드 목록]\n{FUND_CATALOG_TEXT}"
-                ),
-            },
-            {"role": "user", "content": content},
-        ],
-        tools=[{"type": "function", "function": DETAIL_FUNCTION}],
-        tool_choice={"type": "function", "function": {"name": "set_theme_detail"}},
+        system=(
+            "변액보험 상담사가 고객에게 설명할 수 있도록, 이번 주 시장 맥락에서 "
+            "이 테마가 왜 중요한지 분석하세요.\n"
+            "규칙:\n"
+            "- 보고서에 나온 구체적 수치·종목명·목표가를 반드시 인용\n"
+            "- 일반론('지속적 성장이 예상됨', '주목해야 할 시기') 절대 금지\n"
+            "- 이번 주 특유의 이벤트·실적·정책과 연결하여 서술\n"
+            "- 투자 권유 표현('매수하세요', '추천합니다') 금지, 팩트와 인과관계만\n\n"
+            "추가 — related_funds 선정:\n"
+            "아래 변액보험 펀드 목록에서 이 테마에 직접 영향받는 펀드를 1~8개 선정하세요.\n"
+            "선정 기준: 테마의 투자 대상(국가·섹터·자산군)과 펀드의 투자 대상이 일치.\n"
+            "간접적·광범위한 연결(예: '글로벌 성장이니까 모든 주식 펀드')은 포함 금지.\n\n"
+            f"[변액보험 펀드 목록]\n{FUND_CATALOG_TEXT}"
+        ),
+        messages=[{"role": "user", "content": content}],
+        tools=[DETAIL_TOOL],
+        tool_choice={"type": "tool", "name": "set_theme_detail"},
     )
     _track_usage(resp)
-    msg = resp.choices[0].message
-    if msg.tool_calls:
-        return json.loads(msg.tool_calls[0].function.arguments)
+    for block in resp.content:
+        if getattr(block, "type", "") == "tool_use" and block.name == "set_theme_detail":
+            return block.input
     return {"overview": "", "points": [], "insight": ""}
 
 
@@ -888,7 +893,7 @@ body {{
 <div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
 
 <div class="footer">
-  AI 분석: OpenAI {MODEL} &middot; 출처: 미래에셋증권 상세분석 &middot;
+  AI 분석: Bedrock Claude (claude-sonnet-4-5) &middot; 출처: 미래에셋증권 상세분석 &middot;
   생성: {generated.strftime('%Y-%m-%d %H:%M KST')}
   &middot; <a href="index.html">전체 보고서 목록</a>
 </div>
@@ -942,7 +947,7 @@ def main() -> None:
         }]
         print("\n[DRY-RUN] GPT 호출 생략")
     else:
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        client = _get_bedrock_client()
         # 리전 엔드포인트 + virtual-hosted 필수 (글로벌 엔드포인트 사용 시 SignatureDoesNotMatch)
         s3_client = boto3.client(
             "s3",
@@ -976,9 +981,11 @@ def main() -> None:
 
         t = _token_totals
         total = t["prompt"] + t["completion"]
+        # Claude Sonnet 4.5 가격: input $3/M, output $15/M
+        cost = t["prompt"] / 1e6 * 3.0 + t["completion"] / 1e6 * 15.0
         print(
-            f"\n  [토큰] prompt={t['prompt']:,}  completion={t['completion']:,}  "
-            f"total={total:,}  (gpt-4o 기준 ~${t['prompt']/1e6*2.5 + t['completion']/1e6*10:.4f})"
+            f"\n  [토큰] input={t['prompt']:,}  output={t['completion']:,}  "
+            f"total={total:,}  (Claude Sonnet 기준 ~${cost:.4f})"
         )
         sys.path.insert(0, str(ROOT))
         import notify_telegram as _nt
