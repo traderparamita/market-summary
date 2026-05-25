@@ -695,6 +695,7 @@ function switchTab(id){{
 # ─────────────────────────────────────────────────────────────────────────────
 
 _AI_MODEL = "sonnet"  # claude CLI --model 값
+_CLAUDE_BIN = r"C:\Users\user\.local\bin\claude.exe"  # Task Scheduler PATH 보장용
 
 _RULES_PREAMBLE = """당신은 아시아 주식 시장 전문 애널리스트입니다. 아래 규칙을 반드시 준수하십시오.
 1. 문체: 합니다체 (했습니다, 됐습니다, 입니다). 반말 금지.
@@ -787,23 +788,27 @@ def _replace_tab(html: str, tab_id: str, new_inner: str) -> str:
     return result
 
 
-def _call_claude_cli(prompt: str, label: str = "") -> str:
-    """claude CLI를 subprocess로 호출하여 결과 반환."""
-    import subprocess
+def _call_claude_cli(prompt: str, label: str = "", timeout: int = 480) -> str:
+    """claude CLI를 subprocess stdin 파이프로 호출하여 결과 반환."""
+    import subprocess, shutil
     tag = f"[asia-weekly][ai]{f'[{label}]' if label else ''}"
-    print(f"{tag} 호출 중...")
+    print(f"{tag} 호출 중...", flush=True)
+    # 절대경로 우선, 없으면 PATH에서 탐색
+    import os
+    claude_bin = _CLAUDE_BIN if os.path.isfile(_CLAUDE_BIN) else (shutil.which("claude") or "claude")
     result = subprocess.run(
-        ["claude", "-p", prompt, "--model", _AI_MODEL],
+        [claude_bin, "-p", "--model", _AI_MODEL],
+        input=prompt,
         capture_output=True,
         text=True,
         encoding="utf-8",
-        timeout=300,
+        timeout=timeout,
     )
     if result.returncode != 0:
-        err = (result.stderr or "").strip()[:300]
+        err = (result.stderr or "").strip()[:400]
         raise RuntimeError(f"claude CLI 오류 (exit {result.returncode}): {err}")
     out = result.stdout.strip()
-    print(f"{tag} 완료 ({len(out)}자)")
+    print(f"{tag} 완료 ({len(out)}자)", flush=True)
     return out
 
 
@@ -866,24 +871,41 @@ node-impact / metric-value 클래스: up=상승, down=하락, flat=보합. 데�
     story_html = _call_claude_cli(story_prompt, "Story")
     html = _replace_tab(html, "story", story_html)
 
-    # ── CALL 2: Country + Themes + Outlook + Sources ───────────────────────
-    narrative_prompt = f"""{_RULES_PREAMBLE}
-다음 데이터를 바탕으로 Asia Weekly 보고서의 4개 탭 HTML을 작성하십시오.
+    import re as _re
+    kospi_pct = data["indices"].get("KOSPI", {}).get("pct", 0)
+    kosdaq_pct = data["indices"].get("KOSDAQ", {}).get("pct", 0)
+
+    # ── CALL 2: Country Drilldown ──────────────────────────────────────────
+    country_prompt = f"""{_RULES_PREAMBLE}
+다음 데이터를 바탕으로 Asia Weekly 보고서의 Country Drilldown 탭 HTML을 작성하십시오.
+
+{brief}
+
+## 출력 규칙
+- HTML 내부 콘텐츠만 출력 (설명 없이, 탭 div 태그 자체는 제외)
+- 각 국가: <div class="country-section cn|jp|tw|in|hk|kr"> 구조
+  - <div class="country-head"><span class="country-flag">🏳</span><span class="country-title">국가명</span><span class="country-sub">단순 X% · 가중 Y% · N/N 매칭</span></div>
+  - 2~3단락 <p> 서술
+  - <h4>🔺 상위 종목</h4> + <table class="stock-table"><thead><tr><th>종목</th><th>카테고리</th><th>WTD %</th></tr></thead><tbody>...</tbody></table>
+  - <h4>🔻 하위 종목</h4> + 동일 구조 표
+- 국가 순서: 단순평균 WTD% 내림차순 (일본→대만→중국→호주→베트남→인도→홍콩→인도네시아)
+- 한국은 마지막에 class="kr" 컨텍스트 섹션 추가 (KOSPI {kospi_pct:+.2f}%, KOSDAQ {kosdaq_pct:+.2f}%)
+- 데이터에 없는 수치 사용 금지. 합니다체."""
+
+    raw_country = _call_claude_cli(country_prompt, "Country")
+    html = _replace_tab(html, "country", raw_country)
+
+    # ── CALL 3: Themes + Outlook + Sources ────────────────────────────────
+    digest_items = _find_digest_info(week_label)
+
+    tos_prompt = f"""{_RULES_PREAMBLE}
+다음 데이터를 바탕으로 Asia Weekly 보고서의 Themes·Outlook·Sources 3탭 HTML을 작성하십시오.
 
 {brief}
 
 ## 출력 규칙
 - HTML만 출력 (설명 없이)
-- 반드시 아래 4개의 XML 태그(<TAB_COUNTRY>...</TAB_COUNTRY> 등)로 구분하여 출력
-- 각 태그 안에 해당 탭의 HTML 내부 콘텐츠만 작성
-
-<TAB_COUNTRY>
-각 국가를 <div class="country-section cn|jp|tw|in|hk|kr"> 로 작성.
-- country-head (country-flag + country-title + country-sub) 포함
-- 2~3단락 서술, 상위/하위 종목 stock-table 포함
-- 국가 순서: 단순평균 WTD% 내림차순
-- 한국은 class="kr" 컨텍스트 섹션으로 포함 (유니버스 외이지만 KOSPI/KOSDAQ 수치 사용)
-</TAB_COUNTRY>
+- 반드시 아래 3개 XML 태그로 구분 출력
 
 <TAB_THEMES>
 4~5개 theme-card. 각 카드:
@@ -891,8 +913,8 @@ node-impact / metric-value 클래스: up=상승, down=하락, flat=보합. 데�
   <h3><span class="theme-tag">Theme N</span> 제목</h3>
   <p>본문 2~3단락</p>
   <div class="theme-grid">
-    <div class="theme-side"><h5>제목</h5><ul><li>...</li></ul></div>
-    <div class="theme-side"><h5>제목</h5><ul><li>...</li></ul></div>
+    <div class="theme-side"><h5>소제목</h5><ul><li>항목</li></ul></div>
+    <div class="theme-side"><h5>소제목</h5><ul><li>항목</li></ul></div>
   </div>
 </div>
 </TAB_THEMES>
@@ -910,7 +932,7 @@ node-impact / metric-value 클래스: up=상승, down=하락, flat=보합. 데�
 <div class="risk-section">
   <h2>⚠️ 주목 리스크 TOP 5</h2>
   <ul class="risk-items">
-    <li class="risk-item"><span class="risk-tag high">高</span><div>제목 + 한 문장</div></li>
+    <li class="risk-item"><span class="risk-tag high">高</span><div><strong>제목</strong><br>한 문장</div></li>
     <li class="risk-item"><span class="risk-tag high">高</span><div>...</div></li>
     <li class="risk-item"><span class="risk-tag high">高</span><div>...</div></li>
     <li class="risk-item"><span class="risk-tag med">中</span><div>...</div></li>
@@ -921,44 +943,38 @@ node-impact / metric-value 클래스: up=상승, down=하락, flat=보합. 데�
   <h3><span class="theme-tag">W+1 캘린더</span> 다음 주 모니터링</h3>
   <table class="stock-table">
     <thead><tr><th>날짜</th><th>이벤트</th><th>시장 영향</th></tr></thead>
-    <tbody>[5~7개 이벤트 행]</tbody>
+    <tbody>
+      <tr><td>날짜</td><td>이벤트명</td><td style="font-size:12px;color:var(--muted)">영향</td></tr>
+    </tbody>
   </table>
 </div>
 </TAB_OUTLOOK>
 
 <TAB_SOURCES>
 <div class="sources-section">
-  <h3>2. 미래에셋증권 Research Digest — 최근 4주</h3>
-  <ul class="sources-list">
-    {digest_items}
-  </ul>
-</div>
-<div class="sources-section">
   <h3>3. 미래에셋증권 핵심 단편 보고서</h3>
   <ul class="sources-list">
-    [이번 주 데이터와 관련된 보고서 제목 3~4건, 핵심 메시지 한 줄]
+    <li>「보고서명」 — 핵심 메시지 한 줄 (3~4건)</li>
   </ul>
 </div>
 <div class="sources-section">
   <h3>4. 외부 참고 자료</h3>
   <ul class="sources-list">
-    [주요 이벤트 출처 3~4건 (기관명 + 설명)]
+    <li><strong>기관명</strong> — 설명 (3~4건, URL 없이)</li>
   </ul>
 </div>
 </TAB_SOURCES>
 
 데이터에 없는 수치 사용 금지. 합니다체 유지."""
 
-    raw2 = _call_claude_cli(narrative_prompt, "Country+Themes+Outlook+Sources")
+    raw3 = _call_claude_cli(tos_prompt, "Themes+Outlook+Sources")
 
-    import re as _re
-    for tab_id, tag in [("country", "TAB_COUNTRY"), ("themes", "TAB_THEMES"),
-                        ("outlook", "TAB_OUTLOOK"), ("sources", "TAB_SOURCES")]:
-        m = _re.search(rf"<{tag}>(.*?)</{tag}>", raw2, _re.DOTALL)
+    for tab_id, tag in [("themes", "TAB_THEMES"), ("outlook", "TAB_OUTLOOK"), ("sources", "TAB_SOURCES")]:
+        m = _re.search(rf"<{tag}>(.*?)</{tag}>", raw3, _re.DOTALL)
         if m:
             content = m.group(1).strip()
             if tab_id == "sources":
-                html = _inject_sources(html, data, content)
+                html = _inject_sources(html, data, content, digest_items)
             else:
                 html = _replace_tab(html, tab_id, content)
         else:
@@ -967,8 +983,8 @@ node-impact / metric-value 클래스: up=상승, down=하락, flat=보합. 데�
     return html
 
 
-def _inject_sources(html: str, data: dict, ai_sections: str) -> str:
-    """Sources 탭: 자동 생성 섹션 1·5 + AI 생성 섹션 2~4 조합."""
+def _inject_sources(html: str, data: dict, ai_sections: str, digest_items: str = "") -> str:
+    """Sources 탭: 자동 생성 섹션 1·5 + Digest 링크 섹션 2 + AI 생성 섹션 3~4 조합."""
     week_label = data["week"]
     period_label = f"{data['monday']} ~ {data['friday']}"
     # 국가별 매칭 현황
@@ -981,6 +997,16 @@ def _inject_sources(html: str, data: dict, ai_sections: str) -> str:
             )
     match_summary = " · ".join(country_match_lines)
 
+    digest_section = ""
+    if digest_items:
+        digest_section = f"""  <div class="sources-section">
+    <h3>2. 미래에셋증권 Research Digest — 최근 4주</h3>
+    <ul class="sources-list">
+      {digest_items}
+    </ul>
+  </div>
+"""
+
     sources_inner = f"""  <div class="sources-section">
     <h3>1. 시장 데이터 (Quotes)</h3>
     <ul class="sources-list">
@@ -989,7 +1015,7 @@ def _inject_sources(html: str, data: dict, ai_sections: str) -> str:
       <li><strong>매칭 현황</strong>: {data['n_matched']}/{data['n_universe']} ({100*data['n_matched']/data['n_universe']:.1f}%) — {match_summary}</li>
     </ul>
   </div>
-  {ai_sections}
+  {digest_section}  {ai_sections}
   <div class="sources-section">
     <h3>5. 본 보고서 산출 방법론</h3>
     <ul class="sources-list" style="list-style:none;padding-left:0">
