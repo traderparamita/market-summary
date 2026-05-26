@@ -8,6 +8,7 @@
 /market-full [YYYY-MM-DD]    # 데이터 수집 → Dashboard → Story(일/주/월) → 배포
 /market-data [YYYY-MM-DD]    # 데이터 수집 + Data Dashboard만
 /market-deploy               # output/ 변경분 commit + push
+/research [YYYY-MM-DD]       # 주간 테마 리서치 (일요일 수동 발행, OCR 기반)
 /weekly-pm [YYYY-MM-DD]      # 금요일 오전 발행용 Mon-Thu PM 브리프 + PDF 2종
 /asia-weekly [YYYY-MM-DD]    # 아시아 주간 시황 브리프 (xlsx 180종목 유니버스, 6탭)
 ```
@@ -84,8 +85,8 @@ db/
 ├── FND.sql              # Snowflake FND 계열 DDL (market-strategy 참조용)
 └── migrate.py           # 스키마 생성/마이그레이션 유틸
 
-views/                   # 섹터·국가 분석 엔진 (sector_view, country_view, _shared)
-                         #   ※ generate_sector_country.py 가 직접 import. 나머지 8개 의사결정 뷰는 market-strategy/ 로 이관
+views/                   # 섹터·국가 분석 엔진 (레거시 — generate_sector_country.py 전용)
+                         #   ※ sector_view, country_view, _shared. 나머지 8개 의사결정 뷰는 market-strategy/ 로 이관
 ```
 
 > **2026-04 리팩토링**: `portfolio/` 디렉터리는 `market-strategy/` (별도 리포)로 이관. market_summary 는 summary/research 만 담당.
@@ -293,9 +294,9 @@ logs/
 ## 관련 설정
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse, type: "prompt") + Stop 훅 (수치 자동 검증)
-- `.claude/hooks/post_edit_write_structure_guard.py`: HTML 구조·CSS 화이트리스트 검증 (필수 섹션 5개 + tab-story 블록 클래스 검사)
+- `.claude/hooks/post_edit_write_structure_guard.py`: HTML 구조·CSS 화이트리스트 검증 (필수 섹션 5개 + tab-story 블록 클래스 검사; `index.html` 자동 제외)
 - `.claude/skills/`: `market-summary` (+ **`references/stocks.md`** 신규), `macro-events`, `mali-etf-analysis`, `weekly-pm`, **`asia-weekly`** (신규) ※ `sector-country` 스킬은 레거시
-- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full` (**Step 3-D Stocks Story** 신규), `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/weekly-pm`, **`/asia-weekly`** (신규)
+- `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full` (**Step 3-D Stocks Story** 신규), `/market-pm`, `/market-cs`, `/research` (**OCR 기반 주간 테마 리서치**), `/review-story`, `/weekly-pm`, **`/asia-weekly`** (신규)
 
 ## 상세 문서
 
