@@ -27,7 +27,7 @@ Story 작성 규칙은 `market-summary` 스킬에 있다 (Story 작업 시 자�
 generate.py               # HTML 보고서 생성 (collect_market import + Snowflake dual-write)
 generate_periodic.py      # 주간/월간/분기 집계 (--only {weekly|monthly|quarterly} --quarter N)
 generate_weekly_pm.py     # 금요일 오전 PM 브리프 (월~목 4영업일 윈도우 + Today Residual + W+1 Outlook)
-generate_sector_country.py # 섹터·국가 보고서 (11일 사이클)
+generate_sector_country.py # 섹터·국가 보고서 (레거시 — 2026-05-26 폐기, 참조용 보존)
 scripts/generate_asia_weekly.py  # 아시아 주간 브리프 (xlsx 180종목 ↔ market_data.csv 매칭 + 6탭 스켈레톤)
 market_source.py         # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader 의 단일 진입점
 snowflake_loader.py       # CSV ↔ Snowflake 적재 유틸
@@ -153,10 +153,13 @@ views/                   # 섹터·국가 분석 엔진 (sector_view, country_vi
 - Story 없으면 placeholder 유지
 - `generate.py` dual-write 는 `--start` 없이 실행한 일간 수집에만 작동. 전체 재수집은 `snowflake_loader.py --truncate`
 
-## 섹터·국가 사이클
+## 주간 테마 리서치 (일요일 수동 발행)
 
-`generate_sector_country.py`의 `get_focus(date)` 로 자동 계산. 기준일 2026-01-05, 영업일 기준 독립 순환.
-국가: KR(1)·US(2)·CN(3)·JP(4)·EU(5)·UK(6)·DE(7)·FR(8)·IN(9)·TW(10)·EM(11)
+`/research [YYYY-MM-DD]` 한 줄로 발행. 해당 주 OCR 브리핑(`*_ocr.html`)을 읽고 핵심 테마 1~2개를 선정해 심층 분석 보고서를 작성한다.
+
+산출물: `output/research/daily/YYYY-MM/YYYY-MM-DD.html`
+
+> **이전 섹터·국가 11일 순환 사이클** (`generate_sector_country.py`)은 2026-05-26 폐기. `generate_sector_country.py` 파일은 참조용으로 보존.
 
 ## Weekly PM Brief (금요일 오전 발행)
 
@@ -277,7 +280,7 @@ turn 종료 시마다 자동 호출. Story 본문의 종가·등락률·bp 변�
 
 ```
 logs/
-├── market-full-YYYY-MM-DD.log   # generate.py + generate_sector_country.py Step 메시지
+├── market-full-YYYY-MM-DD.log   # generate.py Step 메시지
 ├── auto_market.log              # Task Scheduler 자동 실행 로그
 ├── ocr_story.log                # OCR Story 생성 로그
 ├── verify_numbers.log           # 수치 검증 상세 로그
@@ -291,7 +294,7 @@ logs/
 
 - `.claude/settings.json`: Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse, type: "prompt") + Stop 훅 (수치 자동 검증)
 - `.claude/hooks/post_edit_write_structure_guard.py`: HTML 구조·CSS 화이트리스트 검증 (필수 섹션 5개 + tab-story 블록 클래스 검사)
-- `.claude/skills/`: `market-summary` (+ **`references/stocks.md`** 신규), `sector-country`, `macro-events`, `mali-etf-analysis`, `weekly-pm`, **`asia-weekly`** (신규)
+- `.claude/skills/`: `market-summary` (+ **`references/stocks.md`** 신규), `macro-events`, `mali-etf-analysis`, `weekly-pm`, **`asia-weekly`** (신규) ※ `sector-country` 스킬은 레거시
 - `.claude/commands/`: `/market-data`, `/market-deploy`, `/market-full` (**Step 3-D Stocks Story** 신규), `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/weekly-pm`, **`/asia-weekly`** (신규)
 
 ## 상세 문서

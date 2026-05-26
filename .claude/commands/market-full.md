@@ -329,72 +329,11 @@ Step 8 성공 후 즉시 전송. 실패해도 블록 B로 계속 진행.
 
 ---
 
-## 블록 B — Sector-Country
-
-### Step 10: Sector-Country Data Dashboard 생성
-
-```bash
-.venv/bin/python generate_sector_country.py $ARGUMENTS
-```
-
-실패 시 경고 로그 후 **계속 진행** (Step 11 중단 없음).
-
-### Step 11: Research Story 작성 (섹터·국가·테마)
-
-`research` **스킬**의 작성 절차를 따른다.
-
-핵심:
-1. `get_focus(date)` 결과로 오늘의 3개 주제(US 섹터 + KR 섹터 + 국가) 확인
-2. 주제별 Tavily 검색 (최근 1~2주 트렌드 맥락)
-3. Story 작성 후 `output/research/daily/YYYY-MM/YYYY-MM-DD.html`에 주입
-4. `YYYY-MM-DD_story.html` 저장 확인
-
-**완료 보고**:
-- 성공: `✅ [Step 11] Research Story 작성 완료`
-- 실패: `⚠ [Step 11] Research Story 작성 실패 — 계속 진행`
-
-### Step 12: Git Commit + Push — Research
-
-**반드시 디렉터리 전체를 스테이징한다.** 개별 파일만 `git add` 하면 `output/research/index.html` (Step 10에서 `_update_sc_index()` 가 갱신) 이 누락되어 목록 페이지가 다음 날 보고서로 업데이트되지 않는다.
-
-```bash
-  git add output/research/ && \
-  git status --short output/research/ && \
-  git commit -m "feat: $ARGUMENTS 리서치 보고서 — 섹터 Day N/11 · 국가 Day M/11
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>" && \
-  git push origin main
-```
-
-- 커밋 전 `git status --short` 출력에 `output/research/index.html` 이 포함되는지 반드시 확인
-- 커밋 메시지 N/M 은 Step 10 결과에서 얻은 실제 일자 대입
-
-**완료 보고**:
-- 성공: `✅ [Step 12] Research git push 완료 (커밋: xyz789)`
-- 실패: `❌ [Step 12] git push 실패: <reason> — 즉시 중단`
-
-### Step 13: Telegram ② — Sector-Country 완료 알림
-
-Step 12 성공 후 즉시 전송. 실패해도 완료 보고로 계속.
-
-```bash
-  .venv/bin/python notify_telegram.py $ARGUMENTS --sc-complete \
-    --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/11 — 오늘의 국가" \
-    --ow "OW 섹터/국가 목록" \
-    --uw "UW 섹터/국가 목록 (없으면 생략)"
-```
-
-- `--focus` 값은 Step 10 실행 결과에서 확인한 테마 텍스트
-- `--ow` / `--uw`는 Step 10 데이터 읽기 결과 기반
-
----
-
 ## 완료 보고
 
 모든 단계 완료 후 Step별 실행 결과를 표 형식으로 보고:
 
 ```
-── 블록 A: Market Summary ──────────────────────
 Step 0:    Telegram 시작    — ✅ 전송 / ⚠ 실패(계속)
 Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, Snowflake M행) / ⚠ CSV 저장 · Snowflake 실패(<reason>) / ❌ 실패(<reason>)
 Step 3:    일간 Story        — ✅ 성공 / ❌ 실패
@@ -414,12 +353,6 @@ Step 7.5:  월간 매크로       — ✅ 성공 / ⏭ 스킵
 Step 7.6:  월간 Macro 탭     — ✅ 성공 / ⏭ 스킵
 Step 8:    Git Push (MS)     — ✅ 커밋해시
 Step 9:    Telegram ①       — ✅ 전송 / ⚠ 실패(계속)
-
-── 블록 B: Sector-Country ──────────────────────
-Step 10:   SC Dashboard      — ✅ 성공 / ⚠ 실패(계속)
-Step 11:   SC Story          — ✅ 성공 / ⚠ 실패(계속)
-Step 12:   Git Push (SC)     — ✅ 커밋해시
-Step 13:   Telegram ②       — ✅ 전송 / ⚠ 실패(계속)
 ```
 
 - 다음 영업일 실행 권장 시각도 함께 표기
@@ -428,10 +361,7 @@ Step 13:   Telegram ②       — ✅ 전송 / ⚠ 실패(계속)
 
 ## 중단 규칙
 
-- Step 1~2 실패: 즉시 중단 (블록 A/B 전체)
+- Step 1~2 실패: 즉시 중단
 - Step 3/5/7 훅 block: 사유 읽고 수정 재시도 (2회까지), 계속 실패 시 사용자에게 보고
 - Step 8 git 실패: 즉시 중단하고 사용자에게 상태 보고
-- Step 10 실패: 경고 후 Step 11로 계속 진행
-- Step 11 실패: 경고 후 Step 12로 계속 진행 (Dashboard만 배포)
-- Step 12 git 실패: 즉시 중단하고 사용자에게 상태 보고
 - Telegram 실패: 경고 로그만 출력하고 다음 단계로 계속

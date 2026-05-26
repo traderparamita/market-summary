@@ -1,21 +1,21 @@
 ---
-allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Bash(tail:*), Bash(awk:*), Bash(sort:*), Bash(cut:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
+allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Bash(tail:*), Bash(find:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (날짜 생략 시 전 영업일)"
-description: "섹터·국가 초보자 보고서: Data Dashboard 생성 → 오늘의 3개 주제(US섹터+KR섹터+국가) Tavily 검색 → Story 주입"
+description: "주간 테마 리서치: 주간 OCR 브리핑을 바탕으로 이번 주 핵심 테마 1~2개를 선정해 심층 분석 보고서 작성"
 ---
 
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 섹터·국가 보고서: !`ls -t output/research/daily/**/*.html 2>/dev/null | head -3`
+- 이번 주 OCR 파일: !`find output/summary -name "*_ocr.html" | sort | tail -7`
+- 최근 리서치 보고서: !`ls -t output/research/daily/**/*.html 2>/dev/null | head -3`
 - 최근 증권 다이제스트: !`ls -t output/research/securities/*.html 2>/dev/null | head -2`
-- market_data.csv 마지막 날짜: !`tail -5 history/market_data.csv 2>/dev/null | cut -d',' -f1 | sort -u`
 
 ---
 
 ## Your task
 
-Load and follow `.claude/skills/sector-country/SKILL.md` (research 보고서 스킬).
+매주 일요일, 그 주 OCR 브리핑(`*_ocr.html`)을 읽고 **이번 주 시장을 관통한 핵심 테마 1~2개**를 선정해 심층 리서치 보고서를 작성한다.
 
 **Arguments**: $ARGUMENTS (형식: `YYYY-MM-DD`)
 
@@ -24,265 +24,162 @@ Load and follow `.claude/skills/sector-country/SKILL.md` (research 보고서 스
 ## 사전 점검
 
 1. **날짜 결정**: 날짜 인자 없음 → 전 영업일 자동 선택.
-2. **미래 날짜 금지**: 대상 날짜 > 오늘이면 즉시 중단하고 사용자에게 보고.
-3. **데이터 가용성**: `market_data.csv` 마지막 날짜 < 대상 날짜이면 경고 후 사용자에게 확인.
+2. **미래 날짜 금지**: 대상 날짜 > 오늘이면 즉시 중단.
+3. **OCR 파일 확인**: 이번 주 `*_ocr.html`이 1개 이상 있어야 진행.
 
 ---
 
 ## Step 0 — Telegram 시작 알림
 
-사전 점검 통과 후 즉시 전송. 실패해도 계속 진행.
-
 ```bash
-  .venv/bin/python notify_telegram.py {date} --start --label "섹터·국가"
+.venv/bin/python notify_telegram.py {date} --start --label "테마 리서치"
 ```
 
 ---
 
-## Step 1 — Data Dashboard 생성 + 오늘의 주제 확인
+## Step 1 — 이번 주 OCR 브리핑 읽기
 
-```bash
-.venv/bin/python generate_sector_country.py {date}
-```
+대상 날짜 기준 직전 5영업일의 `*_ocr.html` 파일을 모두 읽는다.
 
-CLI 출력에서 **섹터 Day N/11**, **국가 Day M/11**, **theme**, 3개 subjects를 기록한다.  
-예: `섹터 Day 4/11 — 에너지·화학 (XLE + TIGER 200 에너지화학) | 국가 Day 3/11 — 중국`
+각 파일에서 추출:
+- 주요 시장 이벤트·섹터 움직임·매크로 키워드
+- **반복 등장하거나 가장 강하게 부각된 테마** 1~2개 선정
 
-실패 시 오류 확인 후 재시도 또는 중단.
-
----
-
-## Step 2 — 데이터 읽기
-
-```bash
-.venv/bin/python -c "
-from generate_sector_country import get_focus
-from views.sector_view import compute_sector_view
-from views.country_view import compute_country_view
-import math
-
-focus = get_focus('{date}')
-sv = compute_sector_view('{date}')
-cv = compute_country_view('{date}')
-
-def v(c):
-    if c is None or (isinstance(c, float) and math.isnan(c)): return 'N'
-    return 'OW' if c >= 0.25 else ('UW' if c <= -0.25 else 'N')
-
-focus_codes = {s['code'] for s in focus['subjects']}
-print(f'=== 오늘의 주제 ===')
-print(f'  섹터 Day {focus[\"sector_day\"]}/11 — {focus[\"theme\"]}')
-print(f'  국가 Day {focus[\"country_day\"]}/11 — {focus[\"country_name\"]}')
-print(f'  이전 섹터 사이클: {focus[\"prev_sector_date\"]}')
-print(f'  이전 국가 사이클: {focus[\"prev_country_date\"]}')
-for s in focus['subjects']:
-    print(f'  [{s[\"code\"]}] {s[\"name\"]} | {s.get(\"etf\",\"\")} {s.get(\"ticker\",\"\")}')
-
-print()
-print('=== US 섹터 ===')
-for s in sv['us_sectors']:
-    mark = ' ★' if s['code'] in focus_codes else ''
-    print(f\"{v(s['composite'])} | {s['name']:25s} {s['etf']:5s} | 1M={s.get('mom_1m','—')} 3M={s.get('mom_3m','—')}%{mark}\")
-
-print()
-print('=== KR 섹터 ===')
-for s in sv['kr_sectors']:
-    mark = ' ★' if s['code'] in focus_codes else ''
-    print(f\"{v(s['composite'])} | {s['name']:15s} {s['etf']:30s} | 1M={s.get('mom_1m','—')} 3M={s.get('mom_3m','—')}%{mark}\")
-
-print()
-print('=== 국가 ===')
-for c in cv['countries']:
-    mark = ' ★' if c['code'] in focus_codes else ''
-    print(f\"{c['view']} | {c['flag']} {c['name']:15s} | 3M={c.get('mom_3m','—')}%{mark}\")
-
-"
-```
+테마 선정 예시:
+- AI 인프라 투자 사이클 가속
+- 달러 약세·신흥국 자금 유입
+- 방산·조선 리레이팅
+- 중국 경기부양 기대 vs 실망
 
 ---
 
-## Step 3 — Tavily 뉴스 검색
+## Step 2 — 테마별 Tavily 심층 검색
 
-**대상 날짜({date}) 이후 미래 데이터는 사용하지 않는다.**  
-당일에 국한하지 않고 **최근 1~2주** 트렌드 뉴스를 참조해 포지셔닝 맥락을 설명한다.
+선정된 테마마다 **3~5회** 검색. 최근 1~2주 뉴스 중심.
 
-> **KR 섹터 검색 원칙**: TIGER ETF는 업종 전체의 **proxy**다. ETF를 직접 검색하는 것이 아니라 해당 업종의 기업·정책·수요 뉴스를 검색한다. 수치는 `compute_sector_view()`에서 이미 산출되므로 검색은 **"왜 이 업종인가"** 맥락 파악에 집중한다.
-
-> **대표주 검색 필수**: `SECTOR_REP_STOCKS` / `COUNTRY_REP_STOCKS`에 정의된 대표 기업의 최신 실적·뉴스를 반드시 검색한다. Story 본문에 해당 기업 동향을 포함할 것.
-
-### 오늘의 3개 주제 검색 전략 (type: sector_country)
-
-매일 **US 섹터 + KR 섹터 + 국가** 3개 주제를 검색한다. 순서: Subject 1(US) → Subject 2(KR) → Subject 3(국가) → 대표주 심층 → 비교/맥락.
-
-| 순서 | 대상 | 검색 내용 | 키워드 예시 |
-|------|------|---------|------------|
-| 1 | Subject 1 (US 섹터) | 최근 1~2주 ETF 성과·흐름 + 핵심 드라이버 | `"XLE energy sector April 2026 ETF performance"` |
-| 2 | Subject 1 (US 섹터) 대표주 | 섹터 대표 기업 최신 실적·뉴스 | `"Exxon Mobil Chevron earnings April 2026"` |
-| 3 | Subject 2 (KR 섹터) | 최근 1~2주 국내 업종 뉴스 + 주요 기업 | `"Korea energy chemicals LG Chem Lotte Chemical 2026"` |
-| 4 | Subject 2 (KR 섹터) 대표주 | KR 섹터 대표 기업 최신 뉴스 | `"LG화학 롯데케미칼 에너지화학 April 2026"` |
-| 5 | Subject 3 (국가) | 주가지수 흐름 + 경제지표 + 정책 | `"China CSI300 Shanghai April 2026 market"` |
-| 6 | Subject 3 (국가) 대표주 | 국가 대표 기업 최신 뉴스 | `"Alibaba Tencent China tech April 2026"` |
-| 7 | 전체 맥락 (선택) | 이번 주 GICS 섹터 로테이션 흐름 | `"GICS sector rotation April 2026 winners"` |
-
-#### 섹터별 대표주 검색 가이드
-
-| US 섹터 | KR 섹터 | 대표주 검색 키워드 |
-|---------|---------|-----------------|
-| XLK (Technology) | TIGER 200 IT | `"NVIDIA Apple Microsoft Samsung SK Hynix LG Electronics 2026"` |
-| XLC (Communication) | TIGER 200 커뮤니케이션서비스 | `"Alphabet Meta SK Telecom KT 2026"` |
-| XLF (Financials) | TIGER 200 금융 | `"JPMorgan Bank of America Shinhan KB Hana 2026"` |
-| XLE (Energy) | TIGER 200 에너지화학 | `"Exxon Chevron LG Chem Lotte Chemical 2026"` |
-| XLV (Health Care) | TIGER 200 헬스케어 | `"UnitedHealth Johnson Celltrion Samsung Biologics 2026"` |
-| XLI (Industrials) | TIGER 200 산업재 | `"Caterpillar Boeing HD Hyundai Doosan 2026"` |
-| XLB (Materials) | TIGER 200 중공업 | `"Freeport Nucor Hanwha Aerospace Hyundai Rotem 2026"` |
-| XLY (Consumer Discr.) | TIGER 200 경기소비재 | `"Amazon Tesla Hyundai Kia consumer 2026"` |
-| XLP (Consumer Staples) | TIGER 200 생활소비비재 | `"Procter Gamble Coca-Cola CJ CheilJedang Orion 2026"` |
-| XLU (Utilities) | TIGER 200 철강소재 | `"NextEra Duke Energy POSCO Hyundai Steel 2026"` |
-| XLRE (Real Estate) | TIGER 200 건설 | `"Simon Property Prologis Hyundai Engineering GS Construction 2026"` |
+검색 전략:
+1. 테마 핵심 드라이버 (정책·수요·공급 변화)
+2. 대표 기업·ETF 동향
+3. 반론·리스크 요인
+4. 글로벌 vs 한국 시장 파급
 
 ---
 
-## Step 4 — Story 작성
+## Step 3 — 보고서 파일 생성
 
-SKILL.md의 초보자 언어 변환 규칙 및 시간순 서술 원칙을 따른다.
+경로: `output/research/daily/{YYYY-MM}/{date}.html`
 
-**보고서 전체가 오늘의 3개 주제 중심이다.** 섹터와 국가는 독립적으로 서술하며 억지로 연결짓는 "연결 고리" 단락은 쓰지 않는다.  
-일간/주간/월간 구분 없이 동일한 형식으로 작성한다.
-
-### 품질 규칙
-
-**1. 날짜 이후 데이터 금지**  
-{date} 이후 발생한 결과를 신호 설명의 근거로 사용하지 않는다.
-
-**2. 고점·저점 표현 전 CSV 검증**  
-"YTD 최고", "연내 신고점", "52주 고점" 사용 전 반드시 확인:
-
-```bash
-grep "{indicator_code}" history/market_data.csv | grep "^2026" | sort | awk -F',' '{print $1, $5}' | sort -k2 -rn | head -5
-```
-
-해당일 종가가 **1위**일 때만 사용. 아니면 "월간 최고치" 등 실제 범위로 표현.
-
-**3. 날짜·요일 정확성**  
-날짜와 요일이 실제 달력과 일치하는지 확인.
-
-**4. 수치 출처**  
-모든 수익률·수치는 `compute_sector_view()` / `compute_country_view()` 반환값 기준. Tavily 수치와 상충 시 CSV 우선.
-
-**5. 섹터 내부 코드 금지**  
-`SC_US_TECH` 같은 코드 노출 금지. ETF명(XLK) 또는 섹터명(Technology) 사용.
-
-### Story HTML 형식
+### HTML 골격
 
 ```html
-<div class="story-content">
-  <!-- Subject 1: US 섹터 심층 분석 -->
-  <h3 style="color:#F58220;margin-bottom:12px">🎯 {US섹터명} 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong></p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Market Research | {date}</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root { --accent:#F58220; --accent2:#043B72; --border:#e0e3ed; --muted:#7c8298; }
+body { font-family:'Spoqa Han Sans Neo',sans-serif; background:#f4f5f9; color:#2d3148; max-width:900px; margin:0 auto; padding:32px 24px; line-height:1.7; }
+.header { border-bottom:2px solid var(--border); padding-bottom:16px; margin-bottom:28px; }
+.header h1 { font-size:22px; font-weight:700; color:#1a1d2e; }
+.header .meta { font-size:12px; color:var(--muted); margin-top:4px; }
+.theme-badge { display:inline-block; font-size:11px; font-weight:600; color:var(--accent); background:#fff5eb; border:1px solid #fde0c0; border-radius:12px; padding:3px 12px; margin-bottom:20px; }
+.section { background:#fff; border:1px solid var(--border); border-radius:12px; padding:24px 28px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.section h2 { font-size:18px; font-weight:700; color:var(--accent2); margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+.section h3 { font-size:15px; font-weight:600; color:#1a1d2e; margin:14px 0 8px; }
+.section p { font-size:14px; margin-bottom:10px; }
+.risk-box { background:#fff5f5; border:1px solid #fecaca; border-radius:8px; padding:14px 18px; margin-top:14px; font-size:13px; }
+.footer { font-size:11px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px; margin-top:24px; }
+</style>
+</head>
+<body>
 
-  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
-  <p>{트렌드 배경 문단 1}</p>
-  <p>{전개 문단 2}</p>
-  <p>{현재 신호 이유 문단 3}</p>
+<div class="header">
+  <h1>Weekly Theme Research</h1>
+  <div class="meta">{date} · 테마: {테마명}</div>
+</div>
 
-  <p><strong>대표주 동향</strong></p>
-  <p>{SECTOR_REP_STOCKS 기업 동향 — 2~3 문단으로 분리}</p>
+<!-- STORY_PLACEHOLDER -->
 
-  <!-- Subject 2: KR 섹터 심층 분석 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🎯 {KR섹터명} 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong></p>
+<div class="footer">출처: 미래에셋증권 OCR 브리핑 + Tavily 뉴스 검색 · {date}</div>
+</body>
+</html>
+```
 
-  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
-  <p>{국내 업종 트렌드 — 2~3 문단}</p>
+---
 
-  <p><strong>대표주 동향</strong></p>
-  <p>{KR 대표 기업 최신 동향 — 2~3 문단}</p>
+## Step 4 — Story 작성 및 주입
 
-  <!-- Subject 3: 국가 심층 분석 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🎯 {국가명} 시장 심층 분석</h3>
-  <p>현재 신호: {OW/N/UW} — <strong>{초보자 표현}</strong></p>
+`STORY_PLACEHOLDER`를 아래 구조의 HTML로 교체한다.
 
-  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
-  <p>{주가지수 흐름 + 경제지표 + 정책 — 2~3 문단}</p>
+```html
+<span class="theme-badge">테마: {테마명}</span>
 
-  <p><strong>대표 지수·지표 동향</strong></p>
-  <p>{COUNTRY_REP_STOCKS 기업 또는 지수 동향 — 2~3 문단}</p>
+<!-- 테마 1 -->
+<div class="section">
+  <h2>🎯 {테마1 제목}</h2>
 
-  <!-- 핵심 포인트 3가지 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">💡 핵심 포인트 3가지</h3>
-  <p>① <strong>{US섹터 — 핵심 메시지}</strong></p>
-  <p>{초보자 설명 1~2문장}</p>
+  <h3>배경 — 왜 지금 이 테마인가</h3>
+  <p>{이번 주 OCR에서 포착된 계기 + 매크로 맥락 2~3 문단}</p>
 
-  <p>② <strong>{KR섹터 — 핵심 메시지}</strong></p>
-  <p>{초보자 설명 1~2문장}</p>
+  <h3>핵심 드라이버</h3>
+  <p>{정책·수요·기술 등 구체적 드라이버 2~3 문단}</p>
 
-  <p>③ <strong>{국가 — 핵심 메시지}</strong></p>
-  <p>{초보자 설명 1~2문장}</p>
+  <h3>대표 기업·ETF 동향</h3>
+  <p>{이번 주 실제 움직임 + 실적·뉴스 2~3 문단}</p>
 
-  <div style="font-size:11px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:8px">
-    출처: Tavily 뉴스 검색 + 계량 신호 (history/market_data.csv) · {date} ({period}) · 섹터 Day {sector_day}/11 · 국가 Day {country_day}/11
+  <h3>한국 시장 파급</h3>
+  <p>{국내 관련 섹터·기업 동향 1~2 문단}</p>
+
+  <div class="risk-box">
+    ⚠ 리스크: {이 테마의 반전 시나리오 1~2 문장}
   </div>
+</div>
+
+<!-- 테마 2 (있는 경우) -->
+<div class="section">
+  <h2>🎯 {테마2 제목}</h2>
+  ...
+</div>
+
+<!-- 종합 포인트 -->
+<div class="section">
+  <h2>💡 이번 주 핵심 포인트</h2>
+  <p>① <strong>{테마1 한 줄 요약}</strong> — {초보자 설명 1문장}</p>
+  <p>② <strong>{테마2 한 줄 요약 (있는 경우)}</strong> — {설명}</p>
+  <p>③ <strong>다음 주 주목 변수</strong> — {캘린더 이벤트·지표 1~2개}</p>
 </div>
 ```
 
 ---
 
-## Step 5 — Story 주입
+## Step 5 — `_story.html` 저장
 
 ```bash
-.venv/bin/python -c "
-from generate_sector_country import inject_story
-inject_story('{html_path}', '''
-{story_html}
-''')
-"
+cp output/research/daily/{YYYY-MM}/{date}.html \
+   output/research/daily/{YYYY-MM}/{date}_story.html
 ```
-
-### 주입 후 검증
-
-```bash
-grep -c "story-content\|STORY_PLACEHOLDER\|<!DOCTYPE" {html_path}
-```
-
-- `<!DOCTYPE html>` 존재
-- `STORY_PLACEHOLDER` **0개** (치환 완료)
-- `story-content` **1개** 이상
 
 ---
 
-## Step 6 — `_story.html` 저장
-
-경로: `output/research/daily/YYYY-MM/{date}_story.html`
-
----
-
-## Step 7 — Git commit + push
-
-Story 주입 및 `_story.html` 저장 완료 후 변경분을 커밋·푸시한다. 실패해도 Step 8로 계속 진행.
+## Step 6 — Git commit + push
 
 ```bash
-  git add output/research/ && \
-  git commit -m "feat: {date} research 보고서 — 섹터 Day N/11 · 국가 Day M/11
+git add output/research/ && \
+git commit -m "feat: {date} 테마 리서치 — {테마명}
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>" && \
-  git push origin main
+git push origin main
 ```
 
 ---
 
-## Step 8 — Telegram 완료 알림
-
-Story 주입 성공 후 전송. 실패해도 계속.
-
-- `--focus`: 오늘의 주제 텍스트 (예: `"섹터 Day 4/11 — 에너지·화학 | 국가 Day 3/11 — 중국"`)
-- `--ow`: OW 섹터/국가 목록 (Step 2 결과 기반, 없으면 생략)
-- `--uw`: UW 섹터/국가 목록 (없으면 생략)
+## Step 7 — Telegram 완료 알림
 
 ```bash
-  .venv/bin/python notify_telegram.py {date} --sc-complete \
-    --focus "섹터 Day N/11 — 오늘의 섹터 테마 | 국가 Day M/11 — 오늘의 국가" \
-    --ow "XLK, TIGER 200 IT, 미국" \
-    --uw "XLE"
+.venv/bin/python notify_telegram.py {date} --sc-complete \
+  --focus "테마 리서치 — {테마명}"
 ```
 
 ---
@@ -290,15 +187,12 @@ Story 주입 성공 후 전송. 실패해도 계속.
 ## 완료 보고
 
 - 생성된 HTML 경로
-- 섹터 Day N/11 — 테마명 (US ETF + KR ETF)
-- 국가 Day M/11 — 국가명
-- OW 섹터 (US + KR), UW 섹터 (있다면)
-- OW 국가, UW 국가 (있다면)
+- 선정 테마 (1~2개) + OCR에서 포착된 근거 키워드
 - Tavily 검색 건수 + 주요 뉴스 제목 2~3개
 
 ---
 
 ## 중단 규칙
 
-- Step 1 실패: 즉시 중단 + 사용자 보고
-- Step 5 주입 검증 실패 (`STORY_PLACEHOLDER` 잔존 또는 `<!DOCTYPE` 소실): 즉시 사용자 보고
+- OCR 파일이 0개: 사용자에게 보고 후 중단
+- Step 6 git 실패: 즉시 중단하고 사용자에게 상태 보고
