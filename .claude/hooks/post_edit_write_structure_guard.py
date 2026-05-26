@@ -18,10 +18,13 @@ import sys
 def is_story_file(file_path: str) -> bool:
     # 절대경로("/output/") 또는 상대경로("output/") 모두 처리
     has_output = "/output/" in file_path or file_path.startswith("output/")
-    return (
-        (has_output and file_path.endswith(".html"))
-        or file_path.endswith("generate_stories.py")
-    )
+    if not (has_output and file_path.endswith(".html")) and not file_path.endswith("generate_stories.py"):
+        return False
+    # index 페이지·리스트 페이지는 story 구조 없음 — 제외
+    name = file_path.rsplit("/", 1)[-1]
+    if name == "index.html":
+        return False
+    return True
 
 
 # 필수 섹션 — 6개 모두 있어야 함
