@@ -34,7 +34,7 @@ def _asset(data: dict, category: str, key: str) -> dict | None:
     return data.get(category, {}).get(key)
 
 
-def build_message(date_str: str, data: dict, is_weekly: bool, is_monthly: bool, focus: str = "") -> str:
+def build_message(date_str: str, data: dict, is_weekly: bool, is_monthly: bool) -> str:
     eq = data.get("equity", {})
     fx = data.get("fx", {})
     risk = data.get("risk", {})
@@ -109,12 +109,6 @@ def build_message(date_str: str, data: dict, is_weekly: bool, is_monthly: bool, 
         lines.append("  " + " | ".join(parts))
         lines.append("")
 
-    # 섹터·국가 포커스
-    if focus:
-        lines.append(f"*🎯 섹터·국가 오늘의 주제*")
-        lines.append(f"  {focus}")
-        lines.append("")
-
     # 링크
     year_month = date_str[:7]
     daily_url = f"{GITHUB_PAGES}/summary/{year_month}/{date_str}.html"
@@ -123,9 +117,8 @@ def build_message(date_str: str, data: dict, is_weekly: bool, is_monthly: bool, 
     iso_year, iso_week, _ = dt.isocalendar()
     weekly_url = f"{GITHUB_PAGES}/summary/weekly/{iso_year}-W{iso_week:02d}.html"
     monthly_url = f"{GITHUB_PAGES}/summary/monthly/{year_month}.html"
-    sc_url = f"{GITHUB_PAGES}/research/daily/{year_month}/{date_str}.html"
 
-    link_parts = [f"[일간]({daily_url})", f"[주간]({weekly_url})", f"[월간]({monthly_url})", f"[섹터·국가]({sc_url})"]
+    link_parts = [f"[일간]({daily_url})", f"[주간]({weekly_url})", f"[월간]({monthly_url})"]
     lines.append("🔗 " + "  |  ".join(link_parts))
 
     return "\n".join(lines)
@@ -176,27 +169,6 @@ def build_start_message(date_str: str, label: str = "") -> str:
     )
 
 
-def build_sc_complete_message(date_str: str, focus: str = "", ow_sectors: str = "", uw_sectors: str = "") -> str:
-    dt = datetime.date.fromisoformat(date_str)
-    weekday_ko = ["월", "화", "수", "목", "금", "토", "일"][dt.weekday()]
-    now = datetime.datetime.now().strftime("%H:%M")
-    year_month = date_str[:7]
-    sc_url = f"{GITHUB_PAGES}/research/daily/{year_month}/{date_str}.html"
-
-    lines = [
-        f"✅ *{date_str}({weekday_ko}) 섹터·국가 보고서 완료*",
-        f"",
-        f"  완료 시각: {now} KST",
-    ]
-    if focus:
-        lines += [f"", f"*🎯 오늘의 주제*", f"  {focus}"]
-    if ow_sectors:
-        lines += [f"", f"*▲ OW*  {ow_sectors}"]
-    if uw_sectors:
-        lines += [f"*▼ UW*  {uw_sectors}"]
-    lines += [f"", f"🔗 [섹터·국가 보고서]({sc_url})"]
-    return "\n".join(lines)
-
 
 def build_gpt_usage_message(script: str, label: str, prompt: int, completion: int) -> str:
     """GPT 토큰 사용량 텔레그램 메시지 빌더."""
@@ -216,23 +188,14 @@ def main():
     parser.add_argument("date", help="YYYY-MM-DD")
     parser.add_argument("--weekly", action="store_true", help="주간 마감일 여부")
     parser.add_argument("--monthly", action="store_true", help="월간 마감일 여부")
-    parser.add_argument("--focus", default="", help="섹터·국가 오늘의 주제 텍스트")
     parser.add_argument("--start", action="store_true", help="생성 시작 알림 전송")
-    parser.add_argument("--label", default="", help="시작 알림에 표시할 레이블 (예: '섹터·국가')")
-    parser.add_argument("--sc-complete", action="store_true", help="섹터·국가 보고서 완료 알림")
-    parser.add_argument("--ow", default="", help="OW 섹터/국가 목록 (--sc-complete용)")
-    parser.add_argument("--uw", default="", help="UW 섹터/국가 목록 (--sc-complete용)")
+    parser.add_argument("--label", default="", help="시작 알림에 표시할 레이블")
     args = parser.parse_args()
 
     date_str = args.date
 
     if args.start:
         message = build_start_message(date_str, args.label)
-        send(message)
-        return
-
-    if args.sc_complete:
-        message = build_sc_complete_message(date_str, args.focus, args.ow, args.uw)
         send(message)
         return
 
@@ -246,7 +209,7 @@ def main():
     with open(data_path, encoding="utf-8") as f:
         data = json.load(f)
 
-    message = build_message(date_str, data, args.weekly, args.monthly, args.focus)
+    message = build_message(date_str, data, args.weekly, args.monthly)
     send(message)
 
 
