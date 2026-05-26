@@ -1160,13 +1160,11 @@ def _update_sc_index() -> None:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Research | 섹터·국가 포지셔닝</title>
+<title>Market Research | 주간 테마 리서치</title>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
   @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
 
-  /* ── base ── */
   *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
     font-family: 'Spoqa Han Sans Neo', 'Malgun Gothic', sans-serif;
@@ -1179,26 +1177,6 @@ def _update_sc_index() -> None:
   h1 {{ font-size: 28px; font-weight: 800; margin-bottom: 4px; }}
   .sub {{ font-size: 14px; color: #7c8298; margin-bottom: 28px; }}
 
-  /* ── top tabs ── */
-  .tab-bar {{
-    display: flex; gap: 4px;
-    border-bottom: 2px solid #e2e6f0;
-    margin-bottom: 28px;
-  }}
-  .tab-btn {{
-    padding: 10px 22px;
-    font-size: 14px; font-weight: 700;
-    background: none; border: none; border-bottom: 3px solid transparent;
-    margin-bottom: -2px; cursor: pointer;
-    color: #7c8298; font-family: inherit;
-    transition: all .15s;
-  }}
-  .tab-btn:hover {{ color: #2d3148; }}
-  .tab-btn.active {{ color: #F58220; border-bottom-color: #F58220; }}
-  .tab-panel {{ display: none; }}
-  .tab-panel.active {{ display: block; }}
-
-  /* ── Theme 탭 ── */
   .digest-source-info {{
     font-size: 13px; color: #7c8298;
     margin-bottom: 16px; line-height: 1.6;
@@ -1210,21 +1188,14 @@ def _update_sc_index() -> None:
     font-size: 12px;
   }}
   .digest-cards {{ display: flex; flex-direction: column; gap: 16px; }}
-
-  /* digest theme-card 재정의 (원본 스타일 override) */
   .digest-cards .theme-card {{
-    background: #fff;
-    border: 1px solid #e2e6f0;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    transition: box-shadow .2s;
+    background: #fff; border: 1px solid #e2e6f0; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: box-shadow .2s;
   }}
   .digest-cards .theme-card:hover {{ box-shadow: 0 6px 20px rgba(0,0,0,0.09); }}
   .digest-cards .theme-header {{
     display: flex; align-items: center; gap: 12px;
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid #e2e6f0;
+    padding: 20px 24px 16px; border-bottom: 1px solid #e2e6f0;
   }}
   .digest-cards .theme-badge {{
     font-size: 10px; font-weight: 800; color: #F58220;
@@ -1234,24 +1205,17 @@ def _update_sc_index() -> None:
   .digest-cards .theme-name {{ font-size: 18px; font-weight: 700; color: #1a1d2e; }}
   .digest-cards .theme-body {{ padding: 0 24px; }}
   .digest-cards .detail-section {{
-    padding: 16px 0;
-    border-bottom: 1px solid #f0f2f7;
+    padding: 16px 0; border-bottom: 1px solid #f0f2f7;
   }}
   .digest-cards .detail-section:last-child {{ border-bottom: none; }}
   .digest-cards .detail-label {{
-    display: inline-block;
-    font-size: 10px; font-weight: 800;
+    display: inline-block; font-size: 10px; font-weight: 800;
     text-transform: uppercase; letter-spacing: 0.08em;
     color: #043B72; background: #eef1f8;
-    padding: 2px 9px; border-radius: 20px;
-    margin-bottom: 8px;
+    padding: 2px 9px; border-radius: 20px; margin-bottom: 8px;
   }}
-  .digest-cards .detail-insight .detail-label {{
-    color: #1a9e6e; background: #edfaf5;
-  }}
-  .digest-cards .detail-text {{
-    font-size: 14px; color: #2d3148; line-height: 1.8;
-  }}
+  .digest-cards .detail-insight .detail-label {{ color: #1a9e6e; background: #edfaf5; }}
+  .digest-cards .detail-text {{ font-size: 14px; color: #2d3148; line-height: 1.8; }}
   .digest-cards .point-list {{
     list-style: none !important; display: flex; flex-direction: column; gap: 8px; padding: 0;
   }}
@@ -1264,14 +1228,11 @@ def _update_sc_index() -> None:
     width: 6px; height: 6px; border-radius: 50%; background: #F58220;
   }}
   .digest-cards .source-section {{
-    padding: 14px 24px 18px;
-    background: #f8f9fc;
-    border-top: 1px solid #e2e6f0;
+    padding: 14px 24px 18px; background: #f8f9fc; border-top: 1px solid #e2e6f0;
   }}
   .digest-cards .source-label {{
     font-size: 10px; font-weight: 700; color: #7c8298;
-    text-transform: uppercase; letter-spacing: 0.07em;
-    margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
   }}
   .digest-cards .source-list {{ list-style: none !important; display: flex; flex-direction: column; gap: 6px; padding: 0; }}
   .digest-cards .source-item {{
@@ -1287,40 +1248,14 @@ def _update_sc_index() -> None:
     background: #ebebf0; padding: 1px 7px; border-radius: 10px;
   }}
   .digest-link-row {{ text-align: right; margin-top: 12px; }}
-  .digest-full-link {{
-    font-size: 13px; font-weight: 700; color: #F58220;
-  }}
+  .digest-full-link {{ font-size: 13px; font-weight: 700; color: #F58220; }}
   .digest-full-link:hover {{ text-decoration: underline; }}
   .digest-empty {{
-    text-align: center; padding: 48px 0;
-    font-size: 15px; color: #7c8298;
+    text-align: center; padding: 48px 0; font-size: 15px; color: #7c8298;
   }}
-
-  /* ── Sector·Country 탭 ── */
-  .sc-sub {{ font-size: 13px; color: #7c8298; margin-bottom: 16px; }}
-  .month-bar {{ display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }}
-  .month-btn {{
-    padding: 6px 14px; border: 1px solid #e0e3ed; border-radius: 16px;
-    background: #fff; color: #7c8298; font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all .15s; font-family: inherit;
-  }}
-  .month-btn:hover {{ border-color: #F58220; color: #F58220; }}
-  .month-btn.active {{ background: #F58220; color: #fff; border-color: #F58220; }}
-  .month-panel {{ display: none; }}
-  .month-panel.active {{ display: block; }}
-  #tab-sc ul {{ list-style: none; padding: 0; }}
-  #tab-sc li {{ margin-bottom: 8px; }}
-  #tab-sc li a {{
-    display: block; padding: 12px 18px; background: #fff; border: 1px solid #e0e3ed;
-    border-radius: 10px; color: #2d3148; font-size: 14px; font-weight: 500;
-    transition: all .15s; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    font-family: 'JetBrains Mono', 'Spoqa Han Sans Neo', monospace;
-  }}
-  #tab-sc li a:hover {{ border-color: #F58220; color: #F58220; transform: translateX(4px); }}
 
   @media (max-width: 600px) {{
     body {{ padding: 24px 12px; }}
-    .tab-btn {{ padding: 8px 14px; font-size: 13px; }}
     .digest-cards .theme-name {{ font-size: 16px; }}
     .digest-cards .detail-text,
     .digest-cards .point-list li {{ font-size: 13px; }}
@@ -1330,41 +1265,13 @@ def _update_sc_index() -> None:
 <body>
   <a class="back" href="../index.html">← Back</a>
   <h1>Market Research</h1>
-  <p class="sub">주간 리서치 테마 · 섹터·국가 포지셔닝</p>
+  <p class="sub">주간 테마 리서치 · 미래에셋증권 AI 분석</p>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('theme')">✦ 주간 테마</button>
-    <button class="tab-btn" onclick="switchTab('sc')">Sector · Country</button>
-  </div>
-
-  <!-- Theme 탭 -->
-  <div id="tab-theme" class="tab-panel active">
+  <div id="tab-theme">
 {theme_tab_content}
   </div>
 
-  <!-- Sector·Country 탭 -->
-  <div id="tab-sc" class="tab-panel">
-    <p class="sc-sub">섹터·국가 포지셔닝 · 11일 사이클 · 매 영업일 업데이트</p>
-    <div class="month-bar">
-{month_btns}    </div>
-{sc_panels}  </div>
-
   <div style="background:#fff8f0;border:1px solid #f0d9b5;border-radius:10px;padding:14px 20px;margin-top:24px;font-size:12px;color:#8b6914;line-height:1.7;">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
-
-  <script>
-  function switchTab(name) {{
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    event.target.classList.add('active');
-  }}
-  function showMonth(key) {{
-    document.querySelectorAll('.month-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('m-' + key).classList.add('active');
-    event.target.classList.add('active');
-  }}
-  </script>
 </body>
 </html>
 """
