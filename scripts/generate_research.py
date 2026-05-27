@@ -36,6 +36,11 @@ load_dotenv(ROOT / ".env")
 
 from generate_securities_digest import FUND_CATALOG, FUND_CATALOG_TEXT  # noqa: E402
 
+# generate_securities_digest 모듈 임포트 시 AWS_BEARER_TOKEN_BEDROCK="" 이 주입됨
+# (BEDROCK_API_KEY 미설정 시) → AnthropicBedrock SigV4 인증 헤더 오류 방지
+if not os.environ.get("AWS_BEARER_TOKEN_BEDROCK"):
+    os.environ.pop("AWS_BEARER_TOKEN_BEDROCK", None)
+
 OUTPUT_BASE = ROOT / "output" / "research" / "daily"
 
 THEME_HISTORY_PATH = Path(
