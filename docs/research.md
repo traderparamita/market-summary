@@ -1,9 +1,10 @@
 # 일간 테마 리서치
 
 장 마감 후 자동 발행. `/research [YYYY-MM-DD]` 한 줄로 수동 발행.  
-자동은 `auto_market.py`가 market-full 완료 직후 실행.
+자동은 `MarketSummary-DailyResearch` 태스크가 **월~금 18:50 KST**에 실행 (`scripts/windows/run_daily_research.ps1`).
 
-**산출물**: `output/research/daily/YYYY-MM/YYYY-MM-DD.html` + `_story.html` sibling
+**산출물**: `output/research/daily/YYYY-MM/YYYY-MM-DD.html` + `_story.html` sibling  
+**허브**: `output/research/index.html` — `_update_sc_index()` 호출 시 최신 일간 HTML을 그대로 복사 (카드 목록 아님)
 
 ## 자동화 파이프라인 (`scripts/generate_research.py`)
 
@@ -39,6 +40,7 @@
 
 - `generate_securities_digest.py` import 시 `AWS_BEARER_TOKEN_BEDROCK=""` 환경변수 부작용 발생. import 후 즉시 해당 변수를 정리해 Anthropic SDK 인증 오류 방지.
 - 증권 다이제스트는 선정 신호에서 제외 — 테마 카드 내 분석 풍부화에만 활용.
-- `_update_sc_index()` 연동: `collect_weekly.py` Step 6에서 호출. `output/research/daily/` 스캔 후 최신 리서치 카드 8개를 `output/research/index.html` 상단에 자동 반영.
+- `_update_sc_index()` 연동: `generate_research.py` 완료 후 자동 호출. `output/research/daily/` 최신 HTML을 경로 수정(depth 보정)해 `output/research/index.html`에 직접 덮어씀. 카드 목록이나 증권 다이제스트는 포함하지 않음.
+- `collect_weekly.py` Step 6에서도 호출되어 주간 수집 완료 후 index를 최신 상태로 갱신.
 
 > 이전 섹터·국가 11일 순환 사이클 (`generate_sector_country.py`)은 2026-05-26 폐기. 파일은 참조용 보존.

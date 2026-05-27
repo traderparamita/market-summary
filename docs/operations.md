@@ -6,7 +6,7 @@
 
 ## 1. 자동화 개요
 
-네 개의 Windows Task Scheduler 태스크가 백그라운드로 동작한다. 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`.
+다섯 개의 Windows Task Scheduler 태스크가 백그라운드로 동작한다. 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`.
 
 | 태스크 | 스크립트 | 스케줄 (KST) | 역할 | 상태 |
 |--------|----------|-------------|------|------|
@@ -14,24 +14,27 @@
 | `MarketSummary-OCR` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) | ✅ Active |
 | `MarketSummary-WeeklyCollect` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
 | `MarketSummary-AsiaWeekly` | `scripts/generate_asia_weekly.py` | 일 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active |
+| `MarketSummary-DailyResearch` | `scripts/generate_research.py` | 월~금 18:50 | 당일 Naver 테마 수익률 기반 일간 테마 리서치 자동 생성 | ✅ Active |
 
-월·토는 실행 안 함 (auto_market.should_skip).
+월·토는 Daily 실행 안 함 (auto_market.should_skip). DailyResearch는 월~금 매일.
 
 ### 1.1 요일별 실행 순서
 
 ```
 ─ 일요일 ────────────────────────────────────────
 18:50 → auto_market.py        (금요일 보고서 = 일/주/월 + Snowflake drift 검증)
-19:30 → collect_weekly.py     (주간 증권사 수집)
+19:30 → collect_weekly.py     (주간 증권사 수집 + PRISM + Digest + Index + Fund + push)
 20:00 → generate_asia_weekly  (아시아 주간 브리프 스켈레톤)
 
 ─ 월요일 ────────────────────────────────────────
 08:30 → market-ocr (금요일 발간분 PDF OCR)
+18:50 → generate_research.py  (당일 테마 리서치 → output/research/daily/)
   + (수동) Asia Weekly Story 본문 작성 → `/asia-weekly` 또는 자연어 트리거
 
 ─ 화·수·목·금 ──────────────────────────────────
 06:50 → auto_market.py (전 영업일 보고서)
 08:30 → market-ocr (전 영업일 PDF OCR)
+18:50 → generate_research.py  (당일 테마 리서치)
 
 ─ 토요일 ────────────────────────────────────────
 (자동화 없음)

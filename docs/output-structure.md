@@ -2,7 +2,8 @@
 
 ```
 output/
-├── index.html                   # 메인 허브 (Summary + Research + Fund)
+├── index.html                   # 메인 허브 (Summary · Research · MiraeAsset Securities · MVP Prism)
+├── assets/                      # 브랜드 에셋 (favicon, OG 이미지)
 ├── summary/                     # Market Summary 일/주/월/분기 보고서
 │   ├── index.html              # Summary 인덱스 (Daily/Weekly/Monthly/Quarterly 4개 탭)
 │   ├── YYYY-MM/
@@ -13,28 +14,28 @@ output/
 │   │   └── YYYY-MM-DD_data.json
 │   ├── weekly/
 │   │   ├── YYYY-WNN.html
-│   │   └── YYYY-WNN_{story,cs,pm,macro}.html
+│   │   └── YYYY-WNN_{story,cs,pm,macro,asia}.html
 │   ├── monthly/
 │   │   ├── YYYY-MM.html
 │   │   └── YYYY-MM_{story,cs,pm,macro}.html
 │   └── quarterly/
 │       ├── YYYY-QN.html
 │       └── YYYY-QN_{story,pm,macro}.html
-├── research/                    # 통합 리서치 플랫폼 (섹터·국가·테마 + 증권보고서)
-│   ├── daily/                  # 섹터·국가 초보자 포지셔닝 보고서 (11일 사이클)
-│   │   └── YYYY-MM/
-│   │       ├── YYYY-MM-DD.html
-│   │       └── YYYY-MM-DD_story.html
-│   └── securities/             # 미래에셋증권 상세분석 다이제스트 (주 1회)
+├── research/                    # 일간 테마 리서치 허브
+│   ├── index.html              # 최신 일간 리서치 직접 표시 (generate_sector_country._update_sc_index)
+│   └── daily/
+│       └── YYYY-MM/
+│           ├── YYYY-MM-DD.html
+│           └── YYYY-MM-DD_story.html
+├── securities/                  # 미래에셋증권 상세분석 보고서
+│   ├── index.html              # S3 pre-signed URL 목록 (generate_securities_index.py)
+│   └── digest/                 # 주간 리서치 다이제스트 (generate_securities_digest.py)
 │       ├── digest_YYYY-WNN.html
-│       ├── digest_latest.html
-│       └── index.html
-├── fund/                        # Fund Analysis — S3 기반 다운로드 페이지
-│   └── index.html
+│       └── digest_latest.html
 ├── prism/                       # MVP PRISM 보고서 S3 인덱스 (5개 카테고리 탭)
 │   └── index.html
-├── portfolio/                   # (이관됨 → market-strategy/, 레거시 잔존)
-└── view/                        # (이관됨 → market-strategy/, 레거시 잔존)
+└── fund/                        # Fund Analysis — S3 기반 다운로드 페이지
+    └── index.html
 ```
 
 GitHub Pages 자동 배포 (main 브랜치 push 시 `output/` 폴더).

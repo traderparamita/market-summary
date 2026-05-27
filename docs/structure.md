@@ -47,11 +47,13 @@ scripts/
 │   ├── run_ocr_story.ps1
 │   ├── run_collect_weekly.ps1
 │   ├── run_asia_weekly.ps1
+│   ├── run_daily_research.ps1        # 월~금 18:50 KST 테마 리서치 래퍼
 │   ├── market_summary_task.xml       # 일 18:50 + 화~금 06:50
 │   ├── market_ocr_task.xml           # 월~금 08:30
 │   ├── securities_reports_task.xml   # 일 19:30
 │   ├── asia_weekly_task.xml          # 일 20:00
-│   └── setup_windows_tasks.ps1       # 4개 태스크 일괄 등록
+│   ├── daily_research_task.xml       # 월~금 18:50
+│   └── setup_windows_tasks.ps1       # 5개 태스크 일괄 등록
 └── macos/                            # macOS launchd (레거시 참고용)
 
 db/
@@ -73,8 +75,8 @@ views/                   # 섹터·국가 분석 엔진 (레거시 — generate_
 
 - `.claude/settings.json` — Story 시간 정확성 검증 훅 (PreToolUse/PostToolUse) + Stop 훅 (수치 검증)
 - `.claude/hooks/post_edit_write_structure_guard.py` — HTML 구조·CSS 화이트리스트 검증 (필수 섹션 5개; `index.html` 자동 제외)
-- `.claude/skills/` — `market-summary`, `macro-events`, `mali-etf-analysis`, `weekly-pm`, `asia-weekly` ※ `sector-country`는 레거시
-- `.claude/commands/` — `/market-data`, `/market-deploy`, `/market-full`, `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/weekly-pm`, `/asia-weekly`
+- `.claude/skills/` — `market-summary`, `macro-events`, `mali-etf-analysis`, `asia-weekly`, `sector-country` ※ `weekly-pm`은 제거됨
+- `.claude/commands/` — `/market-data`, `/market-deploy`, `/market-full`, `/market-pm`, `/market-cs`, `/research`, `/review-story`, `/asia-weekly`
 
 ## 로깅
 
