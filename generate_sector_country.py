@@ -1166,9 +1166,7 @@ def _render_research_section(entries: list[dict]) -> str:
   </div>
   <div class="tr-list">{rows}
   </div>
-  <p class="digest-link-row" style="margin-bottom:32px;">
-    <a href="daily/" class="digest-full-link">전체 리서치 목록 보기 &rarr;</a>
-  </p>
+
 """
 
 
