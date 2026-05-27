@@ -3,10 +3,11 @@
 1. 미래에셋증권 상세분석 보고서 (collect_securities_reports.py)
 2. MVP PRISM 보고서 (collect_prism_reports.py)
 3. 주간 리서치 다이제스트 (generate_securities_digest.py)
-4. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
-5. Fund Index 재생성 (generate_fund_index.py) — pre-signed URL 7일 갱신
-6. Research Index 갱신 (_update_sc_index) — digest 새 URL을 research/index.html에 반영
-7. Git push — 갱신된 파일 자동 배포
+4. 주간 테마 리서치 (generate_research.py) — Naver 지속성 × 다이제스트 × Tavily
+5. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
+6. Fund Index 재생성 (generate_fund_index.py) — pre-signed URL 7일 갱신
+7. Research Index 갱신 (_update_sc_index) — digest 새 URL을 research/index.html에 반영
+8. Git push — 갱신된 파일 자동 배포
 """
 from __future__ import annotations
 
@@ -31,6 +32,7 @@ COLLECTORS = [
     ("미래에셋증권 상세분석", "collect_securities_reports.py"),
     ("MVP PRISM", "collect_prism_reports.py"),
     ("주간 리서치 다이제스트", "generate_securities_digest.py"),
+    ("주간 테마 리서치", "generate_research.py"),
     ("Securities Index 재생성", "generate_securities_index.py"),
     ("Fund Index 재생성", "generate_fund_index.py"),
 ]
@@ -97,12 +99,13 @@ def main() -> None:
             ["git", "add",
              "output/research/index.html",
              "output/research/securities/",
+             "output/research/daily/",
              "output/fund/index.html"],
             cwd=str(ROOT), check=True, capture_output=True
         )
         commit_result = subprocess.run(
             ["git", "commit", "-m",
-             f"chore: 주간 securities/fund pre-signed URL 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
+             f"chore: 주간 수집 완료 — research/securities/fund 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
             cwd=str(ROOT), capture_output=True, text=True
         )
         if commit_result.returncode == 0:
