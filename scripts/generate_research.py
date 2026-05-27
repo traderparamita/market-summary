@@ -240,6 +240,10 @@ def load_naver_persistence(ref_date_str: str, n_days: int = 7) -> list[dict]:
                 }
             )
 
+    # 복합 점수 = 지속성(%) × 평균수익률 — 지속성이 같을 때 수익률로 차별화
+    for r in results:
+        r["score"] = r["persistence"] * r["avg_return"]
+
     return sorted(results, key=lambda x: (x["persistence"], x["avg_return"]), reverse=True)
 
 
@@ -543,12 +547,27 @@ def render_html(
     naver_watch = summary.get("naver_watch", "")
     pt2_html = f"<p>② {pt2}</p>" if pt2 else ""
 
+    # 평균수익률 최대값 (바 스케일 기준)
+    _max_abs = max((abs(t["avg_return"]) for t in naver_top[:10]), default=1) or 1
+
+    def _bar(val: float) -> str:
+        w = min(int(abs(val) / _max_abs * 60), 60)
+        color = "#047857" if val >= 0 else "#dc2626"
+        return (
+            f'<div style="display:flex;align-items:center;gap:6px">'
+            f'<div style="width:{w}px;height:8px;border-radius:4px;background:{color};min-width:2px"></div>'
+            f'<span class="{"pos" if val >= 0 else "neg"}">{val:+.2f}%</span>'
+            f"</div>"
+        )
+
     naver_rows = "".join(
-        f"<tr><td>{t['theme']}</td>"
-        f"<td>{t['persistence']}%</td>"
-        f"<td class='{'pos' if t['avg_return'] >= 0 else 'neg'}'>{t['avg_return']:+.2f}%</td>"
-        f"<td>{t['total_days']}일</td></tr>"
-        for t in naver_top[:10]
+        f"<tr>"
+        f"<td>{i+1}</td>"
+        f"<td>{t['theme']}</td>"
+        f"<td>{t['persistence']}% <span style='color:#b0b4c4;font-size:11px'>({t['positive_days']}/{t['total_days']}일)</span></td>"
+        f"<td>{_bar(t['avg_return'])}</td>"
+        f"</tr>"
+        for i, t in enumerate(naver_top[:10])
     )
 
     theme_names = " · ".join(t.get("name", "") for t in selected)
@@ -686,7 +705,7 @@ body{{
 
   <table class="naver-table">
     <thead>
-      <tr><th>Naver 테마</th><th>지속성</th><th>평균수익률</th><th>데이터</th></tr>
+      <tr><th>#</th><th>Naver 테마</th><th>지속성 (상승일/전체)</th><th>평균수익률</th></tr>
     </thead>
     <tbody>{naver_rows}</tbody>
   </table>
