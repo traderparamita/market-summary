@@ -739,6 +739,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="주간 테마 리서치 생성")
     parser.add_argument("--date", help="기준 날짜 (YYYY-MM-DD, 기본: 오늘)")
     parser.add_argument("--dry-run", action="store_true", help="Claude 호출 없이 구조 확인")
+    parser.add_argument("--force", action="store_true", help="이미 생성된 보고서가 있어도 덮어쓰기")
     args = parser.parse_args()
 
     ref_date = datetime.strptime(args.date, "%Y-%m-%d") if args.date else datetime.now()
@@ -758,6 +759,11 @@ def main() -> None:
     month_dir.mkdir(parents=True, exist_ok=True)
     output_path = month_dir / f"{ref_date_str}.html"
     story_path = month_dir / f"{ref_date_str}_story.html"
+
+    if output_path.exists() and not args.force and not args.dry_run:
+        print(f"  이미 존재: {output_path}")
+        print("  재생성하려면 --force 옵션을 사용하세요.")
+        sys.exit(0)
 
     # ── 1. Naver 지속성 ────────────────────────────────────────────────────────
     print("\n[1/5] Naver 테마 지속성 계산...")
