@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash(.venv/bin/python:*), Bash(git:*), Bash(ls:*), Bash(grep:*), Read, Edit, Write, WebSearch, WebFetch, mcp__tavily__search
 argument-hint: "[YYYY-MM-DD]  (생략 시 전 영업일)"
-description: "market_summary 전체 워크플로우: 데이터 수집 → Dashboard → Story(일/주/월) → 배포 → Research(섹터·국가) → 배포"
+description: "market_summary 전체 워크플로우: 데이터 수집 → Dashboard → Story(일/주/월) → 배포"
 ---
 
 ## Context
@@ -17,11 +17,8 @@ description: "market_summary 전체 워크플로우: 데이터 수집 → Dashbo
 
 **대상 날짜**: $ARGUMENTS (비어있으면 전 영업일)
 
-워크플로우는 **두 블록**으로 나뉜다:
-- **블록 A (Steps 0~9)**: Market Summary (일/주/월) → 커밋/푸시 → Telegram ①
-- **블록 B (Steps 10~12)**: Sector-Country → 커밋/푸시 → Telegram ②
-
-블록 A가 완료되면 블록 B 실패 여부와 무관하게 market-summary는 이미 배포된 상태다.
+워크플로우는 **Steps 0~9** 단일 블록으로 구성된다.  
+`generate_sector_country.py`는 2026-05-26 폐기 — 절대 호출하지 않는다.
 
 ---
 
