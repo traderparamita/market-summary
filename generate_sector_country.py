@@ -1176,236 +1176,37 @@ def _render_research_section(entries: list[dict]) -> str:
 
 
 def _update_sc_index() -> None:
-    """output/research/index.html 목록 페이지 생성/갱신.
+    """output/research/index.html を最新の日次リサーチ HTML で上書き。
 
-    탭 구성:
-      1. 주간 테마 리서치 — output/research/daily/ 최신 항목 카드
-      2. Theme           — 이번 주 주간 리서치 다이제스트 (digest_latest.html 인라인)
+    最新の output/research/daily/????-??/????-??-??.html を読み込み、
+    research/ 深さに合わせて相対パスを修正してから index.html として保存する。
     """
     import glob as _glob
 
     daily_dir = OUTPUT_ROOT / "daily"
-    months: dict[str, list[tuple[str, str, str]]] = {}
+    candidates = sorted(
+        [p for p in _glob.glob(str(daily_dir / "????-??" / "????-??-??.html"))
+         if "_story" not in p],
+        reverse=True,
+    )
+    if not candidates:
+        return
 
-    for path in sorted(_glob.glob(str(daily_dir / "????-??" / "????-??-??.html")), reverse=True):
-        fname = Path(path).name
-        date = fname.replace(".html", "")
-        if "_story" in date:
-            continue
-        month = date[:7]
-        try:
-            d = datetime.strptime(date, "%Y-%m-%d")
-            day_name = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][d.weekday()]
-        except Exception:
-            day_name = ""
-        subtitle = ""
-        try:
-            content = Path(path).read_text(encoding="utf-8")
-            m = re.search(r'class="focus-theme">([^<]+)</div>', content)
-            if m:
-                subtitle = f" · {m.group(1).strip()}"
-        except Exception:
-            pass
-        if month not in months:
-            months[month] = []
-        months[month].append((date, day_name, subtitle))
+    content = Path(candidates[0]).read_text(encoding="utf-8")
 
-    sorted_months = sorted(months.keys(), reverse=True)
-    latest_month = sorted_months[0] if sorted_months else ""
+    # Path depth fix: daily HTML is 2 levels below research/, index.html is 0 levels.
+    # Fix favicon path (../../assets/ → ../assets/)
+    content = content.replace('href="../../assets/favicon.svg"', 'href="../assets/favicon.svg"')
+    # Fix Research breadcrumb → self-link
+    content = content.replace('href="../../index.html"', 'href="./index.html"')
+    # Fix footer 보고서 목록 → self-link (BEFORE Anthillia fix: ../index.html → ./index.html
+    # must run first or it would also match the result of the Anthillia replacement)
+    content = content.replace('href="../index.html"', 'href="./index.html"')
+    # Fix Anthillia back link (3 levels → 1 level: ../../../ → ../)
+    content = content.replace('href="../../../index.html"', 'href="../index.html"')
 
-    month_btns = ""
-    sc_panels = ""
-    for m in sorted_months:
-        active = " active" if m == latest_month else ""
-        label = datetime.strptime(m, "%Y-%m").strftime("%Y %b")
-        month_btns += f'        <button class="month-btn{active}" onclick="showMonth(\'{m}\')">{label}</button>\n'
-        items = ""
-        for date, day, subtitle in months[m]:
-            items += f'            <li><a href="daily/{m}/{date}.html">{date} ({day}){subtitle}</a></li>\n'
-        sc_panels += f'        <div class="month-panel{active}" id="m-{m}"><ul>\n{items}        </ul></div>\n'
-
-    # 주간 테마 리서치 섹션
-    research_entries = _scan_research_entries()
-    research_section = _render_research_section(research_entries)
-
-    # Theme 탭 내용
-    week_label, digest_cards = _extract_digest_body()
-    if digest_cards:
-        theme_tab_content = f"""
-      <div class="digest-source-info">
-        미래에셋증권 상세분석 보고서 기반 · AI 자동 요약 · <span class="digest-week-tag">{week_label}</span>
-      </div>
-      <div class="digest-cards">
-{digest_cards}
-      </div>
-      <p class="digest-link-row">
-        <a href="securities/index.html" class="digest-full-link">전체 보고서 목록 보기 →</a>
-      </p>"""
-    else:
-        theme_tab_content = """
-      <div class="digest-empty">
-        <p>아직 이번 주 다이제스트가 생성되지 않았습니다.</p>
-        <p style="margin-top:8px;font-size:13px;color:#7c8298">매주 일요일 자동 생성됩니다.</p>
-      </div>"""
-
-    html = f"""<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Research | 주간 테마 리서치</title>
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<style>
-  @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
-
-  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  body {{
-    font-family: 'Spoqa Han Sans Neo', 'Malgun Gothic', sans-serif;
-    background: #f0f2f7; color: #2d3148;
-    padding: 40px 24px; max-width: 900px; margin: 0 auto;
-  }}
-  a {{ color: inherit; text-decoration: none; }}
-  .back {{ font-size: 13px; color: #7c8298; display: inline-block; margin-bottom: 20px; }}
-  .back:hover {{ color: #F58220; }}
-  h1 {{ font-size: 28px; font-weight: 800; margin-bottom: 4px; }}
-  .sub {{ font-size: 14px; color: #7c8298; margin-bottom: 28px; }}
-
-  .digest-source-info {{
-    font-size: 13px; color: #7c8298;
-    margin-bottom: 16px; line-height: 1.6;
-  }}
-  .digest-week-tag {{
-    display: inline-block;
-    font-weight: 700; color: #043B72;
-    background: #eef1f8; padding: 1px 9px; border-radius: 10px;
-    font-size: 12px;
-  }}
-  .digest-cards {{ display: flex; flex-direction: column; gap: 16px; }}
-  .digest-cards .theme-card {{
-    background: #fff; border: 1px solid #e2e6f0; border-radius: 16px;
-    overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: box-shadow .2s;
-  }}
-  .digest-cards .theme-card:hover {{ box-shadow: 0 6px 20px rgba(0,0,0,0.09); }}
-  .digest-cards .theme-header {{
-    display: flex; align-items: center; gap: 12px;
-    padding: 20px 24px 16px; border-bottom: 1px solid #e2e6f0;
-  }}
-  .digest-cards .theme-badge {{
-    font-size: 10px; font-weight: 800; color: #F58220;
-    background: #fff3e8; padding: 3px 10px; border-radius: 20px;
-    text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
-  }}
-  .digest-cards .theme-name {{ font-size: 18px; font-weight: 700; color: #1a1d2e; }}
-  .digest-cards .theme-body {{ padding: 0 24px; }}
-  .digest-cards .detail-section {{
-    padding: 16px 0; border-bottom: 1px solid #f0f2f7;
-  }}
-  .digest-cards .detail-section:last-child {{ border-bottom: none; }}
-  .digest-cards .detail-label {{
-    display: inline-block; font-size: 10px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: #043B72; background: #eef1f8;
-    padding: 2px 9px; border-radius: 20px; margin-bottom: 8px;
-  }}
-  .digest-cards .detail-insight .detail-label {{ color: #1a9e6e; background: #edfaf5; }}
-  .digest-cards .detail-text {{ font-size: 14px; color: #2d3148; line-height: 1.8; }}
-  .digest-cards .point-list {{
-    list-style: none !important; display: flex; flex-direction: column; gap: 8px; padding: 0;
-  }}
-  .digest-cards .point-list li {{
-    font-size: 14px; color: #2d3148; line-height: 1.7;
-    padding-left: 18px; position: relative;
-  }}
-  .digest-cards .point-list li::before {{
-    content: ''; position: absolute; left: 0; top: 9px;
-    width: 6px; height: 6px; border-radius: 50%; background: #F58220;
-  }}
-  .digest-cards .source-section {{
-    padding: 14px 24px 18px; background: #f8f9fc; border-top: 1px solid #e2e6f0;
-  }}
-  .digest-cards .source-label {{
-    font-size: 10px; font-weight: 700; color: #7c8298;
-    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
-  }}
-  .digest-cards .source-list {{ list-style: none !important; display: flex; flex-direction: column; gap: 6px; padding: 0; }}
-  .digest-cards .source-item {{
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  }}
-  .digest-cards .source-link {{
-    font-size: 12px; color: #043B72;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
-  }}
-  .digest-cards .source-link:hover {{ color: #F58220; text-decoration: underline; }}
-  .digest-cards .source-date {{
-    flex-shrink: 0; font-size: 11px; color: #7c8298;
-    background: #ebebf0; padding: 1px 7px; border-radius: 10px;
-  }}
-  .digest-link-row {{ text-align: right; margin-top: 12px; }}
-  .digest-full-link {{ font-size: 13px; font-weight: 700; color: #F58220; }}
-  .digest-full-link:hover {{ text-decoration: underline; }}
-  .digest-empty {{
-    text-align: center; padding: 48px 0; font-size: 15px; color: #7c8298;
-  }}
-
-  /* 주간 테마 리서치 섹션 */
-  .sec-header {{ margin-bottom: 14px; }}
-  .sec-title {{ font-size: 18px; font-weight: 800; color: #1a1d2e; }}
-  .sec-sub {{ font-size: 13px; color: #7c8298; margin-top: 2px; }}
-  .sec-divider {{
-    border: none; border-top: 1px solid #e2e6f0;
-    margin: 28px 0;
-  }}
-  .tr-list {{ display: flex; flex-direction: column; gap: 10px; }}
-  .tr-row {{
-    display: flex; align-items: center; justify-content: space-between;
-    background: #fff; border: 1px solid #e2e6f0; border-radius: 14px;
-    padding: 18px 20px; text-decoration: none; color: inherit;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.04); transition: box-shadow .18s, border-color .18s;
-  }}
-  .tr-row:hover {{ box-shadow: 0 4px 16px rgba(0,0,0,0.09); border-color: #F58220; }}
-  .tr-left {{ flex: 1; min-width: 0; }}
-  .tr-week {{ font-size: 11px; font-weight: 700; color: #7c8298; margin-bottom: 4px; }}
-  .tr-themes {{ font-size: 16px; font-weight: 700; color: #1a1d2e; margin-bottom: 8px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-  .tr-chips {{ display: flex; flex-wrap: wrap; gap: 6px; }}
-  .tr-chip {{
-    font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px;
-    background: #f0f2f7; color: #7c8298; border: 1px solid #e2e6f0;
-  }}
-  .tr-arrow {{ flex-shrink: 0; font-size: 18px; color: #F58220; margin-left: 12px; }}
-
-  @media (max-width: 600px) {{
-    body {{ padding: 24px 12px; }}
-    .digest-cards .theme-name {{ font-size: 16px; }}
-    .digest-cards .detail-text,
-    .digest-cards .point-list li {{ font-size: 13px; }}
-    .tr-themes {{ font-size: 14px; }}
-  }}
-</style>
-</head>
-<body>
-  <a class="back" href="../index.html">&#8592; Back</a>
-  <h1>Market Research</h1>
-  <p class="sub">주간 테마 리서치 · 미래에셋증권 AI 분석</p>
-
-{research_section}
-  <hr class="sec-divider">
-
-  <div class="sec-header">
-    <div class="sec-title">증권 다이제스트</div>
-    <div class="sec-sub">미래에셋증권 상세분석 보고서 기반 AI 요약</div>
-  </div>
-
-  <div id="tab-theme">
-{theme_tab_content}
-  </div>
-
-  <div style="background:#fff8f0;border:1px solid #f0d9b5;border-radius:10px;padding:14px 20px;margin-top:24px;font-size:12px;color:#8b6914;line-height:1.7;">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
-</body>
-</html>
-"""
     idx_path = OUTPUT_ROOT / "index.html"
-    idx_path.write_text(html, encoding="utf-8")
+    idx_path.write_text(content, encoding="utf-8")
 
 
 def _update_index_link(date_str: str, period: str, out_path: Path) -> None:
