@@ -152,7 +152,7 @@ def render_html(rows: list[dict]) -> str:
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fund · Anthillia</title>
-<meta name="description" content="미래에셋 AI Investment Agent — 펀드 자료 목록">
+<meta name="description" content="미래에셋생명 Market Intelligence — 펀드 자료 목록">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <style>
 @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
