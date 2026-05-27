@@ -13,7 +13,8 @@ import datetime as dt
 import csv
 import tempfile
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+sys.path.insert(0, BASE_DIR)
 SIM_DIR = os.path.join(BASE_DIR, "simulation")
 HISTORY_CSV = os.path.join(BASE_DIR, "history", "market_data.csv")
 

@@ -25,7 +25,7 @@ BG_LIGHT = "#f4f5f9"
 MUTED = "#7c8298"
 WHITE = "#ffffff"
 
-OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
+OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output")
 
 # Spoqa Han Sans ttf from the Mirae skill (if available), else fall back.
 SPOQA_BOLD = os.path.expanduser(
