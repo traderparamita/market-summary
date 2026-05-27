@@ -1,56 +1,253 @@
-<div class="story-section" id="story-section">
-<div class="story-content">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-05-22 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
 
-  <!-- Subject 1: US Industrials 심층 분석 -->
-  <h3 style="color:#F58220;margin-bottom:12px">🎯 미국 산업재(XLI) 심층 분석</h3>
-
-  <p>현재 신호: N — <strong>지켜보는 섹터</strong> (1개월 +0.43%, 3개월 -2.81%)</p>
-
-  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
-  <p>미국 산업재 섹터는 2026년 들어 두 개의 상반된 힘이 동시에 작용하고 있습니다. 한쪽에서는 NATO 회원국들의 방위비 증액과 미국 연방 국방예산 확대 기조가 방산·항공 기업에 든든한 수주 기반을 제공하고 있습니다. GE Aerospace(제트엔진·항공기 부품)와 RTX(미사일·방공 시스템)는 이 흐름에서 직접 수혜를 받고 있으며, 분기 수주잔고가 사상 최고 수준에 근접해 있습니다.</p>
-  <p>반면 건설기계·물류 분야는 미국의 추가 관세 정책에 대한 불확실성으로 수출 마진이 압박을 받고 있습니다. Caterpillar는 북미 인프라 수요는 견고하지만 중국·유럽 수출 위축 우려가 주가 할인 요인으로 작용 중입니다. Honeywell은 항공·빌딩자동화 부문 수주는 양호하나, 전체 섹터의 3개월 모멘텀이 -2.81%로 S&P500(+8.16%)을 크게 밑돌면서 기술주 집중 장세에서 상대적으로 소외되고 있습니다.</p>
-
-  <p><strong>대표주 동향</strong></p>
-  <p>GE Aerospace(GE)는 차세대 전투기 엔진(F414·F110) 납품 물량 증가와 민항기 MRO(유지보수) 수요 회복으로 올해 들어 양호한 실적 흐름을 보이고 있습니다. RTX는 Patriot 미사일과 Raytheon 정밀유도탄 수요가 러시아-우크라이나 분쟁 지속으로 꾸준히 유지되고 있으며, W21 주간에도 유럽 방산 수요 확대 기대로 강세를 나타냈습니다. Caterpillar는 미국 인프라 수요 지속에도 불구하고 관세 불확실성에 따른 이익률 전망 불확실성이 주가 상단을 제한하고 있습니다.</p>
-
-  <!-- Subject 2: KR 산업재 심층 분석 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🎯 한국 산업재(KOSPI200 산업재) 심층 분석</h3>
-
-  <p>현재 신호: OW — <strong>지금 담으면 좋은 섹터</strong> (1개월 -2.09%, 3개월 +12.81%)</p>
-
-  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
-  <p>한국 산업재 섹터는 조선과 방산이 양대 축으로, 최근 3개월 +12.81%의 강한 모멘텀을 보이고 있습니다. W21(5월 18~22일) 한 주는 이 섹터에 결정적 촉매가 된 주간이었습니다. 삼성전자 노조 파업 취소(목요일 새벽 합의)와 NVIDIA 역대 최대 실적 발표 후 목요일 대형 반도체주에 집중됐던 매수세가 금요일에는 방산·조선·부품주로 이동하면서 코스닥을 포함한 산업재 관련주가 2차 랠리를 펼쳤습니다.</p>
-  <p>조선 3사(한화오션·HD현대중공업·삼성중공업)는 LNG선과 군함 수주 잔고가 역대 최고 수준을 유지 중이며, 이란 핵협상 불확실성에도 불구하고 중동·유럽 발주 수요가 꾸준히 유입되고 있습니다. K-방산 수출 모멘텀(한화에어로스페이스·현대로템의 유럽·중동 계약)도 지속되면서 방산·조선이 KR 산업재 섹터의 구조적 OW 근거를 제공하고 있습니다. 1개월 기준으로 -2.09%로 단기 조정이 있었으나, 3개월 +12.81%의 중기 추세는 건재합니다.</p>
-
-  <p><strong>대표주 동향</strong></p>
-  <p>한화오션과 HD현대중공업은 2026년 들어 연속 대형 수주 공시를 통해 장기 실적 가시성을 높이고 있으며, 특히 군함·잠수함 수주 부문에서 경쟁력이 인정받고 있습니다. 삼성중공업은 LNG선 상선 부문에서 점유율을 회복 중입니다. W21 금요일에 이들 조선주는 대형 반도체에서 이동한 차익실현 자금의 새로운 목적지가 됐고, 개인 투자자 중심의 순매수가 유입되면서 코스닥 2차 랠리의 주역이 됐습니다.</p>
-
-  <!-- Subject 3: 영국 시장 심층 분석 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">🎯 영국 시장 심층 분석</h3>
-
-  <p>현재 신호: N — <strong>지켜보는 시장</strong> (3개월 -2.06%)</p>
-
-  <p><strong>최근 1~2주 흐름 (과거 → 현재)</strong></p>
-  <p>영국 시장은 W21에 긍정적 반전 계기를 맞았습니다. 수요일(5/20) 영국 통계청이 발표한 4월 소비자물가(CPI)가 전년대비 2.8% 상승으로 시장 예상치 3.0%를 크게 밑돌았습니다. 영국 인플레이션이 빠르게 안정되고 있다는 신호로, 영란은행(BOE)의 금리 인하 경로가 앞당겨질 수 있다는 기대를 불러왔습니다. 이날 FTSE 100과 유럽 증시가 함께 반등했고, 파운드화도 일시 강세를 나타냈습니다.</p>
-  <p>다만 영국 시장의 3개월 전체 성과는 -2.06%로 글로벌 대비 부진합니다. 에너지주(Shell·BP)가 W21에 원유 가격 급락(-8.37%)의 직격탄을 맞았고, HSBC는 미중 무역 긴장에 따른 아시아 사업 불확실성으로 눌려있습니다. AstraZeneca는 신약 파이프라인 기대로 상대적 강세를 나타내고 있지만, 섹터 구성상 에너지·금융 비중이 높은 FTSE 100의 특성상 유가 약세 환경에서 전체 지수가 제약을 받고 있습니다.</p>
-
-  <p><strong>대표 지수·종목 동향</strong></p>
-  <p>Shell과 BP는 이란 핵협상 진전으로 원유 공급 차질 우려가 완화되면서 W21에 큰 폭으로 하락했습니다. HSBC는 미중 갈등이 항만·해운으로 확산되는 상황에서 홍콩·중국 사업 불확실성이 계속 주가 하단을 당기고 있습니다. AstraZeneca는 종양학 신약(암 치료제) 임상 결과 발표 기대와 GLP-1(비만치료제) 파이프라인 개발 진전이 긍정적 촉매로 작용하며 영국 시장의 상대적 아웃퍼포머 역할을 하고 있습니다. 6개월 기준 영국 시장은 +9.71%로 플러스를 유지하고 있어 절대 기준으로는 선진국 평균 내에 있으며, BOE 금리 인하 사이클 진입이 확인되면 금융주 중심의 재평가 가능성이 있습니다.</p>
-
-  <!-- 핵심 포인트 3가지 -->
-  <h3 style="color:#F58220;margin:16px 0 12px">💡 핵심 포인트 3가지</h3>
-
-  <p>① <strong>미국 산업재(XLI) — 방산 OW·건설기계 N의 양분된 업종</strong></p>
-  <p>GE Aerospace·RTX 등 방산·항공은 국방비 증액 수혜로 실적 가시성이 높지만, Caterpillar 등 건설기계는 관세 불확실성으로 상단이 막혀 있습니다. 섹터 전체 신호는 중립이지만 방산 비중을 높게 유지하는 방식으로 접근할 수 있습니다.</p>
-
-  <p>② <strong>한국 산업재 — 조선·방산이 구조적 OW를 뒷받침</strong></p>
-  <p>LNG선과 군함 수주 잔고가 역대 최고 수준에 근접하며 실적 가시성이 매우 높습니다. W21에 대형 반도체주에서 이동한 자금이 방산·조선으로 유입되면서 3개월 +12.81%의 중기 강세가 재확인됐습니다. 단기 변동성(-2.09% 1개월)은 있지만 구조적 매력은 유지됩니다.</p>
-
-  <p>③ <strong>영국 — CPI 하락으로 BOE 기대 앞당겨지나, 에너지 비중이 지수 발목</strong></p>
-  <p>4월 CPI 2.8%는 BOE 금리 인하 기대를 강화했지만, FTSE 100의 높은 에너지·금융 비중이 유가 약세 환경에서 전체 지수를 억누르고 있습니다. 금리 인하 사이클 본격화와 유가 안정이 동시에 확인될 때 재평가 기회가 있을 수 있습니다.</p>
-
-  <div style="font-size:11px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:8px">
-    출처: history/market_data.csv 계량 신호 + W21 시장 흐름 + BOE CPI 발표(5/20) · 2026-05-22 · 섹터 Day 6/11 (산업재) · 국가 Day 6/11 (영국)
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
 </div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-05-22 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>MLCC(적층세라믹콘덴서)</strong>
+  </p>
+  <div class="kpi-bar"><div class="kpi-item"><span class="kpi-label">KOSPI</span><span class="kpi-val kpi-pos">+0.41%</span><span class="kpi-sub">7,848</span></div><div class="kpi-item"><span class="kpi-label">KOSDAQ</span><span class="kpi-val kpi-pos">+4.99%</span></div><div class="kpi-item"><span class="kpi-label">S&amp;P500</span><span class="kpi-val kpi-pos">+0.37%</span><span class="kpi-sub">전날</span></div></div>
 </div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">MLCC(적층세라믹콘덴서)</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +12.56%</span><span class="chip chip-persist">지속성 60%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: DRY-RUN 확인용</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">DRY-RUN: 오늘의 움직임</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">DRY-RUN: 배경 서술</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">DRY-RUN: 글로벌 연결고리</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>DRY-RUN: 토킹포인트 1</li><li>DRY-RUN: 토킹포인트 2</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. DRY-RUN 질문?</div><div class="qa-a">A. DRY-RUN 답변.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: DRY-RUN: 리스크
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="AI 국내주식">[N150] AI국내주식전략</span></div></div>
+  </div>
 </div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">DRY-RUN: 오늘 요약 한 줄</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — DRY-RUN: 내일 주목 변수</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — DRY-RUN: Naver 주목 테마</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>MLCC(적층세라믹콘덴서)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+12.56%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>2</td><td>2차전지(나트륨이온)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:43px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+9.05%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>3</td><td>우주태양광(페로브스카이트 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:37px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.75%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>4</td><td>양자암호/양자컴퓨팅</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:36px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.63%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>5</td><td>반도체 기판(FC-BGA/PCB/MLB 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:35px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.48%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>6</td><td>고체산화물 연료전지(SOFC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:35px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.33%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>7</td><td>광통신(광케이블/광섬유 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:34px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.19%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>8</td><td>LED장비</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:33px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.95%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>9</td><td>핵융합에너지</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:32px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.86%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>10</td><td>줄기세포</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:32px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.78%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>11</td><td>통신장비</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:31px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.53%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>12</td><td>페라이트</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:27px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.80%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>13</td><td>보안주(정보)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:27px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.79%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>14</td><td>전력저장장치(ESS)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:27px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.70%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>15</td><td>코로나19(치료제/백신 개발 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:27px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.70%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>16</td><td>전력반도체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.59%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>17</td><td>카메라모듈/부품</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.57%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>18</td><td>면역항암제</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.51%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>19</td><td>리튬</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.46%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>20</td><td>비만치료제</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.46%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-05-27 23:38 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
