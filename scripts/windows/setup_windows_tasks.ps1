@@ -10,10 +10,11 @@
 $ROOT = "c:\Users\user\Desktop\kosmos\market-summary"
 
 $TASKS = @(
-    @{ Name = "MarketSummary-Daily";         XML = "$ROOT\scripts\windows\market_summary_task.xml" },
-    @{ Name = "MarketSummary-OCR";           XML = "$ROOT\scripts\windows\market_ocr_task.xml" },
-    @{ Name = "MarketSummary-WeeklyCollect"; XML = "$ROOT\scripts\windows\securities_reports_task.xml" },
-    @{ Name = "MarketSummary-AsiaWeekly";    XML = "$ROOT\scripts\windows\asia_weekly_task.xml" }
+    @{ Name = "MarketSummary-Daily";          XML = "$ROOT\scripts\windows\market_summary_task.xml" },
+    @{ Name = "MarketSummary-OCR";            XML = "$ROOT\scripts\windows\market_ocr_task.xml" },
+    @{ Name = "MarketSummary-WeeklyCollect";  XML = "$ROOT\scripts\windows\securities_reports_task.xml" },
+    @{ Name = "MarketSummary-AsiaWeekly";     XML = "$ROOT\scripts\windows\asia_weekly_task.xml" },
+    @{ Name = "MarketSummary-DailyResearch";  XML = "$ROOT\scripts\windows\daily_research_task.xml" }
 )
 
 Write-Host ""
@@ -55,7 +56,7 @@ Get-ScheduledTask | Where-Object { $_.TaskName -like "MarketSummary-*" } | ForEa
 
 Write-Host ""
 if ($allOk) {
-    Write-Host "완료: 4개 태스크 모두 등록됨." -ForegroundColor Green
+    Write-Host "완료: 5개 태스크 모두 등록됨." -ForegroundColor Green
 } else {
     Write-Host "일부 태스크 등록 실패. 위 오류를 확인하세요." -ForegroundColor Red
 }
@@ -65,3 +66,4 @@ Write-Host "  schtasks /Run /TN MarketSummary-Daily"
 Write-Host "  schtasks /Run /TN MarketSummary-OCR"
 Write-Host "  schtasks /Run /TN MarketSummary-WeeklyCollect"
 Write-Host "  schtasks /Run /TN MarketSummary-AsiaWeekly"
+Write-Host "  schtasks /Run /TN MarketSummary-DailyResearch"
