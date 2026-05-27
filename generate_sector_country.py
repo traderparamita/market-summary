@@ -1088,12 +1088,96 @@ def _extract_digest_body() -> tuple[str, str]:
         return "", ""
 
 
+def _scan_research_entries(n: int = 8) -> list[dict]:
+    """output/research/daily/ 에서 주간 테마 리서치 항목 추출 (최신 n개)."""
+    import glob as _glob
+
+    entries = []
+    for path in sorted(
+        _glob.glob(str(OUTPUT_ROOT / "daily" / "????-??" / "????-??-??.html")),
+        reverse=True,
+    ):
+        if "_story" in path:
+            continue
+        date_str = Path(path).stem
+        try:
+            content = Path(path).read_text(encoding="utf-8")
+        except Exception:
+            continue
+        # 새 테마 리서치 형식 확인 (Weekly Theme Research 배지)
+        if "Weekly Theme Research" not in content:
+            continue
+        # 테마명: <p class="meta">…<strong>…</strong>
+        themes = ""
+        m = re.search(r'class="meta"[^>]*>.*?<strong>([^<]+)</strong>', content, re.DOTALL)
+        if m:
+            themes = m.group(1).strip()
+        # 주차 라벨: header-badge 다음 <h1>
+        week_label = date_str
+        m2 = re.search(r'class="header-badge">.*?</div>\s*<h1>([^<]+)</h1>', content, re.DOTALL)
+        if m2:
+            week_label = m2.group(1).strip()
+        # 신호 칩 — 중복 제거, 최대 4개
+        seen: set[str] = set()
+        chips = []
+        for c in re.findall(r'class="chip[^"]*">([^<]+)</span>', content):
+            if c not in seen:
+                seen.add(c)
+                chips.append(c)
+            if len(chips) >= 4:
+                break
+
+        entries.append({
+            "date": date_str,
+            "week_label": week_label,
+            "themes": themes,
+            "chips": chips,
+            "href": f"daily/{date_str[:7]}/{date_str}.html",
+        })
+        if len(entries) >= n:
+            break
+    return entries
+
+
+def _render_research_section(entries: list[dict]) -> str:
+    """주간 테마 리서치 섹션 HTML 블록 생성."""
+    if not entries:
+        return ""
+
+    rows = ""
+    for e in entries:
+        chip_html = "".join(
+            f'<span class="tr-chip">{c}</span>' for c in e["chips"]
+        )
+        rows += f"""
+    <a class="tr-row" href="{e['href']}">
+      <div class="tr-left">
+        <div class="tr-week">{e['week_label']}</div>
+        <div class="tr-themes">{e['themes'] or e['date']}</div>
+        <div class="tr-chips">{chip_html}</div>
+      </div>
+      <span class="tr-arrow">&#8594;</span>
+    </a>"""
+
+    return f"""
+  <div class="sec-header">
+    <div class="sec-title">주간 테마 리서치</div>
+    <div class="sec-sub">Naver 지속성 &times; 미래에셋 다이제스트 &times; Tavily 글로벌 트리거</div>
+  </div>
+  <div class="tr-list">{rows}
+  </div>
+  <p class="digest-link-row" style="margin-bottom:32px;">
+    <a href="daily/" class="digest-full-link">전체 리서치 목록 보기 &rarr;</a>
+  </p>
+"""
+
+
 def _update_sc_index() -> None:
     """output/research/index.html 목록 페이지 생성/갱신.
 
     탭 구성:
-      1. Theme     — 이번 주 주간 리서치 다이제스트 (digest_latest.html 인라인)
-      2. Sector·Country — 기존 일별 목록
+      1. 주간 테마 리서치 — output/research/daily/ 최신 항목 카드
+      2. Theme           — 이번 주 주간 리서치 다이제스트 (digest_latest.html 인라인)
     """
     import glob as _glob
 
@@ -1103,6 +1187,8 @@ def _update_sc_index() -> None:
     for path in sorted(_glob.glob(str(daily_dir / "????-??" / "????-??-??.html")), reverse=True):
         fname = Path(path).name
         date = fname.replace(".html", "")
+        if "_story" in date:
+            continue
         month = date[:7]
         try:
             d = datetime.strptime(date, "%Y-%m-%d")
@@ -1134,6 +1220,10 @@ def _update_sc_index() -> None:
         for date, day, subtitle in months[m]:
             items += f'            <li><a href="daily/{m}/{date}.html">{date} ({day}){subtitle}</a></li>\n'
         sc_panels += f'        <div class="month-panel{active}" id="m-{m}"><ul>\n{items}        </ul></div>\n'
+
+    # 주간 테마 리서치 섹션
+    research_entries = _scan_research_entries()
+    research_section = _render_research_section(research_entries)
 
     # Theme 탭 내용
     week_label, digest_cards = _extract_digest_body()
@@ -1254,18 +1344,54 @@ def _update_sc_index() -> None:
     text-align: center; padding: 48px 0; font-size: 15px; color: #7c8298;
   }}
 
+  /* 주간 테마 리서치 섹션 */
+  .sec-header {{ margin-bottom: 14px; }}
+  .sec-title {{ font-size: 18px; font-weight: 800; color: #1a1d2e; }}
+  .sec-sub {{ font-size: 13px; color: #7c8298; margin-top: 2px; }}
+  .sec-divider {{
+    border: none; border-top: 1px solid #e2e6f0;
+    margin: 28px 0;
+  }}
+  .tr-list {{ display: flex; flex-direction: column; gap: 10px; }}
+  .tr-row {{
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fff; border: 1px solid #e2e6f0; border-radius: 14px;
+    padding: 18px 20px; text-decoration: none; color: inherit;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04); transition: box-shadow .18s, border-color .18s;
+  }}
+  .tr-row:hover {{ box-shadow: 0 4px 16px rgba(0,0,0,0.09); border-color: #F58220; }}
+  .tr-left {{ flex: 1; min-width: 0; }}
+  .tr-week {{ font-size: 11px; font-weight: 700; color: #7c8298; margin-bottom: 4px; }}
+  .tr-themes {{ font-size: 16px; font-weight: 700; color: #1a1d2e; margin-bottom: 8px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+  .tr-chips {{ display: flex; flex-wrap: wrap; gap: 6px; }}
+  .tr-chip {{
+    font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px;
+    background: #f0f2f7; color: #7c8298; border: 1px solid #e2e6f0;
+  }}
+  .tr-arrow {{ flex-shrink: 0; font-size: 18px; color: #F58220; margin-left: 12px; }}
+
   @media (max-width: 600px) {{
     body {{ padding: 24px 12px; }}
     .digest-cards .theme-name {{ font-size: 16px; }}
     .digest-cards .detail-text,
     .digest-cards .point-list li {{ font-size: 13px; }}
+    .tr-themes {{ font-size: 14px; }}
   }}
 </style>
 </head>
 <body>
-  <a class="back" href="../index.html">← Back</a>
+  <a class="back" href="../index.html">&#8592; Back</a>
   <h1>Market Research</h1>
   <p class="sub">주간 테마 리서치 · 미래에셋증권 AI 분석</p>
+
+{research_section}
+  <hr class="sec-divider">
+
+  <div class="sec-header">
+    <div class="sec-title">증권 다이제스트</div>
+    <div class="sec-sub">미래에셋증권 상세분석 보고서 기반 AI 요약</div>
+  </div>
 
   <div id="tab-theme">
 {theme_tab_content}
