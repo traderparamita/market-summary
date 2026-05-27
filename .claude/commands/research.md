@@ -77,29 +77,19 @@ for t in top:
 
 ---
 
-## Step 1 — 미래에셋 증권 주간 보고서 수집 + OCR
+## Step 1 — 미래에셋 증권 주간 다이제스트 읽기
 
-### 1-A. 이번 주 증권 다이제스트 확인
-
-대상 날짜의 주차(W##)에 해당하는 다이제스트가 있으면 바로 읽는다.
+`collect_weekly.py`가 매주 일요일 19:30에 자동 생성한 다이제스트를 읽는다.
+(`/research`는 `collect_weekly.py` 완료 후인 20:00 이후에 실행할 것)
 
 ```bash
 ls output/research/securities/digest_*.html | sort | tail -3
 ```
 
-파일이 있으면 → 읽고 **Step 1-C**로 건너뜀.
-파일이 없으면 → **Step 1-B** 실행.
+파일이 없으면 → 사용자에게 보고 후 중단.
+(`collect_weekly.py`가 아직 미실행이므로 19:30 이후 재시도 요청)
 
-### 1-B. 증권 보고서 수집 (다이제스트 없을 때만)
-
-```bash
-.venv/bin/python scripts/collect_securities_reports.py --week-of {date}
-.venv/bin/python scripts/generate_securities_digest.py
-```
-
-### 1-C. 다이제스트에서 핵심 키워드 추출
-
-생성된(또는 기존) `digest_YYYY-WNN.html`을 읽어 다음을 추출한다:
+파일이 있으면 → 가장 최근 `digest_YYYY-WNN.html`을 읽어 다음을 추출한다:
 - 이번 주 애널리스트가 가장 많이 다룬 **섹터·테마·종목**
 - **Buy/Overweight 의견**이 집중된 섹터
 - **목표주가 상향** 종목이 많은 섹터
@@ -347,4 +337,5 @@ git push origin main
 
 ## 중단 규칙
 
+- 증권 다이제스트 없음: 사용자에게 보고 후 중단 (`collect_weekly.py`가 19:30에 실행되므로 이후 재시도 요청)
 - Step 9 git 실패: 즉시 중단 후 사용자에게 상태 보고
