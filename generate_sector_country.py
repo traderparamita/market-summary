@@ -1089,7 +1089,10 @@ def _extract_digest_body() -> tuple[str, str]:
 
 
 def _scan_research_entries(n: int = 8) -> list[dict]:
-    """output/research/daily/ 에서 주간 테마 리서치 항목 추출 (최신 n개)."""
+    """output/research/daily/ 에서 테마 리서치 항목 추출 (최신 n개).
+
+    Weekly Theme Research (구형) / Daily Theme Research (신형) 모두 지원.
+    """
     import glob as _glob
 
     entries = []
@@ -1104,19 +1107,21 @@ def _scan_research_entries(n: int = 8) -> list[dict]:
             content = Path(path).read_text(encoding="utf-8")
         except Exception:
             continue
-        # 새 테마 리서치 형식 확인 (Weekly Theme Research 배지)
-        if "Weekly Theme Research" not in content:
+        # Weekly 또는 Daily 테마 리서치 형식 확인
+        is_weekly = "Weekly Theme Research" in content
+        is_daily = "Daily Theme Research" in content
+        if not is_weekly and not is_daily:
             continue
         # 테마명: <p class="meta">…<strong>…</strong>
         themes = ""
         m = re.search(r'class="meta"[^>]*>.*?<strong>([^<]+)</strong>', content, re.DOTALL)
         if m:
             themes = m.group(1).strip()
-        # 주차 라벨: header-badge 다음 <h1>
-        week_label = date_str
+        # 라벨: header-badge 다음 <h1>
+        label = date_str
         m2 = re.search(r'class="header-badge">.*?</div>\s*<h1>([^<]+)</h1>', content, re.DOTALL)
         if m2:
-            week_label = m2.group(1).strip()
+            label = m2.group(1).strip()
         # 신호 칩 — 중복 제거, 최대 4개
         seen: set[str] = set()
         chips = []
@@ -1129,7 +1134,7 @@ def _scan_research_entries(n: int = 8) -> list[dict]:
 
         entries.append({
             "date": date_str,
-            "week_label": week_label,
+            "week_label": label,
             "themes": themes,
             "chips": chips,
             "href": f"daily/{date_str[:7]}/{date_str}.html",
@@ -1161,8 +1166,8 @@ def _render_research_section(entries: list[dict]) -> str:
 
     return f"""
   <div class="sec-header">
-    <div class="sec-title">주간 테마 리서치</div>
-    <div class="sec-sub">Naver 지속성 &times; 미래에셋 다이제스트 &times; Tavily 글로벌 트리거</div>
+    <div class="sec-title">테마 리서치</div>
+    <div class="sec-sub">Naver 테마 수익률 &times; Tavily 글로벌 트리거 &times; 상담사 토킹포인트</div>
   </div>
   <div class="tr-list">{rows}
   </div>
