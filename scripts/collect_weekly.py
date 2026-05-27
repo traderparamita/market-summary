@@ -5,7 +5,7 @@
 3. 주간 리서치 다이제스트 (generate_securities_digest.py)
 4. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
 5. Fund Index 재생성 (generate_fund_index.py) — pre-signed URL 7일 갱신
-6. Research Index 갱신 (_update_sc_index) — digest 새 URL을 research/index.html에 반영
+6. Research Index 갱신 (generate_research_index.py) — 일간 테마 카드 목록 재생성
 7. Git push — 갱신된 파일 자동 배포
 
 주의: 테마 리서치(generate_research.py)는 일간으로 전환되어 auto_market.py에서 실행.
@@ -80,13 +80,19 @@ def main() -> None:
             print(f"  [ERROR] {label}: {e}")
             results.append((label, False, str(e)))
 
-    # research/index.html 갱신 — digest 새 URL 반영
+    # research/index.html 갱신 — 일간 테마 카드 목록 재생성
     print("\n[Research Index 갱신]")
     try:
-        sys.path.insert(0, str(ROOT))
-        from generate_sector_country import _update_sc_index
-        _update_sc_index()
-        print("  ✓ research/index.html 갱신 완료")
+        result = subprocess.run(
+            [PYTHON, str(ROOT / "scripts" / "generate_research_index.py")],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        print(result.stdout)
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr[-500:])
         results.append(("Research Index 갱신", True, ""))
     except Exception as e:
         print(f"  [ERROR] research/index.html 갱신 실패: {e}")

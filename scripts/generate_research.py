@@ -1154,15 +1154,26 @@ def main() -> None:
 
     theme_names = " - ".join(t.get("name", "") for t in selected)
 
-    # ── 6. Git push ───────────────────────────────────────────────────────────
+    # ── 6. Research Index 갱신 + Git push ────────────────────────────────────
     if not args.dry_run:
-        print("\n[6/6] Git push...")
+        # research/index.html 재생성
         try:
             import subprocess as _sp
             _sp.run(
+                [sys.executable, str(ROOT / "scripts" / "generate_research_index.py")],
+                cwd=str(ROOT), check=True, capture_output=True,
+            )
+            print("  -> research/index.html 갱신 완료")
+        except Exception as e:
+            print(f"  [WARN] research/index.html 갱신 실패: {e}")
+
+        print("\n[6/6] Git push...")
+        try:
+            _sp.run(
                 ["git", "add",
                  str(output_path.relative_to(ROOT)),
-                 str(story_path.relative_to(ROOT))],
+                 str(story_path.relative_to(ROOT)),
+                 "output/research/index.html"],
                 cwd=str(ROOT), check=True, capture_output=True,
             )
             commit = _sp.run(
