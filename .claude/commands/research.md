@@ -7,7 +7,7 @@ description: "주간 테마 리서치: Naver 지속성 + 미래에셋 증권 보
 ## Context
 
 - 오늘 날짜: !`date +%Y-%m-%d`
-- 최근 증권 다이제스트: !`ls -t output/research/securities/digest_*.html 2>/dev/null | head -3`
+- 최근 증권 다이제스트: !`ls -t output/securities/digest/digest_*.html 2>/dev/null | head -3`
 - 최근 리서치 보고서: !`ls -t output/research/daily/**/*.html 2>/dev/null | head -3`
 - 펀드 인덱스: `output/fund/index.html`
 
@@ -83,7 +83,7 @@ for t in top:
 (`/research`는 `collect_weekly.py` 완료 후인 20:00 이후에 실행할 것)
 
 ```bash
-ls output/research/securities/digest_*.html | sort | tail -3
+ls output/securities/digest/digest_*.html | sort | tail -3
 ```
 
 파일이 없으면 → 사용자에게 보고 후 중단.
@@ -152,7 +152,7 @@ ls output/research/securities/digest_*.html | sort | tail -3
 ### 5-B. 관련 증권 보고서 매칭
 
 ```bash
-grep -rl "{테마 키워드}" output/research/securities/ | head -5
+grep -rl "{테마 키워드}" output/securities/digest/ | head -5
 ```
 
 매칭된 보고서 파일명과 제목을 목록으로 정리한다.

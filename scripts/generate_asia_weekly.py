@@ -752,7 +752,7 @@ def _build_data_brief(data: dict) -> str:
 def _find_digest_info(week_label: str) -> str:
     """최신 securities digest 파일 4건 정보 수집."""
     import re as _re
-    research_dir = PROJECT_ROOT / "output" / "research" / "securities"
+    research_dir = PROJECT_ROOT / "output" / "securities" / "digest"
     digests = sorted(research_dir.glob("digest_2026-W*.html"), reverse=True)
     # 현재 주 포함 최대 4건
     items = []
@@ -768,7 +768,7 @@ def _find_digest_info(week_label: str) -> str:
             theme_str = " · ".join(themes) if themes else "테마 미확인"
         except Exception:
             theme_str = "읽기 실패"
-        rel = f"../../research/securities/digest_{wk}.html"
+        rel = f"../../securities/digest/digest_{wk}.html"
         items.append(f'<li><a href="{rel}"><strong>{wk} Digest</strong></a> — {theme_str}</li>')
     return "\n      ".join(items) if items else '<li>Digest 파일 없음</li>'
 

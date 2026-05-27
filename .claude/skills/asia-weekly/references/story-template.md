@@ -256,7 +256,7 @@
   <div class="sources-section">
     <h3>2. 미래에셋증권 W##~W## Research Digest</h3>
     <ul>
-      <li><a href="../../research/securities/digest_2026-W##.html">W## Digest</a> — 핵심 키 인사이트</li>
+      <li><a href="../../securities/digest/digest_2026-W##.html">W## Digest</a> — 핵심 키 인사이트</li>
       <li>...최소 4건 (W17 직전 4주)</li>
     </ul>
   </div>

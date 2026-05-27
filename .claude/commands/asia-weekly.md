@@ -9,7 +9,7 @@ description: "아시아 주간 시황 보고서: 종목 유니버스 추출 → 
 - 오늘 날짜: !`date +%Y-%m-%d`
 - 최근 아시아 주간 보고서: !`ls -t output/summary/weekly/*_asia.html 2>/dev/null | head -3`
 - 최근 글로벌 주간 보고서: !`ls -t output/summary/weekly/2026-W*.html 2>/dev/null | grep -v "_asia\|_story\|_macro\|_pm\|_cs\|_sources" | head -3`
-- 미래에셋증권 다이제스트: !`ls -t output/research/securities/digest_*.html 2>/dev/null | head -3`
+- 미래에셋증권 다이제스트: !`ls -t output/securities/digest/digest_*.html 2>/dev/null | head -3`
 
 ## Your task
 
@@ -49,7 +49,7 @@ description: "아시아 주간 시황 보고서: 종목 유니버스 추출 → 
 ### Step 2. 미래에셋증권 디지스트 4건 읽기
 
 ```bash
-ls output/research/securities/digest_2026-W*.html | tail -4
+ls output/securities/digest/digest_2026-W*.html | tail -4
 ```
 
 W##-3, W##-2, W##-1, W## 4건의 디지스트를 읽고:

@@ -8,11 +8,11 @@
   2. Claude: 제목 기반 테마 3개 + 관련 보고서 인덱스 선정 (tool use)
   3. Claude Vision: 테마별 PDF 앞 2페이지 이미지 →
      { overview, points: [...], insight } 구조 JSON 반환
-  4. HTML 렌더링 → output/research/securities/
+  4. HTML 렌더링 → output/securities/digest/
 
 Output:
-    output/research/securities/digest_YYYY-WXX.html
-    output/research/securities/digest_latest.html
+    output/securities/digest/digest_YYYY-WXX.html
+    output/securities/digest/digest_latest.html
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ load_dotenv(ROOT / ".env")
 from _utils import S3_BUCKET
 from generate_securities_index import scan_s3  # noqa: E402
 
-OUTPUT_DIR = ROOT / "output" / "research" / "securities"
+OUTPUT_DIR = ROOT / "output" / "securities" / "digest"
 S3_REGION = "ap-northeast-2"
 
 # Bedrock 설정 — generate_ocr_story.py 와 동일한 Tokyo inference profile 사용

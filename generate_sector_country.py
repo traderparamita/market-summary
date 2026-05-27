@@ -1064,8 +1064,8 @@ def _out_path(date_str: str, period: str) -> Path:
 
 
 def _extract_digest_body() -> tuple[str, str]:
-    """output/research/securities/digest_latest.html 에서 theme-card 블록과 메타 정보를 추출."""
-    digest_path = ROOT / "output" / "research" / "securities" / "digest_latest.html"
+    """output/securities/digest/digest_latest.html 에서 theme-card 블록과 메타 정보를 추출."""
+    digest_path = ROOT / "output" / "securities" / "digest" / "digest_latest.html"
     if not digest_path.exists():
         return "", ""
     try:

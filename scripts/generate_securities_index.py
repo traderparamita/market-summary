@@ -1,4 +1,4 @@
-"""output/research/securities/index.html 생성기 — S3 Pre-signed URL 기반.
+"""output/securities/index.html 생성기 — S3 Pre-signed URL 기반.
 
 미래에셋증권 상세분석 보고서(anthillia/miraeasset-securities/) 를 스캔해
 날짜별 그룹핑된 목록 페이지를 생성한다.
@@ -25,7 +25,7 @@ load_dotenv(ROOT / ".env")
 
 from _utils import S3_BUCKET
 
-OUTPUT_DIR = ROOT / "output" / "research" / "securities"
+OUTPUT_DIR = ROOT / "output" / "securities"
 INDEX_PATH = OUTPUT_DIR / "index.html"
 
 S3_PREFIX = "anthillia/miraeasset-securities"
@@ -169,7 +169,7 @@ def render_html(rows: list[dict]) -> str:
   <div style="text-align:center;color:var(--muted);padding:48px">등록된 보고서가 없습니다.</div>"""
 
     digest_banner = ""
-    digest_path = OUTPUT_DIR / "digest_latest.html"
+    digest_path = OUTPUT_DIR / "digest" / "digest_latest.html"
     if digest_path.exists():
         digest_banner = """
 <div class="digest-banner">
@@ -179,7 +179,7 @@ def render_html(rows: list[dict]) -> str:
       <div class="digest-title">이번 주 핵심 투자 테마</div>
       <div class="digest-desc">AI가 선정한 주간 리서치 다이제스트</div>
     </div>
-    <a href="digest_latest.html" class="digest-link">보러 가기 →</a>
+    <a href="digest/digest_latest.html" class="digest-link">보러 가기 →</a>
   </div>
 </div>"""
 

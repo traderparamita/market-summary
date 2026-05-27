@@ -98,13 +98,13 @@ def main() -> None:
         subprocess.run(
             ["git", "add",
              "output/research/index.html",
-             "output/research/securities/",
+             "output/securities/",
              "output/fund/index.html"],
             cwd=str(ROOT), check=True, capture_output=True
         )
         commit_result = subprocess.run(
             ["git", "commit", "-m",
-             f"chore: 주간 수집 완료 — research/securities/fund 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
+             f"chore: 주간 수집 완료 — securities/fund 갱신 ({start_dt.strftime('%Y-%m-%d')})"],
             cwd=str(ROOT), capture_output=True, text=True
         )
         if commit_result.returncode == 0:

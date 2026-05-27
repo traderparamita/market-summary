@@ -25,7 +25,7 @@ output/summary/weekly/YYYY-WNN_asia.html       # 메인 보고서 (6탭)
 |---|---|---|
 | `history/아시아종목.xlsx` | 종목 유니버스 (180개, 9개 시트) | 종목명·티커·국가·비중 |
 | `history/market_data.csv` | 일별 가격 시계열 (185지표) | 주간 변동률 계산 |
-| `output/research/securities/digest_*.html` | 미래에셋증권 주간 다이제스트 | 중국·일본·아시아 인사이트 보강 |
+| `output/securities/digest/digest_*.html` | 미래에셋증권 주간 다이제스트 | 중국·일본·아시아 인사이트 보강 |
 | `output/summary/weekly/YYYY-WNN.html` | 글로벌 주간 보고서 | 매크로·환율·금리 일관성 참조 |
 
 ---

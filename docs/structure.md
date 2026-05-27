@@ -39,7 +39,7 @@ scripts/
 ├── calendar_check.py                 # 영업일 검증·날짜 포맷터
 ├── backfill_us_yields.py             # US 수익률 곡선 백필 (investiny)
 ├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
-├── generate_securities_index.py      # output/research/securities/index.html
+├── generate_securities_index.py      # output/securities/index.html
 ├── generate_prism_index.py           # output/prism/index.html (5개 카테고리 탭)
 ├── html_to_pdf.py                    # HTML → PDF 변환 (Playwright Chromium, --tab/--exclude 옵션)
 ├── windows/                          # Windows Task Scheduler 자동화
