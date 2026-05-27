@@ -83,7 +83,6 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(LOG_DIR / "ocr_story.log", encoding="utf-8"),
     ],
 )
 log = logging.getLogger(__name__)
@@ -435,6 +434,7 @@ def ocr_pdf(pdf_path: Path) -> str:
     page_texts: list[str] = []
     for i, img in enumerate(images):
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+        tmp.close()  # Windows: release handle before save/unlink
         img.save(tmp.name, "PNG")
         try:
             with open(tmp.name, "rb") as f:
