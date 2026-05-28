@@ -117,60 +117,36 @@ def find_claude() -> str | None:
 
 
 # ─────────────────────────────────────────────────────────────
-# 3. Claude Code로 market-full 실행
+# 3. Claude Code로 market-full 실행 (Part A + Part B 분리)
 # ─────────────────────────────────────────────────────────────
 
-def run_market_full(date_str: str) -> bool:
-    """claude --dangerously-skip-permissions 로 전체 워크플로우 실행."""
+def _build_claude_env(claude_bin: str) -> dict:
+    """claude 실행용 환경변수 반환 (ANTHROPIC_API_KEY 제거, UTF-8 강제)."""
+    import platform as _platform
+    clean_env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
+    sep = ";" if _platform.system() == "Windows" else ":"
+    if _platform.system() == "Windows":
+        path_extra = str(Path(claude_bin).parent)
+        extra = {"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    else:
+        path_extra = (
+            str(Path(claude_bin).parent)
+            + ":/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin"
+        )
+        extra = {"HOME": str(Path.home()), "LANG": "ko_KR.UTF-8"}
+    return {**clean_env, "PATH": path_extra + sep + clean_env.get("PATH", ""), **extra}
+
+
+def _run_claude(prompt: str, persist_prompt: str, label: str, timeout: int = 3600) -> bool:
+    """claude --dangerously-skip-permissions 로 단일 커맨드 실행."""
     claude_bin = find_claude()
     if not claude_bin:
         print("[ERROR] claude CLI를 찾을 수 없습니다.")
         print("        후보 경로: " + ", ".join(str(p) for p in CLAUDE_CANDIDATES))
         return False
 
-    print(f"\n[1/2] Claude Code 실행: {claude_bin}")
-    print(f"      /market-full {date_str}")
-
-    prompt = f"/market-full {date_str}"
-
-    # .env 의 stale ANTHROPIC_API_KEY 가 OAuth 구독을 가리고 'Invalid API key' 를
-    # 유발한 사례가 있어, Claude CLI 호출 시점에는 환경변수에서 제외하고 키체인
-    # OAuth 로 폴백시킨다.
-    clean_env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
-
-    # /market-full 은 Step 1~2(데이터) + Step 3-A/B/C/D(Story 4트랙) + Step 7.7 검증
-    # + Step 8 커밋 + Step 10~13(Sector-Country) 까지 다단계 워크플로우.
-    # 5/20~ 부터 Step 1~2 직후 Claude 가 조기 종료되는 패턴이 반복되어 진단/완주
-    # 확률을 높이기 위해:
-    #   --append-system-prompt: generate.py 의 "Step 1~2 완료" 메시지는 워크플로우
-    #     전체 종료가 아니라 1~2 단계만 끝났다는 신호임을 명시
-    #   --verbose: turn/도구 호출 로그를 stdout 에 상세 출력 (auto_market.log 진단용)
-    # 주의: --max-turns 같은 turn 한도 옵션은 현재 claude CLI 에 존재하지 않음.
-    persist_prompt = (
-        "/market-full 워크플로우 진행 중 generate.py 가 출력하는 "
-        "'[Step 1~2 완료 …]' 또는 'Done!' 메시지는 데이터 수집/HTML 생성 단계의 "
-        "종료 신호일 뿐, 워크플로우 전체가 끝난 것이 아니다. 반드시 Step 3-A "
-        "(Market Story) → 3-B(CS) → 3-C(PM) → 3-D(Stocks) → 7.7(검증) → 8(커밋) "
-        "→ Sector-Country 블록(10~13)을 모두 완수한 뒤에만 응답을 종료하라."
-    )
-    import platform as _platform
-    _sep = ";" if _platform.system() == "Windows" else ":"
-    if _platform.system() == "Windows":
-        _path_extra = str(Path(claude_bin).parent)
-        _extra_env = {
-            "PYTHONUTF8": "1",
-            "PYTHONIOENCODING": "utf-8",
-        }
-    else:
-        _path_extra = (
-            str(Path(claude_bin).parent)
-            + ":/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-            + ":/opt/homebrew/bin"
-        )
-        _extra_env = {
-            "HOME": str(Path.home()),
-            "LANG": "ko_KR.UTF-8",
-        }
+    print(f"\n{label}: {claude_bin}")
+    print(f"      {prompt}")
 
     result = subprocess.run(
         [
@@ -183,20 +159,16 @@ def run_market_full(date_str: str) -> bool:
         cwd=str(ROOT),
         capture_output=True,
         text=True,
-        timeout=3600,   # Story 작성 + 웹 검색 포함 최대 1시간
-        env={
-            **clean_env,
-            "PATH": _path_extra + _sep + clean_env.get("PATH", ""),
-            **_extra_env,
-        },
+        timeout=timeout,
+        env=_build_claude_env(claude_bin),
     )
 
-    # 출력 마지막 50줄 기록
+    # 출력 마지막 200줄 기록 (진단 가시성 향상)
     if result.stdout:
         lines = result.stdout.strip().splitlines()
-        print("\n".join(lines[-50:]))
+        print("\n".join(lines[-200:]))
     if result.stderr:
-        print("[STDERR]", result.stderr[-300:])
+        print("[STDERR]", result.stderr[-500:])
 
     if result.returncode != 0:
         print(f"[ERROR] claude 실행 실패 (exit {result.returncode})")
@@ -204,6 +176,40 @@ def run_market_full(date_str: str) -> bool:
 
     print("  → 완료")
     return True
+
+
+def run_market_full(date_str: str) -> bool:
+    """Part A: 데이터 수집 + Market Story (Step 0 ~ Step 3 + 3-E)."""
+    persist_prompt = (
+        "/market-full (Part A): generate.py 가 출력하는 '[Step 1~2 완료]' 또는 'Done!' 은 "
+        "데이터 단계만 끝난 신호이다. 반드시 Step 3 (Market Story, Sources 주입 포함) → "
+        "Step 3-E (Catalysts) → Step 4/6 (주간·월간 Dashboard 파일 존재 확인) 을 완수한 뒤 "
+        "'완료 보고 (Part A)' 표를 출력하고 종료하라. "
+        "CS·PM·Stocks·검증·push 는 /market-full-b (Part B) 가 담당하므로 여기서 하지 않는다."
+    )
+    return _run_claude(
+        prompt=f"/market-full {date_str}",
+        persist_prompt=persist_prompt,
+        label="[1/4] Claude Part A (/market-full)",
+        timeout=2400,  # 40분: 데이터 수집 + Market Story 웹 검색
+    )
+
+
+def run_market_full_b(date_str: str) -> bool:
+    """Part B: CS·PM·Stocks → 주간·월간 Story → 수치 검증 → git push (Step 3-B ~ Step 9)."""
+    persist_prompt = (
+        "/market-full-b (Part B): Part A 에서 생성된 _story.html 을 기반으로 "
+        "Step 3-B(CS) → 3-C(PM) → 3-D(Stocks) 를 순서대로 완수하라. "
+        "이후 캘린더 체크로 마지막 영업일 여부를 확인해 Step 5/7(주간·월간 Story) 실행 여부를 결정하고, "
+        "Step 7.7(수치 검증) → 8(git push) → 9(Telegram) 까지 모두 완수한 뒤 "
+        "'완료 보고 (Part B)' 표를 출력하고 종료하라."
+    )
+    return _run_claude(
+        prompt=f"/market-full-b {date_str}",
+        persist_prompt=persist_prompt,
+        label="[2/4] Claude Part B (/market-full-b)",
+        timeout=3600,  # 60분: CS+PM+Stocks+주간·월간(금요일)+검증+push
+    )
 
 
 # ─────────────────────────────────────────────────────────────
@@ -298,18 +304,23 @@ def main() -> None:
     print(f"  Auto Market Report — {date_str}")
     print("=" * 52)
 
-    ok = run_market_full(date_str)
-
-    # 성공 시 Telegram은 Claude market-full Step 10(notify_telegram.py)이 담당.
-    # 실패 시에만 여기서 오류 알림 발송.
-    if not ok:
+    # ── Part A: 데이터 수집 + Market Story ───────────────────────────
+    ok_a = run_market_full(date_str)
+    if not ok_a:
         metrics = load_metrics(date_str)
-        send_telegram(date_str, metrics, ok)
+        send_telegram(date_str, metrics, False)
+        return
+
+    # ── Part B: CS·PM·Stocks → 주간·월간 → 검증 → push ───────────────
+    ok_b = run_market_full_b(date_str)
+    if not ok_b:
+        metrics = load_metrics(date_str)
+        send_telegram(date_str, metrics, False)
         return
 
     # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
     # CSV ↔ MKT100/MKT200 일치 여부 자동 검증. 불일치 시 Telegram 알림.
-    print("\n[3/4] Snowflake drift 검증 ...")
+    print("\n[3/4] Snowflake drift 검증 ...")  # [1/4],[2/4]는 Claude Part A, Part B
     try:
         drift_result = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "verify_snowflake_drift.py"), date_str],
