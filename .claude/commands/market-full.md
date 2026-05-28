@@ -140,6 +140,52 @@ Step 3 완료 **후** `market-summary` 스킬 `references/stocks.md` 규칙으�
 
 실패 시 경고 후 계속 진행 (Step 4 중단 없음). Stocks 는 Story / CS / PM 와 독립된 종목 트랙.
 
+### Step 3-E: Completed Catalysts Ledger 발행 (매일)
+
+Step 3 Market Story 작성 직후, 어제 완료된 catalyst를 `completed.jsonl` ledger에 기록한다.  
+실패해도 경고 후 계속 진행 (Avalon Tavily fallback 사용).
+
+**추출 대상**: Market Story에서 언급된 *완료된* 이벤트 (forward 이벤트 제외)
+- 실적 발표 (earnings): 개별 종목 — 발표 직전까지의 서프라이즈·컨센서스 포함
+- 매크로 지표 발표 (macro): CPI, PCE, NFP, GDP, PMI, 주택지표 등
+- FOMC 결정/성명 (fomc)
+- IPO 상장 (ipo)
+- 기타 시장에 영향을 준 완료 이벤트 (other)
+
+**출력 형식** — JSON array, 1건 이상일 때만 발행:
+
+```json
+[
+  {
+    "date": "YYYY-MM-DD",       // 실제 발표일 (어제 날짜)
+    "ticker": "NVDA",           // 어닝이면 티커, macro/fomc는 null
+    "type": "earnings",         // earnings | macro | fomc | ipo | other
+    "session": "after_close",   // pre_open | regular | after_close | scheduled
+    "name": "Nvidia Q1 FY2027 실적 발표",
+    "result": {                 // optional — 알 수 있는 범위만
+      "revenue": "$81.6B",
+      "eps": 1.87,
+      "surprise": "beat"        // beat | miss | in-line
+    }
+  }
+]
+```
+
+**발행 절차**:
+1. 위 JSON array를 구성 (이벤트가 없으면 발행 스킵)
+2. 아래 명령으로 스크립트 호출:
+
+```bash
+.venv/bin/python scripts/publish_catalysts.py --data '<JSON_ARRAY>'
+```
+
+출력에서 `✓ 로컬 append` 및 `✓ S3 업로드 완료` 확인.
+
+**완료 보고**:
+```
+✅ [Step 3-E] Catalysts 발행 완료 (N건) / ⊘ 발행할 catalyst 없음 / ⚠ 실패(계속)
+```
+
 ### Step 4: 주간 Data Dashboard
 
 Step 1~2에서 이미 `update_current_periodic()`이 자동 실행됨. 별도 실행 불필요. `output/summary/weekly/` 해당 주 파일이 존재하는지만 확인.
@@ -336,6 +382,7 @@ Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, Snowflake M행) / ⚠ CSV 
 Step 3:    일간 Story        — ✅ 성공 / ❌ 실패
 Step 3-B:  일간 CS Story     — ✅ 성공 / ⚠ 실패(계속)
 Step 3-C:  일간 PM Story     — ✅ 성공 / ⚠ 실패(계속)
+Step 3-E:  Catalysts Ledger  — ✅ N건 발행 / ⊘ 없음 / ⚠ 실패(계속)
 Step 4:    주간 Dashboard    — ✅ 자동 갱신
 Step 5:    주간 Story        — ✅ 성공 / ⏭ 스킵
 Step 5-B:  주간 CS Story     — ✅ 성공 / ⏭ 스킵 / ⚠ 실패(계속)
