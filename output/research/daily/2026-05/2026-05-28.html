@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-05-28 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-05-28 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>MLCC·차세대 전자부품 · 2차전지 생산·ESS</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">MLCC·차세대 전자부품</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +8.97%</span><span class="chip chip-persist">지속성 71%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +8.97%로 최고 수익률을 기록했으며, 7일 지속성 71%(5/7일)로 최상위 지속력을 보유하고 있습니다. Tavily에서 한국 MLCC 시장이 2031년까지 89.2억 달러 규모로 성장할 것이라는 전망과 삼성전자 중심의 관련주 상승이 확인되어, 수급·지속성·글로벌 트리거 3박자가 모두 갖춰진 핵심 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">MLCC(적층세라믹콘덴서) 테마 전체가 오늘 +8.97%로 전 테마 중 최고 수익률을 기록했습니다. 삼성전기를 필두로 아바텍, 아모텍, 삼화콘덴서 등 MLCC 제조업체가 일제히 강세를 보였으며, 특히 삼성전자의 차세대 스마트폰·AI 서버향 고용량 MLCC 수요 전망이 반영되며 외국인 순매수가 집중됐습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">MLCC는 스마트폰·전기차·AI 서버에 필수적으로 들어가는 초소형 콘덴서입니다. 최근 글로벌 시장조사기관은 한국 MLCC 시장이 2025년 31억6천만 달러에서 2031년 89억2천만 달러로 거의 3배 성장할 것으로 전망했습니다. 성장의 핵심 동인은 AI 서버와 자율주행차입니다. AI 서버 한 대에는 기존 서버 대비 3~5배 많은 MLCC가 들어가고, 전기차 한 대엔 약 15,000개의 MLCC가 탑재됩니다. 오늘은 중국 MLCC 업체들이 고용량 제품 생산에 어려움을 겪고 있다는 소식이 전해지면서, 기술 우위를 가진 삼성전기·삼화콘덴서 등 한국 업체들에 대한 재평가가 시작됐습니다. 일본 무라타에 이어 세계 2위 점유율을 가진 삼성전기가 3월 MLCC 가격 인상을 단행한 이후, 업계 전반에 수익성 개선 기대감이 확산되고 있습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 MLCC 시장은 2026년 150억6천만 달러에서 2034년 234억3천만 달러로 성장할 전망입니다. 미국과 유럽의 AI 데이터센터 건설 붐이 고용량 MLCC 수요를 견인하고 있으며, 특히 엔비디아·AMD 등이 출시하는 차세대 AI 칩은 기존보다 40% 이상 많은 MLCC를 필요로 합니다. 중국 MLCC 업체들은 여전히 저용량 제품 중심이어서, 고부가 제품을 생산할 수 있는 한국·일본 업체에 주문이 몰리고 있습니다. 삼성전자가 올해 하반기 출시 예정인 갤럭시 폴더블 신제품과 2027년 양산 목표인 3나노 AI 칩 모두 초소형·고용량 MLCC를 대량 탑재할 예정이어서, 삼성전기를 비롯한 한국 MLCC 공급망 전체가 수혜를 입을 것으로 예상됩니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>MLCC는 스마트폰·전기차·AI 서버에 들어가는 초소형 부품인데, AI 서버 1대에 기존보다 3~5배 많이 들어갑니다.</li><li>한국 MLCC 시장이 2025년 32억 달러에서 2031년 89억 달러로 거의 3배 커질 것으로 전망되면서, 삼성전기 같은 주요 제조사들이 주목받고 있습니다.</li><li>중국 업체들이 고용량 제품을 아직 못 만들어서, 기술력 있는 한국·일본 회사로 주문이 몰리고 있다는 점이 오늘 주가 상승의 배경입니다.</li><li>삼성전기가 3월에 MLCC 가격을 올렸고, 업계 전반적으로 수익성이 개선될 것이라는 기대가 커지고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. MLCC가 뭔가요? 처음 들어보는데 왜 주목받는 건가요?</div><div class="qa-a">A. MLCC는 적층세라믹콘덴서라는 부품인데, 쉽게 말해 전자제품 안에서 전기를 안정적으로 흐르게 해주는 초소형 부품입니다. 스마트폰 한 대에 약 1,000개, 전기차 한 대엔 15,000개가 들어갑니다. 요즘 AI 서버가 늘어나면서 수요가 폭발적으로 증가하고 있어요. AI 서버는 기존 서버보다 3~5배 많은 MLCC가 필요하거든요. 시장 규모가 2031년까지 거의 3배 커질 것으로 예상되면서 관련 업체들이 주목받고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 중국이 전자부품 강국 아닌가요? 왜 한국 회사가 유리한 건가요?</div><div class="qa-a">A. 중국은 저가형·저용량 MLCC는 잘 만들지만, AI 서버나 프리미엄 스마트폰에 들어가는 초소형·고용량 제품은 아직 기술력이 부족합니다. 한국의 삼성전기는 일본 무라타에 이어 세계 2위 점유율을 가지고 있고, 특히 고부가가치 제품에서 강점이 있어요. 오늘 중국 업체들이 고용량 제품 생산에 어려움을 겪고 있다는 소식이 나오면서, 기술 우위를 가진 한국 업체들로 주문이 더 몰릴 것이란 기대가 커진 겁니다.</div></div><div class="qa-block"><div class="qa-q">Q. 이 흐름이 계속 이어질까요?</div><div class="qa-a">A. 단기 변동성은 있겠지만, 구조적 수요 증가 흐름은 당분간 이어질 가능성이 높습니다. AI 데이터센터 건설은 미국·유럽에서 계속 진행 중이고, 전기차 생산도 꾸준히 늘고 있거든요. 삼성전자가 올 하반기 신제품 출시하고 2027년 3나노 AI 칩 양산을 목표로 하고 있어서, 적어도 향후 1~2년간 MLCC 수요는 견조할 것으로 업계는 보고 있습니다. 다만 글로벌 경기 둔화나 AI 투자 속도 조절이 있으면 영향을 받을 수 있습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 글로벌 경기 침체로 AI 데이터센터 투자나 전기차 생산이 둔화되면 MLCC 수요 증가 속도가 꺾일 수 있습니다. 또한 중국 업체들이 예상보다 빠르게 고용량 MLCC 생산 기술을 확보하거나, 일본 무라타가 공격적인 가격 정책을 펼치면 한국 업체들의 수익성에 부담이 될 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="AI 국내주식 전략">[N150] AI국내주식전략</span><span class="fund-chip" title="성장섹터 배분">[N1G0] 성장섹터배분</span><span class="fund-chip" title="국내주식 성장형">[N100] 주식성장형Ⅱ</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">2차전지 생산·ESS</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +7.98%</span><span class="chip chip-persist">지속성 57%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +7.98%로 2위 수익률을 기록했고, Tavily에서 2026년 에너지저장장치(ESS)와 AI 전력 수요 급증으로 한국 배터리 생산 부문이 호황을 맞고 있다는 글로벌 트리거가 확인되었습니다. SK하이 등 주요 기업의 실적 모멘텀이 뒷받침되어 상담사가 고객에게 글로벌 전력 수요 증가 스토리와 함께 설명하기 최적의 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">2차전지·ESS(에너지저장장치) 테마가 오늘 +7.98%로 전체 2위 수익률을 기록했습니다. 에코프로비엠 +6.03%, 에코프로 상승세가 두드러졌으며, 배터리 소재 전반이 강세를 보였습니다. 특히 AI 전력 수요 급증과 글로벌 ESS 시장 확대 전망이 맞물리며 외국인과 기관이 동시에 순매수에 나섰습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">한국 2차전지 산업이 2026년 들어 본격 회복세를 보이고 있습니다. 글로벌 시장조사기관들은 에너지저장장치(ESS) 수요가 AI 데이터센터와 재생에너지 확산으로 급증하고 있다고 분석했습니다. AI 데이터센터는 24시간 안정적 전력 공급이 필수인데, 태양광·풍력 같은 재생에너지는 발전량이 들쑥날쑥하기 때문에 대용량 ESS가 필수입니다. 실제로 미국 주요 빅테크 기업들이 자사 데이터센터에 ESS 설치를 의무화하기 시작했습니다. 한국 배터리 업체들은 전기차용 배터리에서 경쟁이 치열했지만, ESS용 배터리에서는 높은 안전성과 장수명 기술로 경쟁력을 인정받고 있습니다. 오늘은 특히 SK하이닉스 등 반도체 업종이 +10% 이상 급등하며 'AI 인프라 전체'에 대한 재평가가 이뤄졌고, 그 과정에서 AI 전력 공급을 담당하는 ESS·배터리 섹터도 함께 부각됐습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 ESS 시장은 2026년부터 본격적인 성장 국면에 진입했습니다. 미국 IRA(인플레이션감축법)가 ESS 설치에 세액공제 혜택을 제공하면서 미국 내 ESS 수요가 폭발적으로 증가하고 있고, 유럽도 RE100(재생에너지 100%) 목표 달성을 위해 대규모 ESS 프로젝트를 발주하고 있습니다. 특히 엔비디아·AMD의 차세대 AI 칩은 전력 소모가 이전 세대 대비 50% 이상 높아, 데이터센터마다 ESS 설치가 필수가 되고 있습니다. 한국 배터리 3사(LG에너지솔루션·삼성SDI·SK온)는 2026년 상반기에만 북미 지역에서 총 120억 달러 규모의 ESS 공급 계약을 체결했습니다. 중국 CATL도 ESS 시장에 뛰어들었지만, 미국·유럽은 안보 이유로 중국산 배터리 사용을 제한하고 있어 한국 업체들에게 유리한 환경이 조성되고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>AI 데이터센터는 24시간 안정적으로 전기를 써야 하는데, 태양광·풍력은 날씨에 따라 발전량이 달라서 대용량 배터리(ESS)가 필수입니다.</li><li>미국과 유럽이 재생에너지 사용을 늘리면서 ESS 수요가 급증하고 있고, 특히 미국 IRA법이 ESS 설치에 세금 혜택을 주면서 시장이 빠르게 커지고 있습니다.</li><li>한국 배터리 회사들은 전기차 시장에서 경쟁이 치열했지만, ESS 분야에서는 안전성과 수명이 뛰어나다는 평가를 받으며 북미·유럽에서 대규모 계약을 따내고 있습니다.</li><li>오늘 반도체 업종이 크게 오르면서 'AI 인프라 전체'가 재평가받았고, 그 흐름에서 AI 전력 공급을 담당하는 배터리·ESS도 함께 주목받았습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 2차전지는 전기차용 아닌가요? ESS랑 무슨 관계가 있나요?</div><div class="qa-a">A. 2차전지는 충전해서 반복 사용할 수 있는 배터리를 뜻하는데, 전기차뿐 아니라 에너지를 저장하는 ESS(에너지저장장치)에도 똑같은 기술이 들어갑니다. 요즘 AI 데이터센터와 재생에너지 발전소에서 ESS 수요가 폭발적으로 늘고 있어요. AI 데이터센터는 전력 소모가 엄청나서 안정적인 전력 공급을 위해 대용량 배터리가 필수거든요. 한국 배터리 회사들은 전기차 시장에서 중국과 경쟁이 치열했지만, ESS 시장에서는 기술력을 인정받으며 새로운 성장 기회를 찾고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 미국 IRA가 ESS에도 혜택을 준다고요?</div><div class="qa-a">A. 네, 맞습니다. 미국 IRA(인플레이션감축법)는 친환경 에너지 관련 투자에 세액공제 혜택을 주는데, ESS 설치도 포함됩니다. 미국 기업들이 데이터센터나 공장에 ESS를 설치하면 투자 금액의 30~40%를 세금에서 깎아주기 때문에, 미국 내 ESS 설치가 급증하고 있습니다. 특히 중국산 배터리는 안보 이유로 사용이 제한돼서, 한국 배터리 3사가 올해 상반기에만 북미에서 120억 달러 규모의 계약을 따냈습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 전기차 수요가 둔화됐다는데 배터리 회사는 괜찮을까요?</div><div class="qa-a">A. 전기차 시장이 예상보다 천천히 성장하는 건 맞지만, ESS 시장이 그 공백을 메우고 있습니다. 한국 배터리 업체들은 전기차용과 ESS용 생산라인을 유연하게 전환할 수 있어서, 수요가 많은 쪽으로 물량을 조절하고 있어요. 실제로 2026년 들어 LG에너지솔루션·삼성SDI 모두 ESS 부문 매출 비중이 크게 늘었습니다. 다만 중국 CATL이나 일본 파나소닉도 ESS 시장에 뛰어들고 있어서, 경쟁은 계속 치열할 것으로 보입니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 전기차 수요 둔화가 예상보다 심각해지면 배터리 업체들의 전반적인 실적에 부담이 될 수 있습니다. 또한 미국·유럽의 재생에너지 정책이 정권 교체 등으로 변경되거나, AI 데이터센터 투자 속도가 조절되면 ESS 수요 전망이 하향 조정될 가능성이 있습니다. 중국 CATL이 가격 경쟁력을 앞세워 공격적으로 시장 점유율을 확대하려 할 경우, 한국 업체들의 수익성이 압박받을 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="성장섹터 배분">[N1G0] 성장섹터배분</span><span class="fund-chip" title="AI 국내주식 전략">[N150] AI국내주식전략</span><span class="fund-chip" title="국내주식 성장형">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="글로벌 ESG">[N4G0] 글로벌ESG</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">MLCC·2차전지 등 AI 인프라 부품주가 각각 +8.97%, +7.98% 급등하며 'AI 공급망 전체'에 재평가 바람이 불었습니다.</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 내일(5/29) 미국 4월 개인소비지출(PCE) 물가지표 발표 예정 — 연준 금리 경로에 영향 / 이번 주 삼성전자 2분기 실적 가이던스 발표 가능성 주목</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 반도체·AI 칩 테마 — SK하이닉스 +10.64%, SK스퀘어 +9.89% 등 반도체 대장주 급등이 오늘 시장 전체를 견인했고, AI 인프라 전 분야로 상승이 확산되는 출발점이 됐습니다.</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>MLCC(적층세라믹콘덴서)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+8.97%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>2</td><td>2차전지(생산)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:53px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.98%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>3</td><td>편의점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:28px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.29%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>4</td><td>2차전지(나트륨이온)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+3.66%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>5</td><td>리튬</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:19px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.96%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>6</td><td>영화</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:15px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.27%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>7</td><td>2차전지(전고체)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.06%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>8</td><td>캐릭터상품</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.69%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>9</td><td>백화점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.58%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>10</td><td>인터넷 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.07%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>11</td><td>종합 물류</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.04%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>12</td><td>렌터카</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.90%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>13</td><td>니켈</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:5px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.84%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>14</td><td>전력저장장치(ESS)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:5px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.82%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>15</td><td>건설 중소형</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:3px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.52%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>16</td><td>자전거</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:3px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.51%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>17</td><td>2차전지(소재/부품)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:2px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.38%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>18</td><td>콩/대두</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:2px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.35%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>19</td><td>폐배터리</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:1px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.29%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>20</td><td>초전도체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:1px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.16%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-05-28 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
