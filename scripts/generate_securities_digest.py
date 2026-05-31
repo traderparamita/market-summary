@@ -43,7 +43,9 @@ OUTPUT_DIR = ROOT / "output" / "securities" / "digest"
 S3_REGION = "ap-northeast-2"
 
 # Bedrock 설정 — generate_ocr_story.py 와 동일한 Tokyo inference profile 사용
-os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", os.environ.get("BEDROCK_API_KEY", ""))
+_bedrock_key = os.environ.get("BEDROCK_API_KEY", "")
+if _bedrock_key:
+    os.environ.setdefault("AWS_BEARER_TOKEN_BEDROCK", _bedrock_key)
 BEDROCK_MODEL = os.environ.get(
     "BEDROCK_MODEL",
     "jp.anthropic.claude-sonnet-4-5-20250929-v1:0",

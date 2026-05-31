@@ -39,7 +39,7 @@ CSV_COLUMNS = ["DATE", "INDICATOR_CODE", "CATEGORY", "REGION", "VALUE", "UNIT", 
 
 def load_indicators():
     """Load indicator definitions from YAML."""
-    with open(MACRO_YAML) as f:
+    with open(MACRO_YAML, encoding='utf-8') as f:
         config = yaml.safe_load(f)
     return config["indicators"]
 

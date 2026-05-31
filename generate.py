@@ -1256,7 +1256,7 @@ def backfill_macro_to_daily(week_macro_path):
 
     if not os.path.exists(week_macro_path):
         return
-    with open(week_macro_path) as f:
+    with open(week_macro_path, encoding='utf-8') as f:
         macro_content = f.read().strip()
     if not macro_content or "MACRO_EVENTS_PLACEHOLDER" in macro_content:
         return
@@ -1266,17 +1266,17 @@ def backfill_macro_to_daily(week_macro_path):
     daily_path = os.path.join(OUTPUT_DIR, friday.strftime("%Y-%m"), f"{friday.isoformat()}.html")
     if not os.path.exists(daily_path):
         return
-    with open(daily_path) as f:
+    with open(daily_path, encoding='utf-8') as f:
         html = f.read()
     pattern = r'(<div id="tab-macro" class="tab-panel">)\s*\n.*?\n(</div><!-- /tab-macro -->)'
     replacement = rf'\1\n\n{macro_content}\n\n\2'
     new_html, n = _re.subn(pattern, replacement, html, flags=_re.DOTALL)
     if n > 0:
-        with open(daily_path, "w") as f:
+        with open(daily_path, "w", encoding='utf-8') as f:
             f.write(new_html)
         base, ext = os.path.splitext(daily_path)
         macro_sibling = f"{base}_macro{ext}"
-        with open(macro_sibling, "w") as f:
+        with open(macro_sibling, "w", encoding='utf-8') as f:
             f.write(macro_content)
         _log(f"  Macro backfilled to Friday: {os.path.basename(daily_path)}")
 
