@@ -77,6 +77,38 @@ for t in top:
 
 ---
 
+## Step 0.7 — 당일 시장 지수 실제값 로드 (할루시네이션 방지)
+
+보고서 본문의 **지수·등락률은 반드시 CSV ground truth에서 읽은 수치만 사용**한다. 수치를 추측·창작하지 않는다.
+
+```python
+import pandas as pd
+
+df = pd.read_csv('history/market_data.csv')
+target = "{date}"
+
+# 직전 거래일 자동 탐색
+prev_dates = sorted(df[df['DATE'] < target]['DATE'].unique())
+if not prev_dates:
+    print("이전 날짜 없음 — 지수 수치 생략")
+else:
+    prev_day = prev_dates[-1]
+    for ticker in ['KOSPI', 'KOSDAQ', 'S&P500', 'NASDAQ', 'NIKKEI225']:
+        curr = df[(df['DATE'] == target) & (df['TICKER'] == ticker)]['CLOSE'].values
+        prev = df[(df['DATE'] == prev_day) & (df['TICKER'] == ticker)]['CLOSE'].values
+        if len(curr) and len(prev) and prev[0]:
+            chg = (curr[0] - prev[0]) / prev[0] * 100
+            print(f"{ticker}: {curr[0]:,.2f} ({'+'if chg>=0 else ''}{chg:.2f}%)")
+        else:
+            print(f"{ticker}: 데이터 없음 — 본문에서 생략")
+```
+
+출력된 수치를 `_market_indices` 로 메모한다.
+
+> **규칙**: CSV에 없는 날짜·티커는 본문에서 해당 지수 수치를 **완전히 생략**한다. "약 N%" 같은 추정 표현도 금지.
+
+---
+
 ## Step 1 — 미래에셋 증권 주간 다이제스트 읽기
 
 `collect_weekly.py`가 매주 일요일 19:30에 자동 생성한 다이제스트를 읽는다.
@@ -218,6 +250,11 @@ body { font-family:'Spoqa Han Sans Neo',sans-serif; background:#f4f5f9; color:#2
 ---
 
 ## Step 7 — Story 작성 및 주입
+
+**수치 사용 규칙 (필수)**:
+- 지수 등락률(KOSPI, KOSDAQ, S&P500 등)은 **Step 0.7의 `_market_indices` 수치만** 사용한다.
+- `_market_indices`에 없는 지수는 수치 없이 방향(상승/하락/보합)으로만 서술하거나 생략한다.
+- "약 N%", "N% 내외" 같은 추정 표현 금지. 수치가 없으면 쓰지 않는다.
 
 `STORY_PLACEHOLDER`를 아래 구조의 HTML로 교체한다.
 
