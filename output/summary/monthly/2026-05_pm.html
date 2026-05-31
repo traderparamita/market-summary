@@ -1,0 +1,305 @@
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+  /* Outlook 신규 */
+  .outlook-divider{border-top:2px solid #043B72;margin-top:32px;padding-top:24px;margin-bottom:20px}
+  .outlook-divider h2{font-size:18px;color:#043B72;margin-bottom:6px}
+  .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  @media (max-width:900px){.scenario-grid{grid-template-columns:1fr}}
+  .scenario-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px}
+  .scenario-card.bull{border-left:4px solid #d92b2b}
+  .scenario-card.base{border-left:4px solid #F58220;background:linear-gradient(180deg,#fff5eb 0%,#fff 60%);box-shadow:0 2px 8px rgba(245,130,32,0.08)}
+  .scenario-card.bear{border-left:4px solid #1a5fb4}
+  .scenario-card h3{font-size:15px;font-weight:700;margin-bottom:8px}
+  .scen-prob{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .scen-trigger,.scen-impact{font-size:13.5px;color:#2d3148;margin-bottom:8px;line-height:1.7}
+  .scen-trigger ul,.scen-impact ul{list-style:none;padding-left:0;margin:4px 0 0 0}
+  .scen-trigger li,.scen-impact li{padding-left:10px;position:relative;margin-bottom:3px}
+  .scen-trigger li::before,.scen-impact li::before{content:'·';position:absolute;left:0;color:#043B72}
+  .outlook-section-title{font-size:15px;font-weight:700;color:#043B72;margin:20px 0 12px}
+  .outlook-position{background:#eef4fb;border:1px solid var(--border);border-left:4px solid #043B72;border-radius:10px;padding:18px 24px;margin-top:20px}
+  .outlook-position h3{font-size:14px;color:#043B72;margin-bottom:10px}
+  .outlook-position ul{list-style:none;padding-left:0}
+  .outlook-position li{padding:4px 0;font-size:13.5px}
+  .risk-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-top:16px}
+  .risk-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:12px}
+  .risk-items{list-style:none;padding:0;margin:0}
+  .risk-item{padding:8px 0;border-bottom:1px dashed var(--border);font-size:13.5px;color:#2d3148;line-height:1.7}
+  .risk-item:last-child{border-bottom:none}
+  .risk-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-right:8px;letter-spacing:0.5px}
+  .risk-tag.high{background:#fde8e8;color:#d92b2b}
+  .risk-tag.med{background:#fff3e0;color:#e65100}
+  .risk-tag.low{background:#e8f4fd;color:#1a5fb4}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026년 5월 · 월간 회고 (20/21 영업일 · 4/30 종가 기준) · 지역·자산군별 요지</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> 5월은 KOSPI <span class="pm-up">+28.45%</span>(6,598→8,476)·NASDAQ <span class="pm-up">+8.36%</span>·S&P500 <span class="pm-up">+5.15%</span> 동반 사상 최고, WTI <span class="pm-dn">-16.46%</span>($104→$87) 코로나 이후 최대 월간 낙폭. AI 어닝 체인(Apple→Cisco→Cerebras→NVIDIA→Micron→Snowflake→Dell) 7연속 서프라이즈와 이란 60일 휴전 MOU 서명이 리스크온의 쌍두마차 역할을 했다.</p>
+    <p><strong>Key drivers:</strong> ①이란 협상 단계적 진전(호르무즈 재개 성명 5/27 → MOU 서명 5/28) → WTI 급락·인플레 안도; ②AI 공급망 실적 연쇄(메모리→네트워크→소프트웨어→서버); ③삼성전자 노조 임금협약 가결(5/21 +8.42%, 5/27 74% 비준)·SK하이닉스 $1.12조 시총 돌파; ④Moody's 미국 신용강등(5/19) + US 30Y 5.197% → 단기 충격 후 빠른 흡수.</p>
+    <p><strong>Watch (6월):</strong> 이란 트럼프 최종 서명 여부; ECB 6/5 금리결정(첫 인하 예상); 미국 NFP 6/5; KOSPI 밸류에이션 과열·코스닥 자금 이동 타이밍; US 10Y 4.5% 재돌파 시 채권 압력.</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">8,476.15</span> <span class="pm-up">+3.55%</span> (5/29) · MTD <span class="pm-up">+28.45%</span> · YTD <span class="pm-up">+96%</span> 추정</li>
+      <li>KOSDAQ <span class="pm-num">1,075</span> · MTD <span class="pm-dn">-9.86%</span> — KOSPI-KOSDAQ 격차 38.3%p, 사상 유례없는 이분화</li>
+      <li>최강일: 5/21(목) <span class="pm-up">+8.42%</span> — 삼성전자 노조 임금협약 잠정합의 직후 역사적 단일일 급등; 최약일: 5/19(화) <span class="pm-dn">-3.25%</span> — US 30Y 5.197% 충격</li>
+      <li>삼성전자 MTD 최고 <span class="pm-num">296,000원</span>(W18) → HBM4E 첫 상업 납품 확인(5/29); SK하이닉스 시총 <span class="pm-up">$1.12조</span> 달성(5/27) — 메모리 빅3 전원 1조달러 클럽</li>
+      <li>외국인: 5/08 <span class="pm-dn">-5.5조원</span> 대규모 매도에도 지수 방어 → 5/26 12거래일 만에 순매수 전환; 기관 5/29 <span class="pm-up">+1.87조원</span> 순매수로 월마감</li>
+      <li>USD/KRW <span class="pm-num">1,507</span> (<span class="pm-dn">+2.07% MTD</span>) — 원화 월간 약세, KOSPI 강세와 역설적 동행</li>
+    </ul>
+    <div class="pm-note">대형 반도체 2종목 집중 구조 유지. KOSPI 고점 리스크 vs 코스닥 반등 계기 모니터링 필요.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>미국 4월 NFP <span class="pm-up">+115,000명</span> — 예상의 약 2배, 고용 견조 → 경기 연착륙 기대 지속(5/08)</li>
+      <li>4월 Core PCE <span class="pm-dn">3.3%</span>(전월 3.2% → 소폭 상승) — Fed 동결 압력 지속. 6월 인하 기대 소멸, 7월 이후 포워드 가이던스 주목</li>
+      <li>Moody's 미국 신용등급 <span class="pm-dn">Aaa→Aa1</span> 강등(5/19) — 빅뷰티플 감세법안 통과 우려 복합. 30Y 일시 5.197% 충격 후 복귀</li>
+      <li>WTI <span class="pm-num">$87.36</span> (<span class="pm-dn">-16.46% MTD</span>) — 이란 60일 휴전 MOU로 코로나 이후 최대 월간 낙폭; Gold <span class="pm-dn">-1.96%</span> · Copper <span class="pm-up">+6.39%</span> · 천연가스 <span class="pm-up">+11.25%</span></li>
+      <li>DXY <span class="pm-num">103.2</span> 추정 (<span class="pm-dn">+0.47% MTD</span>) — 소폭 달러 강세. 에너지 디플레이션과 인플레 방향 혼재</li>
+    </ul>
+    <div class="pm-note">에너지 디스인플레이션이 PCE 소폭 상승을 상쇄. 이란 최종 서명 여부가 6월 인플레 경로의 핵심 변수.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>닛케이225 MTD <span class="pm-up">+11.88%</span> · TWSE MTD <span class="pm-up">+14.92%</span> — AI 공급망 3각(KR·JP·TW) 동반 사상 최고점; 5/29 동시 신기록 달성</li>
+      <li>트럼프-시진핑 베이징 인민대회당 정상회담(5/13~14) — 무역·AI 반도체 수출통제·이란 의제 논의. 미-중 갈등 단기 소강</li>
+      <li>중국 상하이종합 월간 제한적 상승 — AI 테마 수혜는 대만·한국 집중, 중국 내수 모멘텀 부재 지속</li>
+      <li>일본 BOJ: 5월 정책 변동 없음. 엔화 약세 지속으로 닛케이 수출주 우위 — 반도체·자동차 쌍두마차</li>
+      <li>대만 TSMC 선단 공정 수요 확인 — DELL AI 서버 호조·NVIDIA 데이터센터 +92%가 대만 생산 체인으로 직결</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&P500 <span class="pm-num">7,580</span> <span class="pm-up">+5.15% MTD</span> · NASDAQ <span class="pm-num">26,973</span> <span class="pm-up">+8.36% MTD</span> · Dow <span class="pm-up">+2.99% MTD</span> — S&P500 9주 연속 상승(2025년 이후 최장)</li>
+      <li>NVIDIA Q1 FY2027 매출 <span class="pm-up">$81.6B (+85% YoY)</span> · 데이터센터 <span class="pm-up">$75.2B (+92%)</span>(5/21); Dell Q1 FY2027 AI 서버 <span class="pm-up">$16.1B (+757% YoY)</span>(5/28 발표)</li>
+      <li>Apple Q2 FY26 <span class="pm-up">$111.2B (+17% YoY)</span>(월초) → Cisco <span class="pm-up">+13.41%</span> → Cerebras IPO <span class="pm-up">+68%</span>(시총 $70B) → Micron <span class="pm-up">+19.29%</span> → Snowflake <span class="pm-up">+37%</span> → Dell <span class="pm-up">+33%</span></li>
+      <li>VIX <span class="pm-num">15.32</span> — 월간 안정권 유지. 5/19 일시 스파이크 후 빠른 진정; 빅뷰티플 감세법안 통과는 재정 우려 상존 요인</li>
+      <li>Russell2K 상대적 부진 — 대형 AI 테크 집중 장세 지속. 중소형주 로테이션 시그널 아직 없음</li>
+    </ul>
+    <div class="pm-note">AI 어닝 체인 7연속 서프라이즈로 "AI 거품론" 데이터 반증. 9주 연속 상승 후 6월 실적 공백 구간 진입.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50 · DAX · CAC40 월간 소폭 플러스 — 미국·아시아 대비 AI 직접 수혜 제한적. 에너지 가격 하락이 유럽 소비 회복 기대 지지</li>
+      <li>영국 4월 CPI <span class="pm-num">2.8%</span> (예상 <span class="pm-dn">3.0%</span> 하회, 5/20 발표) — 브렌트유 당일 <span class="pm-dn">-5.19%</span> 급락 트리거; BOE 금리인하 기대 상승</li>
+      <li>ECB: 5월 결정 없음. 6/5 이사회에서 25bp 인하 첫 컨센서스 형성 중 — EUR/USD 소폭 약세 압력</li>
+      <li>EUR/USD <span class="pm-num">1.081</span> 추정 · GBP/USD <span class="pm-num">1.274</span> 추정 — 달러 소폭 강세, 유럽 통화 월간 약세 흐름</li>
+      <li>유럽 에너지주: WTI -16.46% 역풍 속 월간 부진. 이란 종전 수혜를 에너지 기업이 아닌 소비재·제조업이 흡수하는 구조</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 10Y <span class="pm-num">4.453%</span> (<span class="pm-up">-10.5bp WTD</span>) — 월중 최고 <span class="pm-dn">4.670%</span>(5/19) 이후 이란 협상 진전·영국 CPI 하회로 하향. 5월 말 기준 월간 약 -13bp 내외</li>
+      <li>US 30Y <span class="pm-num">4.993%</span> — 월중 최고 <span class="pm-dn">5.197%</span>(5/19, 2007년 이후 최고). Moody's 강등 + 빅뷰티플 감세 재정 우려가 트리거. 월말 5% 이하로 복귀</li>
+      <li>US 2Y <span class="pm-num">3.84%</span> 추정 — 10Y-2Y 스프레드 약 <span class="pm-up">+61bp</span> 정상화 진행. 베어스팁 구간 일부 완화</li>
+      <li>KR 3Y <span class="pm-num">2.65%</span> 추정 · KR 10Y <span class="pm-num">2.90%</span> 추정 — 미국 금리 변동성에 동조하나 한국은행 동결 기조로 단기물 안정</li>
+      <li>IG 스프레드 <span class="pm-num">~88bp</span> · HY 스프레드 <span class="pm-num">~310bp</span> 추정 — 리스크온 지속으로 스프레드 축소 기조 유지. TLT 월간 소폭 플러스</li>
+      <li>EMB(신흥국 채권) 이란 협상 진전 · DXY 소폭 상승 혼재 — 월간 소폭 강세 예상</li>
+    </ul>
+    <div class="pm-note">에너지 디플레이션 → 인플레 기대 하락 → 금리 하방 지지. 단, 미국 재정 구조적 우려(빅뷰티플)로 30Y 5% 재돌파 리스크 상존.</div>
+  </div>
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 상세 내러티브는 Market Story, 고객 설명은 CS Story 탭을 참고하세요.
+</div>
+
+<!-- ── Outlook 블록 시작 (PM Story 회고 6섹션 직후) ── -->
+<div class="outlook-divider">
+  <h2>📈 2026년 6월 Outlook</h2>
+  <div class="pm-subtitle">시나리오·Watch·리스크·포지셔닝 — 2026-05-31 작성 시점 기준 forward 시각</div>
+</div>
+
+<!-- Part 1: 시나리오 3카드 -->
+<div class="scenario-grid">
+  <div class="scenario-card bull">
+    <h3>🟢 Bull</h3>
+    <div class="scen-prob">확률: 낮음 — 추가 촉매 필요</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>이란 트럼프 최종 서명 완료 → WTI $75 이하 추가 하락</li>
+        <li>6월 미국 NFP 강세 + CPI 하향 동시 확인 → Fed 조기 인하 기대 복원</li>
+        <li>DELL·NVIDIA 가이던스 상향 등 추가 AI 어닝 서프라이즈 연속</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI 8,800~9,000 탐색 (AI 반도체 추가 상승)</li>
+        <li>S&P500 7,800+ 신고점 연장</li>
+        <li>USD/KRW 1,470~1,480으로 원화 강세 전환</li>
+        <li>WTI $75 이하 → 에너지 디플레이션 강화, 유가 관련 기대 추가 하락</li>
+        <li>US 10Y 4.2% 이하 하락 → 성장주 밸류에이션 추가 지지</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scenario-card base">
+    <h3>🟡 Base (유력)</h3>
+    <div class="scen-prob">확률: 유력 — 5월 모멘텀 부분 지속</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>이란 협상 추가 진전 확인 (최종 서명 6~8월 목표)</li>
+        <li>ECB 6/5 25bp 인하 첫 단행 → 유럽 통화 완화 사이클 개시</li>
+        <li>미국 5월 NFP 6/5 +90~120k 범위 (연착륙 범위 내)</li>
+        <li>KOSPI 조정 후 8,000~8,200 구간에서 지지 확인</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI: 8,200~8,600 박스권 등락 — 대형 반도체 vs 코스닥 교차</li>
+        <li>S&P500: 7,400~7,700 구간 등락, 9주 연속 상승 후 숨고르기</li>
+        <li>USD/KRW: 1,490~1,520 유지, 원화 약세 지속</li>
+        <li>WTI $82~92 구간 — 이란 협상 불확실성으로 하단 지지</li>
+        <li>US 10Y: 4.3~4.6% 구간 등락 — 재정 우려 vs 에너지 디플레이션 균형</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scenario-card bear">
+    <h3>🔴 Bear</h3>
+    <div class="scen-prob">확률: 낮음 — 복수 리스크 동시 발화 필요</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>이란 협상 결렬 또는 강경파 쿠데타 → WTI $105+ 재급등</li>
+        <li>미국 6월 CPI·PCE 3.5%+ → Fed 완화 기대 전면 소멸</li>
+        <li>빅뷰티플 감세법안 최종 통과 → US 30Y 5.3% 재돌파</li>
+        <li>외국인 KOSPI 대규모 재매도 + 삼성·SK하이닉스 가이던스 실망</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI 8,000 하향 이탈 → 7,600 지지선 시험</li>
+        <li>S&P500 7,000 이하 조정 (밸류에이션 압박)</li>
+        <li>USD/KRW 1,550+ — 원화 급격 약세</li>
+        <li>WTI $105+ → 인플레 재점화 → 글로벌 성장주 전반 밸류에이션 압박</li>
+        <li>US 10Y 4.8%+ → TLT·채권 ETF 급락</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Part 2: PM 6섹션 Watch & Trigger -->
+<h3 class="outlook-section-title">📍 자산군별 Watch & Trigger — 2026년 6월</h3>
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li><strong>한국은행 금통위 6/12</strong> — 기준금리 동결(2.75%) 컨센서스. 성장-물가 균형 언급 주목</li>
+      <li>Watch: KOSPI 8,000 지지 여부 (5월 폭등 후 첫 대형 조정 구간 진입 가능성)</li>
+      <li>Watch: 코스닥 바닥 확인 — KOSPI 대형주 차익실현 자금이 코스닥으로 이동하는 타이밍</li>
+      <li>Trigger: 외국인 5조+ 재매도 → KOSPI 8,200 이탈 가능성</li>
+      <li>삼성전자 HBM4E 추가 납품 진행 상황 · SK하이닉스 Q2 실적 가이던스(7월)</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li><strong>미국 5월 NFP 6/5</strong> — 컨센서스 +100k 내외. +140k 이상이면 Fed 동결 강화, +70k 이하면 경기 둔화 우려</li>
+      <li><strong>미국 6월 CPI 6/11</strong> — Core 3.2% 이하 확인되면 에너지 디플레이션 효과 가시화</li>
+      <li>이란 트럼프 최종 서명 일정 — 6월 안에 성사 여부가 WTI 방향성 결정</li>
+      <li>Watch: WTI $90 재돌파 시 인플레 우려 재점화 — Base 시나리오 상단 경계</li>
+      <li>Trigger: Core PCE 3.5%+ 연속 → 2026년 금리인하 기대 전면 후퇴</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>일본 BOJ 6/16~17 정책결정 — YCC 추가 정상화 여부·엔화 방향성 결정적</li>
+      <li>중국 5월 CPI·PPI(6/11 예정) — 디플레 탈출 여부 모니터링. CSI 300 상방 촉매 필요</li>
+      <li>Watch: 대만 TWSE 사상 최고 지속 — NVIDIA 서버 수요 체인 지속 여부</li>
+      <li>Trigger: 미-중 반도체 수출통제 추가 강화 → 대만·한국 공급망 경보</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li><strong>5월 NFP 6/5</strong> — 고용 강세 유지 vs 둔화 첫 신호 분기점</li>
+      <li>빅뷰티플 감세법안 최종 표결 타이밍 — 상원 일정 주목. 통과 시 재정 우려 재점화</li>
+      <li>Watch: S&P500 7,400 지지 — 9주 연속 상승 후 첫 대형 조정 가능성 점검</li>
+      <li>Trigger: VIX 20 돌파 → 리스크오프 전환 시그널</li>
+      <li>AI 캐펙스 사이클 2차 가속 증거 — MSFT·구글 Q2 가이던스(7월) 선행 지표 확인</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li><strong>ECB 6/5 이사회</strong> — 25bp 인하(→3.25%) 컨센서스 ★★★. 전 대비 정책 사이클 가속 여부</li>
+      <li>Watch: EUR/USD 1.08 지지 — ECB 인하 vs Fed 동결 금리 격차 확대 시 유로 약세 가속</li>
+      <li>영국 BOE 6/19 — 인플레 2.8% 하회 후 인하 기대 강화. GBP/USD 1.27 레벨 주목</li>
+      <li>Trigger: 유럽 에너지 가격 이란 반전 시 → 인플레 재상승 → ECB 인하 속도 재조정</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>Watch: US 10Y <span class="pm-num">4.5%</span> 재돌파 여부 — NFP·CPI 강세 시 채권 압력 재개 트리거</li>
+      <li>Watch: US 30Y <span class="pm-num">5.0%</span> 재돌파 — 빅뷰티플 재정 우려 가중 시 재점화. 5.197% 재테스트 시 주식 충격</li>
+      <li>10Y-2Y 스프레드 <span class="pm-num">+61bp</span> 추정 — 베어스팁 vs 불스팁 경로 분기. NFP·CPI 결과에 따라 결정</li>
+      <li>Trigger: IG 스프레드 100bp 돌파 → 크레딧 리스크 경보 (현재 ~88bp)</li>
+      <li>KR 3Y: 한은 동결 + 에너지 디플레이션 → 하방 지지. 6월 금통위 후 방향 재확인</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Part 3: 통합 리스크 -->
+<div class="risk-section">
+  <h3>⚠ 6월 주요 리스크</h3>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">High</span><strong>이란 협상 결렬·서명 지연</strong> — 트럼프 최종 서명 불발 또는 이란 강경파 반발 시 WTI $105+ 급반등. 에너지 디플레이션 5월 성과 전면 반전, 인플레 재점화 → 성장주 밸류에이션 압박 동시 발화</li>
+    <li class="risk-item"><span class="risk-tag high">High</span><strong>미국 빅뷰티플 감세법안 통과 → 재정 우려 재점화</strong> — 상원 통과 시 US 30Y 5.2% 재돌파 가능. 5/19 충격의 반복. KOSPI 외국인 재매도 유발 가능성</li>
+    <li class="risk-item"><span class="risk-tag med">Med</span><strong>KOSPI 밸류에이션 급등 후 조정</strong> — MTD +28.45% 급등은 P/E 기준 역대 최고 구간 진입. 외국인 재매도 전환 시 8,000 이탈 가능. 코스닥 추가 하락 연동 위험</li>
+    <li class="risk-item"><span class="risk-tag med">Med</span><strong>Core PCE·CPI 상승 추세 고착</strong> — 4월 Core PCE 3.3%로 반등. 5~6월 연속 3.3%+ 확인 시 Fed 동결 장기화 명확화, 2026년 인하 기대 전면 후퇴 → 장기물 금리 상승</li>
+    <li class="risk-item"><span class="risk-tag low">Low</span><strong>AI 캐펙스 사이클 둔화 신호</strong> — MSFT·구글 Q2 가이던스에서 데이터센터 투자 삭감 시 AI 어닝 체인 서사 균열. Micron·SK하이닉스 H2 수요 하향조정 리스크</li>
+  </ul>
+</div>
+
+<!-- Part 4: 포지셔닝 박스 -->
+<div class="outlook-position">
+  <h3>🎯 포지셔닝 시사점 (Base 시나리오 하)</h3>
+  <ul>
+    <li>🇰🇷 한국 (KOSPI) — <strong>N</strong>: 5월 +28.45% 급등 후 차익실현 구간. 8,200 지지 확인 시 반등 재개 가능. 대형 반도체 vs 코스닥 바닥 신호 병행 모니터링</li>
+    <li>🇺🇸 미국 — <strong>N→UW</strong>: 9주 연속 상승 후 숨고르기 구간. AI 성장주 중기 모멘텀 유효하나 단기 피로도 경계. NFP·CPI 결과 확인 후 재판단</li>
+    <li>🌏 아시아·신흥국 — <strong>N</strong>: 일본·대만 AI 공급망 수혜 지속. 중국은 내수 모멘텀 부재로 상대적 유지. 이란 결렬 시 에너지 수입국(한국·일본) 역풍</li>
+    <li>🇪🇺 유럽 — <strong>N</strong>: ECB 인하 사이클 개시가 경기 완화 지지. 에너지 가격 정상화 수혜. AI 직접 노출 제한적으로 추가 모멘텀 부족</li>
+    <li>💵 채권 (듀레이션) — <strong>N→OW 신중</strong>: 에너지 디플레이션 기조 유지 시 듀레이션 소폭 확대 고려. 단, 재정 우려(빅뷰티플) + PCE 반등으로 US 30Y 5% 재돌파 리스크 상존 — 전략적 단기 포지션 우선</li>
+    <li>🛢️ 원유·원자재 — <strong>UW</strong>: 이란 협상 진전 + 에너지 공급 정상화 기조. 이란 결렬 시 즉각 헤지 전환 필요. 구리는 AI 인프라 수요 지속으로 N 유지</li>
+  </ul>
+</div>
+<!-- ── Outlook 블록 끝 ── -->

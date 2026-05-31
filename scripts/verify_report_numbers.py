@@ -506,7 +506,7 @@ class Violation:
 # ── CSV 로더 ────────────────────────────────────────────────────
 def load_prices(csv_path: Path) -> dict[tuple[str, str], float]:
     out: dict[tuple[str, str], float] = {}
-    with csv_path.open() as f:
+    with csv_path.open(encoding='utf-8') as f:
         r = csv.DictReader(f)
         for row in r:
             try:

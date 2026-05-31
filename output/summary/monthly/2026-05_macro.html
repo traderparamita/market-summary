@@ -1,0 +1,331 @@
+<style>
+.macro-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:900px){.macro-kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.macro-kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.macro-kpi-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.macro-kpi-value{font-size:22px;font-weight:700;color:#1a1d2e;margin-bottom:4px}
+.macro-kpi-value.up{color:#d92b2b}
+.macro-kpi-value.dn{color:#1a5fb4}
+.macro-kpi-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.macro-section{margin-bottom:28px}
+.macro-section h2{font-size:16px;font-weight:700;color:#1a1d2e;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.macro-review-list{list-style:none;padding:0;margin:0}
+.macro-review-list li{font-size:14px;color:#2d3148;line-height:1.8;padding:7px 0;border-bottom:1px dashed var(--border)}
+.macro-review-list li:last-child{border-bottom:none}
+.event-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.event-table th{background:#f0f1f6;padding:9px 12px;text-align:left;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0.5px}
+.event-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.65}
+.event-table tr:last-child td{border-bottom:none}
+.event-table tr:hover td{background:#f8f9fc}
+.imp-high{background:#fde8e8;color:#d92b2b;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px}
+.imp-med{background:#fff3e0;color:#e65100;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px}
+.imp-low{background:#e8f4fd;color:#1a5fb4;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px}
+.hl-up{color:#d92b2b;font-weight:600}
+.hl-down{color:#1a5fb4;font-weight:600}
+.rates-list{list-style:none;padding:0;margin:0}
+.rates-list li{font-size:14px;color:#2d3148;line-height:1.8;padding:6px 0;border-bottom:1px dashed var(--border)}
+.rates-list li:last-child{border-bottom:none}
+.macro-next-vars{background:#eef4fb;border-left:3px solid #043B72;border-radius:6px;padding:12px 16px;margin-top:12px;font-size:13.5px}
+.macro-next-vars strong{color:#043B72}
+.macro-next-vars ul{margin:6px 0 0 14px;line-height:1.8}
+</style>
+
+<!-- ── KPI 카드 그리드 ── -->
+<div class="macro-kpi-grid">
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">US 10년 국채금리</div>
+    <div class="macro-kpi-value dn">4.45%</div>
+    <div class="macro-kpi-desc">5월 고점 4.670%(5/19) 대비 안정. 월초(4/28) 4.36% 대비 +9bp 소폭 상승. 이란 협상 진전으로 인플레 기대 완화가 하방 지지.</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">VIX (공포지수)</div>
+    <div class="macro-kpi-value up">15.74</div>
+    <div class="macro-kpi-desc">4월 말 17.83에서 5월 말 15.74로 하락. AI 어닝 체인 서프라이즈와 이란 협상 진전이 시장 불안감을 낮춤. 5/19 일시 스파이크 후 진정.</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">WTI 원유 (월말)</div>
+    <div class="macro-kpi-value up">$87.36</div>
+    <div class="macro-kpi-desc">5월 MTD <span class="hl-down">-16.46%</span>($104→$87). 이란 60일 휴전 MOU로 코로나 이후 최대 월간 낙폭. 에너지 공급 정상화 기대 반영.</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">Core PCE (4월)</div>
+    <div class="macro-kpi-value dn">3.3%</div>
+    <div class="macro-kpi-desc">전월 3.2%에서 소폭 상승. 개인소비지출(PCE) 물가 중 식품·에너지 제외한 Core 기준. Fed가 가장 선호하는 물가 지표로 인하 시기를 결정하는 핵심 변수.</div>
+  </div>
+</div>
+
+<!-- ── 이번 달 핵심 거시지표 리뷰 ── -->
+<div class="macro-section">
+  <h2>이번 달 핵심 거시지표 리뷰 (2026년 5월)</h2>
+  <ul class="macro-review-list">
+    <li>🇺🇸 <strong>미국 4월 NFP(비농업 고용, 5/08 발표)</strong>: 실제 <span class="hl-up">+115,000명</span> · 예상 +60,000명. 예상의 거의 두 배를 상회하며 미국 고용 시장의 견고함을 재확인. 당일 S&P500·NASDAQ 동시 신고점.</li>
+    <li>🇺🇸 <strong>미국 신용등급 강등 (5/19)</strong>: Moody's가 미국을 Aaa에서 <span class="hl-down">Aa1</span>로 한 단계 강등. 빅뷰티플 감세법안 통과 우려와 재정 건전성 의문이 복합. 당일 KOSPI <span class="hl-down">-3.25%</span>, US 30년물 <span class="hl-down">5.197%</span>(2007년 이후 최고) 충격.</li>
+    <li>🇬🇧 <strong>영국 4월 CPI(소비자물가, 5/20 발표)</strong>: 실제 <span class="hl-down">2.8%</span> · 예상 3.0% 하회. 브렌트유 당일 <span class="hl-down">-5.19%</span> 급락 트리거. BOE 금리인하 기대 상승, 30Y 금리 충격 진정에 기여.</li>
+    <li>🇺🇸 <strong>NVIDIA Q1 FY2027 실적 (5/21 발표)</strong>: 매출 <span class="hl-up">$81.6B (+85% YoY)</span> · 데이터센터 <span class="hl-up">$75.2B (+92%)</span>. AI 반도체 슈퍼사이클 지속 재확인. AI 공급망 어닝 체인의 핵심 고리.</li>
+    <li>🇺🇸 <strong>Micron Technology 실적 (5/26 발표)</strong>: AI 메모리(HBM) 수요 폭증 예고, 주가 <span class="hl-up">+19.29%</span> 폭등. AI 어닝 체인 W22 첫 번째 포문 오픈. 외국인 12거래일 만에 코스피 순매수 전환 촉발.</li>
+    <li>🇺🇸 <strong>Snowflake(SNOW) 실적 (5/28 발표)</strong>: 제품 매출 <span class="hl-up">+34% YoY</span>·AWS $6B AI 파트너십 발표, 주가 <span class="hl-up">+37%</span> 폭등. 클라우드 AI 소프트웨어 수요 현실화 확인.</li>
+    <li>🇺🇸 <strong>미국 4월 Core PCE (5/28 발표)</strong>: 실제 <span class="hl-down">3.3%</span> · 전월 3.2%에서 소폭 상승. Fed의 인플레 목표(2%)와 여전히 괴리. AI 장세가 압도해 시장 영향 제한적.</li>
+    <li>🇺🇸 <strong>Dell Technologies 실적 (5/28 발표, 5/29 시장 반응)</strong>: Q1 FY2027 AI 서버 매출 <span class="hl-up">$16.1B (+757% YoY)</span>. 기업용 AI 인프라 수요 폭발적 확인. 아시아 개장 벨과 함께 코스피 대형 반도체주 급등 트리거.</li>
+    <li>🌍 <strong>이란 60일 휴전 MOU 서명 (5/28)</strong>: 미국·이란 공식 서명. 4/30에 최고조였던 에너지 공급 위기 해소. WTI 5월 MTD <span class="hl-down">-16.46%</span>($104→$87). 트럼프 최종 확인 서명은 미완료.</li>
+    <li>🇰🇷 <strong>삼성전자 임금협약 최종 가결 (5/27)</strong>: 74% 찬성으로 비준. 5/21 잠정합의(+8.42% KOSPI 단일일 폭등) 이후 파업 위협 완전 해소. SK하이닉스 시총 <span class="hl-up">$1.12조</span>(메모리 빅3 전원 1조달러 클럽 완성).</li>
+    <li>🇰🇷 <strong>삼성전자 HBM4E 첫 상업 납품 (5/29)</strong>: 12단 적층 차세대 HBM4E 메모리 첫 상업 납품 완료. 기관 <span class="hl-up">+1.87조원</span> 순매수, KOSPI 역대 최고점 <span class="hl-up">8,476.15</span> 달성.</li>
+  </ul>
+</div>
+
+<!-- ── 이번 달 이벤트 테이블 ── -->
+<div class="macro-section">
+  <h2>2026년 5월 주요 이벤트 일람</h2>
+  <table class="event-table">
+    <thead>
+      <tr>
+        <th>날짜</th>
+        <th>지역</th>
+        <th>이벤트</th>
+        <th>결과 / 예상</th>
+        <th>중요도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>5/01 (목)</td>
+        <td>🇺🇸 미국</td>
+        <td>Apple Q2 FY26 실적</td>
+        <td>매출 $111.2B (+17% YoY) — 예상 상회</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/08 (목)</td>
+        <td>🇺🇸 미국</td>
+        <td>4월 NFP (비농업고용)</td>
+        <td><span class="hl-up">+115,000명</span> · 예상 +60,000명 — 대폭 상회</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/13~14 (화~수)</td>
+        <td>🇺🇸🇨🇳 미·중</td>
+        <td>트럼프-시진핑 베이징 정상회담</td>
+        <td>무역·AI 반도체·이란 의제. 갈등 단기 소강</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/14 (수)</td>
+        <td>🇺🇸 미국</td>
+        <td>Cisco 실적 + Cerebras IPO</td>
+        <td>Cisco <span class="hl-up">+13.41%</span> · Cerebras IPO 상장 첫날 <span class="hl-up">+68%</span>(시총 $70B)</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/19 (월)</td>
+        <td>🇺🇸 미국</td>
+        <td>Moody's 신용등급 강등 + 30Y 쇼크</td>
+        <td>Aaa→<span class="hl-down">Aa1</span> · US 30Y <span class="hl-down">5.197%</span>(2007년 이후 최고) · KOSPI <span class="hl-down">-3.25%</span></td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/20 (화)</td>
+        <td>🇬🇧 영국</td>
+        <td>4월 CPI (소비자물가)</td>
+        <td>실제 <span class="hl-down">2.8%</span> · 예상 3.0% 하회 → 브렌트유 <span class="hl-down">-5.19%</span> 급락</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/21 (수)</td>
+        <td>🇰🇷 한국</td>
+        <td>삼성전자 노사 임금협약 잠정합의</td>
+        <td>임금 +6.2%, DS 성과급 10.5% 합의 → KOSPI <span class="hl-up">+8.42%</span> 역사적 단일일 폭등</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/21 (수)</td>
+        <td>🇺🇸 미국</td>
+        <td>NVIDIA Q1 FY2027 실적</td>
+        <td>매출 <span class="hl-up">$81.6B (+85% YoY)</span> · 데이터센터 <span class="hl-up">$75.2B (+92%)</span></td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/26 (화)</td>
+        <td>🇺🇸 미국</td>
+        <td>Micron Technology 실적</td>
+        <td>AI 메모리 수요 폭증 예고 → 주가 <span class="hl-up">+19.29%</span> 폭등</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/27 (수)</td>
+        <td>🇰🇷 한국</td>
+        <td>삼성전자 임금협약 최종 비준 + SK하이닉스 1조달러</td>
+        <td>74% 찬성 가결 · SK하이닉스 시총 <span class="hl-up">$1.12조</span> 돌파 — 메모리 빅3 전원 1조달러 클럽</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/27 (수)</td>
+        <td>🌍 이란</td>
+        <td>이란 호르무즈 해협 전면 재개 성명</td>
+        <td>공식 성명 발표 · WTI 추가 급락</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/28 (목)</td>
+        <td>🇺🇸 미국</td>
+        <td>Snowflake(SNOW) 실적 + 4월 Core PCE</td>
+        <td>SNOW <span class="hl-up">+37%</span> · Core PCE <span class="hl-down">3.3%</span>(전월 3.2%↑)</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/28 (목)</td>
+        <td>🌍 미·이란</td>
+        <td>미·이란 60일 휴전 연장 MOU 서명</td>
+        <td>공식 서명 완료 · 트럼프 최종 확인 서명은 미완료</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/29 (금)</td>
+        <td>🇺🇸 미국</td>
+        <td>Dell Technologies Q1 FY2027 실적</td>
+        <td>AI 서버 매출 <span class="hl-up">$16.1B (+757% YoY)</span> · 주가 <span class="hl-up">+33%</span></td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>5/29 (금)</td>
+        <td>🇰🇷 한국</td>
+        <td>삼성전자 HBM4E 첫 상업 납품 + KOSPI 신고점</td>
+        <td>12단 HBM4E 첫 납품 · KOSPI <span class="hl-up">8,476.15(+3.55%)</span> 역대 최고점</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── 다음 달 이벤트 캘린더 ── -->
+<div class="macro-section">
+  <h2>다음 달 주목할 이벤트 (2026년 6월)</h2>
+  <table class="event-table">
+    <thead>
+      <tr>
+        <th>날짜</th>
+        <th>지역</th>
+        <th>이벤트</th>
+        <th>예상</th>
+        <th>중요도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>6/1 (월)</td>
+        <td>🇺🇸 미국</td>
+        <td>5월 ISM 제조업 PMI</td>
+        <td>50.0 내외 (확장/위축 경계)</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/3 (수)</td>
+        <td>🇺🇸 미국</td>
+        <td>ADP 민간 고용 + ISM 서비스 PMI</td>
+        <td>+100k 내외 / 53.0 내외</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/5 (금)</td>
+        <td>🇪🇺 유럽</td>
+        <td>ECB 통화정책 결정 ★★★</td>
+        <td>25bp 인하(→3.25%) 컨센서스</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>6/5 (금)</td>
+        <td>🇺🇸 미국</td>
+        <td>5월 NFP (비농업 고용) ★★★</td>
+        <td>+90~110k 내외 예상</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>6/10 (수)</td>
+        <td>🇺🇸 미국</td>
+        <td>5월 CPI (소비자물가) ★★★</td>
+        <td>YoY 2.7~2.9% 예상</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>6/11 (목)</td>
+        <td>🇺🇸 미국</td>
+        <td>5월 PPI (생산자물가)</td>
+        <td>Core PPI 2.5% 내외</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/12 (금)</td>
+        <td>🇰🇷 한국</td>
+        <td>한국은행 금통위 ★★★</td>
+        <td>2.75% 동결 컨센서스</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>6/12 (금)</td>
+        <td>🇺🇸 미국</td>
+        <td>UMich 소비자심리지수(속보)</td>
+        <td>70 내외</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/17~18 (화~수)</td>
+        <td>🇺🇸 미국</td>
+        <td>FOMC 정례회의 ★★★</td>
+        <td>동결(5.25~5.50%) 전망 우세</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>6/19 (목)</td>
+        <td>🇬🇧 영국</td>
+        <td>BOE 통화정책 결정</td>
+        <td>25bp 인하 기대 강화</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/19 (목)</td>
+        <td>🇺🇸 미국</td>
+        <td>5월 소매판매</td>
+        <td>MoM +0.3% 내외</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/25 (수)</td>
+        <td>🇺🇸 미국</td>
+        <td>Q1 2026 GDP 2차 수정</td>
+        <td>1.2~1.5% 내외</td>
+        <td><span class="imp-med">MED</span></td>
+      </tr>
+      <tr>
+        <td>6/27 (금)</td>
+        <td>🇺🇸 미국</td>
+        <td>5월 Core PCE ★★★</td>
+        <td>3.1~3.2% 예상 (이란 효과 반영 여부)</td>
+        <td><span class="imp-high">HIGH</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="macro-next-vars">
+    <strong>6월 최대 변수 3가지:</strong>
+    <ul>
+      <li>이란 트럼프 최종 서명 여부 — 서명 지연/결렬 시 WTI $100+ 급반등 → 6월 CPI·PCE 상승 압력</li>
+      <li>ECB 첫 금리인하(6/5) + FOMC 동결(6/17) 동반 확인 시 → 글로벌 완화 사이클 개시 vs 미국 인플레 격차 확인</li>
+      <li>미국 5월 CPI·PCE 연속 발표(6/10, 6/27) — 에너지 디플레이션이 Core에 얼마나 반영되는지가 Fed의 다음 스텝 결정</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── 주요 금리·스프레드 현황 ── -->
+<div class="macro-section">
+  <h2>주요 금리·스프레드 현황 (2026-05-29 기준)</h2>
+  <ul class="rates-list">
+    <li>🇺🇸 <strong>Fed 기준금리</strong>: <span style="font-weight:600">3.50~3.75%</span> (SOFR 3.62%) — 5월 변동 없음. 2026년 내 인하 기대 후퇴 중 (Core PCE 3.3% 지속)</li>
+    <li>🇰🇷 <strong>한국은행 기준금리</strong>: <span style="font-weight:600">2.75%</span> — 5월 변동 없음. 6/12 금통위 동결 전망. 성장-물가 균형 주시</li>
+    <li>🇪🇺 <strong>ECB 예금금리</strong>: <span style="font-weight:600">2.00%</span> — 5월 변동 없음. 6/5 첫 인하(→1.75%) 컨센서스 형성 중</li>
+    <li>🇺🇸 <strong>US 10년 국채금리</strong>: <span style="font-weight:600">4.45%</span> (4/28: 4.36% → <span class="hl-down">+9bp MTD</span>) — 5/19 고점 4.670% 이후 하향 안정. 에너지 디플레이션 vs 재정 우려 균형</li>
+    <li>🇺🇸 <strong>US 2년 국채금리</strong>: <span style="font-weight:600">3.99%</span> (4/28: 3.84% → <span class="hl-down">+15bp MTD</span>) — 고용 강세로 단기물 상승. 10Y-2Y 스프레드 약 +46bp</li>
+    <li>🇺🇸 <strong>US 30년 국채금리</strong>: <span style="font-weight:600">4.993%</span> — 5/19 고점 5.197%(2007년 이후 최고) 후 안정. 빅뷰티플 감세법안 재정 우려 반영</li>
+    <li>🇺🇸 <strong>미국 장단기 금리차 (10Y-2Y)</strong>: 약 <span style="font-weight:600">+46bp</span> — 수익률 곡선 정상화(역전 해소) 진행 중. 베어스팁 구간</li>
+    <li>🇺🇸 <strong>US IG 크레딧 스프레드</strong>: <span style="font-weight:600">73bp</span> (4/28: 81bp → <span class="hl-up">-8bp MTD</span>) — 리스크온 지속으로 스프레드 축소. 역대 타이트 구간</li>
+    <li>🇺🇸 <strong>US HY 크레딧 스프레드</strong>: <span style="font-weight:600">272bp</span> (4/28: 285bp → <span class="hl-up">-13bp MTD</span>) — 고수익채 스프레드 축소 지속. 경기 우려 낮은 수준</li>
+    <li>🇺🇸 <strong>10년 Breakeven (기대인플레이션)</strong>: <span style="font-weight:600">2.38%</span> (4/28: 2.44% → <span class="hl-up">-6bp MTD</span>) — 이란 종전 기대가 에너지 기대인플레 낮춤. Real Yield <span style="font-weight:600">2.06%</span>(4/28: 1.92% → <span class="hl-down">+14bp</span>)</li>
+    <li>🇺🇸 <strong>US 모기지 30년 고정금리</strong>: <span style="font-weight:600">6.53%</span> (4/30: 6.30% → <span class="hl-down">+23bp MTD</span>) — 주택 시장 부담 지속. 국채금리 상승 전가</li>
+  </ul>
+</div>
