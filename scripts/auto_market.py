@@ -287,6 +287,34 @@ def send_telegram(date_str: str, metrics: list[dict], success: bool) -> bool:
     return telegram_send("\n".join(lines), parse_mode="HTML")
 
 
+def _git_head() -> str:
+    """현재 HEAD 커밋 해시 (짧은 7자). 실패 시 빈 문자열."""
+    try:
+        r = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=10,
+        )
+        return r.stdout.strip() if r.returncode == 0 else ""
+    except Exception:
+        return ""
+
+
+def send_telegram_push_blocked(date_str: str) -> None:
+    """verify 위반으로 git push가 차단됐을 때 Telegram 알림."""
+    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
+    wd = weekdays[date.fromisoformat(date_str).weekday()]
+    now_kst = datetime.now(KST).strftime("%H:%M KST")
+    lines = [
+        "⚠️ <b>Market Summary — git push 차단</b>",
+        f"📅 {date_str} ({wd})",
+        f"⏱ {now_kst}",
+        "",
+        "수치 검증(Step 7.7) 위반이 남아 git push가 차단됐습니다.",
+        "로그: <code>logs/verify_numbers.log</code>",
+    ]
+    telegram_send("\n".join(lines), parse_mode="HTML")
+
+
 # ─────────────────────────────────────────────────────────────
 # 6. 메인
 # ─────────────────────────────────────────────────────────────
@@ -312,10 +340,18 @@ def main() -> None:
         return
 
     # ── Part B: CS·PM·Stocks → 주간·월간 → 검증 → push ───────────────
+    head_before = _git_head()
     ok_b = run_market_full_b(date_str)
     if not ok_b:
         metrics = load_metrics(date_str)
         send_telegram(date_str, metrics, False)
+        return
+
+    # Claude exit 0이어도 verify 위반으로 push를 건너뛰었을 수 있음 — 커밋 해시로 판별
+    head_after = _git_head()
+    if head_before and head_after and head_before == head_after:
+        print(f"[WARN] Part B 완료했으나 커밋 해시 변화 없음 ({head_before}) — push 차단됨")
+        send_telegram_push_blocked(date_str)
         return
 
     # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
