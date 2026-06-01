@@ -1029,6 +1029,12 @@ def _check_sources_empty(file_path: Path, text: str) -> list[Violation]:
     """tab-sources 가 비어있거나 링크 3건 미만이면 Violation 반환."""
     if not _is_main_report_html(file_path):
         return []
+    # 주간(2026-W23) / 월간(2026-06) 셸은 _story.html 사이블링이 없으면 스토리 미작성 상태 → 건너뜀
+    stem = file_path.stem
+    if re.match(r'^\d{4}-W\d{2}$', stem) or re.match(r'^\d{4}-\d{2}$', stem):
+        story_sibling = file_path.parent / f"{stem}_story.html"
+        if not story_sibling.exists():
+            return []
     m = _SOURCES_BLOCK_RE.search(text)
     if not m:
         return []  # 탭 자체가 없는 보고서 (예: 일부 레거시) — 강제하지 않음
@@ -1051,6 +1057,9 @@ def _check_sources_empty(file_path: Path, text: str) -> list[Violation]:
 
 def verify(file_path: Path, prices) -> list[Violation]:
     if not file_path.exists():
+        return []
+    # _macro.html 은 직전 주/월 데이터를 주입한 파일로 일간 수치 대조 대상에서 제외
+    if file_path.name.endswith("_macro.html"):
         return []
     text = file_path.read_text(errors="replace")
     periods = _periods_for_file(file_path)
@@ -1278,6 +1287,9 @@ def verify(file_path: Path, prices) -> list[Violation]:
             continue
         # forward 컨테이너 (outlook/scenario/risk) 안이면 스킵
         if _is_in_forward_container(text, m.start()):
+            continue
+        # 일간 보고서의 macro-block 안이면 스킵 (직전 주 이벤트 테이블 등)
+        if _is_daily_report_file(file_path) and _is_in_macro_block(text, m.start()):
             continue
         # 윈도우 내 매칭 오프셋 계산 (가장 가까운 날짜 선택용)
         combo_text = m.group(0)
