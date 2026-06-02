@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-06-02 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-06-02 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>생명보험 · 통신</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">생명보험</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +7.95%</span><span class="chip chip-persist">지속성 57%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +7.95%로 전체 1위 수익률을 기록했고, 7일 지속성 57%로 안정적인 상승세를 보이고 있습니다. Tavily 글로벌 뉴스에서 한국 증시의 75% 급등과 함께 생명보험 섹터의 강세가 확인되어, 국내외 모두에서 주목받는 테마입니다. 상담사가 고객에게 2026년 시장 전반의 강세 속에서 생명보험주가 특히 두각을 나타내고 있다고 설명할 수 있습니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">생명보험 섹터가 오늘 +7.95%로 전 업종 중 1위 수익률을 기록했습니다. 삼성생명과 한화생명 등 대형 생보주가 일제히 강세를 보이며 코스피 랠리를 주도했고, 외국인과 기관 모두 순매수로 가세하면서 거래량도 크게 증가했습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 코스피가 75% 급등하는 역사적 강세장 속에서 생명보험 섹터가 특히 두각을 나타내고 있습니다. AI 반도체 수요 급증으로 삼성전자를 비롯한 기술주가 랠리를 이끌면서 시장 전반의 유동성이 크게 확대되었고, 이 과정에서 금리 인하 기대감이 더해지며 생보주가 재평가받고 있습니다.
+
+오늘 특히 강세를 보인 이유는 글로벌 투자자들이 한국 증시 급등 속에서 밸류에이션 매력이 남아있는 섹터를 찾으면서 생명보험에 주목했기 때문입니다. 블룸버그 등 주요 외신에서 한국 생명보험 섹터의 강세를 구체적으로 언급하며, 배당 매력과 금리 민감도가 결합된 투자 포인트로 부각되었습니다. 최근 7일간 57%의 상승 지속성(4일 상승/7일)을 보이며 단순 변동성이 아닌 추세적 흐름을 형성하고 있습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">2026년 글로벌 AI 반도체 수요 폭증이 한국 증시 전체를 끌어올리는 메가 트렌드로 작동하고 있습니다. 삼성전자와 SK하이닉스의 실적 개선 기대가 외국인 자금을 대거 유입시키면서 코스피가 연초 대비 75% 급등했고, 이 과정에서 시장 전체의 리스크 선호도가 높아졌습니다.
+
+생명보험주는 이 흐름 속에서 두 가지 수혜를 동시에 받고 있습니다. 첫째, 증시 급등으로 보험사들이 보유한 국내 주식 포트폴리오 평가이익이 크게 늘어났습니다. 둘째, 글로벌 중앙은행들의 완화적 통화정책 기조가 유지되면서 금리 하락 시 채권 평가이익 기대감도 함께 반영되고 있습니다. 결과적으로 생명보험은 '증시 강세 + 금리 안정'이라는 이중 호재를 누리며 글로벌 자금의 새로운 타깃으로 떠오르고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>2026년 들어 코스피가 75%나 오르면서 보험사들이 갖고 있는 주식 자산의 가치가 크게 늘어났습니다. 생명보험사는 고객 자금을 주식과 채권에 나눠 투자하는데, 증시가 이렇게 급등하면 보유 주식에서 큰 이익이 생깁니다.</li><li>금리가 내려갈 것 같다는 기대감도 생명보험주에 긍정적입니다. 보험사가 예전에 사둔 채권의 가치는 금리가 떨어지면 올라가기 때문에, 자산 가치 상승 효과가 이중으로 작용하고 있습니다.</li><li>외신에서 한국 생명보험 섹터를 콕 집어 언급하며 배당 수익률과 자산 가치 상승을 동시에 노릴 수 있다고 평가했습니다. 글로벌 투자자들의 관심이 실제 매수로 이어지면서 오늘 거래량도 평소보다 크게 늘었습니다.</li><li>최근 일주일 중 4일이 상승했고 평균 수익률도 플러스를 유지하고 있어, 단기 급등이 아니라 꾸준한 상승 흐름을 보이고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 생명보험주는 앞으로도 계속 오를까요?</div><div class="qa-a">A. 증시 전체가 강세를 이어가고 금리가 안정되거나 낮아진다면 긍정적인 환경이 유지될 수 있습니다. 다만 코스피가 연초 대비 75%나 올라 단기 과열 우려도 있어, 기술주나 반도체 시장에 조정이 오면 생명보험주도 영향을 받을 수 있습니다. 현재는 모멘텀이 강하지만 변동성에 대비할 필요는 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 왜 하필 지금 생명보험주가 오르는 건가요?</div><div class="qa-a">A. 코스피가 급등하면서 시장에 돈이 많이 풀렸는데, 이미 많이 오른 기술주 대신 상대적으로 저평가된 금융주에 관심이 쏠리고 있습니다. 특히 생명보험은 보유 자산 가치 상승과 배당 매력이 동시에 부각되면서 외국인 매수가 늘어나고 있어요. 글로벌 뉴스에서도 한국 생명보험 섹터를 주목할 만한 투자처로 언급하며 주가 상승을 더 자극했습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 생명보험 관련 펀드에 지금 들어가도 괜찮을까요?</div><div class="qa-a">A. 생명보험은 국내 주식형 펀드나 금융 섹터 펀드에 포함되어 있습니다. 지금 시장 전체가 고점권이라 신규 투자보다는 분할 매수나 이미 보유 중인 펀드의 수익 확인 시점으로 보는 게 안전합니다. 단기 수익을 노리기보다 중장기 관점에서 시장 변동성을 견딜 수 있는 분만 고려하시는 게 좋습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 코스피가 연초 이후 75% 급등해 단기 과열 신호가 나타날 경우 조정 가능성이 있습니다. 특히 AI 반도체 수요가 예상보다 둔화되거나 글로벌 경기 둔화 우려가 부각되면 증시 전체가 조정받을 수 있고, 생명보험주도 보유 주식자산 평가이익 축소로 동반 하락할 수 있습니다. 또한 금리가 예상과 달리 오르면 채권 평가손실이 발생해 주가에 부담으로 작용할 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표펀드">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="배당주 중심투자">[N1E0] 배당주식</span><span class="fund-chip" title="섹터배분 전략">[N1G0] 성장섹터배분</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">통신</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +3.75%</span><span class="chip chip-persist">지속성 57%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +3.75%로 상위 3위 수익률을 기록했고, 7일 지속성 57%에 7일 평균 +1.02%로 꾸준한 상승 흐름을 유지하고 있습니다. Tavily에서 한국 증시 급등 속 통신 섹터의 강세가 명시적으로 언급되어, 글로벌 투자자들의 관심이 확인됩니다. 상담사가 코스피 강세장에서 통신주가 안정적 배당과 성장성을 동시에 인정받고 있다고 설명할 수 있습니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">통신 섹터는 오늘 +3.75%로 상위 3위 수익률을 기록하며 코스피 강세에 동참했습니다. SK텔레콤, KT, LG유플러스 등 주요 통신 3사가 모두 상승했으며, 배당 매력과 5G·AI 인프라 투자 기대감이 맞물리며 기관 매수세가 유입되었습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 한국 증시가 AI 반도체 호황으로 75% 급등하는 가운데, 통신주는 '안정적 배당 + 성장성'을 동시에 인정받으며 재조명되고 있습니다. 과거 통신주는 성장 둔화 우려로 소외되었지만, 최근 AI 데이터센터와 5G 인프라 확대가 새로운 성장 동력으로 부각되면서 평가가 달라지고 있습니다.
+
+오늘 강세는 글로벌 투자자들이 한국 증시 급등 속에서 상대적으로 안정적이면서도 성장 스토리가 있는 섹터를 찾으면서 통신에 주목한 결과입니다. 블룸버그 등 외신에서 코스피 급등과 함께 통신 섹터의 강세를 명시적으로 언급하며, 배당수익률 4~5%대의 안정성과 AI 인프라 수혜 가능성을 강조했습니다. 최근 7일간 57% 지속성(4일 상승/7일)과 평균 +1.02% 수익률로 꾸준한 상승 추세를 이어가고 있습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 AI 혁명은 반도체뿐 아니라 데이터 전송과 처리를 담당하는 통신 인프라에도 막대한 투자를 요구하고 있습니다. 마이크로소프트, 구글, 아마zon 등 빅테크 기업들이 AI 데이터센터 구축에 수천억 달러를 투입하면서, 5G와 광통신 네트워크 수요가 급증하고 있습니다.
+
+한국 통신사들은 이 흐름 속에서 두 가지 수혜를 받고 있습니다. 첫째, 국내 AI 인프라 투자 확대로 B2B(기업 대상) 매출 증가 기대감이 커지고 있습니다. 둘째, 증시 전체의 밸류에이션 상승 속에서 배당수익률 4~5%대를 제공하는 통신주가 '안전한 고배당주'로 재평가받고 있습니다. 글로벌 자금이 한국 시장에 유입되면서 대형 우량주 중심으로 매수세가 집중되고, 통신주가 그 수혜를 입고 있는 구조입니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>코스피가 75% 급등하면서 이미 많이 오른 기술주 대신 상대적으로 안정적인 통신주에 관심이 쏠리고 있습니다. 통신사는 매년 배당을 4~5% 수준으로 꾸준히 주기 때문에 변동성이 큰 장세에서 안전판 역할을 합니다.</li><li>AI 데이터센터가 늘어나면서 통신사들이 제공하는 네트워크 서비스 수요도 함께 증가하고 있습니다. 기업들이 AI 서비스를 운영하려면 대용량 데이터를 빠르게 주고받아야 하는데, 이 부분에서 통신사의 역할이 커지고 있어요.</li><li>외신에서 한국 증시 급등과 함께 통신 섹터의 강세를 구체적으로 언급하며, 배당 매력과 AI 인프라 성장성을 동시에 평가했습니다. 글로벌 투자자들의 관심이 실제 매수로 이어지고 있습니다.</li><li>최근 일주일 평균 수익률이 +1%를 넘고 7일 중 4일 상승하며 안정적인 우상향 흐름을 보이고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 통신주는 원래 안 오르는 업종 아닌가요?</div><div class="qa-a">A. 과거에는 가입자 증가가 멈추면서 성장이 정체된 업종으로 여겨졌습니다. 하지만 지금은 AI 데이터센터와 5G 인프라 확대로 새로운 성장 동력이 생기고 있어요. 게다가 코스피가 급등하면서 안정적인 배당주에 대한 수요가 늘어나 통신주가 재평가받고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 통신주 상승이 계속될까요?</div><div class="qa-a">A. 증시 전체가 강세를 유지하고 AI 인프라 투자가 이어진다면 긍정적인 흐름이 이어질 수 있습니다. 다만 코스피가 이미 많이 올라 조정이 오면 통신주도 영향을 받을 수 있고, 배당 매력이 있다 해도 주가가 급등한 상태에서는 배당수익률이 상대적으로 낮아지는 점도 고려해야 합니다.</div></div><div class="qa-block"><div class="qa-q">Q. 통신 관련 펀드는 어떤 게 있나요?</div><div class="qa-a">A. 통신주는 국내 대형주 중심 펀드나 배당주 펀드에 주로 포함되어 있습니다. 별도로 통신만 투자하는 펀드는 드물지만, 국내 주식형이나 배당형 펀드를 통해 간접 투자가 가능합니다. 지금처럼 시장이 고점권일 때는 신규 투자보다 기존 포트폴리오 점검이 우선입니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 코스피가 단기 급등 후 조정을 받을 경우 통신주도 동반 하락할 수 있습니다. 또한 AI 인프라 투자 기대가 실제 실적 개선으로 이어지지 않거나, 경쟁 심화로 수익성이 악화되면 주가 모멘텀이 약화될 수 있습니다. 금리가 다시 오르면 배당주로서의 상대적 매력이 떨어져 자금 이탈 가능성도 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표펀드">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="배당주 중심투자">[N1E0] 배당주식</span><span class="fund-chip" title="가치주 투자">[N140] 가치주식형</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">2026년 코스피가 75% 급등하며 생명보험(+7.95%)과 통신(+3.75%)이 '안정 배당 + 자산 가치 상승'으로 재평가받는 하루</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 미국 5월 고용지표 발표(금요일), 글로벌 중앙은행 통화정책 회의 일정, 국내 AI·반도체 대기업 실적 컨퍼런스콜</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 2차전지·방산주 — 생명보험·통신처럼 코스피 급등 속 소외됐던 섹터 중 글로벌 공급망 재편과 지정학 리스크로 재조명 가능성</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>생명보험</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.95%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>2</td><td>서울고속버스터미널 재개발 수혜</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:38px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.16%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>3</td><td>통신</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:28px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+3.75%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>4</td><td>백화점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+3.24%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>5</td><td>면세점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:21px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.81%</span></div></td><td style='color:#7c8298;font-size:12px'>14%</td></tr><tr><td>6</td><td>토스(toss)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.89%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>7</td><td>출산장려정책</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.82%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>8</td><td>홈쇼핑</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.77%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>9</td><td>손해보험</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.63%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>10</td><td>소매유통</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.51%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>11</td><td>인터넷 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.48%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>12</td><td>NFT(대체불가토큰)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.48%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>13</td><td>게임</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.43%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>14</td><td>엔젤산업</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.37%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>15</td><td>제습기</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.13%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>16</td><td>모바일게임(스마트폰)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.09%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>17</td><td>공기청정기</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.03%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>18</td><td>부동산 보유 자산주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.01%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>19</td><td>편의점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.98%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>20</td><td>은행</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.97%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-06-02 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
