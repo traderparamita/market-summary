@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """scripts/verify_report_numbers.py — 보고서 수치 결정론 검증
 
 CSV ground truth (history/market_data.csv) 와 보고서 본문에 명시된
@@ -31,6 +32,13 @@ Usage:
 Exit code: 0 = pass, 1 = violation (--fix 사용 시 수정 후 재검증 기준)
 """
 from __future__ import annotations
+
+import io
+import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower() not in ('utf-8', 'utf8'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding and sys.stderr.encoding.lower() not in ('utf-8', 'utf8'):
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 import argparse
 import csv
