@@ -356,16 +356,44 @@ def main() -> None:
 
     # ── S3 증분 업로드 ────────────────────────────────────────────────
     print("\n[3/4] S3 업로드 (market-summary/summary/) ...")
+    s3_ok = False
+    s3_summary = ""
     try:
         s3_result = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "sync_summary_s3.py")],
             cwd=str(ROOT), capture_output=True, text=True, timeout=120,
         )
-        print(s3_result.stdout.strip())
-        if s3_result.returncode != 0:
+        s3_summary = s3_result.stdout.strip()
+        print(s3_summary)
+        if s3_result.returncode == 0:
+            s3_ok = True
+        else:
             print(f"  [WARN] S3 업로드 일부 실패 (exit {s3_result.returncode})")
+            s3_summary += f"\n(exit {s3_result.returncode})"
     except Exception as e:
-        print(f"  [WARN] S3 업로드 실패: {e}")
+        s3_summary = f"S3 업로드 실패: {e}"
+        print(f"  [WARN] {s3_summary}")
+
+    # S3 결과 Telegram 알림
+    now_kst = datetime.now(KST).strftime("%H:%M KST")
+    if s3_ok:
+        # 업로드 건수 파싱 (예: "완료: 12개 업로드 / 0개 오류")
+        import re as _re
+        m = _re.search(r"(\d+)개 업로드", s3_summary)
+        n = m.group(1) if m else "?"
+        telegram_send(
+            f"☁️ <b>S3 업로드 완료</b> — {date_str}\n"
+            f"📁 market-summary/summary/ ({n}개 파일)\n"
+            f"⏱ {now_kst}",
+            parse_mode="HTML",
+        )
+    else:
+        telegram_send(
+            f"⚠️ <b>S3 업로드 실패</b> — {date_str}\n"
+            f"<code>{s3_summary[:300]}</code>\n"
+            f"⏱ {now_kst}",
+            parse_mode="HTML",
+        )
 
     # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
     # CSV ↔ MKT100/MKT200 일치 여부 자동 검증. 불일치 시 Telegram 알림.
