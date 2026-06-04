@@ -29,7 +29,7 @@ load_dotenv(ROOT / ".env")
 
 import os
 S3_BUCKET  = os.getenv("S3_BUCKET_NAME", "mai-life-fund-documents-533370893966-ap-northeast-2-an")
-S3_PREFIX  = "market-summary/summary"
+S3_PREFIX  = "market-summary"
 S3_REGION  = "ap-northeast-2"
 SUMMARY_DIR = ROOT / "output" / "summary"
 
