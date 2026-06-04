@@ -19,7 +19,7 @@ description: "market_summary 보고서 git commit + push → GitHub Pages 자동
 
 1. 위 context의 변경분 확인. 변경이 없으면 "배포할 변경사항 없음"만 보고하고 종료.
 2. 변경 파일이 어떤 날짜·기간의 보고서인지 파악 (일간/주간/월간, 날짜 범위).
-3. `output/`, `history/market_data.csv` 경로의 변경분만 `git add`. **`_data.json`은 `.gitignore`로 자동 제외됨.**
+3. `output/`, `history/macro_indicators.csv` 경로의 변경분만 `git add`. **`_data.json`, `market_data.csv`는 `.gitignore`로 자동 제외됨 — 절대 강제 추가하지 않는다.**
 4. 커밋 메시지 작성 규칙:
    - 형식: `market: YYYY-MM-DD daily report` 또는 `market: YYYY-WNN weekly report` 또는 `market: YYYY-MM monthly report`
    - 여러 보고서 동시 배포 시: `market: update reports (YYYY-MM-DD ~ YYYY-MM-DD)`

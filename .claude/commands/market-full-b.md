@@ -205,11 +205,18 @@ Part B에서 작성·갱신된 일간/주간/월간 보고서를 `history/market
 
 ## Step 8: Git Commit + Push
 
-`output/summary/`, `output/index.html`, `history/market_data.csv`를 스테이징 후 커밋·푸시.  
+`output/summary/`, `output/index.html`, `history/macro_indicators.csv`를 스테이징 후 커밋·푸시.  
+(`history/market_data.csv`는 `.gitignore` 대상이므로 **절대 git add 하지 않는다**.)  
 **Step 7.7 통과 후에만 진행**.
 
+```bash
+git add output/summary/ output/index.html history/macro_indicators.csv
+git commit -m "market: YYYY-MM-DD daily report"
+git push origin main
+```
+
 - 커밋 메시지: `market: YYYY-MM-DD daily report` (주간/월간 포함 시 범위 표기)
-- `git push origin main`
+- `git add` 실패 없이 커밋까지 완료해야 Step 완료로 인정
 
 **완료 보고**:
 - 성공: `✅ [Step 8] git push 완료 (커밋: abcd1ef)`
