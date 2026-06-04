@@ -354,9 +354,22 @@ def main() -> None:
         send_telegram_push_blocked(date_str)
         return
 
+    # ── S3 증분 업로드 ────────────────────────────────────────────────
+    print("\n[3/4] S3 업로드 (market-summary/summary/) ...")
+    try:
+        s3_result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "sync_summary_s3.py")],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=120,
+        )
+        print(s3_result.stdout.strip())
+        if s3_result.returncode != 0:
+            print(f"  [WARN] S3 업로드 일부 실패 (exit {s3_result.returncode})")
+    except Exception as e:
+        print(f"  [WARN] S3 업로드 실패: {e}")
+
     # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
     # CSV ↔ MKT100/MKT200 일치 여부 자동 검증. 불일치 시 Telegram 알림.
-    print("\n[3/3] Snowflake drift 검증 ...")
+    print("\n[4/4] Snowflake drift 검증 ...")
     try:
         drift_result = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "verify_snowflake_drift.py"), date_str],
@@ -367,6 +380,7 @@ def main() -> None:
             print("  → 일치 확인")
         else:
             print(f"  [WARN] drift 감지 (exit {drift_result.returncode}) — Telegram 알림 발송됨")
+
     except Exception as e:
         print(f"  [WARN] drift 검증 자체 실패: {e}")
 
