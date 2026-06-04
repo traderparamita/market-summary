@@ -32,7 +32,7 @@ load_dotenv(ROOT / ".env")
 
 from _utils import S3_BUCKET, telegram_send as _telegram_send
 
-S3_PREFIX = "anthillia/miraeasset-securities"
+S3_PREFIX = "miraeasset-securities"
 S3_REGION = "ap-northeast-2"
 
 BASE_URL = "https://securities.miraeasset.com"

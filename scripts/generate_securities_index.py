@@ -28,7 +28,7 @@ from _utils import S3_BUCKET
 OUTPUT_DIR = ROOT / "output" / "securities"
 INDEX_PATH = OUTPUT_DIR / "index.html"
 
-S3_PREFIX = "anthillia/miraeasset-securities"
+S3_PREFIX = "miraeasset-securities"
 S3_REGION = "ap-northeast-2"
 URL_EXPIRES_DAYS = 7
 
