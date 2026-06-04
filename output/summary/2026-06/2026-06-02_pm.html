@@ -1,126 +1,112 @@
 <style>
-  .pm-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
-  .pm-section h3{font-size:16px;font-weight:700;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .pm-section ul{list-style:none;padding:0;margin:0}
-  .pm-section ul li{font-size:14px;color:#2d3148;line-height:1.75;padding:4px 0;border-bottom:1px solid var(--border)}
-  .pm-section ul li:last-child{border-bottom:none}
-  .pm-tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.5px;padding:1px 6px;border-radius:4px;margin-right:4px;vertical-align:middle}
-  .pm-tag.up{background:#fff0f0;color:var(--up)}
-  .pm-tag.down{background:#f0f4ff;color:var(--down)}
-  .pm-tag.neutral{background:#f5f5f5;color:var(--muted)}
-  .pm-kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-  .pm-kpi{background:var(--card2);border-radius:8px;padding:8px 14px;min-width:100px}
-  .pm-kpi-label{font-size:10px;color:var(--muted);margin-bottom:2px}
-  .pm-kpi-val{font-size:14px;font-weight:700}
-  .pm-kpi-val.up{color:var(--up)}
-  .pm-kpi-val.down{color:var(--down)}
-  .pm-kpi-val.flat{color:var(--muted)}
-  .pm-footer{font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
 </style>
 
-<div class="pm-section">
-  <h3>🇰🇷 한국</h3>
-  <ul>
-    <li><span class="pm-tag up">코스피</span> <strong>8,801.49 (+0.15%)</strong> — 이틀 연속 사상 최고 종가 경신. WTD +3.84%, YTD +104.23%. 삼성전자·SK Square 주도로 장초 +1.08% 갭업 후 차익 매물에 상승폭 반납</li>
-    <li><span class="pm-tag down">코스닥</span> <strong>1,026.03 (-2.29%)</strong> — 금리 상승 우려·수급 이탈로 코스피와 역방향 급락. WTD -4.54%, YTD +8.51%</li>
-    <li><span class="pm-tag up">삼성전자</span> Computex AI 메모리 협력 기대로 <strong>+3.30%</strong>. SK Square <strong>+7.17%</strong>, SK텔레콤 <strong>+11.59%</strong>, 삼성생명 <strong>+17.07%</strong></li>
-    <li><span class="pm-tag down">방산·중공업</span> 두산에너빌리티 -6.45%, 한화오션 -7.13%, LS Electric -9.55%, 삼성SDI -7.67% — AI 수급 집중 반작용</li>
-    <li><span class="pm-tag neutral">한국 5월 CPI</span> <strong>+3.1% (2년 2개월 만 최고)</strong> — BOK 긴축 경계 재부상, 국고채 3년 3.773% (-0.45bp), 10년 3.969% (-0.68bp)</li>
-    <li><span class="pm-tag neutral">원/달러</span> <strong>1,516.19원 (+0.26%)</strong> — WTD +0.60%, YTD +5.09%</li>
-  </ul>
-  <div class="pm-kpi-row">
-    <div class="pm-kpi"><div class="pm-kpi-label">KOSPI</div><div class="pm-kpi-val up">+0.15%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">KOSDAQ</div><div class="pm-kpi-val down">-2.29%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">USD/KRW</div><div class="pm-kpi-val up">1,516.19</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">KR 10Y</div><div class="pm-kpi-val flat">3.969%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">KR CPI (5월)</div><div class="pm-kpi-val up">+3.1%</div></div>
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026-06-02 (화요일) · 지역·자산군별 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> Computex 2026 젠슨 황 "Marvell = 다음 조 달러 기업" + SK그룹 AI 메모리 협력 발표 → 코스피 이틀 연속 사상 최고(8,801.49, +0.15%). Marvell +32.52% 역사적 상승 · AMAT Q2 사상 최대 매출 서프라이즈. 알리바바 Qwen3.7-Plus + UEFA 6년 딜 → HSI +2.52% · 항셍 테크 +3.46%. Alphabet $800억 신주 발행 쇼크로 나스닥 상승폭 제한.</p>
+    <p><strong>Key drivers:</strong> 젠슨 황 Computex 발언(AI 공급망 전세계 동반 급등); 한국 5월 CPI +3.1%(2년여 최고, BOK 긴축 재경계); 알리바바 AI 모델+UEFA 딜(중국 AI 수익화 단계 전환); Alphabet 신주 발행(하이퍼스케일러 희석 우려).</p>
+    <p><strong>Watch:</strong> BOK 6월 금통위 방향(CPI 재점화 vs 성장 둔화) · Alphabet 신주 발행 규모 확정 여부 · WTI $93 지지선 + 중동 협상 추이 · 대만 TSMC 수주 업데이트(Computex 후속).</p>
   </div>
 </div>
 
-<div class="pm-section">
-  <h3>🌐 매크로</h3>
-  <ul>
-    <li><span class="pm-tag up">Computex 2026</span> Jensen Huang, SK그룹 AI 메모리 협력 + "Marvell 다음 조 달러 기업" 발언 → AI 반도체 공급망 전세계 동반 급등 촉매</li>
-    <li><span class="pm-tag neutral">유로존 5월 CPI</span> 헤드라인 <strong>+3.2%</strong>(예상 부합), 근원 <strong>+2.5%</strong>(소폭 상회) → ECB 추가 인하 기대 일부 후퇴</li>
-    <li><span class="pm-tag up">WTI</span> <strong>$93.39 (+0.99%)</strong>, Brent $95.78 (+0.50%) — 중동 긴장 지속. WTI WTD +6.90%, YTD +62.93%</li>
-    <li><span class="pm-tag up">구리</span> <strong>$6.677/lb (+1.63%)</strong>, WTD +5.00%, YTD +16.00% — AI 인프라 수요 기대 반영</li>
-    <li><span class="pm-tag neutral">금</span> <strong>$4,519.20 (+0.10%)</strong> — 사상 최고권 유지. WTD -0.91%</li>
-    <li><span class="pm-tag neutral">DXY</span> <strong>99.208 (+0.04%)</strong> — USD/CNY 6.762 (-0.04%), USD/JPY 159.887 (+0.19%)</li>
-  </ul>
-  <div class="pm-kpi-row">
-    <div class="pm-kpi"><div class="pm-kpi-label">WTI</div><div class="pm-kpi-val up">$93.39</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">Gold</div><div class="pm-kpi-val flat">$4,519</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">DXY</div><div class="pm-kpi-val flat">99.208</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">Copper</div><div class="pm-kpi-val up">+1.63%</div></div>
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">8,801.49</span> <span class="pm-up">+0.15%</span> · WTD <span class="pm-up">+3.84%</span> · YTD <span class="pm-up">+104.23%</span> — 이틀 연속 사상 최고 종가</li>
+      <li>KOSDAQ <span class="pm-num">1,026.03</span> <span class="pm-dn">-2.29%</span> · WTD <span class="pm-dn">-4.54%</span> · YTD <span class="pm-up">+8.51%</span> — 금리 우려·수급 이탈 역방향</li>
+      <li>삼성전자 <span class="pm-up">+3.30%</span> · SK Square <span class="pm-up">+7.17%</span> · SK텔레콤 <span class="pm-up">+11.59%</span> · 삼성생명 <span class="pm-up">+17.07%</span> (자사주 소각 기대)</li>
+      <li>두산에너빌리티 <span class="pm-dn">-6.45%</span> · 한화오션 <span class="pm-dn">-7.13%</span> · LS Electric <span class="pm-dn">-9.55%</span> · 삼성SDI <span class="pm-dn">-7.67%</span> — AI 수급 이탈</li>
+      <li>USD/KRW <span class="pm-num">1,516.19</span> (<span class="pm-dn">+0.26%</span>) · WTD <span class="pm-dn">+0.60%</span> · YTD <span class="pm-dn">+5.09%</span></li>
+      <li>한국 5월 CPI <span class="pm-num">+3.1%</span> (2년 2개월 만 최고) — BOK 추가 인하 기대 후퇴</li>
+    </ul>
+    <div class="pm-note">코스피 내 AI 대형주(SK·삼성) vs 방산·중공업 극단 양극화. CPI 쇼크가 장초 +1.08% 갭업을 보합권으로 끌어내림.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>WTI <span class="pm-num">$93.39</span> (<span class="pm-up">+0.99%</span>) · WTD <span class="pm-up">+6.90%</span> · YTD <span class="pm-up">+62.93%</span> — 중동 긴장 지속</li>
+      <li>Brent <span class="pm-num">$95.78</span> (<span class="pm-up">+0.50%</span>) · WTD <span class="pm-up">+4.05%</span></li>
+      <li>Gold <span class="pm-num">$4,519.20</span> (<span class="pm-up">+0.10%</span>) · WTD <span class="pm-dn">-0.91%</span> — 사상 최고권 유지</li>
+      <li>Copper <span class="pm-up">+1.63%</span> · WTD <span class="pm-up">+5.00%</span> · YTD <span class="pm-up">+16.00%</span> — AI 인프라 수요 기대</li>
+      <li>DXY <span class="pm-num">99.208</span> (<span class="pm-up">+0.04%</span>) · USD/JPY <span class="pm-num">159.887</span> · USD/CNY <span class="pm-num">6.762</span> (<span class="pm-dn">-0.04%</span>)</li>
+      <li>유로존 5월 CPI 헤드라인 <span class="pm-num">+3.2%</span>(예상 부합) · 근원 <span class="pm-num">+2.5%</span>(소폭 상회) — ECB 추가 인하 기대 일부 후퇴</li>
+    </ul>
+    <div class="pm-note">에너지 WTD +6.9%는 AI 수요+중동 프리미엄 동시 작용. 구리 WTD +5.0%는 AI 인프라 기대 선반영. 유로존 근원 CPI 상회가 ECB 스탠스 재점검 요인.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>HSI <span class="pm-num">26,038.32</span> <span class="pm-up">+2.52%</span> · WTD <span class="pm-up">+3.40%</span> · YTD <span class="pm-dn">-1.14%</span></li>
+      <li>항셍 테크 <span class="pm-up">+3.46%</span> — 알리바바 <span class="pm-up">+6.60%</span> · 텐센트 <span class="pm-up">+10.46%</span> · 메이퇀 <span class="pm-up">+9.27%</span> · JD.com <span class="pm-up">+6.85%</span> · BYD <span class="pm-up">+6.61%</span></li>
+      <li>알리바바 Qwen3.7-Plus(멀티모달 AI) + UEFA 6년 독점 AI·클라우드 딜 동시 발표 — AI 수익화 전환 신호</li>
+      <li>Shanghai <span class="pm-num">4,075.10</span> <span class="pm-up">+0.43%</span> · WTD <span class="pm-up">+0.16%</span> — 광통신·AI 부품주 상한가(Suzhou Dongshan·Yangtze Optical +10%)</li>
+      <li>Nikkei225 <span class="pm-num">66,734.24</span> <span class="pm-dn">-0.30%</span> · WTD <span class="pm-up">+0.61%</span> · YTD <span class="pm-up">+28.75%</span> — 차익실현</li>
+      <li>TWSE <span class="pm-num">45,337.91</span> <span class="pm-num">0.00%</span> · WTD <span class="pm-up">+1.35%</span> · YTD <span class="pm-up">+54.47%</span> — Computex 개최국 숨 고르기</li>
+    </ul>
+    <div class="pm-note">알리바바 이중 호재로 중국 AI 채택 테마 재점화. 홍콩이 이날 아시아 최강 퍼포먼스. TWSE는 Computex 개최국임에도 전고점 대비 소화 국면.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&amp;P500 <span class="pm-num">7,609.78</span> <span class="pm-up">+0.13%</span> · WTD <span class="pm-up">+0.39%</span> · YTD <span class="pm-up">+10.95%</span> — 사상 최고가</li>
+      <li>NASDAQ <span class="pm-num">27,093.90</span> <span class="pm-up">+0.03%</span> · WTD <span class="pm-up">+0.45%</span> · YTD <span class="pm-up">+16.60%</span></li>
+      <li>Russell2K <span class="pm-num">2,931.96</span> <span class="pm-up">+0.90%</span> · WTD <span class="pm-up">+0.43%</span> · YTD <span class="pm-up">+16.89%</span></li>
+      <li>Marvell <span class="pm-up">+32.52%</span> (Jensen Huang "다음 조 달러 기업") · AMAT <span class="pm-up">+6.96%</span> (Q2 사상 최대 $79.1억) · HPE <span class="pm-up">+19%</span> · Apple <span class="pm-up">+2.90%</span> · AMD <span class="pm-up">+2.24%</span></li>
+      <li>Alphabet <span class="pm-dn">-3.86%</span> (AI 자본 지출용 $800억 신주 발행) · Amazon <span class="pm-dn">-1.81%</span> · 커뮤니케이션 섹터 <span class="pm-dn">-1.76%</span></li>
+      <li>VIX <span class="pm-num">15.77</span> (<span class="pm-dn">-1.74%</span>) — 공포 완화 · VIX3M <span class="pm-num">19.49</span> (<span class="pm-up">+0.31%</span>)</li>
+    </ul>
+    <div class="pm-note">AI 공급업체(Marvell·AMAT·HPE) 폭등 vs AI 투자자(Alphabet·Amazon) 희석 쇼크의 구조적 분화가 이날 가장 선명. 지수 상승폭은 제한됐으나 S&P 신고점 유지.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50 <span class="pm-num">6,107.85</span> <span class="pm-up">+1.21%</span> · WTD <span class="pm-up">+0.95%</span> · YTD <span class="pm-up">+3.11%</span></li>
+      <li>DAX <span class="pm-num">25,124.17</span> <span class="pm-up">+0.48%</span> · CAC40 <span class="pm-num">8,209.09</span> <span class="pm-up">+0.77%</span> · FTSE100 <span class="pm-num">10,373.51</span> <span class="pm-up">+0.33%</span></li>
+      <li>인피니언 <span class="pm-up">+5.3%</span> (AI 반도체 낙수 최대 수혜) · ASML <span class="pm-up">+1.0%</span> · SAP <span class="pm-up">+1.6%</span></li>
+      <li>유로존 5월 CPI 헤드라인 <span class="pm-num">+3.2%</span>(예상 부합) · 근원 <span class="pm-num">+2.5%</span>(소폭 상회)</li>
+      <li>EUR/USD <span class="pm-num">1.163</span> (<span class="pm-dn">-0.09%</span>) · GBP/USD <span class="pm-num">1.346</span> (보합)</li>
+    </ul>
+    <div class="pm-note">Computex 반도체 낙수효과로 유럽 테크(인피니언)가 당일 최대 상승. 근원 CPI 소폭 상회는 ECB 6월 인하 이후 추가 인하 속도 조절 재료.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.618%</span> (<span class="pm-up">-0.06bp</span>) · US 10Y <span class="pm-num">4.455%</span> (<span class="pm-up">-0.45bp</span>) · 10Y-2Y Spread <span class="pm-num">83.7bp</span></li>
+      <li>KR CD 91D <span class="pm-num">2.87%</span> (<span class="pm-dn">+0.35bp</span>) · KR 3Y <span class="pm-num">3.773%</span> (<span class="pm-up">-0.45bp</span>) · KR 10Y <span class="pm-num">3.969%</span> (<span class="pm-up">-0.68bp</span>)</li>
+      <li>KR 10Y-3Y Spread <span class="pm-num">19.6bp</span> (<span class="pm-up">-4.85bp</span>) — 장기물 강세, 커브 플래트닝</li>
+      <li>TLT <span class="pm-num">85.65</span> (<span class="pm-up">+0.21%</span>) · AGG <span class="pm-num">98.71</span> (<span class="pm-up">+0.03%</span>) · HYG <span class="pm-num">79.90</span> (<span class="pm-up">+0.08%</span>) · LQD <span class="pm-num">108.92</span> (<span class="pm-dn">-0.01%</span>) · EMB <span class="pm-num">96.26</span> (<span class="pm-up">+0.26%</span>)</li>
+    </ul>
+    <div class="pm-note">CPI 상승에도 미국·한국 금리 소폭 하락 — 리스크온 속 안전자산 수요 경합. 한국 장기물 강세(KR 10Y -0.68bp)는 AI 장세 지속 기대 반영. 크레딧 ETF 전반 소폭 강세.</div>
   </div>
 </div>
 
-<div class="pm-section">
-  <h3>🌏 아시아 및 중국</h3>
-  <ul>
-    <li><span class="pm-tag up">항셍(HSI)</span> <strong>26,038.32 (+2.52%)</strong> — 알리바바 Qwen3.7-Plus + UEFA 6년 독점 AI·클라우드 딜 발표로 중국 테크 급등. WTD +3.40%</li>
-    <li><span class="pm-tag up">항셍 테크</span> <strong>+3.46%</strong> — 알리바바 +6.60%, 텐센트 +10.46%, 메이퇀 +9.27%, JD.com +6.85%, BYD +6.61%, XPeng +6.19%</li>
-    <li><span class="pm-tag flat">상하이</span> <strong>4,075.10 (+0.43%)</strong> — 광통신·AI 부품주 급등(Suzhou Dongshan +10.0%, Yangtze Optical +10.0%). WTD +0.16%</li>
-    <li><span class="pm-tag down">닛케이</span> <strong>66,734.24 (-0.30%)</strong> — USD/JPY 159.89엔 엔화 약세에도 차익 매물. WTD +0.61%, YTD +28.75%</li>
-    <li><span class="pm-tag flat">대만(TWSE)</span> <strong>45,337.91 (0.00%)</strong> — Computex 개최국이나 TSMC 등 쉬어가기. WTD +1.35%, YTD +54.47%</li>
-    <li><span class="pm-tag flat">인도(NIFTY50)</span> <strong>23,382.60 (0.00%)</strong> — 공휴일 휴장. WTD -0.70%</li>
-  </ul>
-  <div class="pm-kpi-row">
-    <div class="pm-kpi"><div class="pm-kpi-label">HSI</div><div class="pm-kpi-val up">+2.52%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">Nikkei</div><div class="pm-kpi-val down">-0.30%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">Shanghai</div><div class="pm-kpi-val up">+0.43%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">TWSE</div><div class="pm-kpi-val flat">0.00%</div></div>
-  </div>
-</div>
-
-<div class="pm-section">
-  <h3>🇺🇸 미국</h3>
-  <ul>
-    <li><span class="pm-tag up">S&P500</span> <strong>7,609.78 (+0.13%)</strong> — 사상 최고가 경신. WTD +0.39%, YTD +10.95%</li>
-    <li><span class="pm-tag flat">나스닥</span> <strong>27,093.90 (+0.03%)</strong> — Marvell·AMAT 급등이 Alphabet 쇼크에 상쇄. WTD +0.45%, YTD +16.60%</li>
-    <li><span class="pm-tag up">Russell 2K</span> <strong>2,931.96 (+0.90%)</strong> — 소형주 강세. WTD +0.43%, YTD +16.89%</li>
-    <li><span class="pm-tag up">Marvell</span> <strong>+32.52%</strong> — Jensen Huang "다음 조 달러 기업" 발언, 역사적 최대 하루 상승. AMAT +6.96% (Q2 사상 최대 $79.1억 매출), HPE +19% (실적 서프라이즈), Apple +2.90%, AMD +2.24%</li>
-    <li><span class="pm-tag down">Alphabet</span> <strong>-3.86%</strong> — AI 자본 지출용 최대 $800억 신주 발행 공시, 희석 우려. Amazon -1.81%, 커뮤니케이션 섹터 -1.76%</li>
-    <li><span class="pm-tag neutral">VIX</span> <strong>15.77 (-1.74%)</strong> — 공포 심리 완화. VIX3M 19.49 (+0.31%)</li>
-  </ul>
-  <div class="pm-kpi-row">
-    <div class="pm-kpi"><div class="pm-kpi-label">S&P500</div><div class="pm-kpi-val up">7,609.78</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">Nasdaq</div><div class="pm-kpi-val up">27,093.90</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">Russell2K</div><div class="pm-kpi-val up">+0.90%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">VIX</div><div class="pm-kpi-val flat">15.77</div></div>
-  </div>
-</div>
-
-<div class="pm-section">
-  <h3>🇪🇺 유럽</h3>
-  <ul>
-    <li><span class="pm-tag up">STOXX50</span> <strong>6,107.85 (+1.21%)</strong> — 반도체 낙수 + 안정적 매크로. WTD +0.95%, YTD +3.11%</li>
-    <li><span class="pm-tag up">DAX</span> <strong>25,124.17 (+0.48%)</strong>, CAC40 <strong>8,209.09 (+0.77%)</strong>, FTSE100 <strong>10,373.51 (+0.33%)</strong></li>
-    <li><span class="pm-tag up">인피니언</span> <strong>+5.3%</strong> — AI 반도체 낙수 최대 수혜. ASML +1.0%, SAP +1.6%</li>
-    <li><span class="pm-tag neutral">유로존 CPI</span> 헤드라인 +3.2% (예상 부합), 근원 +2.5% (소폭 상회) → ECB 6월 인하 기대 유지되나 추가 인하 불확실성 존재</li>
-    <li><span class="pm-tag up">EUR/USD</span> <strong>1.163 (-0.09%)</strong> — 근원 CPI 상회 영향으로 달러 소폭 강세</li>
-  </ul>
-  <div class="pm-kpi-row">
-    <div class="pm-kpi"><div class="pm-kpi-label">STOXX50</div><div class="pm-kpi-val up">+1.21%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">DAX</div><div class="pm-kpi-val up">+0.48%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">EUR/USD</div><div class="pm-kpi-val flat">1.163</div></div>
-  </div>
-</div>
-
-<div class="pm-section">
-  <h3>💵 채권 · 크레딧</h3>
-  <ul>
-    <li><span class="pm-tag flat">미국 10년</span> <strong>4.455% (-0.45bp)</strong> — 소폭 하락, 리스크온 속 안전자산 수요 경합. US 2Y 3.618% (-0.06bp), 10-2 스프레드 83.7bp</li>
-    <li><span class="pm-tag flat">한국 10년</span> <strong>3.969% (-0.68bp)</strong> — CPI 쇼크에도 소폭 하락. KR 3Y 3.773% (-0.45bp), 10-3 스프레드 19.6bp</li>
-    <li><span class="pm-tag flat">KR CD 91D</span> <strong>2.87% (+0.35bp)</strong> — 단기 자금시장 CPI 반응 소폭 반영</li>
-    <li><span class="pm-tag up">TLT</span> <strong>+0.21%</strong> — 장기 국채 소폭 강세. AGG +0.03%, LQD -0.01%</li>
-    <li><span class="pm-tag up">크레딧</span> HYG +0.08%, EMB +0.26% — 신흥국 채권 양호. 스프레드 축소 기조 유지</li>
-  </ul>
-  <div class="pm-kpi-row">
-    <div class="pm-kpi"><div class="pm-kpi-label">US 10Y</div><div class="pm-kpi-val flat">4.455%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">US 2Y</div><div class="pm-kpi-val flat">3.618%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">KR 10Y</div><div class="pm-kpi-val flat">3.969%</div></div>
-    <div class="pm-kpi"><div class="pm-kpi-label">TLT</div><div class="pm-kpi-val up">+0.21%</div></div>
-  </div>
-  <p class="pm-footer">PM Story — 포트폴리오 매니저용 수치 중심 요약. 매수·매도 직접 권유가 아니며 참고용입니다.</p>
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 상세 내러티브는 Market Story, 고객 설명은 CS Story 탭을 참고하세요.
 </div>
