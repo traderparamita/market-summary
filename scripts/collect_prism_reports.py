@@ -131,6 +131,7 @@ def scan_page(page_id: int) -> dict | None:
 def get_filename_and_download(info: dict, dest: Path) -> str | None:
     """curl로 PDF 다운로드 + Content-Disposition에서 파일명 추출."""
     import tempfile
+    from urllib.parse import unquote
     header_file = os.path.join(tempfile.gettempdir(), f"imweb_prism_headers_{info['page_id']}.txt")
     try:
         r = subprocess.run(
@@ -146,6 +147,11 @@ def get_filename_and_download(info: dict, dest: Path) -> str | None:
             return None
         with open(header_file, encoding="utf-8", errors="replace") as f:
             headers = f.read()
+        # RFC 5987: filename*=UTF-8''%EC%A3%BC... 우선 처리
+        m = re.search(r"filename\*=UTF-8''([^\r\n;]+)", headers, re.IGNORECASE)
+        if m:
+            return unquote(m.group(1).strip())
+        # 일반 filename="..." fallback
         m = re.search(r'filename="([^"]+)"', headers)
         return m.group(1) if m else None
     except Exception:
