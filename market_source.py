@@ -17,6 +17,7 @@ Fallback:
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -63,7 +64,9 @@ def _load_from_rds(
     """
     conn = get_connection()
     try:
-        df = pd.read_sql(sql, conn, params=params if params else None, parse_dates=["date"])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            df = pd.read_sql(sql, conn, params=params if params else None, parse_dates=["date"])
     finally:
         conn.close()
 
@@ -102,7 +105,9 @@ def _load_macro_from_rds(
     """
     conn = get_connection()
     try:
-        df = pd.read_sql(sql, conn, params=params if params else None, parse_dates=["date"])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            df = pd.read_sql(sql, conn, params=params if params else None, parse_dates=["date"])
     finally:
         conn.close()
 

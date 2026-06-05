@@ -1069,36 +1069,34 @@ def main(target_date=None, start_date=None):
     else:
         _log("    ⊘ 스킵 (bulk mode: --start)")
 
-    # Step 1c: Snowflake MKT100 통합 upsert
+    # Step 1c: RDS market_daily 통합 upsert
     #   - target_date 외에 직전 5영업일(=달력 7일) 도 함께 upsert.
-    #     (Naver/FDR/investiny fallback 으로 과거 행이 사후 업데이트되는 경우 SF 와의 드리프트 방지)
+    #     (Naver/FDR/investiny fallback 으로 과거 행이 사후 업데이트되는 경우 RDS 와의 드리프트 방지)
     #   - upsert_rows 는 (일자 × 지표코드) 교집합 DELETE 후 INSERT — df 에 없는 코드는 안전.
-    #   - 표준 마커: [SNOWFLAKE] OK date=... rows=N  또는  [SNOWFLAKE] FAILED date=... reason=...
-    _log("\n  [Step 1c] Snowflake 통합 upsert 중...")
+    #   - 표준 마커: [RDS] OK date=... rows=N  또는  [RDS] FAILED date=... reason=...
+    _log("\n  [Step 1c] RDS 통합 upsert 중...")
     if not start_date:
         try:
             import pandas as pd
-            from snowflake_loader import upsert_rows
+            from rds_loader import upsert_rows, _alert_failure
             df_full = pd.read_csv(HISTORY_CSV)
             df_full["DATE"] = df_full["DATE"].astype(str)
             window_start = (dt.datetime.strptime(target_date, "%Y-%m-%d").date()
                             - dt.timedelta(days=7)).strftime("%Y-%m-%d")
             df_recent = df_full[(df_full["DATE"] >= window_start) & (df_full["DATE"] <= target_date)]
             if df_recent.empty:
-                _log(f"    [SNOWFLAKE] SKIP date={target_date} reason=no-csv-rows-in-window")
+                _log(f"    [RDS] SKIP date={target_date} reason=no-csv-rows-in-window")
             else:
                 nrows = upsert_rows(df_recent.copy())  # multi-date upsert
                 ndates = df_recent["DATE"].nunique()
-                _log(f"    [SNOWFLAKE] OK date={target_date} window={window_start}~{target_date} dates={ndates} rows={nrows}")
+                _log(f"    [RDS] OK date={target_date} window={window_start}~{target_date} dates={ndates} rows={nrows}")
         except Exception as e:
             reason = str(e).replace("\n", " ")[:300]
             try:
-                from snowflake_loader import _alert_failure
                 _alert_failure(source=f"generate.py-step1c-{target_date}",
-                               reason=reason, table="MKT100_MARKET_DAILY")
+                               reason=reason, table="market_daily")
             except Exception:
-                # _alert_failure 자체도 안되면 최소한 마커는 남김
-                _log(f"    [SNOWFLAKE] FAILED date={target_date} reason={reason}")
+                _log(f"    [RDS] FAILED date={target_date} reason={reason}")
     else:
         _log(f"    ⊘ 스킵 (bulk mode: --start)")
 

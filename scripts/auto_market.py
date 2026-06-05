@@ -395,12 +395,12 @@ def main() -> None:
             parse_mode="HTML",
         )
 
-    # ── Snowflake drift 검증 (P0 운영 안정성 강화) ────────────────────
-    # CSV ↔ MKT100/MKT200 일치 여부 자동 검증. 불일치 시 Telegram 알림.
-    print("\n[4/4] Snowflake drift 검증 ...")
+    # ── RDS drift 검증 (P0 운영 안정성 강화) ────────────────────────
+    # CSV ↔ market_daily/macro_daily 일치 여부 자동 검증. 불일치 시 Telegram 알림.
+    print("\n[4/4] RDS drift 검증 ...")
     try:
         drift_result = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "verify_snowflake_drift.py"), date_str],
+            [sys.executable, str(ROOT / "scripts" / "verify_rds_drift.py"), date_str],
             cwd=str(ROOT), capture_output=True, text=True, timeout=120,
         )
         print(drift_result.stdout[-2000:])
