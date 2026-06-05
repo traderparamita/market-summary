@@ -264,7 +264,7 @@ def run_collection(start_date: str = "2010-01-01", verbose: bool = True) -> int:
         # snowflake_loader.py 는 market_summary/ 프로젝트 루트에 있음
         # collectors/macro.py 기준 parent.parent = market_summary/
         _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
-        from snowflake_loader import sync_macro_rows
+        from rds_loader import sync_macro_rows
 
         if not new_df.empty:
             # 새 데이터가 있으면 그것만 upsert
@@ -283,7 +283,7 @@ def run_collection(start_date: str = "2010-01-01", verbose: bool = True) -> int:
         sync_macro_rows(rows_to_sync, source="collect_macro")
     except Exception as e:
         try:
-            from snowflake_loader import _alert_failure
+            from rds_loader import _alert_failure
             _alert_failure(source="collect_macro", reason=str(e)[:200],
                            table="MKT200_MACRO_DAILY")
         except Exception:

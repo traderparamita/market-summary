@@ -448,11 +448,11 @@ def collect_stocks_universe(
         print("\n  → 신규 데이터 없음")
 
     try:
-        from snowflake_loader import sync_new_rows
+        from rds_loader import sync_new_rows
         sync_new_rows(new_rows, source="collect_stocks_universe")
     except Exception as e:
         try:
-            from snowflake_loader import _alert_failure
+            from rds_loader import _alert_failure
             _alert_failure(source="collect_stocks_universe", reason=str(e)[:200])
         except Exception:
             print(f"[SNOWFLAKE] FAILED source=collect_stocks_universe reason={str(e)[:200]}")
@@ -466,7 +466,7 @@ def upsert_mkt000_seed() -> int:
     이미 등록된 코드는 건너뜀 (idempotent). 신규 환경 셋업·재현용.
     """
     try:
-        from snowflake_loader import get_connection
+        from rds_loader import get_connection
     except Exception as e:
         print(f"[SEED] snowflake_loader import 실패: {e}")
         return 0

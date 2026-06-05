@@ -122,11 +122,11 @@ def collect_valuation(start: str = "2010-01-01", end: str = "9999-12-31") -> int
 
     # Snowflake dual-write (best-effort)
     try:
-        from snowflake_loader import sync_new_rows
+        from rds_loader import sync_new_rows
         sync_new_rows(new_rows, source="collect_valuation")
     except Exception as e:
         try:
-            from snowflake_loader import _alert_failure
+            from rds_loader import _alert_failure
             _alert_failure(source="collect_valuation", reason=str(e)[:200])
         except Exception:
             print(f"[SNOWFLAKE] FAILED source=collect_valuation reason={str(e)[:200]}")
