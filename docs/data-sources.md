@@ -196,8 +196,8 @@ collectors.collect_market.fetch_data()
 generate.py main()
   ├─ fetch_data() → result_dict + history_rows
   ├─ append_to_history(history_rows) → history/market_data.csv (dedup by DATE+INDICATOR_CODE)
-  ├─ Snowflake dual-write: upsert_rows() → MKT100_MARKET_DAILY (해당 일자 DELETE+INSERT)
-  ├─ build_report_data() → Snowflake에서 읽어 지표 계산 (CSV fallback)
+  ├─ RDS dual-write: upsert_rows() → market_daily (해당 일자 DELETE+INSERT)
+  ├─ build_report_data() → RDS에서 읽어 지표 계산 (CSV fallback)
   └─ generate_html() → output/summary/YYYY-MM-DD.html + _data.json
 ```
 
@@ -206,14 +206,14 @@ generate.py main()
 ## 2. 보조 수집기 (`collectors/`)
 
 일간 `collectors/collect_market.py`와 별도로, 이력 백필·특수 지표용 수집기 4종이 있다.
-모두 `history/market_data.csv` (또는 `macro_indicators.csv`)에 append + Snowflake dual-write.
+모두 `history/market_data.csv` (또는 `macro_indicators.csv`)에 append + RDS dual-write.
 
 ### 2-1. Sector ETFs (`sector_etfs.py`)
 
 - **대상**: US Sector 11 + KR Sector GICS 11 + KR 기타 ETF 16 + US Factor 5 + Bond ETF 3 = **46종**
 - **소스**: yfinance (OHLCV)
 - **용도**: 2010~현재 장기 이력 백필 (ETF 상장일 이후)
-- **적재**: `history/market_data.csv` + Snowflake `MKT100_MARKET_DAILY`
+- **적재**: `history/market_data.csv` + RDS `market_daily`
 - **실행**: `python -m collectors.sector_etfs --start 2010-01-01`
 
 ### 2-2. KRX Sectors (`krx_sectors.py`)
@@ -221,7 +221,7 @@ generate.py main()
 - **대상**: KOSPI 200 GICS 섹터 지수 11개 (`IX_KR_` prefix) + 전통 업종 지수 11개 (optional)
 - **소스**: pykrx (`stock.get_index_ohlcv_by_date`)
 - **용도**: ETF보다 긴 2010~ 이력 확보 (ETF는 2015~2022 상장), sector_country 보고서에서 사용
-- **적재**: `history/market_data.csv` + Snowflake `MKT100_MARKET_DAILY`
+- **적재**: `history/market_data.csv` + RDS `market_daily`
 - **실행**: `python -m collectors.krx_sectors --start 2010-01-01 [--traditional]`
 - **환경변수**: `KRX_ID`, `KRX_PW` (pykrx 인증)
 
@@ -230,14 +230,14 @@ generate.py main()
 - **대상**: KOSPI PER / PBR / 배당수익률 3개 (`VAL_KR_PER`, `VAL_KR_PBR`, `VAL_KR_DY`)
 - **소스**: pykrx (`stock.get_index_fundamental_by_date`, 지수코드 1001=KOSPI)
 - **용도**: KR 시장 밸류에이션 수준 판단 (Valuation View)
-- **적재**: `history/market_data.csv` + Snowflake `MKT100_MARKET_DAILY`
+- **적재**: `history/market_data.csv` + RDS `market_daily`
 - **실행**: `python -m collectors.valuation --start 2010-01-01`
 
 ### 2-4. Macro Indicators (`macro.py`)
 
 - **대상**: 48개 거시지표 (`collectors/macro_indicators.yaml`에 정의)
 - **소스**: FRED API (US/JP/CN/EU/UK/IN/Global) + ECOS API (KR)
-- **적재**: `history/macro_indicators.csv` + Snowflake `MKT200_MACRO_DAILY`
+- **적재**: `history/macro_indicators.csv` + RDS `macro_daily`
 - **실행**: `python -m collectors.macro --start 2010-01-01`
 - **환경변수**: `FRED_API_KEY`, `ECOS_API_KEY`
 
@@ -325,40 +325,41 @@ DATE, INDICATOR_CODE, CATEGORY, REGION, VALUE, UNIT, SOURCE
 
 ---
 
-## 5. Snowflake 연동
+## 5. RDS PostgreSQL 연동
+
+**엔드포인트**: `anthillia-db.ch6koauosfkl.ap-northeast-2.rds.amazonaws.com` (db.t4g.micro, ap-northeast-2)
 
 ### 테이블 구조
 
 | 테이블 | 용도 | CSV 대응 |
 |--------|------|----------|
-| `FDE_DB.PUBLIC.MKT100_MARKET_DAILY` | 시장 데이터 (단일 정본) | `market_data.csv` |
-| `FDE_DB.PUBLIC.MKT200_MACRO_DAILY` | 거시지표 | `macro_indicators.csv` |
-| `FDE_DB.PUBLIC.MKT001_MACRO_INDICATOR` | 거시지표 마스터 (주기/소스_시리즈 lookup) | — |
+| `market_daily` | 시장 데이터 (단일 정본) | `market_data.csv` |
+| `macro_daily` | 거시지표 | `macro_indicators.csv` |
 
-### 컬럼 매핑 (MKT100)
+### 컬럼 매핑
 
 ```
-CSV (English)    →  Snowflake (한글)
-DATE             →  일자
-INDICATOR_CODE   →  지표코드
-CATEGORY         →  카테고리
-TICKER           →  티커
-CLOSE            →  종가        (NUMBER 18,3)
-OPEN             →  시가        (NUMBER 18,3)
-HIGH             →  고가        (NUMBER 18,3)
-LOW              →  저가        (NUMBER 18,3)
-VOLUME           →  거래량
-SOURCE           →  소스
+CSV (English)    →  RDS PostgreSQL (소문자)
+DATE             →  date
+INDICATOR_CODE   →  indicator_code
+CATEGORY         →  category
+TICKER           →  ticker
+CLOSE            →  close         (NUMERIC)
+OPEN             →  open          (NUMERIC)
+HIGH             →  high          (NUMERIC)
+LOW              →  low           (NUMERIC)
+VOLUME           →  volume
+SOURCE           →  source
 ```
 
 ### 적재 패턴
 
 | 상황 | 방법 | 모듈 |
 |------|------|------|
-| 일간 수집 후 | 해당 일자 DELETE + INSERT (dual-write) | `generate.py` → `snowflake_loader.upsert_rows()` |
-| 전체 재적재 | TRUNCATE + bulk INSERT | `python snowflake_loader.py --truncate` |
-| 보조 수집기 | 동일 upsert (best-effort, 실패 시 Telegram 알림) | `snowflake_loader.sync_new_rows()` |
-| 매크로 지표 | (일자, 지표코드) DELETE + INSERT | `snowflake_loader.sync_macro_rows()` |
+| 일간 수집 후 (최근 7일 윈도우) | 해당 일자 DELETE + INSERT (dual-write) | `generate.py` → `rds_loader.upsert_rows()` |
+| 전체 재적재 | TRUNCATE + bulk COPY | `rds_loader.bulk_load_csv(..., truncate=True)` |
+| 보조 수집기 | 동일 upsert (best-effort, 실패 시 Telegram 알림) | `rds_loader.sync_new_rows()` |
+| 매크로 지표 | (일자, 지표코드) DELETE + INSERT | `rds_loader.sync_macro_rows()` |
 
 ### Reader 패턴
 
@@ -367,14 +368,14 @@ SOURCE           →  소스
 ```python
 from market_source import load_long, load_wide_close, load_macro_long
 
-load_long(start, end, codes)        # Long format (MKT100 → CSV fallback)
+load_long(start, end, codes)        # Long format (market_daily → CSV fallback)
 load_wide_close(start, end, codes)  # DATE × INDICATOR_CODE pivot
-load_macro_long(start, end, codes)  # MKT200 → macro_indicators.csv fallback
+load_macro_long(start, end, codes)  # macro_daily → macro_indicators.csv fallback
 ```
 
-- `prefer="snowflake"` (기본): Snowflake 우선, 실패 시 CSV fallback
+- `prefer="rds"` (기본): RDS 우선, 실패 시 CSV fallback
 - `prefer="csv"`: CSV 강제 (시뮬레이션/테스트)
-- `SNOWFLAKE_DISABLE=1`: 전역 CSV fallback
+- `RDS_DISABLE=1`: 전역 CSV fallback
 
 ---
 

@@ -3,12 +3,13 @@
 ## 파일 트리
 
 ```
-generate.py               # HTML 보고서 생성 (collect_market import + Snowflake dual-write)
+generate.py               # HTML 보고서 생성 (collect_market import + RDS dual-write)
 generate_periodic.py      # 주간/월간/분기 집계 (--only {weekly|monthly|quarterly} --quarter N)
 generate_sector_country.py # 섹터·국가 보고서 (레거시 — 2026-05-26 폐기, 참조용 보존)
 scripts/generate_asia_weekly.py  # 아시아 주간 브리프 (xlsx 180종목 ↔ market_data.csv 매칭 + 6탭 스켈레톤)
-market_source.py          # Snowflake MKT100/MKT200 리더 (CSV fallback) — 모든 reader의 단일 진입점
-snowflake_loader.py       # CSV ↔ Snowflake 적재 유틸
+market_source.py          # RDS market_daily/macro_daily 리더 (CSV fallback) — 모든 reader의 단일 진입점
+rds_loader.py             # CSV ↔ RDS PostgreSQL 적재 유틸 (snowflake_loader 대체)
+snowflake_loader.py       # (레거시 — RDS 이관 완료, 보존만)
 notify_telegram.py        # Telegram 알림 (개인 + 그룹 동시 발송)
 simulate.py               # 과거 날짜 시뮬레이션
 gen_assets.py             # 브랜드 에셋 생성 (favicon, OG image)
@@ -35,7 +36,8 @@ scripts/
 ├── generate_securities_digest.py     # 증권 보고서 Claude 분석 → 주간 다이제스트
 ├── generate_research.py              # 일간 테마 리서치 자동 생성
 ├── verify_report_numbers.py          # 보고서 수치 결정론 검증 (logs/verify_numbers.log)
-├── verify_snowflake_drift.py         # Snowflake ↔ CSV 정합성 비교
+├── verify_rds_drift.py               # RDS ↔ CSV 정합성 비교 (verify_snowflake_drift 대체)
+├── verify_snowflake_drift.py         # (레거시 보존)
 ├── calendar_check.py                 # 영업일 검증·날짜 포맷터
 ├── backfill_us_yields.py             # US 수익률 곡선 백필 (investiny)
 ├── generate_fund_index.py            # output/fund/index.html (S3 pre-signed URL)
@@ -57,7 +59,7 @@ scripts/
 └── macos/                            # macOS launchd (레거시 참고용)
 
 db/
-├── MKT.sql              # Snowflake MKT100/MKT200 DDL (정본)
+├── MKT.sql              # Snowflake MKT100/MKT200 DDL (레거시 참조용)
 ├── FND.sql              # Snowflake FND 계열 DDL (market-strategy 참조용)
 └── migrate.py           # 스키마 생성/마이그레이션 유틸
 
@@ -89,5 +91,5 @@ logs/
 └── securities_reports.log       # 증권 보고서 수집 로그
 ```
 
-- `[SNOWFLAKE] OK/FAILED/SKIP` 마커로 Snowflake 적재 결과 추적
+- `[RDS] OK/FAILED/SKIP` 마커로 RDS 적재 결과 추적
 - `✅ [Step X]`, `⚠ [Step X]`, `⊘ [Step X]` 마커로 Step별 결과 확인

@@ -18,11 +18,13 @@
 
 월·토는 Daily 실행 안 함 (auto_market.should_skip). DailyResearch는 월~금 매일.
 
+> **EC2 병행 운영 (2026-06~)**: Anthillia EC2 (54.180.225.122)가 06:30 KST에 `generate.py`를 실행해 데이터 수집 + RDS upsert를 선행한다. 로컬이 06:50에 시작할 때 RDS가 이미 채워진 상태. EC2는 `MALife-AI/market-summary` (private repo)로 push, 로컬은 `traderparamita/market-summary` (GitHub Pages)로 push — 별도 레포라 충돌 없음.
+
 ### 1.1 요일별 실행 순서
 
 ```
 ─ 일요일 ────────────────────────────────────────
-18:50 → auto_market.py        (금요일 보고서 = 일/주/월 + Snowflake drift 검증)
+18:50 → auto_market.py        (금요일 보고서 = 일/주/월 + RDS drift 검증)
 19:30 → collect_weekly.py     (주간 증권사 수집 + PRISM + Digest + Index + Fund + push)
 20:00 → generate_asia_weekly  (아시아 주간 브리프 스켈레톤)
 
@@ -135,22 +137,25 @@ Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>"
 git push origin main
 ```
 
-### 2.5 케이스: Snowflake 적재 실패
+### 2.5 케이스: RDS 적재 실패
 
-`generate.py` 출력에 `[SNOWFLAKE] FAILED`가 있을 때.
+`generate.py` 출력에 `[RDS] FAILED`가 있을 때.
 
 ```bash
 # 단일 일자 재적재
 .venv/bin/python -c "
-from snowflake_loader import upsert_market_daily
-upsert_market_daily('2026-05-08')
+import pandas as pd
+from rds_loader import upsert_rows
+df = pd.read_csv('history/market_data.csv')
+df = df[df['DATE'] == '2026-05-08']
+upsert_rows(df)
 "
 
-# CSV ↔ Snowflake drift 검증
-.venv/bin/python scripts/verify_snowflake_drift.py 2026-05-08
+# CSV ↔ RDS drift 검증
+.venv/bin/python scripts/verify_rds_drift.py 2026-05-08
 ```
 
-전체 재수집은 `snowflake_loader.py --truncate` 후 `generate.py --start YYYY-MM-DD`. **주의**: dual-write는 `--start` 없이 실행할 때만 작동.
+전체 재적재는 `scripts/migrate_sf_to_rds.py` 또는 `rds_loader.bulk_load_csv('history/market_data.csv', truncate=True)`. **주의**: dual-write는 `--start` 없이 실행할 때만 작동.
 
 ---
 
@@ -184,8 +189,8 @@ logs/
 ### 4.2 주요 마커 검색
 
 ```bash
-# Snowflake 적재 결과
-grep "\[SNOWFLAKE\]" logs/auto_market.log | tail -20
+# RDS 적재 결과
+grep "\[RDS\]" logs/auto_market.log | tail -20
 
 # Step별 결과
 grep "\[Step" logs/market-full-YYYY-MM-DD.log
@@ -225,13 +230,13 @@ grep "✗\|위반 없음" logs/verify_numbers.log | tail -10
 
 상세: [docs/verify-numbers.md](verify-numbers.md)
 
-### 5.2 Snowflake ↔ CSV 정합성
+### 5.2 RDS ↔ CSV 정합성
 
 ```bash
-.venv/bin/python scripts/verify_snowflake_drift.py 2026-05-08
+.venv/bin/python scripts/verify_rds_drift.py 2026-05-08
 ```
 
-일요일 18:50 워크플로우(auto_market.py 안에서) 자동 호출. 차이 발견 시 Telegram 알림.
+매일 `/market-full` 완료 후 auto_market.py 안에서 자동 호출. 차이 발견 시 Telegram 알림.
 
 ---
 
@@ -282,7 +287,7 @@ grep "✗\|위반 없음" logs/verify_numbers.log | tail -10
 특정 지표가 며칠 누락된 경우:
 
 ```bash
-# Core market data 재수집 (CSV + Snowflake dual-write)
+# Core market data 재수집 (CSV + RDS dual-write)
 .venv/bin/python -m collectors.collect_market --start 2026-05-04 --end 2026-05-08
 
 # Macro 재수집 (FRED + ECOS)
@@ -292,7 +297,7 @@ grep "✗\|위반 없음" logs/verify_numbers.log | tail -10
 .venv/bin/python -m collectors.stocks_universe --start 2026-05-04
 ```
 
-전체 truncate 후 재적재는 운영 환경에서는 권장하지 않음 (Snowflake 비용 + 다른 reader 영향).
+전체 truncate 후 재적재는 운영 환경에서는 권장하지 않음 (다른 reader 영향).
 
 ### 7.3 인덱스만 재생성
 
@@ -313,7 +318,7 @@ Pre-signed URL이 만료되면 인덱스 페이지의 PDF 링크가 끊긴다 �
 
 ## 8. 관련 문서
 
-- [docs/data-sources.md](data-sources.md) — 수집 대상·소스·CSV·Snowflake 스키마
+- [docs/data-sources.md](data-sources.md) — 수집 대상·소스·CSV·RDS 스키마
 - [docs/verify-numbers.md](verify-numbers.md) — 수치 자동 검증 (패턴·가드)
 - [docs/fund-analysis.md](fund-analysis.md) — Fund S3 저장소·pre-signed URL
 - [docs/output-structure.md](output-structure.md) — `output/` 디렉터리 트리
