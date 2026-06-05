@@ -311,7 +311,7 @@ def main() -> None:
     rows = scan_s3()
     html = render_html(rows)
     INDEX_PATH.write_text(html, encoding="utf-8")
-    print(f"  {INDEX_PATH} — {len(rows)}건 (pre-signed URL {URL_EXPIRES_DAYS}일 만료)")
+    print(f"  {INDEX_PATH} - {len(rows)}건 (pre-signed URL {URL_EXPIRES_DAYS}일 만료)")
 
 
 if __name__ == "__main__":
