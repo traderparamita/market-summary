@@ -1274,23 +1274,571 @@ body{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 �
 </div><!-- /tab-data -->
 
 <div id="tab-macro" class="tab-panel">
-<!-- MACRO_EVENTS_PLACEHOLDER -->
+<style>
+  .macro-section{margin-bottom:32px}
+  .macro-section h2{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+  .macro-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;border-left:4px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .macro-date{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+  .macro-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px}
+  .macro-values{font-size:13px;margin-bottom:8px;font-family:'JetBrains Mono',monospace}
+  .macro-explain{font-size:13px;color:var(--text);line-height:1.75;background:var(--card2);padding:10px 12px;border-radius:6px;margin-bottom:8px}
+  .macro-reaction{font-size:12px;color:var(--muted);font-style:italic}
+</style>
+
+<div class="macro-section">
+  <h2>📋 W23 주요 이벤트 (6/1~6/5)</h2>
+  <div class="macro-cards">
+    <div class="macro-card" style="border-left-color:#d92b2b">
+      <div class="macro-date">2026-06-03 (수) · 미국 장 마감 후 (AH)</div>
+      <div class="macro-title">브로드컴(AVGO) Q3 FY2026 실적 발표</div>
+      <div class="macro-values">AI 칩 매출 가이던스: $16.0B (컨센서스 $17.2B) — 미스 약 $1.2B</div>
+      <div class="macro-explain">AI 반도체 수요가 무한히 확장될 것이라는 시장 가정에 처음으로 균열이 생겼습니다. AVGO의 AI 칩 가이던스 하회는 엔비디아·삼성전자·SK하이닉스 등 AI 공급망 전체에 연쇄 충격을 줬습니다. 한국 증시가 수요일 휴장이었기 때문에 이틀치 충격이 목·금요일에 집중됐습니다.</div>
+      <div class="macro-reaction">반응: SOXX -10.44% (이틀), 코스피 -5.54% + 서킷브레이커, AVGO AH -18%↑</div>
+    </div>
+    <div class="macro-card" style="border-left-color:#d92b2b">
+      <div class="macro-date">2026-06-05 (금) · 오후 2:30 KST</div>
+      <div class="macro-title">미국 5월 비농업 고용(NFP)</div>
+      <div class="macro-values">실제: +172K &nbsp;|&nbsp; 예상: +145K &nbsp;|&nbsp; 전월(수정): +149K &nbsp;|&nbsp; 실업률: 3.8%</div>
+      <div class="macro-explain">예상을 크게 웃도는 고용 서프라이즈로 연준의 조기 금리 인하 기대가 급격히 후퇴했습니다. "Good news is bad news" 국면이 재현되며 주가는 발표 직후 추가 하락했습니다. AVGO 쇼크와 동시에 발생하며 복합 충격 구조를 형성했습니다.</div>
+      <div class="macro-reaction">반응: US 10Y +6bp(당일), DXY +0.64%(당일), 달러/원 +1.71%(당일), S&amp;P500 -2.64%</div>
+    </div>
+    <div class="macro-card">
+      <div class="macro-date">2026-06-03 (수) · 한국 증시</div>
+      <div class="macro-title">한국 증시 휴장</div>
+      <div class="macro-values">KOSPI/KOSDAQ 휴장 — 일일 데이터 없음(NaN)</div>
+      <div class="macro-explain">한국 증시가 수요일 쉬는 동안 AVGO 실적 충격이 미국에서 발생하면서, 목요일(-1.84%)과 금요일(-5.54%)에 이틀치 충격이 집중됐습니다. 이는 금요일 서킷브레이커 발동의 구조적 원인 중 하나였습니다.</div>
+      <div class="macro-reaction">누적 영향: 목 -1.84% + 금 -5.54% = 이틀 합산 -7.25%</div>
+    </div>
+  </div>
+</div>
+
+<div class="macro-section">
+  <h2>📆 W24 주요 예정 이벤트 (6/8~6/12)</h2>
+  <div class="macro-cards">
+    <div class="macro-card" style="border-left-color:#043B72">
+      <div class="macro-date">2026-06-11 (목) 예정</div>
+      <div class="macro-title">미국 5월 CPI (소비자물가)</div>
+      <div class="macro-values">컨센서스: YoY +3.2% 예상 (전월 +3.4%)</div>
+      <div class="macro-explain">NFP 서프라이즈 이후 물가 지표가 시장의 다음 촉매제가 됩니다. 예상치 상회 시 연준 긴축 우려 재부상, 하회 시 기술주·성장주 회복 기회가 형성될 수 있습니다. WTI +57.68% YTD의 에너지 비용 전가 여부가 핵심 변수입니다.</div>
+      <div class="macro-reaction">Watch: 서프라이즈 방향 → US 10Y 4.6% 돌파 or 4.3% 재진입</div>
+    </div>
+    <div class="macro-card" style="border-left-color:#043B72">
+      <div class="macro-date">2026-06-12 (금) 예정</div>
+      <div class="macro-title">미국 5월 PPI (생산자물가)</div>
+      <div class="macro-values">생산자물가지수 — 소비자물가 선행 지표</div>
+      <div class="macro-explain">에너지·원자재 가격 상승(WTI +57.68% YTD)이 PPI에 반영될 경우 CPI 재가속 우려도 검토 필요합니다. CPI와 함께 연준의 9월 정책 회의를 앞둔 인플레이션 내러티브를 결정할 주요 지표입니다.</div>
+      <div class="macro-reaction">Watch: CPI와 방향 일치 시 채권 추가 매도 압력</div>
+    </div>
+  </div>
+</div>
 </div><!-- /tab-macro -->
 
 <div id="tab-story" class="tab-panel">
-<!-- STORY_CONTENT_PLACEHOLDER -->
+<!-- ── 1. Story Hero (주간 관점) ── -->
+<div class="story-hero">
+  <h2>이번 주 시장 이야기</h2>
+  <div class="story-text">
+    <strong>W23: 코스피 8,800선 돌파 직후 AVGO 가이던스 미스와 NFP 서프라이즈가 동시에 불거지며, AI 반도체 주도 글로벌 랠리에 제동이 걸렸습니다.</strong><br><br>
+    월요일(6/1), 코스피는 <span class="hl-up">+3.68%</span>로 8,788까지 급등했습니다. 반도체·IT 대형주 중심의 강한 외국인 순매수가 이어지며 8,800선 돌파가 가시권에 들어왔고, 코스피는 연초 대비 <span class="hl-up">+93%</span>에 육박하는 누적 수익률을 기록했습니다.<br><br>
+    화요일(6/2), 코스피는 <span class="hl-up">+0.15%</span>로 8,801을 기록하며 8,800선을 처음 넘어섰습니다. 미국 증시도 완만한 상승세를 이어가며 주간 고점을 형성했고, 나스닥은 연초 대비 <span class="hl-up">+10%</span>대를 유지했습니다.<br><br>
+    수요일(6/3), 한국 증시는 휴장했습니다. 이날 미국 장 마감 후 브로드컴(AVGO)이 3분기 실적을 발표했는데, AI 칩 매출 가이던스가 <span class="hl-down">160억 달러</span>로 시장 컨센서스(172억 달러)를 하회하며 AI 수요에 대한 의구심이 빠르게 확산됐습니다.<br><br>
+    목요일(6/4), 한국 증시가 이틀 공백을 한꺼번에 반영하며 코스피는 <span class="hl-down">-1.84%</span>(8,639)로 하락했습니다. 미국 S&amp;P500은 <span class="hl-up">+0.41%</span>로 소폭 반등했으나 반도체 섹터 매도 압력은 지속됐습니다.<br><br>
+    금요일(6/5), 미국 5월 비농업 고용(NFP) <span class="hl-down">+17만 2천 명</span>이 예상치를 크게 상회하며 연준의 금리 인하 기대를 후퇴시켰습니다. AVGO 쇼크와 매크로 충격이 겹치면서 코스피는 장중 서킷브레이커를 발동하며 <span class="hl-down">-5.54%</span>(8,161)로 급락했습니다. 나스닥 <span class="hl-down">-4.18%</span>, 반도체 지수(SOXX) <span class="hl-down">-10.44%</span>로 글로벌 AI·반도체 섹터의 한 주가 마무리됐습니다.
+  </div>
+</div>
+
+<!-- ── 2. Causal Chain (주간 흐름) ── -->
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">WEEK START</div>
+    <div class="node-title">코스피 8,800 돌파</div>
+    <div class="node-detail">월·화 연속 상승, YTD +93% 달성</div>
+    <div class="node-impact hl-up">주간 고점 8,801</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">TRIGGER 1</div>
+    <div class="node-title">AVGO 가이던스 미스</div>
+    <div class="node-detail">AI 칩 Q3 가이던스 $16B vs 예상 $17.2B</div>
+    <div class="node-impact hl-down">AI 수요 의구심 촉발</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">TRIGGER 2</div>
+    <div class="node-title">NFP 서프라이즈</div>
+    <div class="node-detail">5월 고용 +172K 예상 상회, 인하 기대↓</div>
+    <div class="node-impact hl-down">달러 강세·금리 상승</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">REACTION</div>
+    <div class="node-title">SOXX -10.44%</div>
+    <div class="node-detail">반도체 시총 $1T 소멸, 삼성·하이닉스 급락</div>
+    <div class="node-impact hl-down">코스피 서킷브레이커</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">CROSS-ASSET</div>
+    <div class="node-title">위험자산 이탈</div>
+    <div class="node-detail">금 -4.90%, USD/KRW +3.43%, VIX +39.7%</div>
+    <div class="node-impact hl-down">WTI만 +3.64% 역행</div>
+  </div>
+</div>
+
+<!-- ── 3. Insight Grid (주간 학습 4개) ── -->
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(26,95,180,0.1);color:#1a5fb4">반도체</span>
+    <h3>AVGO 가이던스가 드러낸 AI 수요의 한계</h3>
+    <p>브로드컴의 Q3 AI 칩 매출 가이던스는 시장 컨센서스를 약 7% 하회했습니다. "AI 인프라 투자는 무한히 확장된다"는 가정에 처음으로 균열이 생기면서, SOXX는 이틀간 두 자릿수 조정을 기록했습니다. 삼성전자·SK하이닉스 등 HBM 공급망도 동반 급락했습니다.</p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">SOXX WTD</div><div class="metric-value down">-10.4%</div></div>
+      <div class="metric-item"><div class="metric-label">가이던스 미스</div><div class="metric-value down">-$1.2B</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(212,139,7,0.1);color:#d48b07">매크로</span>
+    <h3>Good News Is Bad News — 고용 서프라이즈의 역설</h3>
+    <p>5월 NFP +172K는 경기 건전성을 확인해줬지만 주식 시장에는 악재로 작용했습니다. 연준의 금리 인하 기대가 후퇴하고 미국 10년물 금리는 주간 기준 약 +8bp 상승해 4.54%에 도달했습니다. 달러/원 환율도 3.43% 급등하며 외국인 한국 자산 매력도를 낮췄습니다.</p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">US 10Y WTD</div><div class="metric-value down">+8bp</div></div>
+      <div class="metric-item"><div class="metric-label">달러/원 WTD</div><div class="metric-value down">+3.43%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(217,43,43,0.1);color:#d92b2b">한국</span>
+    <h3>반도체 집중도의 양날 — 서킷브레이커 발동</h3>
+    <p>삼성전자·SK하이닉스가 코스피 시가총액의 절반을 차지하는 구조에서 AVGO 쇼크는 코스피를 직격했습니다. 수요일 한국 휴장으로 이틀치 매도 압력이 금요일 하루에 집중되며 서킷브레이커가 발동됐습니다. 반면 금융주는 주간 상승 상위를 기록해 업종 차별화가 두드러졌습니다.</p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">코스피 WTD</div><div class="metric-value down">-3.72%</div></div>
+      <div class="metric-item"><div class="metric-label">코스닥 WTD</div><div class="metric-value down">-6.73%</div></div>
+    </div>
+  </div>
+  <div class="insight-card">
+    <span class="badge" style="background:rgba(4,59,114,0.1);color:#043B72">크로스에셋</span>
+    <h3>금 하락·유가 상승 — 공포의 성격이 달랐습니다</h3>
+    <p>통상적인 리스크오프에서 금은 상승하지만, W23에서 금은 -4.90%로 오히려 하락했습니다. 반면 WTI유는 +3.64% 상승했습니다. 이는 충격의 성격이 "지정학 위기"가 아닌 "실적 실망 + 금리 상승"임을 반영합니다. 달러 강세 속 금 매도, 에너지 수요 기대에 유가 상승이라는 비전형적 패턴이 관찰됐습니다.</p>
+    <div class="metric-row">
+      <div class="metric-item"><div class="metric-label">금 WTD</div><div class="metric-value down">-4.90%</div></div>
+      <div class="metric-item"><div class="metric-label">WTI WTD</div><div class="metric-value up">+3.64%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 4. Risk Section ── -->
+<div class="risk-section">
+  <h2>⚠ 주요 리스크</h2>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high">High</span>
+      <span>AI 수요 재평가 연쇄 — 브로드컴 이후 엔비디아·AMD 등 주요 반도체 기업의 차기 가이던스에 시장 시선이 집중될 전망입니다. 추가 가이던스 미스 시 SOXX·코스피 재조정이 가능합니다.</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag high">High</span>
+      <span>연준 긴축 우려 재부상 — NFP 서프라이즈로 연내 금리 인하 기대가 후퇴했습니다. 다음 주 미국 CPI 발표가 예상치를 상회할 경우 금리 상승 압력이 추가로 가중될 수 있습니다.</span>
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">Med</span>
+      <span>원화 약세·외국인 이탈 — USD/KRW 1,559원 돌파로 외국인 한국 자산 달러 환산 매력도가 낮아졌습니다. 외국인 순매도 지속 시 코스피 추가 하방 압력이 예상됩니다.</span>
+    </li>
+  </ul>
+</div>
+
+<!-- ── 5. WTD Progress ── -->
+<div class="story-hero" style="border-left-color:#7F9FC3">
+  <h2 style="color:#7F9FC3">WTD 결산 — W23 (5/5 영업일 경과)</h2>
+  <div class="story-text">
+    <strong>W23(6/1~6/5): 코스피 <span class="hl-down">-3.72%</span> · 코스닥 <span class="hl-down">-6.73%</span> · 나스닥 <span class="hl-down">-4.68%</span> · S&amp;P500 <span class="hl-down">-2.59%</span> · SOXX <span class="hl-down">-10.44%</span></strong><br><br>
+    W23는 월초 강세 출발(코스피 +3.68%, YTD +93%)에서 시작해 AVGO 가이던스 미스(수요일 장후)와 NFP 서프라이즈(금요일)라는 쌍악재에 무너진 한 주였습니다. 코스피가 주간 고점 8,801에서 금요일 서킷브레이커까지 발동되는 극적인 전개를 보였습니다. 달러/원 <span class="hl-down">+3.43%</span>(1,559원), KR 10Y <span class="hl-down">+20bp</span>(4.12%), VIX <span class="hl-down">+39.7%</span>(21.51)로 리스크 지표 전반이 악화됐습니다. 주간 상위 종목에 삼성화재 <span class="hl-up">+22.14%</span>, 신한지주 <span class="hl-up">+14.85%</span>, KB금융 <span class="hl-up">+13.94%</span>가 이름을 올리며 금융 업종 내 차별화가 두드러진 점은 주목할 만합니다.
+  </div>
+</div>
 </div><!-- /tab-story -->
 
 <div id="tab-cs" class="tab-panel active">
-<!-- CS_STORY_PLACEHOLDER -->
+<style>
+  .cs-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}
+  .cs-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+  .cs-hero .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .cs-text{font-size:16px;color:#2d3148;line-height:1.9}
+  .cs-text p{margin-bottom:14px}
+  .cs-text p:last-child{margin-bottom:0}
+  .cs-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .cs-section h3{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}
+  .cs-section p{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+  .cs-section p:last-child{margin-bottom:0}
+  .cs-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+</style>
+<div class="cs-hero">
+  <h2>CS Story — 고객 설명용</h2>
+  <div class="cs-subtitle">2026 W23 (6/1~6/5) · ISO 주차 W23 · 5/5 영업일 경과</div>
+  <div class="cs-text">
+    <p>이번 주 시장은 환희와 공포를 닷새 안에 모두 경험했습니다. 월요일과 화요일, 한국 증시는 기세 좋게 올라 연중 처음으로 8,800선을 넘어섰습니다. 반도체와 IT 대형주를 중심으로 외국인 자금이 들어오며 연초 대비 랠리가 정점을 향해 달리는 분위기였습니다.</p>
+    <p>수요일 한국 증시가 쉬는 동안, 미국에서는 세계적인 반도체 기업 브로드컴이 실적을 발표했습니다. 이익 자체는 나쁘지 않았지만, AI 사업의 다음 분기 전망이 시장의 기대에 미치지 못했습니다. "AI 투자 수요는 멈추지 않는다"는 믿음이 반도체 주가를 끌어올렸던 만큼, 이 소식은 업종 전체에 냉물처럼 쏟아졌습니다.</p>
+    <p>목요일에는 이틀간의 공백을 메우듯 한국 주가가 하락했습니다. 미국은 소폭 반등했으나 반도체 종목을 향한 매도는 이어졌습니다.</p>
+    <p>금요일, 두 번째 충격이 왔습니다. 미국의 고용지표가 예상보다 훨씬 많은 일자리가 생겼다는 것을 보여줬는데, 역설적으로 이것이 주식 시장에는 나쁜 소식이 됐습니다. 경기가 좋으면 미국 중앙은행이 금리를 낮출 이유가 없어지기 때문입니다. 두 충격이 겹치면서 한국 코스피는 거래를 잠시 멈추는 서킷브레이커가 발동될 만큼 큰 폭으로 떨어졌습니다. 반도체 지수는 이틀 만에 열 퍼센트 넘게 빠졌습니다.</p>
+  </div>
+</div>
+
+<div class="cs-section">
+  <h3>🤖 브로드컴이 연 질문 — AI 수요, 어디까지인가</h3>
+  <p>브로드컴의 AI 전망 하향은 단순히 한 기업의 실망이 아니었습니다. 지난 수년간 AI 인프라 투자는 끝이 없다는 기대감이 반도체 주가를 끌어올렸는데, 이번 발표는 그 기대에 "한계가 있을 수 있다"는 최초의 경고였습니다. 삼성전자·SK하이닉스처럼 AI 가속기용 메모리를 만드는 기업들도 연쇄적으로 흔들렸습니다. 특히 이 두 기업이 코스피에서 워낙 큰 비중을 차지하다 보니, 한국 시장이 받은 충격은 다른 어떤 나라보다 크게 증폭됐습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>💵 "좋은 경제 지표가 나쁜 주가" — 고금리 딜레마의 재현</h3>
+  <p>금요일에 발표된 미국 고용지표는 경기 호황의 증거였습니다. 그런데 이 '좋은 소식'이 주식 시장엔 찬물을 끼얹었습니다. 경기가 탄탄하면 미국 중앙은행이 서둘러 금리를 낮출 이유가 없고, 고금리가 지속되면 기업 가치를 평가할 때 미래 이익이 더 크게 할인됩니다. AI·기술주처럼 지금 당장보다 먼 미래의 성장을 먹고 자라는 업종일수록 이 부담은 더 깊이 파고듭니다. 달러가 강해지면서 원/달러 환율도 한 주 만에 크게 올라, 외국인 투자자 입장에서 한국 주식을 달러로 환산한 수익률이 더욱 쪼그라들었습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🇰🇷 한국 시장의 엇갈린 풍경 — 금융주의 역주행</h3>
+  <p>같은 한 주였지만 업종마다 운명이 달랐습니다. 반도체와 IT·배터리 관련주가 급락하는 동안, 삼성화재·신한지주·KB금융 같은 금융주들은 오히려 강한 상승세를 보였습니다. 금리가 오를수록 은행·보험사는 예대마진과 운용 수익이 늘어나는 구조를 갖고 있기 때문입니다. 최근 몇 달간 반도체 일변도였던 코스피에서, 이번 주는 그 '쏠림'에 균열이 생기기 시작한 것처럼 보입니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>📅 이번 달 관점</h3>
+  <p>6월은 강한 출발 후 첫 주를 마이너스로 마감한 달입니다. AI 기대감이 이끌어온 반도체 랠리의 지속 가능성에 의문이 제기된 만큼, 앞으로 발표될 주요 반도체·AI 기업들의 실적 전망, 그리고 미국 물가 지표가 시장 방향을 결정짓는 핵심 변수가 될 것으로 보입니다.</p>
+  <p class="cs-footer">CS Story 는 Market Story 를 수치 대신 맥락·흐름 중심으로 재구성한 고객 설명용 버전입니다. 구체적 수치는 Market Story / Data Dashboard 탭을 참고하세요.</p>
+</div>
 </div><!-- /tab-cs -->
 
 <div id="tab-pm" class="tab-panel">
-<!-- PM_STORY_PLACEHOLDER -->
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+  .outlook-divider{border-top:2px solid #043B72;margin-top:32px;padding-top:24px;margin-bottom:20px}
+  .outlook-divider h2{font-size:18px;color:#043B72;margin-bottom:6px}
+  .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  @media (max-width:900px){.scenario-grid{grid-template-columns:1fr}}
+  .scenario-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px}
+  .scenario-card.bull{border-left:4px solid #d92b2b}
+  .scenario-card.base{border-left:4px solid #F58220;background:linear-gradient(180deg,#fff5eb 0%,#fff 60%);box-shadow:0 2px 8px rgba(245,130,32,0.08)}
+  .scenario-card.bear{border-left:4px solid #1a5fb4}
+  .scenario-card h3{font-size:15px;font-weight:700;margin-bottom:8px}
+  .scen-prob{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .scen-trigger,.scen-impact{font-size:13.5px;color:#2d3148;margin-bottom:8px;line-height:1.7}
+  .scen-trigger ul,.scen-impact ul{list-style:none;padding-left:0;margin:4px 0 0 0}
+  .scen-trigger li,.scen-impact li{padding-left:10px;position:relative;margin-bottom:3px}
+  .scen-trigger li::before,.scen-impact li::before{content:'·';position:absolute;left:0;color:#043B72}
+  .outlook-section-title{font-size:15px;font-weight:700;color:#043B72;margin:20px 0 12px}
+  .outlook-position{background:#eef4fb;border:1px solid var(--border);border-left:4px solid #043B72;border-radius:10px;padding:18px 24px;margin-top:20px}
+  .outlook-position h3{font-size:14px;color:#043B72;margin-bottom:10px}
+  .outlook-position ul{list-style:none;padding-left:0}
+  .outlook-position li{padding:4px 0;font-size:13.5px}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026 W23 (6/1~6/5) · 지역·자산군별 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> AVGO Q3 AI 가이던스 미스($16B vs $17.2B)와 미국 5월 NFP +172K 서프라이즈가 겹치며 W23 코스피 <span style="color:#1a5fb4;font-weight:600">-3.72%</span>, SOXX <span style="color:#1a5fb4;font-weight:600">-10.44%</span>로 마감. 달러/원 <span style="color:#1a5fb4;font-weight:600">+3.43%</span>(1,559원), KR 10Y <span style="color:#1a5fb4;font-weight:600">+20bp</span>(4.12%), VIX <span style="color:#1a5fb4;font-weight:600">+39.7%</span>(21.51)</p>
+    <p><strong>Key drivers:</strong> ① AVGO AI 칩 가이던스 하회로 AI 수요 의구심 촉발 — SOXX 이틀간 -10.4% ② 미국 고용 서프라이즈로 연준 인하 기대 후퇴 — 달러 강세·금리 상승 동반</p>
+    <p><strong>Watch:</strong> W24 미국 CPI(5월, ~6/11 예정) · 연내 추가 반도체 기업 가이던스 · 달러/원 1,560 지지 여부</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">8,161</span> <span class="pm-dn">-3.72% WTD</span> · YTD <span class="pm-up">+93.65%</span> · 주간 고점 8,801(화요일)</li>
+      <li>KOSDAQ <span class="pm-num">1,002</span> <span class="pm-dn">-6.73% WTD</span> · YTD <span class="pm-up">+8.32%</span> — 코스피 대비 상대적 약세</li>
+      <li>주간 상위: 삼성화재 <span class="pm-up">+22.14%</span>, 신한지주 <span class="pm-up">+14.85%</span>, KB금융 <span class="pm-up">+13.94%</span> — 금리 상승 수혜 금융주</li>
+      <li>주간 하위: 삼성SDI <span class="pm-dn">-17.44%</span>, 삼성전기 <span class="pm-dn">-17.40%</span>, 포스코퓨처엠 <span class="pm-dn">-14.87%</span></li>
+      <li>USD/KRW <span class="pm-num">1,559</span> <span class="pm-dn">+3.43% WTD</span> · YTD <span class="pm-dn">+8.21%</span> — 외국인 자금 유출 우려</li>
+      <li>금요일 장중 서킷브레이커 발동 — 수요일 휴장으로 이틀치 충격 집중</li>
+    </ul>
+    <div class="pm-note">반도체 집중도(삼성전자+SK하이닉스 시총 50%+)가 AVGO 쇼크를 증폭. 코스피 YTD +93%의 고점 압력 상존.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>미국 5월 NFP <span class="pm-dn">+172K</span> — 예상 +145K 상회, 실업률 <span class="pm-num">3.8%</span> 유지</li>
+      <li>연준 금리 인하 기대 후퇴 — 연내 1회 인하 컨센서스도 흔들림</li>
+      <li>WTI <span class="pm-num">$90.54</span> <span class="pm-up">+3.64% WTD</span> · YTD <span class="pm-up">+57.68%</span> — 에너지 인플레 압박</li>
+      <li>금(Gold) <span class="pm-num">$4,337.10</span> <span class="pm-dn">-4.90% WTD</span> — 달러 강세 속 안전자산 매도</li>
+      <li>DXY <span class="pm-num">100</span> <span class="pm-up">+1.17% WTD</span> · YTD <span class="pm-up">+1.78%</span></li>
+    </ul>
+    <div class="pm-note">Good news (고용 강세) = bad news (고금리 장기화) 패턴. W24 CPI가 다음 분기점.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>니케이225 <span class="pm-num">66,588</span> <span class="pm-up">+0.39% WTD</span> · YTD <span class="pm-up">+32.28%</span> — 글로벌 조정 속 상대 강세</li>
+      <li>상해종합 <span class="pm-num">4,028</span> <span class="pm-dn">-1.00% WTD</span> · 항셍(HSI) <span class="pm-num">24,962</span> <span class="pm-dn">-0.88% WTD</span></li>
+      <li>대만가권(TWSE) <span class="pm-num">45,071</span> <span class="pm-up">+0.76% WTD</span> · YTD <span class="pm-up">+55.61%</span> — TSMC 상대 방어</li>
+      <li>인도 NIFTY50 <span class="pm-num">23,367</span> <span class="pm-dn">-0.77% WTD</span></li>
+      <li>MSCI EM <span class="pm-num">64.59</span> <span class="pm-dn">-5.85% WTD</span> — 한국 비중 반영 EM 전반 급락</li>
+      <li>USD/JPY <span class="pm-num">160</span> <span class="pm-up">+0.68% WTD</span> — 엔화 약세 지속</li>
+    </ul>
+    <div class="pm-note">니케이는 방어적 흐름 (엔 약세·에너지 수혜). EM은 달러 강세·한국 급락 이중 부담.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&amp;P500 <span class="pm-num">7,384</span> <span class="pm-dn">-2.59% WTD</span> · YTD <span class="pm-up">+7.86%</span></li>
+      <li>나스닥 <span class="pm-num">25,709</span> <span class="pm-dn">-4.68% WTD</span> · 러셀2K <span class="pm-num">2,834</span> <span class="pm-dn">-2.94% WTD</span></li>
+      <li>AVGO AH -18%↑ (수요일 실적) — AI 칩 가이던스 미스 $1.2B</li>
+      <li>MSCI World <span class="pm-num">200</span> <span class="pm-dn">-2.22% WTD</span> · MSCI ACWI <span class="pm-num">154</span> <span class="pm-dn">-2.62% WTD</span></li>
+      <li>VIX <span class="pm-num">21.51</span> <span class="pm-dn">+39.7% WTD</span> — Elevated 구간 진입</li>
+    </ul>
+    <div class="pm-note">반도체(SOXX -10.4%)·메가캡 AI주 중심 조정. 러셀2K 상대 선방 — 대형 기술주 쏠림 해소 조짐.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>유로스톡스50 <span class="pm-num">6,062</span> <span class="pm-up">+0.19% WTD</span> · CAC40 <span class="pm-num">8,218</span> <span class="pm-up">+0.43% WTD</span></li>
+      <li>DAX <span class="pm-num">24,759</span> <span class="pm-dn">-1.38% WTD</span> · FTSE100 <span class="pm-num">10,368</span> <span class="pm-dn">-0.40% WTD</span></li>
+      <li>EUR/USD <span class="pm-num">1.15</span> <span class="pm-dn">-1.11% WTD</span> · GBP/USD <span class="pm-num">1.34</span> <span class="pm-dn">-0.07% WTD</span></li>
+      <li>유럽 지수는 미국·한국 대비 상대 선방 — 에너지·소재 비중 높은 구조 덕분</li>
+      <li>MSCI EMEA <span class="pm-num">64.37</span> <span class="pm-dn">-7.26% WTD</span> — 신흥국 유럽 포함 급락</li>
+    </ul>
+    <div class="pm-note">유로존 선진국 지수는 반도체 비중 낮아 상대 방어. ECB 추가 인하 기대 유지.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.62%</span> (<span class="pm-dn">+4bp WTD</span>) · US 10Y <span class="pm-num">4.54%</span> (<span class="pm-dn">+8bp WTD</span>) · US 30Y <span class="pm-num">5.00%</span> (<span class="pm-dn">+1bp WTD</span>)</li>
+      <li>US 10Y-2Y 스프레드 <span class="pm-num">91bp</span> (<span class="pm-dn">+5bp WTD</span>) — 커브 스팁 유지, 정상화 진행 중</li>
+      <li>KR 3Y <span class="pm-num">3.88%</span> (<span class="pm-dn">+15bp WTD</span>) · KR 10Y <span class="pm-num">4.12%</span> (<span class="pm-dn">+20bp WTD</span>)</li>
+      <li>KR CD 91D <span class="pm-num">2.88%</span> (<span class="pm-dn">+2bp WTD</span>) · KR 10-3 스프레드 <span class="pm-num">24bp</span> (<span class="pm-dn">+5bp WTD</span>)</li>
+      <li>TLT <span class="pm-num">$85.06</span> (<span class="pm-dn">-0.82% WTD</span>) · LQD <span class="pm-num">$108.17</span> (<span class="pm-dn">-1.09%</span>) · HYG <span class="pm-num">$79.43</span> (<span class="pm-dn">-1.10%</span>)</li>
+    </ul>
+    <div class="pm-note">한국 금리 상승폭(KR 10Y +20bp)이 미국(+8bp)보다 가팔랐음. NFP+AVGO 복합 충격 + 외국인 채권 매도 반영.</div>
+  </div>
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 상세 내러티브는 Market Story, 고객 설명은 CS Story 탭을 참고하세요.
+</div>
+
+<!-- ── Outlook 블록 시작 (PM Story 회고 6섹션 직후) ── -->
+<div class="outlook-divider">
+  <h2>📈 다음 주(W24) Outlook</h2>
+  <div class="cs-subtitle">작성 시점 기준 forward 시각 — 2026-06-05 마감 기준</div>
+</div>
+
+<!-- Part 1: 시나리오 3카드 -->
+<div class="scenario-grid">
+  <div class="scenario-card bull">
+    <h3>🟢 Bull</h3>
+    <div class="scen-prob">확률: 낮음</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>미국 CPI 전월 대비 하회 → 연내 금리 인하 기대 복원</li>
+        <li>주요 반도체 기업 추가 AI 수주 공시 → AVGO 우려 해소</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI: 8,400~8,600 회복 시도</li>
+        <li>S&amp;P500: 기술주 주도 V자 반등</li>
+        <li>USD/KRW: 1,520~1,540 재진입</li>
+        <li>금: 달러 약세 반전 시 반등 가능</li>
+        <li>US 10Y: 4.3~4.4%대 재진입</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="scenario-card base">
+    <h3>🟡 Base (유력)</h3>
+    <div class="scen-prob">확률: 유력</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>CPI 부합 → 금리 안정, 추가 상승 억제</li>
+        <li>AVGO 이후 반도체 섹터 변동성 지속, 분산 모색</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI: 8,000~8,300 등락 구간</li>
+        <li>S&amp;P500: 7,300~7,500 횡보</li>
+        <li>USD/KRW: 1,540~1,570 구간 유지</li>
+        <li>금: 달러 강세 지속 시 4,300 지지 테스트</li>
+        <li>US 10Y: 4.4~4.6% 구간 안착</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="scenario-card bear">
+    <h3>🔴 Bear</h3>
+    <div class="scen-prob">확률: 낮음</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>CPI 상회 → 금리 재급등, 연내 인하 기대 소멸</li>
+        <li>추가 반도체 기업 가이던스 미스 → AI 버블 우려 심화</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI: 7,800 하방 테스트</li>
+        <li>S&amp;P500: 7,100~7,200 추가 하락</li>
+        <li>USD/KRW: 1,580~1,600 재진입</li>
+        <li>금: 4,200 하방 가능성</li>
+        <li>US 10Y: 4.7% 돌파 시도</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Part 2: PM 6섹션 Watch & Trigger -->
+<h3 class="outlook-section-title">📍 자산군별 Watch &amp; Trigger (W24)</h3>
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>Watch: KOSPI 8,000 지지 여부 — W23 서킷브레이커 후 첫 주 기술적 반등 가능성</li>
+      <li>Watch: USD/KRW 1,560 저항 · 1,590 돌파 시 추가 외국인 이탈 신호</li>
+      <li>Trigger: 삼성전자·SK하이닉스 자사주 매입 공시 또는 경영진 코멘트 → 낙폭 과대 인식 반등</li>
+      <li>금융주(삼성화재·신한지주) 모멘텀 지속 여부 — 금리 상승 수혜 vs. 거시 불확실성 상충</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>6월 CPI(5월 기준, ~6/11 예정) — 컨센서스 대비 서프라이즈 방향이 W24 핵심 변수</li>
+      <li>WTI $90 유지 시 에너지 인플레 압박 → CPI 상방 리스크 증가</li>
+      <li>Watch: DXY 100선 지지 — 달러 강세 지속 시 EM 자산 추가 약세</li>
+      <li>Trigger: CPI >예상 + PPI 강세 동시 → 9월 인하도 불투명해지며 금리 급등 가능</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>니케이: 글로벌 기술주 조정 속 엔 약세 지속 시 상대 우위 유지 가능</li>
+      <li>대만 TWSE: TSMC 수급 + AI 칩 체인 직결 → AVGO 쇼크 여진 모니터링</li>
+      <li>중국: 달러 강세에 위안 안정 유지(USD/CNY 6.77). 내수 경기 부양 동향 주시</li>
+      <li>Watch: MSCI EM -5.85% WTD 이후 반등 여부 — 한국 비중 조정 흐름 연관</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>SOXX -10.44% WTD 이후 기술적 반등 vs. AI 수요 재평가 지속 여부</li>
+      <li>엔비디아·AMD 등 차기 실적 전망치 변화 주시 — AVGO 쇼크 전이 여부</li>
+      <li>VIX 21.51 Elevated 구간 — 25 돌파 시 변동성 확대 국면 재진입</li>
+      <li>Watch: 러셀2K 상대 선방 지속 시 Large-Cap 기술주에서 Mid-Cap으로 자금 이동 신호</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50·CAC40 W23 상대 강세 — 에너지·소재 비중이 기술주 약세 완충</li>
+      <li>ECB 추가 인하 기대 유지: EUR/USD 1.15 레벨 — 달러 강세에 눌린 유로 방향 주시</li>
+      <li>Trigger: 미국 CPI 하회 → USD 약세 반전 시 EUR/USD 1.17+ 회복 가능</li>
+      <li>DAX -1.38% WTD — 독일 제조업 지표와 에너지 비용 추이 점검 필요</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 10Y 4.54% — 4.6% 돌파 시 주식 추가 하락 압력. 4.4% 재진입 시 안도 랠리 신호</li>
+      <li>KR 10Y +20bp WTD: 4.12% — 한은 통화정책 스탠스 재점검. CD 2.88% vs 10Y 4.12% 스프레드 확대</li>
+      <li>HYG -1.10% WTD: 크레딧 스프레드 확대 초기 — 고수익채 압박 지속 여부 모니터링</li>
+      <li>US 10Y-2Y 91bp(+5bp) — 수익률 곡선 스팁. 베어 스팁 패턴 유지 시 장기물 추가 압박</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Part 3: 통합 리스크 -->
+<div class="risk-section">
+  <h3 style="font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px">⚠ W24 주요 리스크</h3>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">High</span><span>CPI 재가속 — WTI +57.68% YTD 에너지 비용이 5월 CPI에 충분히 반영되지 않았다면, 6/11 발표치가 예상을 상회하며 금리 재급등을 촉발할 수 있습니다.</span></li>
+    <li class="risk-item"><span class="risk-tag high">High</span><span>AI 수요 추가 실망 — 엔비디아·AMD 등 주요 반도체 기업의 실적 또는 코멘트에서 AVGO와 유사한 신호가 나올 경우 SOXX 추가 조정이 예상됩니다.</span></li>
+    <li class="risk-item"><span class="risk-tag med">Med</span><span>달러/원 1,580+ 돌파 — 외국인의 한국 주식·채권 동반 이탈이 가속화될 경우, 한은의 긴급 외환 개입 여부가 주목됩니다.</span></li>
+  </ul>
+</div>
+
+<!-- Part 4: 포지셔닝 시사점 박스 -->
+<div class="outlook-position">
+  <h3>🎯 포지셔닝 시사점 (Base 시나리오)</h3>
+  <ul>
+    <li>한국 — N (KOSPI YTD +93% 고점 부담 + AVGO 쇼크 여진. 8,000 지지 확인 후 재진입 판단)</li>
+    <li>미국 — N/UW 기술 (SOXX -10.4% 낙폭 과대 측면 있으나 AI 수요 재평가 진행 중)</li>
+    <li>유럽 — N/OW (반도체 비중 낮아 상대 방어. 에너지·소재 섹터 혜택)</li>
+    <li>채권(미국) — N (US 10Y 4.4~4.6% 구간. CPI 결과 이전까지 방향성 불명)</li>
+    <li>채권(한국) — 관망 (KR 10Y +20bp 급등 후 기술적 반등 여지. 한은 동향 주시)</li>
+  </ul>
+</div>
 </div><!-- /tab-pm -->
 
 <div id="tab-sources" class="tab-panel">
-<!-- SOURCES_PLACEHOLDER -->
+<div class="sources-header">
+  <h2>참조 출처 — 2026-W23 주간 (6/1~6/5)</h2>
+  <div class="sources-sub">본 보고서 작성에 참조된 뉴스 및 데이터 소스 목록입니다.</div>
+</div>
+
+<div class="sources-section">
+  <h3>🇰🇷 한국 시장</h3>
+  <ul class="sources-list">
+    <li><a href="https://en.sedaily.com/finance/2026/06/05/kospi-plunges-55-percent-to-8160-as-broadcom-selloff-hits" target="_blank">KOSPI Plunges 5.5% to 8,160 as Broadcom Selloff Hits Chip Stocks</a> — <span class="source-meta">Seoul Economic Daily · 2026-06-05</span></li>
+    <li><a href="https://www.tradingkey.com/analysis/stocks/more/261947500-kospi-korea-crash-samsung-sk-hynix-broadcom-ai-chip-guidance-miss-foreign-outflow-circuit-breaker-tradingkey" target="_blank">Kospi Index Slumps Over 6% at One Point, Samsung Electronics Falls Over 7%, SK Hynix Drops More Than 9%, AI Bubble Fears Partially Erupt</a> — <span class="source-meta">TradingKey · 2026-06-05</span></li>
+    <li><a href="https://en.sedaily.com/finance/2026/06/05/leverage-etfs-plunge-14-percent-as-samsung-sk-hynix-tumble" target="_blank">Leverage ETFs Plunge 14% as Samsung, SK hynix Tumble</a> — <span class="source-meta">Seoul Economic Daily · 2026-06-05</span></li>
+    <li><a href="https://en.bloomingbit.io/feed/news/113626" target="_blank">Kospi Slides 5.5% as Cash Heads for SpaceX IPO; Samsung, SK Hynix Tumble</a> — <span class="source-meta">Bloomingbit · 2026-06-05</span></li>
+    <li><a href="https://www.tradingkey.com/analysis/stocks/more/261948441-samsung-skhynix-avgo-dram-tradingkey" target="_blank">'Black Friday' Sweeps Korean Stocks, SK Hynix Plunges Nearly 10%, Samsung Electronics Drops Over 6%</a> — <span class="source-meta">TradingKey · 2026-06-05</span></li>
+  </ul>
+</div>
+
+<div class="sources-section">
+  <h3>🇺🇸 미국 시장 &amp; 반도체</h3>
+  <ul class="sources-list">
+    <li><a href="https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-june-05-2026" target="_blank">Stock Market Today (June 5, 2026): Nasdaq falls 4% as semiconductor slide wipes $1T from markets</a> — <span class="source-meta">TheStreet · 2026-06-05</span></li>
+    <li><a href="https://www.cnn.com/2026/06/05/markets/stock-market-sell-off-fed" target="_blank">Nasdaq, S&amp;P 500 suffer worst day of year as AI stocks tumble and Fed rate-hike odds rise</a> — <span class="source-meta">CNN Business · 2026-06-05</span></li>
+    <li><a href="https://finance.yahoo.com/markets/stocks/articles/stock-market-today-june-5-172520268.html" target="_blank">Stock Market Today, June 5: Strong Jobs Data Drives Broad Sell-Off at Midday</a> — <span class="source-meta">Yahoo Finance · 2026-06-05</span></li>
+    <li><a href="https://www.startuphub.ai/ai-news/ai-stocks-daily/2026/ai-stocks-2026-06-05" target="_blank">ARM and Intel lead AI chip rout as Broadcom guidance miss and jobs beat deepen two-day selloff, SOXX -10.4%</a> — <span class="source-meta">StartupHub.ai · 2026-06-05</span></li>
+    <li><a href="https://www.gurufocus.com/news/8903354/broadcom-avgo-ai-chip-sales-guidance-falls-short-sparks-semiconductor-selloff" target="_blank">Broadcom (AVGO) AI Chip Sales Guidance Falls Short, Sparks Semiconductor Sell-Off</a> — <span class="source-meta">GuruFocus · 2026-06-05</span></li>
+    <li><a href="https://www.gurufocus.com/news/8903712/ai-and-chip-stocks-plummet-broadcom-avgo-triggers-market-selloff" target="_blank">AI and Chip Stocks Plummet: Broadcom (AVGO) Triggers Market Selloff</a> — <span class="source-meta">GuruFocus · 2026-06-05</span></li>
+    <li><a href="https://www.washingtonpost.com/business/2026/06/05/wall-street-stocks-dow-nasdaq/db16d758-611b-11f1-9c46-d6211372eede_story.html" target="_blank">How major US stock indexes fared Friday 6/5/2026</a> — <span class="source-meta">Washington Post · 2026-06-05</span></li>
+  </ul>
+</div>
+
+<div class="sources-section">
+  <h3>🌏 아시아·글로벌</h3>
+  <ul class="sources-list">
+    <li><a href="https://www.bnnbloomberg.ca/markets/2026/06/05/stocks-slip-on-wall-street-big-tech-falls/" target="_blank">Stock market news: U.S. stocks slump as Big Tech sinks</a> — <span class="source-meta">BNN Bloomberg · 2026-06-05</span></li>
+    <li><a href="https://www.cnbc.com/2026/06/04/stock-market-today-live-updates.html" target="_blank">Stock market today: Live updates — June 4-5 sell-off</a> — <span class="source-meta">CNBC · 2026-06-05</span></li>
+  </ul>
+</div>
+
+<div class="sources-section">
+  <h3>📊 데이터 소스</h3>
+  <ul class="sources-list">
+    <li>history/market_data.csv — RDS market_daily (CSV fallback)</li>
+    <li>history/macro_indicators.csv — FRED · ECOS</li>
+    <li>output/summary/2026-06/2026-06-05_data.json — generate.py 산출 메트릭</li>
+    <li>output/summary/weekly/2026-W23.html — generate_periodic.py 주간 집계</li>
+  </ul>
+</div>
 </div><!-- /tab-sources -->
 
 <div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
