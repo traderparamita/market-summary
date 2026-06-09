@@ -805,7 +805,7 @@ def _save_macro_file(html_path, html_content):
         return
     base, ext = os.path.splitext(html_path)
     macro_path = f"{base}_macro{ext}"
-    with open(macro_path, "w") as f:
+    with open(macro_path, "w", encoding="utf-8") as f:
         f.write(macro)
     print(f"  Macro saved: {os.path.basename(macro_path)}")
 
@@ -814,7 +814,7 @@ def _inject_existing_macro(path, new_html):
     """기존 파일에 Macro & Events가 있으면 새 HTML의 placeholder에 주입 + _macro.html 저장"""
     old_macro = ""
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             old_content = f.read()
         candidate = extract_tab(old_content, "macro")
         if candidate and "MACRO_EVENTS_PLACEHOLDER" not in candidate:
@@ -823,14 +823,14 @@ def _inject_existing_macro(path, new_html):
             base, ext = os.path.splitext(path)
             sib_path = f"{base}_macro{ext}"
             if os.path.exists(sib_path):
-                with open(sib_path) as f:
+                with open(sib_path, encoding="utf-8") as f:
                     sib_macro = f.read().strip()
                 if sib_macro and "MACRO_EVENTS_PLACEHOLDER" not in sib_macro:
                     old_macro = sib_macro
     if old_macro:
         new_html = new_html.replace("<!-- MACRO_EVENTS_PLACEHOLDER -->", old_macro)
     new_html = _inject_existing_story(path, new_html)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(new_html)
     _save_macro_file(path, new_html)
     _save_story_file(path, new_html)
