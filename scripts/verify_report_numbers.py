@@ -1069,7 +1069,7 @@ def verify(file_path: Path, prices) -> list[Violation]:
     # _macro.html 은 직전 주/월 데이터를 주입한 파일로 일간 수치 대조 대상에서 제외
     if file_path.name.endswith("_macro.html"):
         return []
-    text = file_path.read_text(errors="replace")
+    text = file_path.read_text(encoding="utf-8", errors="replace")
     periods = _periods_for_file(file_path)
     violations: list[Violation] = []
 
