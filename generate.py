@@ -1233,7 +1233,7 @@ def _inject_existing_story(path, new_html):
         if macro:
             new_html = new_html.replace("<!-- MACRO_EVENTS_PLACEHOLDER -->", macro)
 
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(new_html)
 
     save_story_files(path, new_html, _TAB_SPECS, log_fn=_log)

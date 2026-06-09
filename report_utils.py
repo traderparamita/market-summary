@@ -190,7 +190,7 @@ def save_story_files(html_path: str, html_content: str, tab_specs: list, *, log_
         if not content or placeholder in content:
             continue
         target = f"{base}{suffix}{ext}"
-        with open(target, "w") as f:
+        with open(target, "w", encoding="utf-8") as f:
             f.write(content)
         if log_fn:
             log_fn(f"  Tab saved: {os.path.basename(target)}")
@@ -200,7 +200,7 @@ def inject_existing_story(path: str, new_html: str, tab_specs: list) -> str:
     """기존 파일의 탭 내용을 새 HTML placeholder에 주입. 변경된 HTML 반환."""
     old_content = ""
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             old_content = f.read()
 
     for tab, placeholder, suffix in tab_specs:
@@ -213,7 +213,7 @@ def inject_existing_story(path: str, new_html: str, tab_specs: list) -> str:
             base, ext = os.path.splitext(path)
             sibling = f"{base}{suffix}{ext}"
             if os.path.exists(sibling):
-                with open(sibling) as f:
+                with open(sibling, encoding="utf-8") as f:
                     sib = f.read().strip()
                 if sib and placeholder not in sib:
                     preserved = sib
