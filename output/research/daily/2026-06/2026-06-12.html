@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-06-12 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-06-12 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>HBM·반도체 랠리 · 테마파크</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">HBM·반도체 랠리</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +7.83%</span><span class="chip chip-persist">지속성 0%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +7.83%로 상위권 수익률을 기록했으며, Tavily에서 삼성·SK하이닉스가 HBM 섹터를 주도하며 2026년 한국 증시 급등을 견인하고 있다는 글로벌 트리거가 확인됐습니다. 반도체 대표주(+7.50%), 반도체 장비(+7.09%) 등 연관 테마도 동반 강세를 보여 상담사가 '글로벌 AI·메모리 업사이클'로 설명하기에 가장 적합합니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">HBM·반도체 테마가 오늘 +7.83%로 전체 테마 중 상위권 수익률을 기록했습니다. 반도체 대표주는 +7.50%, 반도체 장비는 +7.09% 상승하며 섹터 전반이 동반 강세를 보였습니다. SK하이닉스는 장중 시가총액 1조 달러를 돌파하며 아시아 3번째 기업으로 기록됐고, 삼성전자 메모리 부문은 HBM 중심으로 분기 사상 최대 실적을 발표했습니다. 외국인 매수세가 장 초반부터 유입되며 상승을 주도했습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 들어 HBM(고대역폭메모리) 시장이 본격적인 '슈퍼사이클'에 진입했다는 평가가 확산되고 있습니다. SK하이닉스는 2026년 반도체 시장 전망 보고서에서 HBM3E와 HBM4 수요가 AI 메모리 붐을 견인할 것으로 예측했으며, 삼성전자는 메모리 부문에서 HBM과 고부가 제품을 중심으로 분기 사상 최대 매출과 수익을 달성했습니다.
+
+오늘 시장은 SK하이닉스가 시가총액 1조 달러를 돌파했다는 소식에 촉발됐습니다. 이는 삼성전자에 이어 아시아에서 세 번째이자, 메모리 전문기업으로는 글로벌 최초 기록입니다. 미국 마이크론도 같은 주에 1조 달러를 넘어서며, 글로벌 투자자들 사이에서 'AI 인프라 = 메모리 반도체'라는 인식이 강화되고 있습니다. 다만 일부 애널리스트들은 2025~2026년 메모리 가격 급등이 과거 붐-버스트 사이클을 연상시킨다며 주의를 당부하기도 했습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 빅테크와 클라우드 기업들이 2026년에도 AI 데이터센터 투자를 가속화하면서 HBM 수요가 공급을 초과하는 상황이 지속되고 있습니다. 특히 엔비디아 차세대 AI 칩과 AMD, 구글 TPU 등이 모두 HBM3E 이상을 탑재하면서 삼성전자와 SK하이닉스에 대한 발주가 2026년 하반기까지 풀가동 수준으로 확정됐습니다.
+
+이 흐름이 한국 증시에 직접 영향을 미치는 이유는, 코스피 시가총액 상위 1위(삼성전자)와 3위(SK하이닉스)가 모두 HBM 주도 기업이기 때문입니다. 두 기업의 시총 합계가 코스피 전체의 약 30%를 차지하면서, 글로벌 HBM 수요 증가가 곧 한국 지수 상승으로 이어지는 구조입니다. 외국인 투자자들도 '한국=HBM 순수 플레이' 관점에서 자금을 유입하고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>AI가 학습하고 추론하는 데 필요한 데이터를 빠르게 주고받으려면 HBM이라는 고성능 메모리가 필수입니다. 지금 전 세계 빅테크가 AI 데이터센터에 수조 원을 쏟아붓고 있어서, HBM을 만들 수 있는 삼성과 SK하이닉스에 주문이 몰리고 있습니다.</li><li>SK하이닉스가 오늘 시가총액 1조 달러를 넘어섰는데, 이건 메모리 반도체 회사로는 세계 최초 기록입니다. 미국 마이크론도 비슷한 시기에 1조 달러를 돌파해서, 글로벌 투자자들이 메모리 반도체를 'AI 시대 필수 인프라'로 보고 있다는 신호입니다.</li><li>삼성전자는 이번 분기에 메모리 부문에서 사상 최대 실적을 냈다고 발표했습니다. 일반 메모리 가격도 올랐지만, HBM 같은 고부가 제품 비중이 늘어난 덕분에 수익성이 크게 개선됐습니다.</li><li>다만 일부 전문가들은 메모리 반도체가 과거에도 가격이 급등했다가 급락한 사이클을 반복했다는 점을 경고하고 있습니다. 지금은 수요가 공급을 넘어서지만, 공급이 늘어나면 가격이 다시 내려올 수 있다는 의미입니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. HBM이 뭔가요? 일반 메모리랑 뭐가 다른가요?</div><div class="qa-a">A. HBM은 High Bandwidth Memory의 약자로, 데이터를 매우 빠르게 주고받을 수 있는 고성능 메모리입니다. 일반 D램보다 칩을 여러 층으로 쌓아 올려서 속도가 훨씬 빠르고, AI 연산처럼 한 번에 엄청난 양의 데이터를 처리해야 할 때 꼭 필요합니다. 가격도 일반 메모리보다 5~10배 비싸서, 같은 양을 팔아도 회사 수익이 훨씬 커집니다.</div></div><div class="qa-block"><div class="qa-q">Q. SK하이닉스가 시총 1조 달러를 넘었다는데, 앞으로도 계속 오를까요?</div><div class="qa-a">A. 오늘 1조 달러를 넘긴 건 HBM 수요가 폭발적으로 늘어나면서 실적과 기대감이 동시에 반영된 결과입니다. 당분간은 엔비디아 등 빅테크의 AI 투자가 계속되고, HBM 공급이 부족한 상황이라 긍정적입니다. 다만 메모리 반도체는 과거에도 호황 이후 공급 과잉으로 가격이 급락한 사례가 여러 번 있었기 때문에, 중장기적으로는 공급 증가 시점을 주의 깊게 봐야 합니다.</div></div><div class="qa-block"><div class="qa-q">Q. 삼성전자도 HBM을 만드는데, SK하이닉스보다 못한가요?</div><div class="qa-a">A. 삼성전자도 HBM을 만들지만, 지금까지는 SK하이닉스가 엔비디아 등 주요 고객사 인증을 먼저 받으면서 시장 점유율에서 앞서 있었습니다. 다만 삼성도 최근 HBM3E 양산을 본격화하고 있고, 이번 분기 실적에서 메모리 부문 사상 최대 수익을 기록했다고 발표했습니다. 두 회사 모두 HBM 시장에서 수혜를 받고 있는 상황입니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 글로벌 빅테크의 AI 투자가 예상보다 빨리 둔화되거나, 삼성·SK하이닉스·마이크론의 HBM 증설이 동시에 완료돼 공급 과잉이 발생하면 메모리 가격이 급락할 수 있습니다. 과거 2018~2019년처럼 '슈퍼사이클' 이후 급격한 조정이 올 가능성도 염두에 둬야 합니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="국내주식 프리미엄">[N110] 프리미엄포커스</span><span class="fund-chip" title="AI 국내주식">[N150] AI국내주식전략</span><span class="fund-chip" title="액티브 국내주식">[N1N0] 액티브주식</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">여름 성수기 소비 회복 (테마파크·면세·카지노)</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +6.81%</span><span class="chip chip-persist">지속성 71%</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +6.81%로 양호한 수익률을 보였고, 7일 지속성 71%(5/7일)로 최근 1주일간 꾸준히 상승 중입니다. 글로벌 트리거는 확인되지 않았으나, 면세점(86%)·카지노(86%)·백화점(71%) 등 리오프닝·소비 테마 전반의 지속성이 높아 '여름 성수기 소비 회복'으로 고객에게 설명 가능합니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">테마파크 테마가 오늘 +6.81%로 강세를 보였으며, 최근 7일 중 5일 상승하며 71%의 지속성을 기록했습니다. 면세점 테마는 7일 지속성 86%, 카지노 86%, 백화점 71%로 리오프닝·소비 섹터 전반이 동반 상승세를 이어가고 있습니다. 롯데관광개발, 에이스테크 등 여가·테마파크 관련주와 호텔신라, 파라다이스 등 면세·카지노주가 상승을 주도했으며, 외국인 관광객 증가와 여름 성수기 기대감이 반영된 것으로 풀이됩니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 상반기 들어 한국 관광·여가 섹터가 본격적인 회복 국면에 진입했습니다. 코로나19 이후 중단됐던 중국인 단체 관광이 2025년 하반기부터 재개됐고, 일본·동남아 개별 관광객도 꾸준히 증가하면서 면세점과 카지노 매출이 회복세를 보이고 있습니다. 특히 6월은 여름휴가 시즌 본격 시작 시점으로, 국내 테마파크와 리조트 예약률이 전년 대비 크게 증가하고 있습니다.
+
+오늘 시장에서는 테마파크를 비롯한 여가 관련주가 +6.81% 급등하며 주목받았습니다. 최근 1주일간 5일 상승(지속성 71%)을 기록한 점도 단기 이벤트가 아닌, 여름 성수기 진입에 따른 구조적 수요 증가로 해석되고 있습니다. 면세점(86%)과 카지노(86%) 테마의 지속성이 더 높은 것은 외국인 관광객 회복이 국내 여가 수요보다 먼저 가시화되고 있기 때문으로 보입니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 항공·여행 수요가 2026년 들어 코로나 이전 수준을 회복하면서, 아시아 역내 관광 이동이 본격화되고 있습니다. 국제항공운송협회(IATA)는 2026년 아시아·태평양 지역 항공 수요가 2019년 대비 110% 수준까지 회복할 것으로 전망했으며, 특히 한국·일본·태국 등 주요 관광지로의 단거리 여행이 급증하고 있습니다.
+
+한국 시장에는 중국 정부의 단체 관광 재개 조치가 직접적인 영향을 미쳤습니다. 2025년 11월 한국이 중국인 단체 관광 허가 국가 명단에 재포함되면서, 2026년 상반기 중국인 관광객이 전년 동기 대비 3배 이상 증가했습니다. 이는 면세점·카지노·호텔 매출 증가로 이어지고 있으며, 국내 테마파크도 외국인 방문 증가와 국내 여가 수요 회복이 겹치면서 수혜를 입고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>코로나 이후 중단됐던 중국인 단체 관광이 작년 말부터 다시 허가되면서, 올해 상반기 중국인 관광객이 작년보다 3배 넘게 늘었습니다. 면세점과 카지노 매출이 빠르게 회복되고 있습니다.</li><li>6월은 여름휴가 시즌이 본격 시작되는 시기입니다. 국내 테마파크와 리조트 예약률이 작년보다 크게 오르면서, 관련 기업들의 실적 기대감이 커지고 있습니다.</li><li>테마파크 테마는 최근 1주일 중 5일 올랐고, 면세점과 카지노는 7일 중 6일 올라서 단기 이벤트가 아니라 여름 성수기 수요 증가가 반영되고 있다고 볼 수 있습니다.</li><li>국제항공운송협회는 올해 아시아 항공 수요가 코로나 이전보다 10% 더 많아질 거라고 예측했습니다. 한국도 외국인 관광객이 계속 늘면서 관광·여가 섹터 전반에 긍정적입니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 테마파크 주식이 왜 갑자기 오른 건가요?</div><div class="qa-a">A. 오늘 +6.81% 오른 건 여름휴가 시즌이 본격 시작되면서 국내 테마파크 예약률이 크게 증가했기 때문입니다. 최근 1주일간 7일 중 5일 올랐다는 건, 단기 뉴스보다는 성수기 진입이라는 계절적 수요가 반영되고 있다는 의미입니다. 외국인 관광객도 늘면서 리조트·호텔 수요도 함께 늘고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 면세점이랑 카지노도 같이 오르던데, 테마파크랑 연관이 있나요?</div><div class="qa-a">A. 직접 연관은 없지만, 모두 '관광 회복'이라는 큰 흐름에서 움직이고 있습니다. 면세점과 카지노는 외국인 관광객이 늘면서 수혜를 입고, 테마파크는 국내 여가 수요와 외국인 방문이 겹치면서 오르고 있습니다. 특히 중국인 단체 관광이 재개되면서 면세점·카지노의 지속성이 86%로 테마파크(71%)보다 높게 나타나고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 여름 지나면 다시 빠지는 거 아닌가요?</div><div class="qa-a">A. 여름 성수기가 끝나면 계절적 수요는 줄어들 수 있습니다. 다만 올해는 외국인 관광객이 구조적으로 증가하고 있어서, 가을 이후에도 면세·카지노·호텔은 상대적으로 견조할 가능성이 있습니다. 테마파크는 여름 실적이 1년 중 가장 중요하기 때문에, 성수기 매출이 기대치를 얼마나 충족하느냐에 따라 이후 주가 흐름이 달라질 수 있습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 여름 성수기 날씨가 예상보다 나쁘거나, 태풍·폭염 등으로 야외 활동이 위축되면 테마파크 방문객이 감소할 수 있습니다. 또한 중국 경기 둔화로 중국인 관광객 증가세가 꺾이거나, 환율 변동으로 면세 쇼핑 매력도가 떨어지면 관광·소비 섹터 전반에 부담이 될 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="배당주(소비)">[N1E0] 배당주식</span><span class="fund-chip" title="섹터배분(소비)">[N1G0] 성장섹터배분</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">HBM 슈퍼사이클로 SK하이닉스 시총 1조 달러 돌파, 반도체 +7.8% 급등하며 코스피 상승 견인—여름 성수기 기대감에 테마파크·면세점도 동반 강세.</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 엔비디아 AI 칩 신제품 발표 일정(HBM 발주 영향), 6월 중국인 방한 관광객 통계 발표, 삼성전자·SK하이닉스 HBM 증설 투자 공시 여부</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 2차전지·배터리 소재 테마 (삼성SDI·LG에너지솔루션 등 배터리 3사의 2분기 실적 가이던스 발표를 앞두고 전기차 수요 회복 기대감이 커지고 있어, 반도체 다음으로 주목해야 할 수출 핵심 섹터입니다)</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>원자력발전소 해체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+13.14%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>2</td><td>건설 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:44px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+9.79%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>3</td><td>자동차 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:42px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+9.32%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>4</td><td>인터넷 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:36px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.93%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>5</td><td>HBM(고대역폭메모리)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:35px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.83%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>6</td><td>반도체 대표주(생산)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:34px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.50%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>7</td><td>반도체 장비</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:32px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.09%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>8</td><td>원자력발전</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:31px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.93%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>9</td><td>테마파크</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:31px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.81%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>10</td><td>온디바이스 AI</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:29px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.36%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>11</td><td>뉴로모픽 반도체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:28px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.26%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>12</td><td>日 수출 규제(국산화 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:27px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.00%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>13</td><td>로봇(산업용/협동로봇 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.74%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>14</td><td>전후 재건(우크라/중동 전쟁 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.74%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>15</td><td>반도체 재료/부품</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.73%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>16</td><td>GTX(수도권 광역급행철도)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:25px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.53%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>17</td><td>증권</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.42%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>18</td><td>모듈러주택</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.41%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>19</td><td>풍력에너지</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.38%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>20</td><td>전력반도체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.37%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-06-12 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
