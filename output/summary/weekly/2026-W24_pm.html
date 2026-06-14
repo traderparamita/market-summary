@@ -1,0 +1,256 @@
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-outlook-hero{background:linear-gradient(135deg,#f0f4ff,#e0e9ff);border:1px solid #b8c8f0;border-left:4px solid #2851b4;border-radius:12px;padding:22px 26px;margin:20px 0 16px}
+  .pm-outlook-hero h3{font-size:13px;color:#2851b4;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:800px){.pm-scenario-grid{grid-template-columns:1fr}}
+  .pm-scenario{border:1px solid var(--border);border-radius:10px;padding:16px 18px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-scenario .s-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+  .pm-scenario .s-base{color:#1a7a3c}.pm-scenario .s-bull{color:#d92b2b}.pm-scenario .s-bear{color:#1a5fb4}
+  .pm-scenario .s-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:8px}
+  .pm-scenario .s-body{font-size:12.5px;color:#2d3148;line-height:1.65}
+  .pm-scenario .s-prob{font-size:11px;color:var(--muted);margin-top:8px;font-weight:600}
+  .pm-watch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:800px){.pm-watch-grid{grid-template-columns:1fr}}
+  .pm-watch-card{border:1px solid var(--border);border-radius:10px;padding:15px 18px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-watch-card h4{font-size:13px;font-weight:700;color:#2851b4;margin-bottom:8px}
+  .pm-watch-card ul{list-style:none;padding:0;margin:0}
+  .pm-watch-card li{font-size:12.5px;color:#2d3148;line-height:1.65;margin-bottom:5px;padding-left:12px;position:relative}
+  .pm-watch-card li::before{content:'▸';position:absolute;left:0;color:#2851b4;font-size:10px;top:2px}
+  .pm-risk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+  @media(max-width:800px){.pm-risk-grid{grid-template-columns:1fr}}
+  .pm-risk-item{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:var(--card)}
+  .pm-risk-item .r-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+  .pm-risk-item .r-high{color:#c0392b}.pm-risk-item .r-med{color:#d68910}.pm-risk-item .r-low{color:#1a7a3c}
+  .pm-risk-item .r-title{font-size:13px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+  .pm-risk-item .r-body{font-size:12px;color:#2d3148;line-height:1.6}
+  .pm-positioning{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+</style>
+
+<!-- PM Hero (주간 회고) -->
+<div class="pm-hero">
+  <h2>PM Story — 주간 포트폴리오 매니저 브리프 (W24 회고)</h2>
+  <div class="pm-subtitle">2026년 6월 8일(월) ~ 6월 12일(금) · 지역·자산군별 WTD 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>WTD Top-line:</strong> 코스피 <span class="pm-dn">-0.45%</span>(WTD, 일간 최대 스윙 -8.29% ~ +8.18%), S&P500 <span class="pm-up">+0.65%</span>, 나스닥 <span class="pm-up">+0.70%</span>, VIX 주간 <span class="pm-up">-17.81%</span>(17.68 마감). WTI <span class="pm-dn">-6.25%</span>(84.88달러) — 이란 협상 기대 주후반 급반전.</p>
+    <p><strong>주간 핵심 이벤트:</strong> 이란-이스라엘 탄도미사일 공격(6/8) → 코스피 사이드카 대반등(6/9) → 미국-이란 재공습·CPI 4.2%·코스피 서킷브레이커(6/10) → AMAT 어닝 +9.8% 가이던스 상향·이란 협상 임박(6/11) → 이란 협상 이틀째 낙관론(6/12).</p>
+    <p><strong>주간 Best:</strong> AMAT <span class="pm-up">+25.22%</span> · 한미반도체 <span class="pm-up">+24.05%</span>(일간기준) · 현대건설 <span class="pm-up">+28.36%</span>(일간) · Russell2K <span class="pm-up">+3.90%</span>(WTD) · MSCI EM <span class="pm-up">+5.09%</span>(WTD)</p>
+  </div>
+</div>
+
+<!-- 6섹션 PM Grid (WTD 회고) -->
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국 (WTD)</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">8,123.62</span> · WTD <span class="pm-dn">-0.45%</span> · MTD <span class="pm-dn">-4.16%</span> · YTD <span class="pm-up">+88.5%</span></li>
+      <li>주간 최저 7,484(6/8 -8.29%) → 주간 최고 8,123(6/12 +4.63%) — 전주 대비 내러티브: V자 롤러코스터</li>
+      <li>KOSDAQ <span class="pm-num">1,029.05</span> · WTD <span class="pm-up">+2.65%</span> · MTD <span class="pm-dn">-4.26%</span> — 반도체 수출 서프라이즈(목) 주도</li>
+      <li>USD/KRW <span class="pm-num">1,517.89</span> · WTD <span class="pm-up">-2.63%</span>(원화 주간 강세) — 이란 협상 리스크 오프 완화 반영</li>
+      <li>KR 10Y <span class="pm-num">3.971%</span> · WTD 약 <span class="pm-up">-10bp</span> — 지정학 공포 감소 + 유가 하락에 금리 하락</li>
+      <li>주간 최대 상승: 현대건설 <span class="pm-up">+28.36%</span>(금, 이란 중동 플랜트 기대) · 한미반도체 <span class="pm-up">+24.05%</span>(금, HBM 패키징)</li>
+    </ul>
+    <div class="pm-note">코스피 WTD -0.45% — 극단적 변동성에도 주간 기준 거의 보합. AI 반도체 펀더멘털 → 코스닥 강세(+2.65%)가 완충.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로 (WTD)</h3>
+    <ul>
+      <li>WTI <span class="pm-num">84.88달러</span> · WTD <span class="pm-dn">-6.25%</span>(주초 97달러 돌파 → 목·금 이틀간 급락)</li>
+      <li>브렌트 <span class="pm-num">87.33달러</span> · WTD <span class="pm-dn">-6.19%</span></li>
+      <li>금(Gold) <span class="pm-num">4,215달러</span> · WTD <span class="pm-dn">-2.82%</span> · MTD <span class="pm-dn">-7.58%</span> — 6/10 CPI 4.2% 발표 후 단일일 -4.45% 급락이 결정적</li>
+      <li>구리 <span class="pm-num">6.431달러/lb</span> · WTD <span class="pm-up">+2.67%</span> — 이란 협상 기대로 공급망 위기 완화 반영</li>
+      <li>DXY <span class="pm-num">99.75</span> · WTD <span class="pm-up">-0.32%</span> — 달러 주간 소폭 약세, 위험자산 선호</li>
+      <li>5월 CPI 4.2%(YoY) — 이번 주 최대 매크로 이벤트, 연준 인하 경로 압박</li>
+    </ul>
+    <div class="pm-note">유가 주간 -6.25% vs CPI 4.2% — 에너지 vs 서비스 인플레의 엇갈린 신호. 서비스 인플레 지속 시 2H 인하 기대 제한.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국 (WTD)</h3>
+    <ul>
+      <li>Nikkei225 <span class="pm-num">66,020</span> · WTD <span class="pm-dn">-0.85%</span> · MTD <span class="pm-dn">-0.47%</span> · YTD <span class="pm-up">+27.37%</span></li>
+      <li>TWSE <span class="pm-num">44,169</span> · WTD <span class="pm-dn">-2.00%</span> — TSMC 공급망 우려로 아시아 최대 주간 낙폭</li>
+      <li>항셍(HSI) <span class="pm-num">24,718</span> · WTD <span class="pm-dn">-0.98%</span> · MTD <span class="pm-dn">-1.84%</span></li>
+      <li>상하이 <span class="pm-num">4,031.5</span> · WTD <span class="pm-up">+0.09%</span> — 중국 내수 방어로 아시아 최소 낙폭</li>
+      <li>NIFTY50 <span class="pm-num">23,622.9</span> · WTD <span class="pm-up">+1.10%</span> — 유가 하락 수혜, 에너지 수입국 인도 강세</li>
+      <li>주간 Best 아시아 종목: Disco(일본) WTD 추정 +14%이상 · ASE Tech(대만) +8.46%(금 일간)</li>
+    </ul>
+    <div class="pm-note">아시아 내 AMAT 파급 — Advantest·Disco·Lasertec 장비주 강세 vs TWSE -2.00% 대조. 반도체 내 장비 vs 설계 이분법.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국 (WTD)</h3>
+    <ul>
+      <li>S&P500 <span class="pm-num">7,431.46</span> · WTD <span class="pm-up">+0.65%</span> · MTD <span class="pm-dn">-1.96%</span> · YTD <span class="pm-up">+8.35%</span></li>
+      <li>NASDAQ <span class="pm-num">25,888</span> · WTD <span class="pm-up">+0.70%</span> · MTD <span class="pm-dn">-4.02%</span></li>
+      <li>Russell2K <span class="pm-num">2,943</span> · WTD <span class="pm-up">+3.90%</span> — 이란 협상 낙관론에 소형주 아웃퍼폼</li>
+      <li>VIX <span class="pm-num">17.68</span> · WTD <span class="pm-up">-17.81%</span>(주초 22.22 → 주말 17.68)</li>
+      <li>주간 Best: AMAT <span class="pm-up">+25.22%</span> · Intel <span class="pm-up">+11.19%(월 일간)</span> · PHLX 반도체 WTD 추정 +3%이상</li>
+      <li>주간 Worst: Apple WTD 추정 -3%이상(EU Siri 차단 여파) · 에너지 섹터(유가 하락)</li>
+    </ul>
+    <div class="pm-note">6/10 CPI 4.2% 충격(-1.62%) → 6/11 AMAT 서프라이즈+이란 협상(+1.75%) — 이틀간 +0.13%p 순반등 = AI 수요 > 인플레 공포.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽 (WTD)</h3>
+    <ul>
+      <li>STOXX50 <span class="pm-num">6,187.63</span> · WTD <span class="pm-up">+2.07%</span> · MTD <span class="pm-up">+2.27%</span> · YTD <span class="pm-up">+4.46%</span></li>
+      <li>DAX <span class="pm-num">24,635</span> · WTD <span class="pm-dn">-0.50%</span>(독일 내수 우려로 STOXX 대비 부진)</li>
+      <li>CAC40 <span class="pm-num">8,350.87</span> · WTD 추정 +1.5%이상 · FTSE100 WTD <span class="pm-up">+1.00%</span></li>
+      <li>EUR/USD <span class="pm-num">1.157</span> · WTD <span class="pm-up">+0.35%</span> — 유로 주간 소폭 강세</li>
+      <li>이란 협상 기대 → 에너지 수입국 유럽에 최대 수혜 섹터: 금융·소재·소비재</li>
+    </ul>
+    <div class="pm-note">유럽이 미국보다 유가 수혜 크게 받음 — STOXX50 WTD +2.07% vs S&P500 +0.65%. 에너지 안정 = 유럽 실질 구매력 회복 신호.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권 (WTD)</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.618%</span> · WTD 거의 보합(±1bp)</li>
+      <li>US 10Y <span class="pm-num">4.487%</span> · WTD 약 <span class="pm-up">-1bp</span>(CPI 충격 상방 vs 이란 협상 하방 상쇄)</li>
+      <li>10Y-2Y 스프레드 <span class="pm-num">+86.9bp</span> — 스팁 기조 유지</li>
+      <li>KR 10Y <span class="pm-num">3.971%</span> · WTD 약 <span class="pm-up">-10bp</span> — 안도 심리 + 유가 하락에 반응</li>
+      <li>TLT <span class="pm-num">85.77</span>(미국 장기채 ETF) — 주간 거의 보합</li>
+      <li>HY(HYG) <span class="pm-num">79.94</span> — 주말 보합, 이란 협상 낙관론으로 스프레드 소폭 축소</li>
+    </ul>
+    <div class="pm-note">미국 명목금리 주간 거의 변화 없음 — CPI 상방 충격을 이란 협상 risk-off 완화가 상쇄. KR 금리 -10bp 하락이 상대적으로 돋보임.</div>
+  </div>
+</div>
+
+<!-- Outlook 블록 -->
+<div class="pm-outlook-hero">
+  <h3>📡 W25 Outlook — 다음 주 시나리오 · Watch & Trigger · 포지셔닝</h3>
+  <p style="font-size:13px;color:#2d3148;line-height:1.7;margin:0;">이란 협상 공식화 여부 + Fed 경로 재조정(CPI 4.2% 기저) + 코스피 6월 MTD -4.16% 회복 속도가 W25 방향성을 결정한다.</p>
+</div>
+
+<!-- 시나리오 3카드 -->
+<div class="pm-scenario-grid">
+  <div class="pm-scenario">
+    <div class="s-label s-base">■ Base (확률 50%)</div>
+    <div class="s-title">이란 협상 합의 공식화 + AI 수요 지속</div>
+    <div class="s-body">이란-미국 핵 합의가 공식 서명되고 원유 공급 우려가 완전히 해소됩니다. WTI 80~85달러 구간 안정, 코스피 8,200~8,500 회복, S&P500 7,500~7,600 도달. AI 반도체 공급망(AMAT·Disco·한미반도체) 강세 지속. Fed는 연내 1회 인하(12월) 경로 유지.</div>
+    <div class="s-prob">트리거: 이란 합의 공식 서명, 6월 말 PCE 3%대 하락</div>
+  </div>
+  <div class="pm-scenario">
+    <div class="s-label s-bull">▲ Bull (확률 25%)</div>
+    <div class="s-title">이란 완전 정상화 + 유가 70달러대 진입</div>
+    <div class="s-body">이란과의 핵 합의 이후 이란 원유 수출이 빠르게 재개되며 WTI가 70달러대로 하락합니다. 글로벌 인플레이션 우려가 급격히 완화되며 연준 인하 기대가 9월로 당겨집니다. 코스피 8,500+ 돌파, VIX 15이하로 내려앉는 랠리 모드.</div>
+    <div class="s-prob">트리거: 이란 원유 수출 재개 발표, CPI 6월 3%대 서프라이즈</div>
+  </div>
+  <div class="pm-scenario">
+    <div class="s-label s-bear">▼ Bear (확률 25%)</div>
+    <div class="s-title">이란 협상 결렬 + 서비스 CPI 재가속</div>
+    <div class="s-body">이란-미국 협상이 결렬되고 이란이 호르무즈 해협 봉쇄를 경고합니다. WTI가 90달러대로 재반등하고 6월 CPI 선행지표가 다시 가속됩니다. 코스피 7,800 재테스트, VIX 22 이상 재진입, 금리인하 기대 완전 소멸로 나스닥 조정 재개.</div>
+    <div class="s-prob">트리거: 이란 협상 공식 결렬 발표, WTI 90달러 돌파</div>
+  </div>
+</div>
+
+<!-- W25 Watch & Trigger (6섹션) -->
+<div class="pm-watch-grid">
+  <div class="pm-watch-card">
+    <h4>🇰🇷 한국 Watch</h4>
+    <ul>
+      <li>이란 합의 후 중동 플랜트 수주 뉴스 — 현대건설·두산 추가 상승 촉매</li>
+      <li>코스피 8,200 저항선 돌파 여부 — WTD -0.45% 상황에서 MTD 만회 속도</li>
+      <li>KR 10Y 3.9% 지지 여부 — 하락 시 채권·주식 동반 매력 증가</li>
+    </ul>
+  </div>
+  <div class="pm-watch-card">
+    <h4>🌐 매크로 Watch</h4>
+    <ul>
+      <li>WTI 84달러 지지 여부 — 협상 결렬 시 90달러 재돌파 경고선</li>
+      <li>6월 PPI(화) → 6월 말 PCE — CPI 4.2% 기저 지속 확인 필요</li>
+      <li>Fed 위원 발언 (파월 연설 일정 확인) — 인하 경로 재조정 시사 여부</li>
+    </ul>
+  </div>
+  <div class="pm-watch-card">
+    <h4>🌏 아시아 Watch</h4>
+    <ul>
+      <li>일본 Nikkei 66,000 지지 여부 — 엔화 흐름(USD/JPY 150선) 연동</li>
+      <li>대만 TWSE WTD -2.00% 회복 — TSMC 2분기 실적 가이던스 변수</li>
+      <li>인도 NIFTY 23,000 지지 — 유가 하락 지속 시 아웃퍼폼 강화</li>
+    </ul>
+  </div>
+  <div class="pm-watch-card">
+    <h4>🇺🇸 미국 Watch</h4>
+    <ul>
+      <li>S&P500 7,500 저항선 — 돌파 시 기술적 강세 모멘텀 확인</li>
+      <li>AMAT +25.22% 이후 반도체 업사이클 실적 시즌 확인 (NVDA 5월 실적)</li>
+      <li>Apple EU Siri 차단 해결 여부 — 빅테크 규제 리스크 점검</li>
+    </ul>
+  </div>
+  <div class="pm-watch-card">
+    <h4>🇪🇺 유럽 Watch</h4>
+    <ul>
+      <li>STOXX50 6,200 저항선 돌파 — WTD +2.07% 추세 연속성</li>
+      <li>ECB 6월 회의 결과 — 유럽 인플레 경로와 금리 동결 vs 인하 시그널</li>
+      <li>EUR/USD 1.16 저항선 — 달러 약세 지속 시 유럽 수입 인플레 완화</li>
+    </ul>
+  </div>
+  <div class="pm-watch-card">
+    <h4>💵 채권 Watch</h4>
+    <ul>
+      <li>US 10Y 4.5% 상방 저항 — CPI 4.2% 재가속 시 4.6~4.7% 재테스트</li>
+      <li>10Y-2Y 86.9bp 스프레드 확대 여부 — 스팁 가속은 경기회복 신호</li>
+      <li>HY 스프레드 — 이란 협상 결렬 시 크레딧 리스크 확대 조기 경보</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 통합 리스크 4개 -->
+<div class="pm-risk-grid" style="margin-top:8px;">
+  <div class="pm-risk-item">
+    <div class="r-label r-high">HIGH RISK</div>
+    <div class="r-title">이란 협상 결렬 → 유가 재급등</div>
+    <div class="r-body">공식 서명 없이 협상이 무산되면 WTI 90달러+ 재진입 → 에너지 인플레 가속 → 연준 인하 완전 소멸 → 위험자산 전면 재조정</div>
+  </div>
+  <div class="pm-risk-item">
+    <div class="r-label r-high">HIGH RISK</div>
+    <div class="r-title">서비스 CPI 지속 가속 → 연내 금리 인하 차단</div>
+    <div class="r-body">5월 CPI 4.2%의 서비스 component 재가속이 확인될 경우 12월 인하도 어려워지며 장기금리 상방 압력 재등장</div>
+  </div>
+  <div class="pm-risk-item">
+    <div class="r-label r-med">MED RISK</div>
+    <div class="r-title">코스피 뉴스 플로우 레짐 — 변동성 구조적 확대</div>
+    <div class="r-body">한 주에 사이드카·서킷브레이커 동시 경험 → VIX 17이하에서도 코스피 일중 변동성은 구조적으로 높아진 상태</div>
+  </div>
+  <div class="pm-risk-item">
+    <div class="r-label r-med">MED RISK</div>
+    <div class="r-title">Apple EU 규제 확산 → 빅테크 과세·반독점</div>
+    <div class="r-body">EU의 Siri 차단이 다른 AI 서비스(구글 Gemini 등)로 확산될 경우 나스닥 빅테크 복합 규제 리스크 재점화</div>
+  </div>
+</div>
+
+<!-- 포지셔닝 시사점 -->
+<div class="pm-positioning">
+  <h4 style="font-size:13px;font-weight:700;color:#2851b4;margin-bottom:8px;">📌 W25 포지셔닝 시사점</h4>
+  <ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#2d3148;line-height:1.75;">
+    <li style="margin-bottom:6px;padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#2851b4;">▸</span><strong>이란 협상 바이너리 포지션:</strong> 합의 확정 전까지는 WTI 롱/에너지주 롱 부분 헤지 유지. 합의 확정 시 에너지 헤지 해제 + 소비·금융 리밸런싱 고려.</li>
+    <li style="margin-bottom:6px;padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#2851b4;">▸</span><strong>AI 반도체 공급망 장기 방향성 유지:</strong> AMAT 서프라이즈는 업사이클 지속 확인. 장비주(Disco·Advantest·한미반도체) WTD 강세는 단기 차익 기회보다 중기 방향성 지지로 해석.</li>
+    <li style="margin-bottom:6px;padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#2851b4;">▸</span><strong>코스피 변동성 관리:</strong> 코스피 8,200 저항선 + VIX 17 수준에서 옵션 헤지 비용 대비 효과 재점검. 지정학 뉴스 플로우 레짐은 당분간 지속.</li>
+    <li style="padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#2851b4;">▸</span><strong>인도·유럽 상대 강세 유망:</strong> 유가 하락 수혜국(인도 WTD +1.10%) + 에너지 안정 기대(STOXX50 WTD +2.07%)는 코스피·TWSE 대비 상대 강세 포지션 검토 가능.</li>
+  </ul>
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. Outlook은 시나리오 분석이며 투자 권유가 아닙니다.
+</div>
