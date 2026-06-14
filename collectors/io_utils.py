@@ -81,6 +81,7 @@ def append_save_csv(
     n = len(df_new)
     df_all = pd.concat([existing, df_new], ignore_index=True)
     df_all[date_col] = pd.to_datetime(df_all[date_col])
+    df_all = df_all.drop_duplicates(subset=list(sort_cols), keep="last")
     df_all = df_all.sort_values(list(sort_cols)).reset_index(drop=True)
     df_all.to_csv(csv_path, index=False, date_format=date_format)
     return n

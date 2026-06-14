@@ -156,34 +156,41 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
         df.columns = [c.lower() for c in df.columns]
         df = df[[c for c in macro_cols if c in df.columns]]
 
+        # (date, indicator_code) 중복 제거 — COPY 중 PK 위반 방지
+        df = df.drop_duplicates(subset=["date", "indicator_code"], keep="last")
+
+        buf = StringIO()
+        for _, row in df.iterrows():
+            def safe(v):
+                return NULL if pd.isna(v) else str(v)
+            vals = [
+                str(row["date"].date()) if pd.notna(row["date"]) else NULL,
+                safe(row.get("indicator_code")),
+                safe(row.get("category")),
+                safe(row.get("region")),
+                safe(row.get("value")),
+                safe(row.get("unit")),
+                safe(row.get("source")),
+            ]
+            buf.write("\t".join(vals) + "\n")
+        buf.seek(0)
+
         conn = get_connection()
         try:
             cur = conn.cursor()
-            # (date, indicator_code) 단위 DELETE 후 INSERT
-            keys = df[["date", "indicator_code"]].drop_duplicates()
-            for _, row in keys.iterrows():
-                cur.execute(
-                    "DELETE FROM macro_daily WHERE date = %s AND indicator_code = %s",
-                    (row["date"].date(), row["indicator_code"]),
-                )
-
-            buf = StringIO()
-            for _, row in df.iterrows():
-                def safe(v):
-                    return NULL if pd.isna(v) else str(v)
-                vals = [
-                    str(row["date"].date()) if pd.notna(row["date"]) else NULL,
-                    safe(row.get("indicator_code")),
-                    safe(row.get("category")),
-                    safe(row.get("region")),
-                    safe(row.get("value")),
-                    safe(row.get("unit")),
-                    safe(row.get("source")),
-                ]
-                buf.write("\t".join(vals) + "\n")
-            buf.seek(0)
-            cur.copy_from(buf, "macro_daily",
-                columns=macro_cols, null=NULL)
+            # temp table → INSERT ON CONFLICT (atomic upsert, race-condition-free)
+            cur.execute("CREATE TEMP TABLE _tmp_macro (LIKE macro_daily) ON COMMIT DROP")
+            cur.copy_from(buf, "_tmp_macro", columns=macro_cols, null=NULL)
+            cur.execute(f"""
+                INSERT INTO macro_daily ({', '.join(macro_cols)})
+                SELECT {', '.join(macro_cols)} FROM _tmp_macro
+                ON CONFLICT (date, indicator_code) DO UPDATE SET
+                    category       = EXCLUDED.category,
+                    region         = EXCLUDED.region,
+                    value          = EXCLUDED.value,
+                    unit           = EXCLUDED.unit,
+                    source         = EXCLUDED.source
+            """)
             conn.commit()
             n = len(df)
             print(f"[RDS] OK source={source} rows={n}")
@@ -212,6 +219,9 @@ def upsert_rows(df: pd.DataFrame, target_date: Optional[str] = None) -> int:
     df = df.copy()
     if "DATE" in df.columns:
         df["DATE"] = pd.to_datetime(df["DATE"])
+
+    # (DATE, INDICATOR_CODE) 중복 제거 — COPY 중 PK 위반 방지
+    df = df.drop_duplicates(subset=["DATE", "INDICATOR_CODE"], keep="last")
 
     conn = get_connection()
     try:
