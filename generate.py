@@ -1239,6 +1239,25 @@ def _inject_existing_story(path, new_html):
     save_story_files(path, new_html, _TAB_SPECS, log_fn=_log)
 
 
+def _reinject_stories(target_date: str | None = None):
+    """사이드카 파일(_cs/_pm/_stocks/_story/_macro/_sources)을 메인 HTML에 재주입.
+
+    generate.py --reinject [YYYY-MM-DD] 로 호출.
+    데이터 재수집 없이 스토리 탭 주입만 수행한다.
+    """
+    if not target_date:
+        target_date = prev_business_day()
+    month_dir = os.path.join(OUTPUT_DIR, target_date[:7])
+    html_path = os.path.join(month_dir, f"{target_date}.html")
+    if not os.path.exists(html_path):
+        _log(f"[reinject] 파일 없음: {html_path}")
+        return
+    with open(html_path, encoding="utf-8") as f:
+        html = f.read()
+    _inject_existing_story(html_path, html)
+    _log(f"[reinject] 완료: {html_path}")
+
+
 def backfill_macro_to_daily(week_macro_path):
     """주간 _macro.html 작성 후, 해당 주 마지막 영업일(금요일) 보고서에만 macro 탭을 주입.
 
@@ -1286,7 +1305,14 @@ if __name__ == "__main__":
                         help="보고서 기준일 YYYY-MM-DD (기본: 전 영업일)")
     parser.add_argument("--start", dest="start_date", default=None,
                         help="수집 시작일 YYYY-MM-DD (전체 재수집 용)")
+    parser.add_argument("--reinject", action="store_true",
+                        help="사이드카(_cs/_pm/_stocks/_story) → 메인 HTML 재주입만 수행 (데이터 재수집 없음)")
     args = parser.parse_args()
+
+    if args.reinject:
+        _reinject_stories(args.target_date)
+        sys.exit(0)
+
     path = main(target_date=args.target_date, start_date=args.start_date)
     # NOTE: 이 메시지는 generate.py(데이터 수집 + HTML 생성) 자체의 종료 신호다.
     # /market-full 워크플로우 입장에서는 Step 1~2 가 끝난 것일 뿐이며, Story 작성
