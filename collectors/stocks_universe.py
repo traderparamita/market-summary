@@ -148,6 +148,7 @@ US_TOP50: list[tuple[str, str, str, int, str]] = [
     ("ST_PEP",      "PEP",   "PepsiCo",         358, "PepsiCo"),
     ("ST_IBM",      "IBM",   "IBM",             359, "IBM"),
     ("ST_TMUS",     "TMUS",  "T-Mobile",        360, "T-Mobile US"),
+    ("ST_SPCX",     "SPCX",  "SpaceX",          308, "Space Exploration Technologies"),
 ]
 
 # 아시아 종목 (history/아시아종목.xlsx 2026-05-14 기준).
