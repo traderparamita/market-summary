@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-06-15 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-06-15 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>항공·저가항공사 · MLCC·전장반도체</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">항공·저가항공사(LCC)</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +14.18%</span><span class="chip chip-persist">지속성 0%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +14.18%로 전체 테마 중 1위 수익률을 기록했으며, Tavily에서 2026년 한국 LCC 섹터의 강한 성장세가 글로벌 차원에서 확인되었습니다. 여름 성수기 진입과 맞물려 항공 수요 회복이 실제 수급으로 이어지고 있어, 상담사가 고객에게 계절성·실적 개선 스토리를 명확히 설명할 수 있습니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">항공·저가항공사 테마가 +14.18%로 전체 테마 중 1위 수익률을 기록했습니다. 제주항공·진에어 등 LCC 중심으로 오전부터 강한 매수세가 유입되며 대한항공도 동반 상승했습니다. 여름 성수기 진입과 맞물려 항공권 예매율이 전년 대비 큰 폭 증가하며 실적 개선 기대가 주가 급등으로 이어졌습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 상반기 한국 주식시장이 75% 급등하는 가운데, 저가항공사(LCC) 섹터가 특히 뚜렷한 성장세를 보이고 있습니다. 6월 중순은 본격적인 여름 휴가 시즌 진입 시점으로, 해외여행 수요가 코로나19 이전 수준을 회복하며 항공권 예매가 급증하고 있습니다. 특히 LCC는 가격 경쟁력을 앞세워 동남아·일본 노선에서 점유율을 빠르게 확대하고 있으며, 유류비 안정화로 비용 부담 우려가 완화되면서 수익성 개선 가능성이 커졌습니다.
+
+최근 7거래일 중 3일 상승(지속성 43%)으로 단기 변동성은 있었으나, 오늘 한 자릿수 대형 급등은 성수기 실적 기대가 본격화된 신호로 해석됩니다. 대한항공을 중심으로 한 한진그룹 재편 기대감과 LCC 시장 1위 경쟁 심화도 투자자들의 관심을 끌고 있습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">2026년 글로벌 항공 수요가 팬데믹 이전을 넘어서며 IATA(국제항공운송협회)가 여객 수송량 역대 최고치를 전망하고 있습니다. 특히 아시아·태평양 지역이 전 세계 여객 증가율을 주도하고 있으며, 한국은 K-콘텐츠 인기와 엔저 영향으로 일본·동남아 여행 수요가 폭발적으로 늘어나는 중입니다.
+
+글로벌 항공사들이 성수기 공급을 확대하면서 한국 LCC들도 기재 가동률을 최대로 끌어올리고 있으며, 인바운드(방한 외국인) 수요 역시 크게 증가해 양방향 수익 모델이 작동하고 있습니다. 국제유가가 배럴당 70달러 중반에서 안정세를 보이는 점도 항공사 마진 개선에 긍정적입니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>여름 휴가 시즌이 본격화되면서 항공권 예매가 급증하고 있고, 특히 저렴한 가격의 저가항공사 이용객이 크게 늘고 있습니다.</li><li>유류비가 안정되면서 항공사들의 비용 부담이 줄어들어, 티켓을 많이 팔수록 수익이 더 늘어나는 구조가 만들어지고 있습니다.</li><li>K-드라마·K-팝 인기로 일본과 동남아에서 한국 방문 외국인도 함께 늘어나, 왕복 노선 모두에서 좌석이 빠르게 차고 있습니다.</li><li>오늘 테마가 14% 넘게 오른 것은 성수기 실적 개선이 단순 기대가 아니라 실제 예약 데이터로 확인되고 있기 때문입니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 항공주는 유가가 오르면 위험한 거 아닌가요?</div><div class="qa-a">A. 맞습니다. 유가가 급등하면 항공사 비용 부담이 커지는 게 사실입니다. 다만 지금은 국제유가가 배럴당 70달러 중반에서 안정세를 보이고 있고, 항공사들이 유류할증료를 통해 어느 정도 비용을 전가할 수 있는 환경이라 수익성 악화 우려는 크지 않은 상황입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 여름 지나면 또 빠지는 거 아닌가요?</div><div class="qa-a">A. 항공주는 계절성이 강한 게 맞습니다. 여름·겨울 성수기에 실적이 좋아지고 봄·가을 비수기엔 주춤할 수 있습니다. 다만 올해는 코로나 이후 여행 수요 자체가 구조적으로 회복되고 있고, 가을 추석 연휴·연말 여행 수요도 예년보다 강할 것으로 예상돼 비수기 낙폭은 제한적일 수 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 대한항공이랑 저가항공사 중 뭐가 더 나은가요?</div><div class="qa-a">A. 대한항공은 장거리 노선과 화물 사업이 강해 안정적이고, 저가항공사는 단거리 여객 증가에 민감해 성장성이 높습니다. 지금처럼 여행 수요가 폭발하는 시기엔 저가항공사 주가 탄력이 더 큰 편이지만, 경기 둔화 시엔 대형사가 방어력이 좋습니다. 투자 성향에 따라 선택이 달라질 수 있습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 국제유가가 지정학적 리스크(중동 정세 등)로 급등하거나, 환율(원·달러) 급변동으로 유류비·리스 비용이 예상보다 크게 증가하면 실적 개선 기대가 후퇴할 수 있습니다. 또한 성수기 이후 수요 공백기에 접어들면 주가 조정 가능성이 있으며, 태풍·전염병 등 돌발 변수로 여행 수요가 위축될 경우 단기 급락 위험도 존재합니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표형">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="섹터배분 전략">[N1G0] 성장섹터배분</span><span class="fund-chip" title="가치주 중심">[N140] 가치주식형</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">MLCC·전장반도체</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +6.38%</span><span class="chip chip-persist">지속성 71%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +6.38% 상승에 최근 7거래일 중 5일 상승(지속성 71%)으로 수급 안정성이 검증되었습니다. 뉴로모픽 반도체·스마트카 테마가 동반 강세인 점과 Tavily 글로벌 반도체 랠리 확인을 종합하면, 전장·AI 수요 확대라는 중기 트렌드를 고객에게 설득력 있게 제시할 수 있습니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">MLCC·전장반도체 테마는 오늘 +6.38% 상승하며 강세를 이어갔습니다. 삼성전기 등 MLCC 주요 업체와 전장 반도체 관련주가 동반 상승했으며, 뉴로모픽 반도체·스마트카 테마도 함께 오르며 AI·자동차 반도체 수요 확대 기대를 반영했습니다. 최근 7거래일 중 5일 상승(지속성 71%)으로 수급 안정성이 검증되며, 단기 차익 실현보다 중기 트렌드를 따르는 매수세가 우세했습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 한국 주식시장이 반도체 실적 호조에 힘입어 크게 상승하는 가운데, KOSPI가 6월 15일 8574포인트를 기록하며 기술주 중심 랠리가 지속되고 있습니다. 특히 전장(자동차용) 반도체와 MLCC(적층세라믹콘덴서)는 전기차·자율주행차 확산으로 수요가 구조적으로 증가하고 있으며, AI 반도체 붐이 데이터센터뿐 아니라 차량용 AI 칩 수요로까지 확산되고 있습니다.
+
+MLCC는 스마트폰·PC보다 전기차 한 대당 수천 개씩 들어가며, 자율주행 레벨이 올라갈수록 탑재량이 기하급수적으로 늘어나는 구조입니다. 뉴로모픽(neuromorphic) 반도체 등 차세대 AI 칩 개발 경쟁이 본격화되며, 한국 부품·소재 업체들의 공급망 지위가 강화되고 있다는 점도 투자자들의 관심을 끌고 있습니다. 최근 7거래일 평균 +1.01% 상승으로 변동성은 크지 않으나, 오늘 6% 넘는 상승은 글로벌 반도체 랠리와 맞물린 수급 개선 신호로 해석됩니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 전기차 시장이 2026년 연간 판매량 2,000만 대를 넘어서며, 차량용 반도체와 MLCC 수요가 역대 최고치를 경신하고 있습니다. 특히 테슬라·BYD 등 주요 완성차 업체들이 AI 기반 자율주행 기능을 대중화하면서, 차량당 반도체 탑재 금액이 기존 내연기관 대비 3~4배 증가하고 있습니다.
+
+미국·유럽의 AI 인프라 투자 확대는 데이터센터용 고성능 MLCC 수요를 끌어올리고, 중국의 전기차 보조금 연장 정책은 아시아 공급망 전반에 긍정적입니다. 한국 부품업체들은 일본(무라타·TDK)과 함께 고용량 MLCC 시장을 과점하고 있어, 글로벌 수요 증가가 곧바로 실적 개선으로 연결되는 구조입니다. 반도체 업황 사이클이 상승 국면에 진입하면서 한국 기술주 전반에 대한 외국인 매수세도 강화되고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>전기차 한 대에는 스마트폰보다 훨씬 많은 반도체와 MLCC 부품이 들어가는데, 전기차 판매가 늘수록 이 부품 업체들의 매출이 함께 늘어나는 구조입니다.</li><li>자율주행 기술이 발전하면서 차량에 들어가는 AI 반도체 수요가 급증하고 있고, 한국 업체들이 이 분야 핵심 부품을 공급하고 있어 수혜가 큽니다.</li><li>데이터센터가 전 세계적으로 확대되며 고성능 MLCC 수요도 함께 늘고 있어, 자동차와 AI 두 가지 수요를 동시에 받고 있는 상황입니다.</li><li>최근 7거래일 중 5일 올라 수급이 안정적이고, 오늘 6% 이상 오른 것은 글로벌 반도체 업황 개선 기대가 반영된 결과입니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 반도체는 사이클이 있다던데 지금 사도 되나요?</div><div class="qa-a">A. 반도체는 맞습니다, 경기 사이클을 많이 타는 업종입니다. 다만 지금은 AI와 전기차라는 새로운 수요가 구조적으로 늘어나고 있어, 과거처럼 급등락보다는 중장기 성장 흐름이 강한 국면입니다. 단기 조정은 있을 수 있지만, 몇 년 단위로 보면 수요 기반이 탄탄한 시기로 평가됩니다.</div></div><div class="qa-block"><div class="qa-q">Q. MLCC가 뭔가요? 반도체랑 다른 건가요?</div><div class="qa-a">A. MLCC는 전자기기에서 전기를 안정적으로 흐르게 해주는 콘덴서라는 부품입니다. 반도체는 아니지만, 반도체와 함께 스마트폰·전기차·서버에 필수로 들어갑니다. 전기차 한 대에 수천 개씩 들어가서, 전기차가 늘어날수록 MLCC 수요도 함께 급증하는 구조입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 중국 전기차 업체들 실적이 안 좋다는 뉴스도 있던데요?</div><div class="qa-a">A. 일부 중국 전기차 업체들이 가격 경쟁으로 수익성이 나빠진 건 사실입니다. 하지만 판매 대수 자체는 여전히 크게 늘고 있고, 테슬라·BYD 같은 주요 업체들은 오히려 점유율을 확대하고 있습니다. 부품 업체 입장에서는 누가 차를 팔든 부품 수요는 늘어나기 때문에, 완성차 업체 수익성과는 별개로 수혜를 볼 수 있습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 글로벌 경기 둔화로 전기차 판매 증가세가 예상보다 둔화되거나, 중국 정부의 보조금 축소·미국 IRA 정책 변경 등으로 전기차 수요가 꺾이면 전장 부품 업체 실적 기대가 후퇴할 수 있습니다. 또한 반도체 업황이 재고 조정 국면에 진입하면 MLCC 등 연관 부품 수요도 동반 위축될 가능성이 있으며, 환율 급변동(원화 강세)은 수출 중심 부품업체 수익성에 부담 요인입니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="AI 국내주식 전략">[N150] AI국내주식전략</span><span class="fund-chip" title="국내주식 대표형">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="성장섹터 배분">[N1G0] 성장섹터배분</span><span class="fund-chip" title="글로벌AI테크">[N390] ETF글로벌AI테크</span><span class="fund-chip" title="글로벌신성장">[N4D0] 글로벌신성장액티브</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">여름 성수기 항공 수요 폭발과 전장·AI 반도체 수요 확대로 테마주 강세 — 항공주 +14%, MLCC·전장반도체 +6% 급등</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 6월 16일 미국 5월 소매판매 발표(한국 시각 저녁)와 한국은행 금융통화위원회 의사록 공개 — 글로벌 소비 트렌드 및 국내 금리 경로 단서 확인</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 2차전지·배터리 소재 테마 — 전기차 판매 증가와 함께 배터리 공급망 전반이 동반 수혜를 받고 있으며, 양극재·분리막 업체들의 가동률 상승과 중국 발주 증가 소식이 주가 모멘텀을 만들고 있습니다</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>항공/저가 항공사(LCC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+14.18%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>2</td><td>낙태/피임</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:43px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.26%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>3</td><td>탈모 치료</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:31px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.50%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>4</td><td>자동차 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:30px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.23%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>5</td><td>조선</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:30px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.14%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>6</td><td>뉴로모픽 반도체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:28px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.63%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>7</td><td>MLCC(적층세라믹콘덴서)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:26px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.38%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>8</td><td>스마트카(SMART CAR)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:23px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.64%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>9</td><td>피팅(관이음쇠)/밸브</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:23px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.44%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>10</td><td>전선</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:22px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.40%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>11</td><td>유심(USIM)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.85%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>12</td><td>조선기자재</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:19px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.67%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>13</td><td>2차전지(생산)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:19px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.65%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>14</td><td>타이어</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:19px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.62%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>15</td><td>희귀금속(희토류 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.45%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>16</td><td>2026 상반기 신규상장</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.45%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>17</td><td>전력설비</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.39%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>18</td><td>LNG(액화천연가스)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.39%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>19</td><td>종합상사</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.35%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>20</td><td>전력저장장치(ESS)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:18px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.31%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-06-15 18:52 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
