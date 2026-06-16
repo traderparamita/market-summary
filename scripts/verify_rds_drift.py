@@ -1,6 +1,6 @@
 """CSV ↔ RDS drift 검증.
 
-매일 /market-full 직후 실행해 CSV 와 market_daily/macro_daily 의 행수·코드집합·CLOSE 값이
+매일 /market-full 직후 실행해 CSV 와 mkt100_market_daily/mkt200_macro_daily 의 행수·코드집합·CLOSE 값이
 일치하는지 확인. 불일치 시 Telegram 알림 발송.
 
 Usage:
@@ -9,9 +9,9 @@ Usage:
     # --days N: target_date 를 끝점으로 한 N영업일 윈도우(달력일+2)까지 CLOSE 값 비교 (기본 7)
 
 검증 항목:
-    1. (단일일) market_daily 행수·indicator_code 집합 일치
-    2. (윈도우) market_daily (date × indicator_code × close) 일치
-    3. macro_daily 전체 행수 (±100 허용)
+    1. (단일일) mkt100_market_daily 행수·indicator_code 집합 일치
+    2. (윈도우) mkt100_market_daily (date × indicator_code × close) 일치
+    3. mkt200_macro_daily 전체 행수 (±100 허용)
 
 Exit code:
     0 — 일치
@@ -49,12 +49,12 @@ def _verify_market_single(target_date: str) -> tuple[bool, str]:
         cur = conn.cursor()
         cur.execute(
             "SELECT COUNT(*), COUNT(DISTINCT indicator_code) "
-            "FROM market_daily WHERE date = %s",
+            "FROM mkt100_market_daily WHERE date = %s",
             (target_date,),
         )
         rds_count, _ = cur.fetchone()
         cur.execute(
-            "SELECT DISTINCT indicator_code FROM market_daily WHERE date = %s",
+            "SELECT DISTINCT indicator_code FROM mkt100_market_daily WHERE date = %s",
             (target_date,),
         )
         rds_codes = {r[0] for r in cur.fetchall()}
@@ -65,7 +65,7 @@ def _verify_market_single(target_date: str) -> tuple[bool, str]:
     only_csv = sorted(csv_codes - rds_codes)
     only_rds = sorted(rds_codes - csv_codes)
 
-    msg = [f"market_daily {target_date} (단일일): CSV={csv_count} RDS={rds_count}"]
+    msg = [f"mkt100_market_daily {target_date} (단일일): CSV={csv_count} RDS={rds_count}"]
     if csv_count != rds_count:
         msg.append(f"  ❌ 행수 차이: {csv_count - rds_count:+d}")
     if only_csv:
@@ -89,7 +89,7 @@ def _verify_market_window(target_date: str, days: int) -> tuple[bool, str]:
 
     df_rds = load_long(start=window_start, end=target_date)
     if df_rds.empty:
-        return False, f"market_daily 윈도우 {window_start}~{target_date}: RDS 응답 비어있음"
+        return False, f"mkt100_market_daily 윈도우 {window_start}~{target_date}: RDS 응답 비어있음"
     df_rds = df_rds.copy()
     df_rds["DATE"] = df_rds["DATE"].dt.strftime("%Y-%m-%d")
     df_rds["CLOSE"] = pd.to_numeric(df_rds["CLOSE"], errors="coerce")
@@ -112,7 +112,7 @@ def _verify_market_window(target_date: str, days: int) -> tuple[bool, str]:
 
     ok = not (missing_in_rds or extra_in_rds or len(close_diff))
     msg = [
-        f"market_daily 윈도우 {window_start}~{target_date} ({days}일): "
+        f"mkt100_market_daily 윈도우 {window_start}~{target_date} ({days}일): "
         f"CSV={len(csv_keys)} RDS={len(rds_keys)} 교집합={len(merged)}"
     ]
     if missing_in_rds:
@@ -135,7 +135,7 @@ def _verify_macro() -> tuple[bool, str]:
     from rds_loader import get_connection
 
     if not CSV_MACRO.exists():
-        return True, "macro_daily: macro CSV 없음 — skip"
+        return True, "mkt200_macro_daily: macro CSV 없음 — skip"
 
     df = pd.read_csv(CSV_MACRO)
     csv_count = len(df)
@@ -144,7 +144,7 @@ def _verify_macro() -> tuple[bool, str]:
     conn = get_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*), MAX(date)::text FROM macro_daily")
+        cur.execute("SELECT COUNT(*), MAX(date)::text FROM mkt200_macro_daily")
         rds_count, rds_max = cur.fetchone()
     finally:
         conn.close()
@@ -152,7 +152,7 @@ def _verify_macro() -> tuple[bool, str]:
     drift = abs(csv_count - rds_count)
     # 이관 시 Snowflake 중복 196건 제거됐으므로 250까지 허용
     ok = drift <= 250
-    msg = [f"macro_daily: CSV={csv_count:,} RDS={rds_count:,} (최신 CSV={csv_max_date} RDS={rds_max})"]
+    msg = [f"mkt200_macro_daily: CSV={csv_count:,} RDS={rds_count:,} (최신 CSV={csv_max_date} RDS={rds_max})"]
     if not ok:
         msg.append(f"  ❌ 행수 차이 {drift:,} (허용 100 초과)")
     return ok, "\n".join(msg)
@@ -183,9 +183,9 @@ def main() -> int:
     all_ok = True
 
     for label, fn in [
-        ("market_daily 단일일", lambda: _verify_market_single(target)),
-        (f"market_daily 윈도우({args.days}일)", lambda: _verify_market_window(target, args.days)),
-        ("macro_daily", _verify_macro),
+        ("mkt100_market_daily 단일일", lambda: _verify_market_single(target)),
+        (f"mkt100_market_daily 윈도우({args.days}일)", lambda: _verify_market_window(target, args.days)),
+        ("mkt200_macro_daily", _verify_macro),
     ]:
         try:
             ok, msg = fn()

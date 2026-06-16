@@ -1,6 +1,6 @@
 """RDS PostgreSQL 기반 시장 데이터 소스.
 
-market_daily / macro_daily (RDS PostgreSQL) 를 단일 소스로 하는 reader 유틸.
+mkt100_market_daily / mkt200_macro_daily (RDS PostgreSQL) 를 단일 소스로 하는 reader 유틸.
 기존 `pd.read_csv('history/market_data.csv')` 및 Snowflake reader를 대체한다.
 
 기본 사용법:
@@ -58,7 +58,7 @@ def _load_from_rds(
     sql = f"""
         SELECT date, indicator_code, category, ticker,
                close, open, high, low, volume, source
-        FROM market_daily
+        FROM mkt100_market_daily
         {where_sql}
         ORDER BY date, indicator_code
     """
@@ -99,7 +99,7 @@ def _load_macro_from_rds(
     where_sql = f"WHERE {' AND '.join(where)}" if where else ""
     sql = f"""
         SELECT date, indicator_code, category, region, value, unit, source
-        FROM macro_daily
+        FROM mkt200_macro_daily
         {where_sql}
         ORDER BY date, indicator_code
     """
@@ -192,7 +192,7 @@ def load_macro_long(
     *,
     prefer: str = "rds",
 ) -> pd.DataFrame:
-    """macro_daily 읽기. macro_indicators.csv 대체."""
+    """mkt200_macro_daily 읽기. macro_indicators.csv 대체."""
     csv_path = ROOT / "history" / "macro_indicators.csv"
 
     def _from_csv() -> pd.DataFrame:
@@ -212,11 +212,11 @@ def load_macro_long(
     try:
         df = _load_macro_from_rds(start, end, codes)
         if df.empty:
-            print("[market_source] macro_daily empty → CSV fallback")
+            print("[market_source] mkt200_macro_daily empty → CSV fallback")
             return _from_csv()
         return df
     except Exception as e:
-        print(f"[market_source] macro_daily RDS 실패 → CSV fallback: {str(e)[:200]}")
+        print(f"[market_source] mkt200_macro_daily RDS 실패 → CSV fallback: {str(e)[:200]}")
         return _from_csv()
 
 

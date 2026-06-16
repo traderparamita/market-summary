@@ -1,6 +1,6 @@
 """RDS PostgreSQL 적재 유틸리티.
 
-history/market_data.csv → market_daily (RDS PostgreSQL)
+history/market_data.csv → mkt100_market_daily (RDS PostgreSQL)
 
 snowflake_loader.py 와 동일한 public API를 제공한다:
     bulk_load_csv(csv_path, truncate=True)
@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-TABLE = "market_daily"
+TABLE = "mkt100_market_daily"
 NULL = r"\N"
 
 _CSV_COLUMNS = ["DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
@@ -71,7 +71,7 @@ def _alert_failure(*, source: str, reason: str, table: str = "") -> None:
 
 
 def bulk_load_csv(csv_path: str, *, truncate: bool = False) -> int:
-    """CSV 전체를 market_daily에 적재.
+    """CSV 전체를 mkt100_market_daily에 적재.
 
     Args:
         csv_path: market_data.csv 경로
@@ -119,7 +119,7 @@ def bulk_load_csv(csv_path: str, *, truncate: bool = False) -> int:
 
 
 def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
-    """collectors 공용 헬퍼 — market_daily upsert.
+    """collectors 공용 헬퍼 — mkt100_market_daily upsert.
 
     snowflake_loader.sync_new_rows 와 동일한 시그니처.
     """
@@ -139,7 +139,7 @@ def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
 
 
 def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
-    """collectors 공용 헬퍼 — macro_daily upsert.
+    """collectors 공용 헬퍼 — mkt200_macro_daily upsert.
 
     snowflake_loader.sync_macro_rows 와 동일한 시그니처.
     """
@@ -179,10 +179,10 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
         try:
             cur = conn.cursor()
             # temp table → INSERT ON CONFLICT (atomic upsert, race-condition-free)
-            cur.execute("CREATE TEMP TABLE _tmp_macro (LIKE macro_daily) ON COMMIT DROP")
+            cur.execute("CREATE TEMP TABLE _tmp_macro (LIKE mkt200_macro_daily) ON COMMIT DROP")
             cur.copy_from(buf, "_tmp_macro", columns=macro_cols, null=NULL)
             cur.execute(f"""
-                INSERT INTO macro_daily ({', '.join(macro_cols)})
+                INSERT INTO mkt200_macro_daily ({', '.join(macro_cols)})
                 SELECT {', '.join(macro_cols)} FROM _tmp_macro
                 ON CONFLICT (date, indicator_code) DO UPDATE SET
                     category       = EXCLUDED.category,
@@ -199,7 +199,7 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
             conn.close()
     except Exception as e:
         reason = str(e).replace("\n", " ")[:300]
-        _alert_failure(source=source, reason=reason, table="macro_daily")
+        _alert_failure(source=source, reason=reason, table="mkt200_macro_daily")
         return 0
 
 
