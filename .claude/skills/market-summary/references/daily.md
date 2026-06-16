@@ -389,6 +389,12 @@ Story HTML 주입 직후, **같은 Edit 세션 안에서** `tab-sources` 탭을 
 
 `.venv/bin/python generate.py {date}` 실행 시 내부적으로 `_inject_existing_story()`가 호출되어 Story 탭 placeholder 처리와 `_story.html` 저장까지 모두 자동이다. **외부에서 이 함수를 직접 호출할 필요 없다.**
 
+> ⚠️ **generate.py는 CS/PM/Stocks 사이드카 파일이 아직 없는 시점에 실행되므로**, 해당 탭의 placeholder가 그대로 남는다. Story·CS·PM·Stocks·Sources 탭을 모두 작성한 뒤 아래 명령으로 사이드카 파일 전체를 메인 HTML에 재주입해야 한다:
+> ```bash
+> .venv/bin/python generate.py --reinject {date}
+> ```
+> 이 명령은 데이터 재수집 없이 사이드카(`_cs/_pm/_stocks/_story/_macro/_sources.html`)를 읽어 메인 HTML의 각 탭 placeholder를 교체한다.
+
 ### (B) 이미 존재하는 Story를 수정할 때
 
 **방법 1 (권장) — `tab-story` 블록 직접 Edit**:

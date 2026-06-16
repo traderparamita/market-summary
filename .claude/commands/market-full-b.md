@@ -81,9 +81,24 @@ CS·PM·Stocks Story → 주간/월간 Story(해당일 기준) → 수치 검증
 3. 각 단락에 인과 채널 1개 명시 (실적·정책·매크로·테마·이벤트)
 4. `YYYY-MM-DD.html` 의 `<div id="tab-stocks">` 블록 Edit + `YYYY-MM-DD_stocks.html` 동기화
 
-실패 시 경고 후 Step 5 로 계속 진행 (트랙 독립).
+실패 시 경고 후 Step 3-R 로 계속 진행 (트랙 독립).
 
 **완료 보고**: `✅ [Step 3-D] 일간 Stocks Story 작성 완료`
+
+---
+
+## Step 3-R: 사이드카 → 메인 HTML 재주입 (필수 안전장치)
+
+Step 3-B/3-C/3-D 완료 직후, **반드시** 아래 명령을 실행한다.  
+`generate.py`가 Step 1~2 실행 시점에 사이드카 파일이 없어 placeholder를 남기는 경우가 있으므로, 이 단계에서 전체 탭을 재주입해 placeholder를 확실히 제거한다.
+
+```bash
+.venv/bin/python generate.py --reinject $ARGUMENTS
+```
+
+출력에서 `[reinject] 완료:` 확인. 실패 시 경고 후 계속.
+
+**완료 보고**: `✅ [Step 3-R] 재주입 완료` / `⚠ 실패(계속)`
 
 ---
 
@@ -244,6 +259,7 @@ Step 8 성공 후 즉시 전송. 실패해도 계속.
 Step 3-B:  일간 CS Story     — ✅ 성공 / ⚠ 실패(계속)
 Step 3-C:  일간 PM Story     — ✅ 성공 / ⚠ 실패(계속)
 Step 3-D:  일간 Stocks Story — ✅ 성공 / ⚠ 실패(계속)
+Step 3-R:  사이드카 재주입   — ✅ 완료 / ⚠ 실패(계속)
 Step 5:    주간 Story        — ✅ 성공 (Sources: N건) / ⏭ 스킵
 Step 5-B:  주간 CS Story     — ✅ 성공 / ⏭ 스킵 / ⚠ 실패(계속)
 Step 5-C:  주간 PM Story     — ✅ 성공 / ⏭ 스킵 / ⚠ 실패(계속)
