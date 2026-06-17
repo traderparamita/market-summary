@@ -805,7 +805,7 @@ def generate_index():
         # HTML에서 날짜 범위 추출
         date_range = ""
         try:
-            with open(path) as _f:
+            with open(path, encoding="utf-8") as _f:
                 head = _f.read(25000)
             m = _re.search(r'class="date">\s*([\d-]+)\s*~\s*([\d-]+)', head)
             if m:
@@ -979,7 +979,7 @@ def generate_index():
 </html>"""
 
     idx_path = os.path.join(OUTPUT_DIR, "index.html")
-    with open(idx_path, "w") as f:
+    with open(idx_path, "w", encoding="utf-8") as f:
         f.write(index_html)
     print(f"Index saved: {idx_path}")
 
@@ -1214,7 +1214,7 @@ def _find_prev_weekly_macro(daily_html_path):
                 f"{candidate[0]}-W{candidate[1]:02d}_macro.html"
             )
             if os.path.exists(macro_path):
-                with open(macro_path) as f:
+                with open(macro_path, encoding="utf-8") as f:
                     content = f.read().strip()
                 if content and "MACRO_EVENTS_PLACEHOLDER" not in content:
                     _log(f"  Macro injected from: {os.path.basename(macro_path)}")

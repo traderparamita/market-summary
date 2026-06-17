@@ -47,10 +47,23 @@ def _df_to_tsv(df: pd.DataFrame) -> StringIO:
             return NULL
         return str(val)
 
+    def safe_int(val):
+        """volume bigint: float '12387424.0' → '12387424'"""
+        if pd.isna(val):
+            return NULL
+        try:
+            return str(int(float(val)))
+        except (ValueError, OverflowError):
+            return NULL
+
     buf = StringIO()
     for _, row in df.iterrows():
         vals = [str(row["DATE"].date()) if pd.notna(row["DATE"]) else NULL]
-        vals += [safe(row.get(c)) for c in _CSV_COLUMNS[1:]]
+        for c in _CSV_COLUMNS[1:]:
+            if c == "VOLUME":
+                vals.append(safe_int(row.get(c)))
+            else:
+                vals.append(safe(row.get(c)))
         buf.write("\t".join(vals) + "\n")
     buf.seek(0)
     return buf
@@ -122,6 +135,7 @@ def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
     """collectors 공용 헬퍼 — mkt100_market_daily upsert.
 
     snowflake_loader.sync_new_rows 와 동일한 시그니처.
+    ON CONFLICT 방식으로 기존 행을 보존하면서 merge — DELETE+INSERT 금지.
     """
     if not new_rows:
         print(f"[RDS] SKIP source={source} reason=no-new-rows")
@@ -129,7 +143,33 @@ def sync_new_rows(new_rows: list[dict], *, source: str) -> int:
     try:
         cols = _CSV_COLUMNS
         df = pd.DataFrame(new_rows, columns=cols)
-        n = upsert_rows(df)
+        df["DATE"] = pd.to_datetime(df["DATE"])
+        df = df.drop_duplicates(subset=["DATE", "INDICATOR_CODE"], keep="last")
+
+        buf = _df_to_tsv(df)
+        conn = get_connection()
+        try:
+            cur = conn.cursor()
+            cur.execute(f"CREATE TEMP TABLE _tmp (LIKE {TABLE}) ON COMMIT DROP")
+            cur.copy_from(buf, "_tmp", columns=_DB_COLUMNS, null=NULL)
+            cur.execute(f"""
+                INSERT INTO {TABLE} ({', '.join(_DB_COLUMNS)})
+                SELECT {', '.join(_DB_COLUMNS)} FROM _tmp
+                ON CONFLICT (date, indicator_code) DO UPDATE SET
+                    category = EXCLUDED.category,
+                    ticker   = EXCLUDED.ticker,
+                    close    = EXCLUDED.close,
+                    open     = EXCLUDED.open,
+                    high     = EXCLUDED.high,
+                    low      = EXCLUDED.low,
+                    volume   = EXCLUDED.volume,
+                    source   = EXCLUDED.source
+            """)
+            conn.commit()
+            n = len(df)
+        finally:
+            conn.close()
+
         print(f"[RDS] OK source={source} rows={n}")
         return n
     except Exception as e:
@@ -204,14 +244,14 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
 
 
 def upsert_rows(df: pd.DataFrame, target_date: Optional[str] = None) -> int:
-    """특정 날짜 행을 DELETE 후 INSERT (당일 갱신용).
+    """ON CONFLICT upsert — 다른 collector가 쓴 행을 보존한다.
 
     Args:
         df: CSV 스키마(DATE/INDICATOR_CODE/...) DataFrame
-        target_date: 'YYYY-MM-DD'. None이면 df의 모든 날짜 처리
+        target_date: 사용하지 않음 (하위호환 유지용)
 
     Returns:
-        INSERT된 행 수
+        upsert된 행 수
     """
     if df.empty:
         return 0
@@ -223,17 +263,25 @@ def upsert_rows(df: pd.DataFrame, target_date: Optional[str] = None) -> int:
     # (DATE, INDICATOR_CODE) 중복 제거 — COPY 중 PK 위반 방지
     df = df.drop_duplicates(subset=["DATE", "INDICATOR_CODE"], keep="last")
 
+    buf = _df_to_tsv(df)
     conn = get_connection()
     try:
         cur = conn.cursor()
-        if target_date:
-            cur.execute(f"DELETE FROM {TABLE} WHERE date = %s", (target_date,))
-        else:
-            dates = df["DATE"].dt.date.unique().tolist()
-            cur.execute(f"DELETE FROM {TABLE} WHERE date = ANY(%s)", (dates,))
-
-        buf = _df_to_tsv(df)
-        cur.copy_from(buf, TABLE, columns=_DB_COLUMNS, null=NULL)
+        cur.execute(f"CREATE TEMP TABLE _tmp (LIKE {TABLE}) ON COMMIT DROP")
+        cur.copy_from(buf, "_tmp", columns=_DB_COLUMNS, null=NULL)
+        cur.execute(f"""
+            INSERT INTO {TABLE} ({', '.join(_DB_COLUMNS)})
+            SELECT {', '.join(_DB_COLUMNS)} FROM _tmp
+            ON CONFLICT (date, indicator_code) DO UPDATE SET
+                category = EXCLUDED.category,
+                ticker   = EXCLUDED.ticker,
+                close    = EXCLUDED.close,
+                open     = EXCLUDED.open,
+                high     = EXCLUDED.high,
+                low      = EXCLUDED.low,
+                volume   = EXCLUDED.volume,
+                source   = EXCLUDED.source
+        """)
         conn.commit()
         return len(df)
     except Exception as e:

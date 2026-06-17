@@ -162,10 +162,17 @@ def load_long(
     if prefer == "csv" or _rds_disabled():
         return _load_from_csv(start, end, codes)
     try:
-        return _load_from_rds(start, end, codes)
+        df = _load_from_rds(start, end, codes)
     except Exception as e:
         print(f"[market_source] RDS 실패 → CSV fallback: {str(e)[:200]}")
         return _load_from_csv(start, end, codes)
+    if df.empty:
+        # RDS 쓰기 실패(e.g. bigint 타입 오류)로 해당 날짜 데이터가 미적재됐을 수 있으므로 CSV 확인
+        csv_df = _load_from_csv(start, end, codes)
+        if not csv_df.empty:
+            print("[market_source] RDS empty → CSV fallback")
+            return csv_df
+    return df
 
 
 def load_wide_close(
