@@ -145,6 +145,15 @@ def collect_krx_sectors(
 
         print(f"{added}행 추가")
 
+    # KRX 직접 수집 실패 시 RDS fallback (로컬에서 KRX 접속 차단된 경우)
+    if not new_rows and targets is not None and len(targets) > 0:
+        new_rows = _pull_from_rds(
+            codes=[t[0] for t in targets],
+            start=start,
+            end=end,
+            existing_set=existing_set,
+        )
+
     n = append_save_csv(
         MARKET_CSV, existing, new_rows,
         sort_cols=("INDICATOR_CODE", "DATE"),
@@ -154,18 +163,76 @@ def collect_krx_sectors(
     else:
         print("\n  → 신규 데이터 없음")
 
-    # Snowflake dual-write (best-effort)
-    try:
-        from rds_loader import sync_new_rows
-        sync_new_rows(new_rows, source="collect_krx_sectors")
-    except Exception as e:
+    # Snowflake dual-write (best-effort) — RDS fallback 경유 행은 제외
+    rds_rows = [r for r in new_rows if r.get("SOURCE") != "rds_pull"]
+    if rds_rows:
         try:
-            from rds_loader import _alert_failure
-            _alert_failure(source="collect_krx_sectors", reason=str(e)[:200])
-        except Exception:
-            print(f"[SNOWFLAKE] FAILED source=collect_krx_sectors reason={str(e)[:200]}")
+            from rds_loader import sync_new_rows
+            sync_new_rows(rds_rows, source="collect_krx_sectors")
+        except Exception as e:
+            try:
+                from rds_loader import _alert_failure
+                _alert_failure(source="collect_krx_sectors", reason=str(e)[:200])
+            except Exception:
+                print(f"[SNOWFLAKE] FAILED source=collect_krx_sectors reason={str(e)[:200]}")
 
     return len(new_rows)
+
+
+def _pull_from_rds(
+    codes: list[str],
+    start: str,
+    end: str,
+    existing_set: set,
+) -> list[dict]:
+    """KRX 직접 수집 실패 시 RDS에서 IX_KR_* 행을 pull해 CSV dedup 후 반환."""
+    try:
+        from rds_loader import get_connection
+        conn = get_connection()
+        placeholders = ", ".join(["%s"] * len(codes))
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"""
+                    SELECT date, indicator_code, category, ticker,
+                           close, open, high, low, volume
+                    FROM mkt100_market_daily
+                    WHERE indicator_code IN ({placeholders})
+                      AND date BETWEEN %s AND %s
+                    ORDER BY indicator_code, date
+                    """,
+                    codes + [start, end],
+                )
+                rows = cur.fetchall()
+        conn.close()
+    except Exception as e:
+        print(f"  [RDS fallback] FAILED: {e}")
+        return []
+
+    result = []
+    for r in rows:
+        key = (str(r[0]), r[1])
+        if key in existing_set:
+            continue
+        result.append({
+            "DATE":           r[0],
+            "INDICATOR_CODE": r[1],
+            "CATEGORY":       r[2],
+            "TICKER":         r[3],
+            "CLOSE":          r[4],
+            "OPEN":           r[5],
+            "HIGH":           r[6],
+            "LOW":            r[7],
+            "VOLUME":         r[8],
+            "SOURCE":         "rds_pull",
+        })
+        existing_set.add(key)
+
+    if result:
+        print(f"  [RDS fallback] {len(result)}행 pull 완료")
+    else:
+        print("  [RDS fallback] 신규 데이터 없음")
+    return result
 
 
 def main():
