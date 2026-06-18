@@ -1,14 +1,16 @@
-"""미래에셋증권 상세분석 보고서를 S3에 주간 수집.
+"""미래에셋증권 상세분석 보고서를 S3에 일간 수집.
 
-매주 일요일 실행 — 직전 영업주(월~금)의 보고서 PDF를 스크래핑하여 S3 업로드.
+매 영업일 auto_market.py 에서 호출 — 전 영업일(기본) 또는 지정 날짜의 보고서 PDF를
+스크래핑하여 S3 업로드.
 
 Source: https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1521
-Target: s3://<BUCKET>/anthillia/miraeasset-securities/YYYY-MM/<filename>.pdf
+Target: s3://<BUCKET>/miraeasset-securities/YYYY-MM/<filename>.pdf
 
 Usage:
-    .venv/bin/python scripts/collect_securities_reports.py            # 직전 주
-    .venv/bin/python scripts/collect_securities_reports.py --week-of 2026-04-21  # 특정 주
-    .venv/bin/python scripts/collect_securities_reports.py --dry-run  # 실제 업로드 없이 테스트
+    .venv/bin/python scripts/collect_securities_reports.py                          # 전 영업일
+    .venv/bin/python scripts/collect_securities_reports.py --date 2026-06-18        # 특정 날짜
+    .venv/bin/python scripts/collect_securities_reports.py --week-of 2026-04-21     # 특정 주(재수집용)
+    .venv/bin/python scripts/collect_securities_reports.py --dry-run                # 업로드 없이 테스트
 """
 from __future__ import annotations
 
@@ -51,10 +53,17 @@ DOWNLOAD_RE = re.compile(r"downConfirm\('([^']+)'\s*,\s*'(\d+)'")
 VIEW_RE = re.compile(r"view\('(\d+)'")
 
 
+def get_prev_business_day() -> datetime:
+    """전 영업일 (한국 공휴일 반영)."""
+    from _utils import prev_business_day
+    from datetime import date as _date
+    d = prev_business_day(_date.today())
+    return datetime(d.year, d.month, d.day)
+
+
 def get_week_range(ref_date: datetime | None = None) -> tuple[datetime, datetime]:
-    """직전 영업주의 월~금 날짜 범위."""
+    """직전 영업주의 월~금 날짜 범위 (재수집용)."""
     today = ref_date or datetime.now()
-    # 일요일(6) 실행 기준 → 직전 금요일 = today - 2
     days_since_friday = (today.weekday() - 4) % 7 or 7
     friday = today - timedelta(days=days_since_friday)
     monday = friday - timedelta(days=4)
@@ -204,8 +213,12 @@ def send_telegram(message: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="미래에셋증권 보고서 S3 수집")
     parser.add_argument(
+        "--date",
+        help="수집 대상 날짜 (YYYY-MM-DD). 생략 시 전 영업일.",
+    )
+    parser.add_argument(
         "--week-of",
-        help="수집 대상 주의 월요일 날짜 (YYYY-MM-DD). 생략 시 직전 주.",
+        help="수집 대상 주의 월요일 날짜 (YYYY-MM-DD). 주간 재수집용.",
     )
     parser.add_argument(
         "--dry-run", action="store_true",
@@ -217,11 +230,16 @@ def main() -> None:
         ref_monday = datetime.strptime(args.week_of, "%Y-%m-%d")
         start = ref_monday
         end = ref_monday + timedelta(days=4)
+    elif args.date:
+        start = end = datetime.strptime(args.date, "%Y-%m-%d")
     else:
-        start, end = get_week_range()
+        start = end = get_prev_business_day()
 
     print(f"=== 미래에셋증권 상세분석 보고서 수집 ===")
-    print(f"기간: {start.strftime('%Y-%m-%d')} ~ {end.strftime('%Y-%m-%d')}")
+    if start == end:
+        print(f"날짜: {start.strftime('%Y-%m-%d')}")
+    else:
+        print(f"기간: {start.strftime('%Y-%m-%d')} ~ {end.strftime('%Y-%m-%d')}")
     print(f"S3:   s3://{S3_BUCKET}/{S3_PREFIX}/")
     print()
 
@@ -301,10 +319,13 @@ def main() -> None:
         except Exception as e:
             print(f"  WARN: 인덱스 재생성 실패: {e}")
 
-        week_label = f"{start.strftime('%m/%d')}~{end.strftime('%m/%d')}"
+        if start == end:
+            date_label = start.strftime('%Y-%m-%d')
+        else:
+            date_label = f"{start.strftime('%m/%d')}~{end.strftime('%m/%d')}"
         msg = (
             f"<b>미래에셋증권 보고서 수집 완료</b>\n"
-            f"기간: {week_label}\n"
+            f"날짜: {date_label}\n"
             f"업로드: {uploaded}건 / 스킵: {skipped}건 / 실패: {failed}건\n"
             f"S3: {S3_PREFIX}/{start.strftime('%Y-%m')}/"
         )

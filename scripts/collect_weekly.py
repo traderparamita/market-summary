@@ -1,14 +1,14 @@
 """주간 보고서 수집 러너 — 매주 일요일 19:30 KST 실행.
 
-1. 미래에셋증권 상세분석 보고서 (collect_securities_reports.py)
-2. MVP PRISM 보고서 (collect_prism_reports.py)
-3. 주간 리서치 다이제스트 (generate_securities_digest.py)
-4. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
-5. Fund Index 재생성 (generate_fund_index.py) — pre-signed URL 7일 갱신
-6. Research Index 갱신 (generate_research_index.py) — 일간 테마 카드 목록 재생성
-7. Git push — 갱신된 파일 자동 배포
+1. MVP PRISM 보고서 (collect_prism_reports.py)
+2. 주간 리서치 다이제스트 (generate_securities_digest.py)
+3. Securities Index 재생성 (generate_securities_index.py) — pre-signed URL 7일 갱신
+4. Fund Index 재생성 (generate_fund_index.py) — pre-signed URL 7일 갱신
+5. Research Index 갱신 (generate_research_index.py) — 일간 테마 카드 목록 재생성
+6. Git push — 갱신된 파일 자동 배포
 
-주의: 테마 리서치(generate_research.py)는 일간으로 전환되어 auto_market.py에서 실행.
+주의: 미래에셋증권 상세분석(collect_securities_reports.py)은 일간으로 전환되어 auto_market.py에서 실행.
+      테마 리서치(generate_research.py)는 일간으로 전환되어 auto_market.py에서 실행.
 """
 from __future__ import annotations
 
@@ -30,7 +30,6 @@ PYTHON = sys.executable
 KST = ZoneInfo("Asia/Seoul")
 
 COLLECTORS = [
-    ("미래에셋증권 상세분석", "collect_securities_reports.py"),
     ("MVP PRISM", "collect_prism_reports.py"),
     ("주간 리서치 다이제스트", "generate_securities_digest.py"),
     ("Securities Index 재생성", "generate_securities_index.py"),
