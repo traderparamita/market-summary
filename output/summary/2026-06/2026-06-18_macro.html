@@ -1,0 +1,265 @@
+<style>
+  .macro-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+  .macro-kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .macro-kpi-card .kpi-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-bottom:4px}
+  .macro-kpi-card .kpi-value{font-size:16px;font-weight:700;color:#1a1d2e}
+  .macro-kpi-card .kpi-change{font-size:11px;margin-top:3px}
+  .macro-kpi-card .kpi-change.up{color:#d92b2b}
+  .macro-kpi-card .kpi-change.dn{color:#1a5fb4}
+  .macro-section-title{font-size:14px;font-weight:700;color:#1a1d2e;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .event-timeline{list-style:none;padding:0;margin:0 0 20px}
+  .event-timeline li{position:relative;padding:10px 12px 10px 32px;border-left:2px solid var(--border);margin-left:8px;margin-bottom:4px;font-size:13px;color:#2d3148;line-height:1.65}
+  .event-timeline li::before{content:'';position:absolute;left:-5px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--border)}
+  .event-timeline li.shock::before{background:#c0392b}
+  .event-timeline li.positive::before{background:#1a7a3c}
+  .event-timeline li.neutral::before{background:#2851b4}
+  .event-timeline li .ev-date{font-size:11px;font-weight:700;color:var(--muted);margin-right:6px}
+  .event-timeline li .ev-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px;letter-spacing:.5px;vertical-align:middle}
+  .ev-tag.geo{background:#ffe8e8;color:#c0392b}
+  .ev-tag.macro{background:#e8f0ff;color:#2851b4}
+  .ev-tag.earn{background:#e8fff0;color:#1a7a3c}
+  .ev-tag.korea{background:#fff3e8;color:#d68910}
+  .calendar-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}
+  .calendar-table th{background:var(--card);border:1px solid var(--border);padding:8px 10px;text-align:left;font-weight:600;color:#2d3148}
+  .calendar-table td{border:1px solid var(--border);padding:8px 10px;color:#2d3148;vertical-align:top}
+  .calendar-table tr:nth-child(even) td{background:#f9f9fb}
+  .cal-imp-h{color:#c0392b;font-weight:700}
+  .cal-imp-m{color:#d68910;font-weight:600}
+  .cal-imp-l{color:var(--muted)}
+</style>
+
+<!-- KPI 카드 그리드 (W24 금요일 기준) -->
+<div class="macro-section-title">📊 W24 매크로 스냅샷 (2026-06-12 기준)</div>
+<div class="macro-kpi-grid">
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US Fed Rate</div>
+    <div class="kpi-value">3.63%</div>
+    <div class="kpi-change">동결 (5월 기준)</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US 10Y Yield</div>
+    <div class="kpi-value">4.487%</div>
+    <div class="kpi-change dn">WTD 약 -1bp</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US 2Y Yield</div>
+    <div class="kpi-value">3.618%</div>
+    <div class="kpi-change">WTD 거의 보합</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">10Y-2Y 스프레드</div>
+    <div class="kpi-value">+86.9bp</div>
+    <div class="kpi-change up">스팁 기조 유지</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">VIX</div>
+    <div class="kpi-value">17.68</div>
+    <div class="kpi-change up">WTD -17.81%</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US HY 스프레드</div>
+    <div class="kpi-value">2.78bp</div>
+    <div class="kpi-change">WTD 소폭 확대</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US IG 스프레드</div>
+    <div class="kpi-value">0.75bp</div>
+    <div class="kpi-change">WTD 보합</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">브레이크이븐 10Y</div>
+    <div class="kpi-value">2.31%</div>
+    <div class="kpi-change dn">WTD -4bp</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">실질금리 10Y</div>
+    <div class="kpi-value">2.16%</div>
+    <div class="kpi-change">높은 실질금리 유지</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">KR 기준금리</div>
+    <div class="kpi-value">2.5%</div>
+    <div class="kpi-change">동결</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">ECB 기준금리</div>
+    <div class="kpi-value">2.0%</div>
+    <div class="kpi-change">동결</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US 모기지 30Y</div>
+    <div class="kpi-value">6.52%</div>
+    <div class="kpi-change dn">소폭 하락</div>
+  </div>
+</div>
+
+<!-- 주요 월간 지표 -->
+<div class="macro-section-title">📈 최신 경제 지표</div>
+<div class="macro-kpi-grid">
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US CPI YoY (5월)</div>
+    <div class="kpi-value">4.27%</div>
+    <div class="kpi-change dn">예상 상회 — 핵심 이벤트</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US Core CPI (5월)</div>
+    <div class="kpi-value">2.96%</div>
+    <div class="kpi-change">서비스 인플레 완전 미완료</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US NFP MoM (5월)</div>
+    <div class="kpi-value">+172k</div>
+    <div class="kpi-change">예상 상회</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US 실업률 (5월)</div>
+    <div class="kpi-value">4.3%</div>
+    <div class="kpi-change">완전 고용 유지</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">US Core PCE (4월)</div>
+    <div class="kpi-value">3.29%</div>
+    <div class="kpi-change dn">연준 목표(2%) 대비 높음</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="kpi-label">KR CPI YoY (5월)</div>
+    <div class="kpi-value">3.14%</div>
+    <div class="kpi-change">한국 인플레 지속</div>
+  </div>
+</div>
+
+<!-- W24 이벤트 타임라인 -->
+<div class="macro-section-title">📅 W24 이벤트 타임라인</div>
+<ul class="event-timeline">
+  <li class="shock">
+    <span class="ev-date">6/7(토)</span>
+    <span class="ev-tag geo">지정학</span>
+    <strong>이란, 이스라엘 탄도미사일 공격 — 주말 지정학 쇼크 → 월요일 아시아 급락 발화</strong>
+  </li>
+  <li class="shock">
+    <span class="ev-date">6/8(월)</span>
+    <span class="ev-tag korea">한국</span>
+    <strong>코스피 -8.29%(7,484) — 아시아 최대 낙폭, 삼성전자 -10.18%, SK하이닉스 -7.68%</strong>
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/8(월)</span>
+    <span class="ev-tag earn">어닝</span>
+    Intel +11.19% — The Information "Google Intel TPU 300만 개 수주" 보도, 미국 반전
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/9(화)</span>
+    <span class="ev-tag geo">지정학</span>
+    이란-이스라엘 아침 일시 휴전 + NVIDIA CEO 젠슨 황 긍정 발언 + Micron +9.87%
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/9(화)</span>
+    <span class="ev-tag korea">한국</span>
+    <strong>코스피 +8.18%(8,097) — 역사적 대반등, 사이드카 2회 발동, 기관 2.91조 순매수</strong>
+  </li>
+  <li class="shock">
+    <span class="ev-date">6/9(화)</span>
+    <span class="ev-tag geo">지정학</span>
+    트럼프 이란 재공습 재개 가능 시사 + EU 애플 Siri 출시 차단 → 나스닥 -0.97%
+  </li>
+  <li class="shock">
+    <span class="ev-date">6/10(수)</span>
+    <span class="ev-tag macro">매크로</span>
+    <strong>5월 CPI 4.27%(YoY) — 예상 대폭 상회, 연준 인하 기대 소멸, 금 -4.45%</strong>
+  </li>
+  <li class="shock">
+    <span class="ev-date">6/10(수)</span>
+    <span class="ev-tag geo">지정학</span>
+    미국, 이란 재공습 단행 확인 → 코스피 서킷브레이커 발동, -4.52%(7,731), VIX 22.22
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/11(목)</span>
+    <span class="ev-tag korea">한국</span>
+    6월 1~10일 반도체 수출 YoY +300%이상 (전체 수출 +86%) — 코스닥 +4.76%
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/11(목)</span>
+    <span class="ev-tag earn">어닝</span>
+    <strong>Applied Materials Q3 가이던스 +9.8% 컨센서스 초과 → AMAT +11.19%, 글로벌 반도체 장비 랠리</strong>
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/11(목)</span>
+    <span class="ev-tag geo">지정학</span>
+    <strong>트럼프 이란 협상 합의 임박 시사 → WTI -5.91%, S&P500 +1.75%, 나스닥 +2.54%</strong>
+  </li>
+  <li class="positive">
+    <span class="ev-date">6/12(금)</span>
+    <span class="ev-tag geo">지정학</span>
+    이란 협상 낙관론 이틀째 → 코스피 +4.63%(8,124), 아시아 전역 동반 강세, VIX 17.68
+  </li>
+</ul>
+
+<!-- W25 다음 주 캘린더 -->
+<div class="macro-section-title">📆 W25 다음 주 주요 일정 (2026-06-15 ~ 06-19)</div>
+<table class="calendar-table">
+  <thead>
+    <tr>
+      <th style="width:80px;">날짜</th>
+      <th style="width:90px;">지역</th>
+      <th>이벤트</th>
+      <th style="width:60px;">중요도</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>6/16(월)</td>
+      <td>🇺🇸 미국</td>
+      <td>소매판매 (5월) — CPI 4.27% 이후 소비 지속 여부 확인</td>
+      <td class="cal-imp-h">★★★</td>
+    </tr>
+    <tr>
+      <td>6/17(화)</td>
+      <td>🇺🇸 미국</td>
+      <td>PPI (5월) — CPI 후속 생산자 물가, 서비스 인플레 확인</td>
+      <td class="cal-imp-h">★★★</td>
+    </tr>
+    <tr>
+      <td>6/17(화)</td>
+      <td>🌐 글로벌</td>
+      <td>이란-미국 협상 결과 공식 발표 여부 (시한 미정, 주중 예상)</td>
+      <td class="cal-imp-h">★★★</td>
+    </tr>
+    <tr>
+      <td>6/18(수)</td>
+      <td>🇺🇸 미국</td>
+      <td>주택착공(5월) · 건축허가 — 금리 6.52% 모기지 영향 확인</td>
+      <td class="cal-imp-m">★★</td>
+    </tr>
+    <tr>
+      <td>6/18(수)</td>
+      <td>🇺🇸 미국</td>
+      <td>Fed 발언 일정 — 6월 CPI 이후 경로 재시사 여부 주목</td>
+      <td class="cal-imp-h">★★★</td>
+    </tr>
+    <tr>
+      <td>6/19(목)</td>
+      <td>🇺🇸 미국</td>
+      <td>주간 실업수당 청구건수 — 고용 시장 건전성 지속 확인</td>
+      <td class="cal-imp-m">★★</td>
+    </tr>
+    <tr>
+      <td>6/19(목)</td>
+      <td>🇰🇷 한국</td>
+      <td>금통위 기준금리 결정 — 2.5% 동결 vs 25bp 인하 갈림길</td>
+      <td class="cal-imp-h">★★★</td>
+    </tr>
+    <tr>
+      <td>6/20(금)</td>
+      <td>🇺🇸 미국</td>
+      <td>미시간대 소비자신뢰지수 (6월 확정) — 인플레 기대 재확인</td>
+      <td class="cal-imp-m">★★</td>
+    </tr>
+    <tr>
+      <td>6/20(금)</td>
+      <td>🇯🇵 일본</td>
+      <td>BOJ 통화정책 결정회의 — 추가 금리 인상 여부</td>
+      <td class="cal-imp-h">★★★</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="font-size:12px;color:var(--muted);margin-top:8px;">★★★ = 시장 영향 대; ★★ = 중; ★ = 소 | 데이터 출처: FRED, ECOS, Bloomberg | 수집 2026-06-12</div>
