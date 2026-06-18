@@ -355,7 +355,7 @@ def main() -> None:
         return
 
     # ── S3 증분 업로드 ────────────────────────────────────────────────
-    print("\n[3/5] S3 업로드 (market-summary/summary/) ...")
+    print("\n[3/4] S3 업로드 (market-summary/summary/) ...")
     s3_ok = False
     s3_summary = ""
     try:
@@ -395,23 +395,9 @@ def main() -> None:
             parse_mode="HTML",
         )
 
-    # ── 미래에셋증권 보고서 일간 수집 ───────────────────────────────
-    print("\n[4/5] 미래에셋증권 보고서 수집 ...")
-    try:
-        sec_result = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "collect_securities_reports.py"),
-             "--date", date_str],
-            cwd=str(ROOT), capture_output=True, text=True, timeout=300,
-        )
-        print(sec_result.stdout[-2000:])
-        if sec_result.returncode != 0:
-            print(f"  [WARN] 증권 보고서 수집 실패 (exit {sec_result.returncode})")
-    except Exception as e:
-        print(f"  [WARN] 증권 보고서 수집 오류: {e}")
-
     # ── RDS drift 검증 (P0 운영 안정성 강화) ────────────────────────
     # CSV ↔ market_daily/macro_daily 일치 여부 자동 검증. 불일치 시 Telegram 알림.
-    print("\n[5/5] RDS drift 검증 ...")
+    print("\n[4/4] RDS drift 검증 ...")
     try:
         drift_result = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "verify_rds_drift.py"), date_str],
