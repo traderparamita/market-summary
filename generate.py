@@ -1094,7 +1094,7 @@ def main(target_date=None, start_date=None):
             reason = str(e).replace("\n", " ")[:300]
             try:
                 _alert_failure(source=f"generate.py-step1c-{target_date}",
-                               reason=reason, table="market_daily")
+                               reason=reason, table="mkt100_market_daily")
             except Exception:
                 _log(f"    [RDS] FAILED date={target_date} reason={reason}")
     else:

@@ -58,14 +58,14 @@ for r in rows:
     buf.write('\t'.join(vals) + '\n')
 buf.seek(0)
 
-pg_cur.execute("TRUNCATE market_daily")
-pg_cur.copy_from(buf, 'market_daily',
+pg_cur.execute("TRUNCATE mkt100_market_daily")
+pg_cur.copy_from(buf, 'mkt100_market_daily',
     columns=['date','indicator_code','category','ticker',
              'close','open','high','low','volume','source'],
     null=NULL)
 pg.commit()
 
-pg_cur.execute("SELECT COUNT(*), MIN(date)::text, MAX(date)::text FROM market_daily")
+pg_cur.execute("SELECT COUNT(*), MIN(date)::text, MAX(date)::text FROM mkt100_market_daily")
 cnt, mn, mx = pg_cur.fetchone()
 print(f"  RDS: {cnt} rows  {mn} ~ {mx}")
 
@@ -94,12 +94,12 @@ if rows2:
         buf2.write('\t'.join(vals) + '\n')
     buf2.seek(0)
 
-    pg_cur.execute("TRUNCATE macro_daily")
-    pg_cur.copy_from(buf2, 'macro_daily',
+    pg_cur.execute("TRUNCATE mkt200_macro_daily")
+    pg_cur.copy_from(buf2, 'mkt200_macro_daily',
         columns=cols2, null=NULL)
     pg.commit()
 
-    pg_cur.execute("SELECT COUNT(*), MIN(date)::text, MAX(date)::text FROM macro_daily")
+    pg_cur.execute("SELECT COUNT(*), MIN(date)::text, MAX(date)::text FROM mkt200_macro_daily")
     cnt2, mn2, mx2 = pg_cur.fetchone()
     print(f"  RDS: {cnt2} rows  {mn2} ~ {mx2}")
 else:
