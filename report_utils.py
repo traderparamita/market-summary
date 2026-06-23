@@ -189,6 +189,10 @@ def save_story_files(html_path: str, html_content: str, tab_specs: list, *, log_
         content = extract_tab(html_content, tab)
         if not content or placeholder in content:
             continue
+        if tab == "stocks":
+            content = re.sub(r'<div class="heatmap-section">.*', '', content, flags=re.DOTALL).strip()
+            if not content:
+                continue
         target = f"{base}{suffix}{ext}"
         with open(target, "w", encoding="utf-8") as f:
             f.write(content)
