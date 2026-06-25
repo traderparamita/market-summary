@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-06-25 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-06-25 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>반도체 대표주 · 항공/저가항공사</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">반도체 대표주</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +7.34%</span><span class="chip chip-persist">지속성 86%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +7.34%로 전 테마 중 최고 수익률을 기록했고, 7일 지속성 86%(6/7일)로 압도적 1위입니다. SK하이닉스를 중심으로 2026년 글로벌 반도체 섹터가 강세를 보이고 있다는 Tavily 트리거가 확인되어, 수급·지속성·글로벌 모멘텀 3박자가 완벽하게 갖춰진 핵심 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">반도체 대표주 테마가 오늘 +7.34%로 전체 테마 중 최고 수익률을 기록했습니다. SK하이닉스가 나스닥 상장을 7월 10일 목표로 추진한다는 뉴스가 나오며 급등세를 이끌었고, 미국 시장에서도 인텔이 10%대 급등하는 등 글로벌 반도체 섹터 전체가 강세를 보였습니다. 국내 반도체 대표주들은 외국인 매수세와 함께 7일 중 6일 상승하며 86%의 지속성을 보이고 있습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 들어 글로벌 반도체 섹터가 예상을 뛰어넘는 강세를 이어가고 있습니다. 특히 SK하이닉스는 2026년 최고 실적주 중 하나로 꼽히며, AI 반도체 수요 증가에 따른 HBM(고대역폭메모리) 공급 확대가 실적 개선을 이끌고 있습니다. 미국 나스닥에서도 지난주 폭락 이후 반도체주 중심으로 반등이 시작되면서, 저가 매수세와 AI에 대한 관심이 다시 살아나는 모습입니다.
+
+오늘은 SK하이닉스의 나스닥 상장 추진 소식이 시장에 긍정적으로 작용했습니다. 엔비디아의 주요 파트너로서 글로벌 투자자들의 접근성이 높아질 것이라는 기대감이 주가를 끌어올렸고, 국내 다른 반도체 대표주들도 동반 상승했습니다. 지난 7일간 86%의 상승 지속성은 단순 이벤트성이 아니라 구조적 수급 개선을 시사합니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">미국 나스닥에서 인텔이 10%대 급등하고, 엔비디아를 비롯한 AI 반도체주들이 저가 매수세로 반등하면서 글로벌 반도체 업종 전체에 모멘텀이 살아났습니다. 특히 AI 데이터센터 투자가 2026년에도 지속될 것이라는 전망이 강화되면서, HBM과 고성능 메모리를 공급하는 한국 반도체 기업들이 직접적인 수혜를 입고 있습니다. SK하이닉스의 나스닥 상장 추진은 글로벌 자금이 한국 반도체 섹터로 유입되는 계기가 될 수 있어, 외국인 매수세가 이어질 가능성이 높습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>SK하이닉스가 7월 10일을 목표로 미국 나스닥 상장을 추진한다는 소식이 나오면서 오늘 반도체주들이 크게 올랐습니다.</li><li>엔비디아 같은 AI 반도체 회사들이 쓰는 HBM(고대역폭메모리)을 SK하이닉스가 주로 공급하기 때문에, 글로벌 투자자들이 접근하기 쉬워지면 주가에 긍정적입니다.</li><li>미국에서도 인텔이 10% 넘게 오르는 등 반도체 섹터 전체가 다시 주목받고 있어서, 한국 반도체주들도 함께 오르는 흐름입니다.</li><li>지난 7일 중 6일 올랐다는 건 하루 이틀 이벤트가 아니라 외국인들이 꾸준히 사고 있다는 의미입니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. SK하이닉스가 나스닥에 상장하면 주가가 더 오를까요?</div><div class="qa-a">A. 나스닥 상장이 확정되면 미국 투자자들이 직접 살 수 있게 되니까 수요가 늘어날 가능성은 있습니다. 특히 엔비디아에 HBM을 공급하는 회사라는 점이 미국에서도 잘 알려져 있어서, 상장 자체가 관심을 끌 수 있어요. 다만 상장 전후로 단기 변동성이 생길 수 있고, 이미 기대감이 반영됐을 수도 있어서 상장=무조건 상승은 아닙니다.</div></div><div class="qa-block"><div class="qa-q">Q. 반도체가 지난주 폭락했다가 다시 오르는데, 이게 진짜 반등일까요?</div><div class="qa-a">A. 미국 나스닥이 지난주 급락한 뒤 반도체주 중심으로 저가 매수세가 들어왔고, AI 데이터센터 투자 전망이 여전히 긍정적이라는 점이 다시 부각됐습니다. 한국은 특히 7일 중 6일 올랐고 외국인 매수가 이어지고 있어서, 단기 기술적 반등 이상의 흐름으로 보는 시각이 많습니다. 다만 미국 금리나 경기 우려가 다시 커지면 변동성은 여전히 있을 수 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. HBM이 뭐길래 SK하이닉스가 계속 오르나요?</div><div class="qa-a">A. HBM은 고대역폭메모리라고 해서, AI 학습에 쓰이는 고성능 칩에 꼭 필요한 부품입니다. 엔비디아가 만드는 AI 칩에 SK하이닉스 HBM이 들어가는데, AI 수요가 폭발적으로 늘면서 HBM 공급이 부족한 상황이에요. SK하이닉스는 이 분야에서 세계 1~2위 기술력을 갖고 있어서, AI 붐이 이어지는 한 실적 개선이 기대되는 구조입니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 미국 나스닥의 변동성이 다시 커지거나, AI 투자 과열 우려가 재부상하면 반도체주도 조정받을 수 있습니다. 또한 나스닥 상장이 예상보다 지연되거나 불발되면 단기 실망 매물이 나올 가능성도 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="AI국내주식전략">[N150] AI국내주식전략</span><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="성장섹터배분">[N1G0] 성장섹터배분</span><span class="fund-chip" title="글로벌AI테크">[N390] ETF글로벌AI테크</span><span class="fund-chip" title="글로벌IT전략">[N4F0] 글로벌IT소프트웨어</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">항공/저가항공사</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +4.45%</span><span class="chip chip-persist">지속성 0%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +4.45%로 2위 수익률을 기록했고, KOSPI 9,300 돌파 및 시가총액 신고가 경신 속에서 LCC 섹터가 시장 랠리의 수혜를 입고 있다는 글로벌 트리거가 확인됩니다. 7일 지속성은 미확인이나, 오늘 강한 수급과 명확한 글로벌 모멘텀으로 상담사가 고객에게 즉시 설명 가능한 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">항공/저가항공사 테마가 오늘 +4.45%로 전체 테마 중 2위 수익률을 기록했습니다. KOSPI가 9,300을 돌파하고 한국 증시 시가총액이 8,000조 원을 넘어서며 역대 최고치를 경신하는 가운데, 내수 소비 관련주인 저가항공사(LCC) 섹터가 시장 전체 랠리에 힘입어 동반 상승했습니다. 제주항공, 티웨이항공 등 LCC 종목들이 일제히 강세를 보였습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">2026년 한국 증시는 연초 이후 75% 이상 상승하며 전 세계에서 가장 뜨거운 시장으로 주목받고 있습니다. KOSPI가 9,300을 돌파하고 시가총액 8,000조 원을 넘어서면서, 반도체·AI 중심 랠리가 내수 섹터로까지 확산되는 양상입니다. 증권사들은 실적 개선 전망이 광범위하게 나타나고 있어 상승세가 이어질 것으로 전망하고 있습니다.
+
+항공주는 코로나19 이후 여행 수요 회복이 본격화되면서 실적 개선 기대가 높아지고 있습니다. 특히 저가항공사들은 국제선 재개와 함께 탑승률이 빠르게 회복되고 있고, 유가 안정도 수익성에 긍정적입니다. 오늘은 KOSPI 신고가 랠리 속에서 개인 투자자들의 관심이 중소형 내수주로 확산되며 항공주가 수혜를 입었습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">한국 증시의 급등은 글로벌 자금이 아시아 신흥국으로 재유입되는 흐름과 맞물려 있습니다. 미국 금리 인하 기대감이 높아지면서 신흥국 자산 선호도가 올라가고, 특히 한국은 AI·반도체 중심의 구조적 성장 스토리가 부각되며 외국인 매수세가 이어지고 있습니다. 항공주는 직접적인 글로벌 모멘텀보다는, 이런 전체 시장 랠리에서 내수 소비 회복 기대가 반영되며 동반 상승하는 패턴입니다. 한국 주식 시장 전체가 뜨거워지면서 투자자 수가 2019년 600만 명에서 2025년 말 1,450만 명으로 급증했고, 이런 유동성이 중소형 소비주에도 흘러들어가고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>KOSPI가 9,300을 넘고 시가총액이 8,000조 원을 돌파하며 역대 최고치를 경신했는데, 이런 전체 시장 상승 분위기에서 항공주도 함께 오른 겁니다.</li><li>항공사들은 코로나 이후 국제선이 정상화되면서 탑승률이 빠르게 회복되고 있고, 유가도 안정적이라 실적 개선 기대가 커지고 있습니다.</li><li>한국 주식 투자자가 5년 새 2배 이상 늘면서, 반도체 대형주뿐 아니라 항공 같은 내수 중소형주에도 개인 투자자들의 관심이 확산되는 흐름입니다.</li><li>증권사들은 한국 증시가 AI·반도체 집중도가 높긴 하지만, 실적 개선이 여러 업종으로 퍼지고 있어 상승세가 이어질 것으로 보고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 항공주는 왜 오늘 갑자기 오른 건가요?</div><div class="qa-a">A. KOSPI가 9,300을 돌파하고 시장 전체가 신고가 랠리를 이어가면서, 항공 같은 내수 소비주에도 자금이 들어온 겁니다. 항공사들의 실적 자체도 국제선 회복과 유가 안정으로 좋아지고 있는데, 전체 증시 분위기가 좋으니까 함께 오르는 패턴이에요. 특정 뉴스보다는 시장 전체 모멘텀에 편승한 측면이 큽니다.</div></div><div class="qa-block"><div class="qa-q">Q. 한국 증시가 올해만 75% 올랐다는데, 너무 과열된 거 아닌가요?</div><div class="qa-a">A. 수치만 보면 상승폭이 크긴 합니다. 다만 AI·반도체 중심으로 실적이 실제로 크게 개선되고 있고, 외국인 자금이 계속 들어오고 있어서 펀더멘털 기반이 있다는 평가가 많습니다. 증권사들도 업종 전반에 걸쳐 실적 전망치가 상향되고 있다고 보고 있어요. 다만 급등 후에는 조정 가능성도 항상 있기 때문에, 변동성을 감안해야 합니다.</div></div><div class="qa-block"><div class="qa-q">Q. 항공주는 앞으로도 계속 오를까요?</div><div class="qa-a">A. 여행 수요 회복과 유가 안정이라는 기본 흐름은 긍정적입니다. 다만 항공주는 경기 민감주라서, 전체 증시가 조정받거나 경기 둔화 우려가 나오면 빠르게 약세로 돌아설 수 있어요. 오늘 오른 건 시장 분위기 덕이 큰데, 업종 자체의 독자적 모멘텀보다는 전체 증시 흐름에 더 영향을 많이 받는 섹터입니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: KOSPI 조정이 시작되거나, 반도체 등 주도주가 약세로 돌아서면 내수 소비주인 항공주도 빠르게 하락할 수 있습니다. 또한 유가 급등이나 환율 변동성 확대도 항공사 수익성에 부담 요인입니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="혼합형 내수">[N1B0] 혼합형</span><span class="fund-chip" title="가치주 포함">[N140] 가치주식형</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">KOSPI 9,300 돌파 신고가 랠리 속에서 SK하이닉스 나스닥 상장 소식에 반도체주 +7% 급등, 항공주도 동반 강세</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 7월 10일 SK하이닉스 나스닥 상장 추진 일정, 미국 반도체 섹터 변동성, KOSPI 9,300선 지지 여부</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 한국 증시 투자자 수 급증(600만→1,450만 명) — 유동성 확대가 중소형주 랠리로 이어지면서 시장 구조 자체가 변하고 있어, 내수 소비주 변동성에 주목할 필요</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>반도체 대표주(생산)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.34%</span></div></td><td style='color:#7c8298;font-size:12px'>86%</td></tr><tr><td>2</td><td>항공/저가 항공사(LCC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:36px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.45%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>3</td><td>생명보험</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:28px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+3.49%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>4</td><td>IT 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:21px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.62%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>5</td><td>태양광에너지</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:20px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.54%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>6</td><td>태풍 및 장마</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:17px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.11%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>7</td><td>자원개발</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:16px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.03%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>8</td><td>소캠(SOCAMM)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.39%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>9</td><td>종합상사</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.31%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>10</td><td>자전거</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.27%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>11</td><td>면세점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.24%</span></div></td><td style='color:#7c8298;font-size:12px'>14%</td></tr><tr><td>12</td><td>사료</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:9px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.20%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>13</td><td>증권</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.00%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>14</td><td>손해보험</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.86%</span></div></td><td style='color:#7c8298;font-size:12px'>14%</td></tr><tr><td>15</td><td>마리화나(대마)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:5px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.67%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>16</td><td>고체산화물 연료전지(SOFC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:5px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.67%</span></div></td><td style='color:#7c8298;font-size:12px'>14%</td></tr><tr><td>17</td><td>페인트</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:5px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.63%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>18</td><td>리츠(REITs)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:4px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.57%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>19</td><td>SNS(소셜네트워크서비스)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:3px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.48%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>20</td><td>인터넷 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:3px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.44%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-06-25 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
