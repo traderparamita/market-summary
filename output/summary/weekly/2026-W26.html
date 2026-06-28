@@ -1274,7 +1274,180 @@ body{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 �
 </div><!-- /tab-data -->
 
 <div id="tab-macro" class="tab-panel">
-<!-- MACRO_EVENTS_PLACEHOLDER -->
+<style>
+  .macro-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+  .macro-kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .macro-kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px}
+  .macro-kpi-value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#1a1d2e}
+  .macro-kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+  .macro-kpi-date{font-size:10px;color:var(--muted);margin-top:2px}
+  .macro-evt-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);margin-bottom:20px}
+  .macro-evt-table th{background:var(--accent2);color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:600}
+  .macro-evt-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+  .macro-evt-table tr:last-child td{border-bottom:none}
+  .macro-evt-table tr:hover td{background:var(--card2)}
+  .macro-imp-high{color:var(--up);font-weight:700}
+  .macro-imp-med{color:var(--warn);font-weight:600}
+  .macro-imp-low{color:var(--muted)}
+  .macro-section-title{font-size:16px;font-weight:700;color:var(--accent2);margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+</style>
+
+<div class="macro-section-title">📊 W26 핵심 매크로 지표</div>
+
+<div class="macro-kpi-grid">
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 연방기금금리</div>
+    <div class="macro-kpi-value">4.50%</div>
+    <div class="macro-kpi-chg flat">동결</div>
+    <div class="macro-kpi-date">2026-06-17 FOMC (W25)</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 10Y 국채</div>
+    <div class="macro-kpi-value">4.372%</div>
+    <div class="macro-kpi-chg down">WTD -7.9bp</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 2Y 국채</div>
+    <div class="macro-kpi-value">3.69%</div>
+    <div class="macro-kpi-chg up">WTD +3.2bp</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">DXY 달러 인덱스</div>
+    <div class="macro-kpi-value">101.58</div>
+    <div class="macro-kpi-chg up">WTD +0.51%</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">WTI 원유</div>
+    <div class="macro-kpi-value">$69.23</div>
+    <div class="macro-kpi-chg down">WTD -9.55%</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">Brent 원유</div>
+    <div class="macro-kpi-value">$71.99</div>
+    <div class="macro-kpi-chg down">WTD -10.67%</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">금 (Gold)</div>
+    <div class="macro-kpi-value">$4,078.7</div>
+    <div class="macro-kpi-chg down">WTD -2.26%</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">VIX</div>
+    <div class="macro-kpi-value">18.41</div>
+    <div class="macro-kpi-chg up">화 19.49 스파이크 후 진정</div>
+    <div class="macro-kpi-date">2026-06-26 종가</div>
+  </div>
+</div>
+
+<div class="macro-section-title">📅 W26 주요 이벤트</div>
+
+<table class="macro-evt-table">
+  <thead>
+    <tr><th>날짜</th><th>이벤트</th><th>중요도</th><th>시장 반응 요약</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>6/22 (월)</td>
+      <td>트럼프 Apple-Intel 미국 반도체 제조 합의 발표</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>글로벌 반도체 장비 랠리. Intel +5.19%, Micron +6.82%. 닛케이 사상 최고(72,354). 코스피 +0.69%.</td>
+    </tr>
+    <tr>
+      <td>6/22 (월)</td>
+      <td>Alphabet AlphaFold 공동창시자 퇴사 보도</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>Alphabet -4.99%. AI 인재 유출 우려로 나스닥 -1.32%. Communication Services -3.8%.</td>
+    </tr>
+    <tr>
+      <td>6/23 (화)</td>
+      <td>MSCI 6월 연간 검토 — 한국 DM 편입 불발 확인</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>코스피 서킷브레이커(-9.99%). 외국인 5.79조원 순매도. 개인 11.11조원 순매수(사상 최대).</td>
+    </tr>
+    <tr>
+      <td>6/23 (화)</td>
+      <td>미-이란 핵협상 진전 — 이란 60일 원유 판매 라이선스</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>WTI -4.70%($72.94). 호르무즈 해협 탱커 통항 재개. 지정학 리스크 프리미엄 해소.</td>
+    </tr>
+    <tr>
+      <td>6/23 (화)</td>
+      <td>BofA 채권 전략 노트 — 연내 Fed 3회 금리인상 베팅</td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>성장주 밸류에이션 부담 확산. 달러 강세. 수요일 TLT +1.37%.</td>
+    </tr>
+    <tr>
+      <td>6/24 (수)</td>
+      <td>호르무즈 해협 탱커 운항 재개 확인 (국제해사기구)</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>WTI -4.21%($69.87). Brent -4.80%($73.18). 은 -7.80% 동반 급락.</td>
+    </tr>
+    <tr>
+      <td>6/24 (수 장후)</td>
+      <td>마이크론 Q3 FY2026 실적 — 매출 $41.46B (+346% YoY)</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>목 SK하이닉스 +11.29%, 어드밴테스트 +15.06%, 코스피 +5.42%, 닛케이 +4.61%.</td>
+    </tr>
+    <tr>
+      <td>6/25 (목)</td>
+      <td>애플 맥북·아이패드 가격 인상 (DRAM 원가 +90~95% QoQ)</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>애플 -6.12%, MS -3.23%. 나스닥 4거래일 연속 하락. 소비자 가전 원가 전이 확인.</td>
+    </tr>
+    <tr>
+      <td>6/25 (목)</td>
+      <td>독일 라인메탈 해군 프리깃함 계약 전격 취소</td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>라인메탈 -18.7% 급락. DAX +1.03% 반도체 상쇄.</td>
+    </tr>
+    <tr>
+      <td>6/26 (금)</td>
+      <td>NYT: OpenAI IPO 2027년 연기 검토 보도</td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>SoftBank -12.53%. 코스피 서킷브레이커 재발동(-8.19% 장중). 닛케이 -4.15%.</td>
+    </tr>
+    <tr>
+      <td>6/26 (금)</td>
+      <td>CMS 메디케어 어드밴티지 보상률 인상 발표</td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>헬스케어 +3.03%. UnitedHealth +2.97%. S&P500 보합(-0.05%) 방어.</td>
+    </tr>
+    <tr>
+      <td>6/26 (금)</td>
+      <td>IEA 6월 보고서 — 하반기 석유 수요 전망 하향</td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>WTI -3.13%($69.23) 2월 이후 최저. 주간 두 자릿수 하락 마무리.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="macro-section-title">📈 W26 주간 자산별 등락</div>
+
+<table class="macro-evt-table">
+  <thead>
+    <tr><th>자산</th><th>종가</th><th>주간 변동</th><th>MTD (6월)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>KOSPI</td><td>8,411.21</td><td><span class="macro-imp-high">-7.08%</span></td><td>-0.77%</td></tr>
+    <tr><td>KOSDAQ</td><td>851.37</td><td><span class="macro-imp-high">-11.92%</span></td><td>-20.79%</td></tr>
+    <tr><td>S&P500</td><td>7,354.02</td><td><span class="macro-imp-med">-1.95%</span></td><td>-2.98%</td></tr>
+    <tr><td>NASDAQ</td><td>25,297.62</td><td><span class="macro-imp-high">-4.60%</span></td><td>-6.21%</td></tr>
+    <tr><td>Nikkei225</td><td>69,360.88</td><td><span class="macro-imp-med">-2.65%</span></td><td>+4.57%</td></tr>
+    <tr><td>STOXX50</td><td>6,221.55</td><td><span class="macro-imp-low">-0.64%</span></td><td>—</td></tr>
+    <tr><td>WTI</td><td>$69.23</td><td><span class="macro-imp-high">-9.55%</span></td><td>-18.19%+</td></tr>
+    <tr><td>Gold</td><td>$4,078.7</td><td><span class="macro-imp-med">-2.26%</span></td><td>-11.38%</td></tr>
+    <tr><td>DXY</td><td>101.58</td><td><span class="macro-imp-low">+0.51%</span></td><td>+2.57%</td></tr>
+    <tr><td>USD/KRW</td><td>1,535.00</td><td><span class="macro-imp-low">+0.33%</span></td><td>+2.48%</td></tr>
+    <tr><td>미 10Y</td><td>4.372%</td><td>-7.9bp</td><td>—</td></tr>
+    <tr><td>VIX</td><td>18.41</td><td>화 19.49 후 진정</td><td>—</td></tr>
+  </tbody>
+</table>
 </div><!-- /tab-macro -->
 
 <div id="tab-story" class="tab-panel">
@@ -1400,11 +1573,161 @@ body{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 �
 </div><!-- /tab-story -->
 
 <div id="tab-cs" class="tab-panel active">
-<!-- CS_STORY_PLACEHOLDER -->
+<style>
+  .cs-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}
+  .cs-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+  .cs-hero .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .cs-text{font-size:16px;color:#2d3148;line-height:1.9}
+  .cs-text p{margin-bottom:14px}
+  .cs-text p:last-child{margin-bottom:0}
+  .cs-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .cs-section h3{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}
+  .cs-section p{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+  .cs-section p:last-child{margin-bottom:0}
+  .cs-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+</style>
+
+<div class="cs-hero">
+  <h2>CS Story — 고객 설명용</h2>
+  <div class="cs-subtitle">2026년 W26 (6월 22일~26일) · 수치 대신 맥락·흐름 중심</div>
+  <div class="cs-text">
+    <p>이번 주는 한국 시장에게 역사적인 변동성의 한 주였습니다. 코스피가 5일 동안 두 차례 서킷브레이커(거래 중단)를 기록했고, 마이크론 반도체 역대 최대 실적 발표가 촉발한 대폭등이 하루 만에 전량 소화되는 극단적 롤러코스터를 보였습니다. 월요일 미국 반도체 정책 낙관론으로 시작된 한 주는 화요일 MSCI 선진국지수 편입 불발 충격과 AI 레버리지 포지션 강제 청산으로 급락했고, 수요일 기술적 반등 후 목요일 마이크론 실적 폭발로 다시 강하게 튀어 올랐다가, 금요일 OpenAI IPO 지연 보도와 차익실현에 다시 급락하며 재서킷브레이커를 기록했습니다.</p>
+    <p>미국 시장은 아시아와 달리 상대적 안정을 유지했습니다. 나스닥이 5거래일 연속 하락을 기록하며 기술주 조정 국면에 진입했지만, 헬스케어·유틸리티·필수소비재 등 방어 섹터가 순환매를 받아 S&amp;P500은 주간 낙폭이 제한됐습니다. 한편 중동 정세 안정화로 유가는 주간 두 자릿수 하락을 기록하며 올해 2월 이후 최저치를 경신했습니다.</p>
+  </div>
+</div>
+
+<div class="cs-section">
+  <h3>🇰🇷 한국 — 이번 주 두 번째 서킷브레이커, 올해 다섯 번째</h3>
+  <p>코스피가 이번 주에만 두 차례 거래 중단을 기록한 것은 삼성전자·SK하이닉스 두 종목이 코스피 시가총액의 절반 이상을 차지하는 극단적 집중 구조에서 기인합니다. 반도체 섹터에 좋은 소식이 오면 지수가 단숨에 크게 오르고, 나쁜 소식이 오면 그만큼 빠르게 내려가는 '증폭기' 역할을 합니다. 화요일에는 MSCI 선진국지수 편입 불발이 확인되고 전날 나스닥 하락과 AI 레버리지 포지션 강제 청산이 겹치며 역사상 5번째 최대 낙폭을 기록했고, 금요일에는 OpenAI IPO 지연 보도와 전날 마이크론 랠리 차익실현이 동시에 작용하며 재발동됐습니다. 코스닥은 이번 주 누적 낙폭이 코스피보다 훨씬 커, 중소형주에서 자금 이탈이 가속화되고 있음을 경고하고 있습니다. KRX는 "이번 주가 급락이 한국 경제나 기업 펀더멘털에 대한 투자자 신뢰 위기를 반영하지 않는다"는 성명을 발표했습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>💾 마이크론 실적 — 목요일 대폭등, 금요일 전량 소화</h3>
+  <p>마이크론 테크놀로지가 3분기 역대 최대 실적을 발표하며 AI 메모리 수요가 공급을 구조적으로 앞서고 있음을 확인시켜줬습니다. 이 소식에 목요일 아시아 장에서 SK하이닉스·어드밴테스트 등 반도체 공급망 전체가 강하게 급등했고, 코스피와 닛케이가 일제히 상승했습니다. SK하이닉스는 시가총액 2,000조원을 재돌파했습니다. 그러나 동일 메모리 원가가 급등하며 애플과 마이크로소프트가 맥북·아이패드·Xbox 가격 인상을 단행했고, 금요일에는 목요일 랠리가 하루 만에 전량 소화되며 차익실현과 OpenAI IPO 지연 우려가 겹쳐 재급락했습니다. 이는 반도체 호황이 공급망 상류(메모리 제조사)와 하류(세트 업체) 간 이익 이전을 동반하며, 단기 랠리의 지속성보다는 변동성 증폭이 구조화됐음을 보여줍니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🤖 OpenAI IPO 연기 — SoftBank 쇼크의 배경</h3>
+  <p>뉴욕타임스가 OpenAI 관계자들을 인용해 "OpenAI가 2026년 하반기 IPO 계획에서 2027년으로 대기하는 방향으로 기울고 있다"고 보도했습니다. SoftBank는 OpenAI의 최대 기관 투자자로, IPO를 통한 수익 실현이 SoftBank 주가 상승의 핵심 내러티브였습니다. 이 보도 하나로 SoftBank가 장 중 최대 열네 퍼센트 넘게 급락했고 닛케이225를 끌어내렸습니다. Sam Altman CEO의 "1조 달러 미만 가치평가는 수용 불가" 입장과 현재 기술주 시장 변동성 간의 간극이 상장 지연의 배경으로 지목됩니다. 이 사건은 AI 생태계 관련 상장 예정 기업들의 가치 평가가 얼마나 빠르게 재조정될 수 있는지를 보여주는 사례로, Arm이나 SpaceX 같은 AI 관련 상장 후보 기업들에도 간접적인 참조 사례가 됩니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🛢 유가 — 미-이란 협상 진전으로 주간 두 자릿수 하락</h3>
+  <p>WTI 원유가 이번 주 크게 내리며 올해 2월 이후 최저 수준을 기록했습니다. 미국과 이란 간 핵협상이 진전되며 호르무즈 해협 운항이 재개되고, 사우디아라비아도 원유 적재를 재개했습니다. 동시에 국제에너지기구(IEA)가 높은 에너지 가격으로 인한 수요 둔화를 이유로 하반기 석유 수요 전망을 낮췄습니다. 이 정도 규모의 유가 하락은 인플레이션 압력을 완화하는 긍정적 측면이 있지만, 에너지 기업 이익과 산유국 재정에는 부담입니다. 지난 4주간 유가가 가파르게 내려온 점은 공급 과잉 우려를 반영합니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🇺🇸 미국 — 나스닥 5거래일 연속 하락, 방어주 로테이션</h3>
+  <p>나스닥이 이번 주 5거래일 연속 하락을 기록하며 2월 이후 최장 하락 국면에 진입했습니다. 메모리 원가 급등으로 인한 애플·마이크로소프트 수익성 압박, AI 투자 수익 실현 기대치 하향 조정, 메모리 가이던스 불확실성이 맞물렸습니다. 반면 헬스케어·유틸리티·REIT·필수소비재 등 방어 섹터로 자금이 회전하며 S&P500은 낙폭이 제한됐습니다. 금요일 CMS가 메디케어 어드밴티지 보상률을 인상한다는 발표가 나오자 건강보험주를 비롯한 헬스케어 업종이 눈에 띄게 강세를 보였고, 유틸리티·REIT도 순환매를 받았습니다. 변동성지수가 주말을 앞두고 오히려 하락하며 미국 시장이 아시아와 달리 상대적 안정을 유지했음을 보여줬습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>📅 이번 주(W26) 관점</h3>
+  <p>W26 한 주 동안 코스피는 두 차례 서킷브레이커를 기록하며 한국 시장이 역사적 변동성 국면에 접어들었습니다. 나스닥도 5거래일 연속 하락하며 기술주 조정 국면에 진입했습니다. 반면 유럽 선진국 시장은 상대적 강세를 유지했고, 유가와 금이 크게 내리는 가운데 달러가 강세를 보이며 원화·유로·위안 등 주요 통화는 약세 기조를 이어갔습니다. 이번 주의 흐름은 "월 반도체 정책 낙관 → 화 MSCI 불발·서킷브레이커 → 수 기술적 반등 → 목 마이크론 어닝 대폭등 → 금 OpenAI 지연·차익실현으로 재서킷브레이커"라는 극단적 롤러코스터로 요약됩니다.</p>
+  <p class="cs-footer">CS Story는 Market Story를 수치 대신 맥락·흐름 중심으로 재구성한 고객 설명용 버전입니다. 구체적 수치는 Market Story / Data Dashboard 탭을 참고하세요.</p>
+</div>
 </div><!-- /tab-cs -->
 
 <div id="tab-pm" class="tab-panel">
-<!-- PM_STORY_PLACEHOLDER -->
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026년 W26 (6월 22일~26일, 5영업일) · 지역·자산군별 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> 한국 코스피 5일 동안 서킷브레이커 2회(화 -9.99%, 금 -8.19% 장중), 주간 -7.08%. 마이크론 Q3 +346% YoY 서프라이즈 목요일 대폭등 → 금요일 OpenAI IPO 지연 보도로 전량 소화. 나스닥 5거래일 연속 하락(-4.60% WTD), S&P500 -1.95%. WTI -9.55%, Brent -10.67% 호르무즈 재개통·IEA 수요 하향. VIX는 화요일 스파이크 후 주말 18.41로 진정.</p>
+    <p><strong>Key drivers:</strong> ① MSCI DM 편입 불발 + AI 레버리지 청산 → 한국 서킷브레이커; ② 마이크론 HBM 수요 확인 → DRAM 원가 역풍(애플·MS 가격 인상); ③ 미-이란 협상 진전 → 유가 4주 -22%; ④ 나스닥 5일 연속 하락 속 헬스케어·방어주 로테이션으로 S&P500 낙폭 제한.</p>
+    <p><strong>Watch:</strong> 다음 주 한국 추가 서킷브레이커 리스크(삼성·SK하이닉스 집중도 57%), 나스닥 연속 하락 지속 여부, 유가 $70 하방 돌파 시 OPEC+ 대응, Fed 금리 인상 베팅 재점화 가능성.</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">8,411.21</span> <span class="pm-dn">-7.08% WTD</span> · MTD <span class="pm-dn">-0.77%</span> — 화·금 서킷브레이커 2회 (역사상 10·11번째 발동)</li>
+      <li>KOSDAQ <span class="pm-num">851.37</span> <span class="pm-dn">-11.92% WTD</span> · MTD <span class="pm-dn">-20.79%</span> — 중소형주 자금 이탈 가속</li>
+      <li>SK하이닉스: 목 +11.29% → 금 -8.36%, 시총 2,000조 재돌파 후 재반납. 삼성전자: 목 +5.30% → 금 -5.30%</li>
+      <li>USD/KRW <span class="pm-num">1,535.00</span> <span class="pm-up">+0.33% WTD</span> — 원화 소폭 약세 지속. 외국인 주간 누적 대규모 순매도(화요일 단일 5.79조원)</li>
+    </ul>
+    <div class="pm-note">화 MSCI DM 편입 불발·AI 레버리지 청산 → 금 OpenAI IPO 지연·차익실현. 반도체 집중 구조(57%)가 변동성 증폭.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>WTI <span class="pm-num">$69.23</span> <span class="pm-dn">-9.55% WTD</span>, Brent <span class="pm-num">$71.99</span> <span class="pm-dn">-10.67% WTD</span> — 4주 누적 -22%, 2월 이후 최저</li>
+      <li>미-이란 핵협상 진전 → 호르무즈 해협 운항 재개(페르시아만 수출 전전 75% 수준). IEA 6월 보고서 하반기 수요 전망 하향</li>
+      <li>금 <span class="pm-num">$4,078.7</span> <span class="pm-dn">-2.26% WTD</span>, 구리 <span class="pm-dn">-3.09% WTD</span> — 달러 강세 압력. DXY <span class="pm-num">101.58</span> <span class="pm-up">+0.51% WTD</span></li>
+      <li>Bank of America 화요일 노트: 연내 Fed 3회 금리인상 베팅 확산 → 성장주 할인율 압박. 미 10년물 주말 4.372%로 주간 소폭 하락</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>Nikkei225 <span class="pm-num">69,360.88</span> <span class="pm-dn">-2.65% WTD</span> — 금 SoftBank -12.53%(OpenAI IPO 지연 보도)가 지수 끌어내림. 월 사상 최고(72,353) → 금 급락</li>
+      <li>Shanghai <span class="pm-num">4,027.27</span> <span class="pm-dn">-1.77% WTD</span>, HSI <span class="pm-num">22,671.86</span> <span class="pm-dn">-3.12% WTD</span> — 알리바바·중국 인터넷주 약세 지속</li>
+      <li>TWSE <span class="pm-num">44,571.76</span> <span class="pm-dn">-3.64% 금요일</span> — 대만 반도체 차익실현. ASE Tech 금 -1.40%, Applied Materials -6.16%</li>
+      <li>목 마이크론 Q3 매출 $41.46B (+346% YoY), 매출총이익률 84.9% 역대 최고 → 금 차익실현 전량 소화. HBM 수요 구조적 초과 확인</li>
+    </ul>
+    <div class="pm-note">반도체 공급망: 월 정책 낙관 → 화 연쇄 급락 → 목 마이크론 폭등 → 금 OpenAI 쇼크. 5일 롤러코스터.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&P500 <span class="pm-num">7,354.02</span> <span class="pm-dn">-1.95% WTD</span> · MTD <span class="pm-dn">-2.98%</span> — 헬스케어·방어주 로테이션으로 낙폭 제한</li>
+      <li>NASDAQ <span class="pm-num">25,297.62</span> <span class="pm-dn">-4.60% WTD</span> · MTD <span class="pm-dn">-6.21%</span> — 5거래일 연속 하락(2월 이후 최장). Mag7 원가 압박(애플 맥북·아이패드 가격 인상 -6.12% 목)</li>
+      <li>Russell2000 <span class="pm-num">3,010.08</span> <span class="pm-up">+0.25% WTD</span> — 소형주 상대 강세. iShares Momentum ETF -4.00% vs LowVol ETF +1.16% 금요일, 방어 분화 뚜렷</li>
+      <li>VIX <span class="pm-num">18.41</span> (금 -2.54%) — 화 19.49로 스파이크 후 주말 진정. 헬스케어 +3.03% 금(CMS 메디케어 보상률 인상), 유틸리티·REIT 순환매</li>
+      <li>빅테크: 애플 목 -6.12% → 금 +3.14%, MS 목 -3.23% → 금 +5.71% 반등. 마이크론 금 -6.69% 차익실현, NVIDIA -1.64%, 브로드컴 -3.67%</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50 <span class="pm-num">6,221.55</span> <span class="pm-dn">-0.64% WTD</span>, DAX <span class="pm-num">24,671.22</span> <span class="pm-dn">-0.94% WTD</span> — 독일 라인메탈 목 -18.7%(해군 계약 취소) 충격</li>
+      <li>CAC40 <span class="pm-num">8,384.87</span> <span class="pm-up">+0.08% WTD</span>, FTSE100 <span class="pm-num">10,508.00</span> <span class="pm-up">+0.07% WTD</span> — 영·프 상대 강세</li>
+      <li>EUR/USD <span class="pm-num">1.139</span> <span class="pm-dn">-0.70% WTD</span>, GBP/USD <span class="pm-num">1.320</span> <span class="pm-dn">-0.15% WTD</span> — 달러 강세 압박. 유로존 6월 소비자신뢰 소폭 개선</li>
+      <li>화 ASML -5%+, STMicroelectronics -7.5%, 인피니언 -5.86% 반도체 섹터 2월 이후 최대 일간 낙폭</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.69%</span> (+0.27bp 화), US 10Y <span class="pm-num">4.372%</span> (-0.46bp 금) · 주간 소폭 하락, 10Y-2Y 스프레드 68.2bp</li>
+      <li>TLT <span class="pm-up">+1.37% 수</span> 장기채 안전자산 수요 유입. 금리인상 베팅 확산 속 장기채 랠리는 성장 둔화 우려 내재</li>
+      <li>KR CD91D / 3Y / 10Y — 데이터 미확인, 일반적으로 USD/KRW 약세 시 한국 금리 상승 압력</li>
+      <li>IG spread / HY spread — 화 VIX 스파이크 시 크레딧 스프레드 일시 확대 추정, 금 VIX 진정으로 재축소</li>
+    </ul>
+    <div class="pm-note">단기 금리 인상 베팅 vs 장기채 안전자산 수요 — 커브 평탄화 지속. 달러 강세가 신흥국 채권(EMB) 압박.</div>
+  </div>
+</div>
+
+<div class="pm-footer">PM Story는 포트폴리오 매니저 의사결정 참고용 브리프입니다. 전망·권유가 아닌 사실·수치 정리 목적입니다.</div>
 </div><!-- /tab-pm -->
 
 <div id="tab-sources" class="tab-panel">
