@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asia Weekly Brief | 2026-W26</title>
+<meta name="description" content="2026-06-22 ~ 2026-06-26 — 아시아 중심 주간 시황 (중국·일본·대만·인도·홍콩·한국)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#f4f5f9;--card:#fff;--card2:#f0f1f6;--border:#e0e3ed;--text:#2d3148;--muted:#7c8298;--accent:#F58220;--accent2:#043B72;--up:#d92b2b;--down:#1a5fb4;--warn:#CB6015;--cn:#d92b2b;--jp:#043B72;--tw:#0f7f5a;--in:#7c4dff;--hk:#9c27b0;--kr:#F58220}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:24px;max-width:1360px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.mood-badge{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:600;background:rgba(26,95,180,0.08);color:var(--muted);border:1px solid rgba(26,95,180,0.2)}
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px}
+.kpi-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
+.back-link{display:inline-block;margin-bottom:18px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}
+.tab-bar{display:flex;gap:0;margin-bottom:26px;border-bottom:2px solid var(--border);flex-wrap:wrap}
+.tab-btn{padding:12px 24px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none} .tab-panel.active{display:block}
+.story-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:28px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text p{margin-bottom:14px} .story-text p:last-child{margin-bottom:0}
+.story-text strong{color:#1a1d2e}
+.story-text .hl-up{color:var(--up);font-weight:600}
+.story-text .hl-down{color:var(--down);font-weight:600}
+.story-text .hl-warn{color:var(--warn);font-weight:600}
+.story-text .hl-accent{color:var(--accent);font-weight:600}
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:170px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text);line-height:1.5}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+.country-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,0.04);border-left:5px solid var(--accent2)}
+.country-section.cn{border-left-color:var(--cn)} .country-section.jp{border-left-color:var(--jp)} .country-section.tw{border-left-color:var(--tw)} .country-section.in{border-left-color:var(--in)} .country-section.hk{border-left-color:var(--hk)} .country-section.kr{border-left-color:var(--kr)}
+.country-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.country-flag{font-size:30px}
+.country-title{font-size:20px;font-weight:700;color:#1a1d2e}
+.country-sub{font-size:13px;color:var(--muted);margin-left:auto;font-family:'JetBrains Mono',monospace}
+.country-section p{font-size:14.5px;line-height:1.85;margin-bottom:12px;color:#2d3148}
+.country-section h4{font-size:14px;font-weight:700;color:#1a1d2e;margin:14px 0 8px 0}
+.stock-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.stock-table th{font-size:11px;font-weight:600;color:var(--muted);padding:9px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border)}
+.stock-table th:first-child,.stock-table th:nth-child(2){text-align:left}
+.stock-table td{padding:7px 12px;font-size:12.5px;border-bottom:1px solid #f3f4f8;font-family:'JetBrains Mono',monospace;text-align:right}
+.stock-table td:first-child{font-weight:600;color:#1a1d2e;text-align:left;font-family:inherit}
+.stock-table td:nth-child(2){text-align:left;font-family:inherit;color:var(--muted);font-size:12px}
+.stock-table tr.gain{background:rgba(217,43,43,0.03)} .stock-table tr.loss{background:rgba(26,95,180,0.03)}
+.theme-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.theme-card h3{font-size:17px;font-weight:700;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.theme-card .theme-tag{font-size:11px;padding:3px 10px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600}
+.theme-card p{font-size:14px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.theme-side{background:var(--card2);border-radius:10px;padding:14px 16px}
+.theme-side h5{font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:8px}
+.theme-side ul{list-style:none;padding:0}
+.theme-side li{font-size:12.5px;line-height:1.7;padding:3px 0;font-family:'JetBrains Mono',monospace}
+.heatmap{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.heatmap th{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}
+.heatmap th:first-child,.heatmap th:nth-child(2){text-align:left}
+.heatmap td{padding:8px 12px;font-size:13px;border-bottom:1px solid #f3f4f8}
+.name-cell{font-weight:600;color:#1a1d2e;white-space:nowrap}
+.close-cell{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:left;white-space:nowrap}
+.heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600;background:rgba(245,130,32,0.12);color:var(--accent)}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}
+.metric-label{font-size:10px;color:var(--muted)}
+.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.outlook-card{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:12px;padding:24px 28px;margin-bottom:18px}
+.outlook-card h3{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:12px}
+.outlook-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+.scenario{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.scenario h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.scenario.bull h4{color:var(--up)} .scenario.base h4{color:var(--warn)} .scenario.bear h4{color:var(--down)}
+.scenario p{font-size:12.5px;line-height:1.7;color:#2d3148}
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.risk-section h2{font-size:16px;font-weight:700;color:#1a1d2e;margin-bottom:14px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:13px;line-height:1.7}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:2px}
+.risk-tag.high{background:rgba(26,95,180,0.15);color:var(--down)}
+.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}
+.sources-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.sources-section h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sources-list{margin:0;padding-left:18px;font-size:13px;line-height:1.8}
+.sources-list a{color:var(--accent);text-decoration:none}
+.source-meta{font-size:11px;color:var(--muted)}
+.placeholder{background:repeating-linear-gradient(45deg,#fafbfc,#fafbfc 10px,#f4f5f9 10px,#f4f5f9 20px);border:2px dashed #c8cce0;border-radius:12px;padding:32px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px}
+.placeholder strong{color:var(--accent);display:block;font-size:15px;margin-bottom:6px}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:36px;padding-top:18px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:20px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+@media(max-width:900px){
+  .insight-grid,.theme-grid,.outlook-grid,.risk-items{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back to Index</a>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Asia Weekly Brief | 2026-W26</h1>
+    <div class="date">2026-06-22 ~ 2026-06-26 · 아시아 중심 주간 시황</div>
+  </div>
+  <div class="header-right">
+    <div class="mood-badge">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted)"></span>
+      데이터 부족
+    </div>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-label">코스피</div><div class="kpi-value">8,411.21</div><div class="kpi-chg down">−7.08%</div></div>
+  <div class="kpi"><div class="kpi-label">코스닥</div><div class="kpi-value">851.37</div><div class="kpi-chg down">−11.92%</div></div>
+  <div class="kpi"><div class="kpi-label">Nikkei225</div><div class="kpi-value">69,360.88</div><div class="kpi-chg down">−2.65%</div></div>
+  <div class="kpi"><div class="kpi-label">USD/KRW</div><div class="kpi-value">1,535.00</div><div class="kpi-chg up">+0.33%</div></div>
+  <div class="kpi"><div class="kpi-label">USD/INR</div><div class="kpi-value">94.30</div><div class="kpi-chg flat">−0.01%</div></div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('story')">Asia Story</button>
+  <button class="tab-btn" onclick="switchTab('country')">Country Drilldown</button>
+  <button class="tab-btn" onclick="switchTab('themes')">Themes</button>
+  <button class="tab-btn" onclick="switchTab('data')">Data</button>
+  <button class="tab-btn" onclick="switchTab('outlook')">Outlook</button>
+  <button class="tab-btn" onclick="switchTab('sources')">Sources</button>
+</div>
+
+<!-- TAB: Asia Story (placeholder) -->
+<div id="tab-story" class="tab-panel active">
+  <div class="story-hero">
+    <h2>2026-W26 한 줄 요약</h2>
+    <div class="story-text">
+      <p><strong>[Claude 작성 영역]</strong> 핵심 내러티브 1단락 (가장 큰 그림)</p>
+      <p><strong>[Claude 작성 영역]</strong> 국가별 명암 1단락 (어디가 강했고 어디가 약했나)</p>
+      <p><strong>[Claude 작성 영역]</strong> 매크로 컨텍스트 1단락 (달러·금리·정상회담 등)</p>
+    </div>
+  </div>
+
+  <div class="causal-chain">
+    <div class="cause-node"><div class="node-label">월요일 트리거</div><div class="node-title">[작성 필요]</div><div class="node-detail">[작성 필요]</div><div class="node-impact">[작성 필요]</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">중반 흐름</div><div class="node-title">[작성 필요]</div><div class="node-detail">[작성 필요]</div><div class="node-impact">[작성 필요]</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">목요일</div><div class="node-title">[작성 필요]</div><div class="node-detail">[작성 필요]</div><div class="node-impact">[작성 필요]</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">금요일</div><div class="node-title">[작성 필요]</div><div class="node-detail">[작성 필요]</div><div class="node-impact">[작성 필요]</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">주말 마감</div><div class="node-title">[작성 필요]</div><div class="node-detail">[작성 필요]</div><div class="node-impact">[작성 필요]</div></div>
+  </div>
+
+  <div class="insight-grid">
+    <div class="insight-card"><span class="badge">Theme 1</span><h3>[작성 필요] 인사이트 제목</h3><p>[Claude 작성 영역]</p></div>
+    <div class="insight-card"><span class="badge">Theme 2</span><h3>[작성 필요]</h3><p>[Claude 작성 영역]</p></div>
+    <div class="insight-card"><span class="badge">Theme 3</span><h3>[작성 필요]</h3><p>[Claude 작성 영역]</p></div>
+    <div class="insight-card"><span class="badge">Theme 4</span><h3>[작성 필요]</h3><p>[Claude 작성 영역]</p></div>
+    <div class="insight-card"><span class="badge">Theme 5</span><h3>[작성 필요]</h3><p>[Claude 작성 영역]</p></div>
+    <div class="insight-card"><span class="badge">Theme 6</span><h3>[작성 필요]</h3><p>[Claude 작성 영역]</p></div>
+  </div>
+</div><!-- /tab-story -->
+
+<!-- TAB: Country Drilldown (placeholder) -->
+<div id="tab-country" class="tab-panel">
+  <div class="placeholder"><strong>Country Drilldown — Claude 작성 영역</strong>국가별 6 섹션 (🇨🇳 중국 · 🇯🇵 일본 · 🇹🇼 대만 · 🇮🇳 인도 · 🇭🇰 홍콩 · 🇰🇷 한국).<br>각 섹션에 country-section 클래스 사용. references/story-template.md 참조.</div>
+</div><!-- /tab-country -->
+
+<!-- TAB: Themes (placeholder) -->
+<div id="tab-themes" class="tab-panel">
+  <div class="placeholder"><strong>Themes — Claude 작성 영역</strong>횡단 주제 4~5개 (반도체 디커플링·달러 강세·AI 인프라·정책 리스크·지정학).<br>theme-card 클래스 사용. references/story-template.md 참조.</div>
+</div><!-- /tab-themes -->
+
+<!-- TAB: Data (auto-filled) -->
+<div id="tab-data" class="tab-panel">
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:8px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 지수 2026-W26 변동률</h2>
+  <table class="heatmap">
+    <thead><tr><th>지수</th><th>국가/지역</th><th>2026-06-19 종가</th><th>2026-06-26 종가</th><th>WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="name-cell">Nikkei225</td><td class="close-cell">일본</td><td class="close-cell">71,250.06</td><td class="close-cell">69,360.88</td><td class="heat-cell down">−2.65%</td></tr>
+      <tr><td class="name-cell">코스피</td><td class="close-cell">한국</td><td class="close-cell">9,052.42</td><td class="close-cell">8,411.21</td><td class="heat-cell down">−7.08%</td></tr>
+      <tr><td class="name-cell">코스닥</td><td class="close-cell">한국</td><td class="close-cell">966.59</td><td class="close-cell">851.37</td><td class="heat-cell down">−11.92%</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 통화 2026-W26 변동률</h2>
+  <table class="heatmap">
+    <thead><tr><th>통화쌍</th><th>2026-06-19</th><th>2026-06-26</th><th>WTD %</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td class="name-cell">USD/KRW</td><td class="close-cell">1,529.8900</td><td class="close-cell">1,535.0000</td><td class="heat-cell up">+0.33%</td><td style="font-size:12px;color:var(--muted)">원</td></tr>
+      <tr><td class="name-cell">USD/INR</td><td class="close-cell">94.3100</td><td class="close-cell">94.3000</td><td class="heat-cell flat">−0.01%</td><td style="font-size:12px;color:var(--muted)">루피</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 종목 2026-W26 TOP 20</h2>
+  <table class="heatmap">
+    <thead><tr><th>#</th><th>종목</th><th>국가</th><th>비중%</th><th>2026-06-19</th><th>2026-06-26</th><th>WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="close-cell">1</td><td class="name-cell">Techcombank</td><td class="close-cell">베트남</td><td class="close-cell">0.03</td><td class="close-cell">30,950.00</td><td class="close-cell">33,400.00</td><td class="heat-cell up">+7.92%</td></tr>
+      <tr><td class="close-cell">2</td><td class="name-cell">VPBank</td><td class="close-cell">베트남</td><td class="close-cell">0.03</td><td class="close-cell">25,900.00</td><td class="close-cell">26,750.00</td><td class="heat-cell up">+3.28%</td></tr>
+      <tr><td class="close-cell">3</td><td class="name-cell">Takeda</td><td class="close-cell">일본</td><td class="close-cell">0.17</td><td class="close-cell">4,934.00</td><td class="close-cell">5,087.00</td><td class="heat-cell up">+3.10%</td></tr>
+      <tr><td class="close-cell">4</td><td class="name-cell">Panasonic</td><td class="close-cell">일본</td><td class="close-cell">0.03</td><td class="close-cell">4,419.00</td><td class="close-cell">4,540.00</td><td class="heat-cell up">+2.74%</td></tr>
+      <tr><td class="close-cell">5</td><td class="name-cell">Advantest</td><td class="close-cell">일본</td><td class="close-cell">0.33</td><td class="close-cell">31,740.00</td><td class="close-cell">32,440.00</td><td class="heat-cell up">+2.21%</td></tr>
+      <tr><td class="close-cell">6</td><td class="name-cell">Sony</td><td class="close-cell">일본</td><td class="close-cell">0.09</td><td class="close-cell">3,140.00</td><td class="close-cell">3,199.00</td><td class="heat-cell up">+1.88%</td></tr>
+      <tr><td class="close-cell">7</td><td class="name-cell">Recruit</td><td class="close-cell">일본</td><td class="close-cell">0.07</td><td class="close-cell">10,865.00</td><td class="close-cell">11,040.00</td><td class="heat-cell up">+1.61%</td></tr>
+      <tr><td class="close-cell">8</td><td class="name-cell">Renesas</td><td class="close-cell">일본</td><td class="close-cell">0.22</td><td class="close-cell">4,734.00</td><td class="close-cell">4,800.00</td><td class="heat-cell up">+1.39%</td></tr>
+      <tr><td class="close-cell">9</td><td class="name-cell">Mitsubishi Estate</td><td class="close-cell">일본</td><td class="close-cell">0.33</td><td class="close-cell">4,050.00</td><td class="close-cell">4,101.00</td><td class="heat-cell up">+1.26%</td></tr>
+      <tr><td class="close-cell">10</td><td class="name-cell">NEC</td><td class="close-cell">일본</td><td class="close-cell">0.04</td><td class="close-cell">3,756.00</td><td class="close-cell">3,795.00</td><td class="heat-cell up">+1.04%</td></tr>
+      <tr><td class="close-cell">11</td><td class="name-cell">Mobile World</td><td class="close-cell">베트남</td><td class="close-cell">0.04</td><td class="close-cell">78,000.00</td><td class="close-cell">78,500.00</td><td class="heat-cell up">+0.64%</td></tr>
+      <tr><td class="close-cell">12</td><td class="name-cell">ANZ</td><td class="close-cell">호주</td><td class="close-cell">0.21</td><td class="close-cell">35.03</td><td class="close-cell">35.04</td><td class="heat-cell up">+0.03%</td></tr>
+      <tr><td class="close-cell">13</td><td class="name-cell">Toyota</td><td class="close-cell">일본</td><td class="close-cell">0.19</td><td class="close-cell">2,776.50</td><td class="close-cell">2,768.00</td><td class="heat-cell down">−0.31%</td></tr>
+      <tr><td class="close-cell">14</td><td class="name-cell">Fujitsu</td><td class="close-cell">일본</td><td class="close-cell">0.03</td><td class="close-cell">3,211.00</td><td class="close-cell">3,199.00</td><td class="heat-cell down">−0.37%</td></tr>
+      <tr><td class="close-cell">15</td><td class="name-cell">Hoa Phat</td><td class="close-cell">베트남</td><td class="close-cell">0.06</td><td class="close-cell">23,600.00</td><td class="close-cell">23,500.00</td><td class="heat-cell down">−0.42%</td></tr>
+      <tr><td class="close-cell">16</td><td class="name-cell">Vietinbank</td><td class="close-cell">베트남</td><td class="close-cell">0.05</td><td class="close-cell">33,750.00</td><td class="close-cell">33,600.00</td><td class="heat-cell down">−0.44%</td></tr>
+      <tr><td class="close-cell">17</td><td class="name-cell">Vietcombank</td><td class="close-cell">베트남</td><td class="close-cell">0.02</td><td class="close-cell">61,700.00</td><td class="close-cell">61,400.00</td><td class="heat-cell down">−0.49%</td></tr>
+      <tr><td class="close-cell">18</td><td class="name-cell">Keyence</td><td class="close-cell">일본</td><td class="close-cell">0.09</td><td class="close-cell">77,700.00</td><td class="close-cell">77,100.00</td><td class="heat-cell down">−0.77%</td></tr>
+      <tr><td class="close-cell">19</td><td class="name-cell">Masan Group</td><td class="close-cell">베트남</td><td class="close-cell">0.03</td><td class="close-cell">72,000.00</td><td class="close-cell">71,400.00</td><td class="heat-cell down">−0.83%</td></tr>
+      <tr><td class="close-cell">20</td><td class="name-cell">MB Bank</td><td class="close-cell">베트남</td><td class="close-cell">0.05</td><td class="close-cell">25,000.00</td><td class="close-cell">24,750.00</td><td class="heat-cell down">−1.00%</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 종목 2026-W26 BOTTOM 20</h2>
+  <table class="heatmap">
+    <thead><tr><th>#</th><th>종목</th><th>국가</th><th>비중%</th><th>2026-06-19</th><th>2026-06-26</th><th>WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="close-cell">1</td><td class="name-cell">Kawasaki Heavy</td><td class="close-cell">일본</td><td class="close-cell">0.03</td><td class="close-cell">3,191.00</td><td class="close-cell">2,836.00</td><td class="heat-cell down">−11.12%</td></tr>
+      <tr><td class="close-cell">2</td><td class="name-cell">SUMCO</td><td class="close-cell">일본</td><td class="close-cell">0.12</td><td class="close-cell">4,254.00</td><td class="close-cell">3,818.00</td><td class="heat-cell down">−10.25%</td></tr>
+      <tr><td class="close-cell">3</td><td class="name-cell">Lasertec</td><td class="close-cell">일본</td><td class="close-cell">0.21</td><td class="close-cell">55,100.00</td><td class="close-cell">50,000.00</td><td class="heat-cell down">−9.26%</td></tr>
+      <tr><td class="close-cell">4</td><td class="name-cell">MHI</td><td class="close-cell">일본</td><td class="close-cell">0.04</td><td class="close-cell">3,917.00</td><td class="close-cell">3,567.00</td><td class="heat-cell down">−8.94%</td></tr>
+      <tr><td class="close-cell">5</td><td class="name-cell">TDK</td><td class="close-cell">일본</td><td class="close-cell">0.03</td><td class="close-cell">3,909.00</td><td class="close-cell">3,575.00</td><td class="heat-cell down">−8.54%</td></tr>
+      <tr><td class="close-cell">6</td><td class="name-cell">Murata</td><td class="close-cell">일본</td><td class="close-cell">0.06</td><td class="close-cell">11,750.00</td><td class="close-cell">10,770.00</td><td class="heat-cell down">−8.34%</td></tr>
+      <tr><td class="close-cell">7</td><td class="name-cell">Disco</td><td class="close-cell">일본</td><td class="close-cell">0.27</td><td class="close-cell">84,900.00</td><td class="close-cell">78,510.00</td><td class="heat-cell down">−7.53%</td></tr>
+      <tr><td class="close-cell">8</td><td class="name-cell">Bank Mandiri</td><td class="close-cell">인도네시아</td><td class="close-cell">0.20</td><td class="close-cell">4,310.00</td><td class="close-cell">3,990.00</td><td class="heat-cell down">−7.42%</td></tr>
+      <tr><td class="close-cell">9</td><td class="name-cell">Nintendo</td><td class="close-cell">일본</td><td class="close-cell">0.05</td><td class="close-cell">7,076.00</td><td class="close-cell">6,589.00</td><td class="heat-cell down">−6.88%</td></tr>
+      <tr><td class="close-cell">10</td><td class="name-cell">Hitachi</td><td class="close-cell">일본</td><td class="close-cell">0.22</td><td class="close-cell">4,764.00</td><td class="close-cell">4,478.00</td><td class="heat-cell down">−6.00%</td></tr>
+      <tr><td class="close-cell">11</td><td class="name-cell">Fanuc</td><td class="close-cell">일본</td><td class="close-cell">0.04</td><td class="close-cell">7,473.00</td><td class="close-cell">7,026.00</td><td class="heat-cell down">−5.98%</td></tr>
+      <tr><td class="close-cell">12</td><td class="name-cell">Resonac</td><td class="close-cell">일본</td><td class="close-cell">0.19</td><td class="close-cell">18,390.00</td><td class="close-cell">17,330.00</td><td class="heat-cell down">−5.76%</td></tr>
+      <tr><td class="close-cell">13</td><td class="name-cell">IHI</td><td class="close-cell">일본</td><td class="close-cell">0.26</td><td class="close-cell">2,817.00</td><td class="close-cell">2,672.50</td><td class="heat-cell down">−5.13%</td></tr>
+      <tr><td class="close-cell">14</td><td class="name-cell">BaoViet</td><td class="close-cell">베트남</td><td class="close-cell">0.03</td><td class="close-cell">66,800.00</td><td class="close-cell">63,400.00</td><td class="heat-cell down">−5.09%</td></tr>
+      <tr><td class="close-cell">15</td><td class="name-cell">Mitsui</td><td class="close-cell">일본</td><td class="close-cell">0.02</td><td class="close-cell">4,716.00</td><td class="close-cell">4,508.00</td><td class="heat-cell down">−4.41%</td></tr>
+      <tr><td class="close-cell">16</td><td class="name-cell">Tokyo Electron</td><td class="close-cell">일본</td><td class="close-cell">0.34</td><td class="close-cell">75,360.00</td><td class="close-cell">72,920.00</td><td class="heat-cell down">−3.24%</td></tr>
+      <tr><td class="close-cell">17</td><td class="name-cell">Mitsubishi Electric</td><td class="close-cell">일본</td><td class="close-cell">0.32</td><td class="close-cell">6,051.00</td><td class="close-cell">5,858.00</td><td class="heat-cell down">−3.19%</td></tr>
+      <tr><td class="close-cell">18</td><td class="name-cell">Rohm</td><td class="close-cell">일본</td><td class="close-cell">0.12</td><td class="close-cell">5,509.00</td><td class="close-cell">5,342.00</td><td class="heat-cell down">−3.03%</td></tr>
+      <tr><td class="close-cell">19</td><td class="name-cell">Mitsubishi Corp</td><td class="close-cell">일본</td><td class="close-cell">0.02</td><td class="close-cell">4,540.00</td><td class="close-cell">4,403.00</td><td class="heat-cell down">−3.02%</td></tr>
+      <tr><td class="close-cell">20</td><td class="name-cell">Vinpearl</td><td class="close-cell">베트남</td><td class="close-cell">0.02</td><td class="close-cell">91,000.00</td><td class="close-cell">88,800.00</td><td class="heat-cell down">−2.42%</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">국가별 종합</h2>
+  <table class="heatmap">
+    <thead><tr><th>국가</th><th>매칭/유니버스</th><th>비중 합계</th><th>단순평균 WTD %</th><th>가중평균 WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="name-cell">🇻🇳 베트남</td><td class="close-cell">10/10</td><td class="close-cell">0.35%</td><td class="heat-cell up">+0.11%</td><td class="heat-cell up">+0.01%</td></tr>
+      <tr><td class="name-cell">🇦🇺 호주</td><td class="close-cell">1/2</td><td class="close-cell">0.21%</td><td class="heat-cell up">+0.03%</td><td class="heat-cell up">+0.03%</td></tr>
+      <tr><td class="name-cell">🇯🇵 일본</td><td class="close-cell">32/44</td><td class="close-cell">4.74%</td><td class="heat-cell down">−3.21%</td><td class="heat-cell down">−2.61%</td></tr>
+      <tr><td class="name-cell">🇮🇩 인도네시아</td><td class="close-cell">1/1</td><td class="close-cell">0.20%</td><td class="heat-cell down">−7.42%</td><td class="heat-cell down">−7.42%</td></tr>
+    </tbody>
+  </table>
+</div><!-- /tab-data -->
+
+<!-- TAB: Outlook (placeholder + required risk-section markers) -->
+<div id="tab-outlook" class="tab-panel">
+  <div class="outlook-card">
+    <h3>2026-W26 다음 주 시나리오 — [Claude 작성 영역]</h3>
+    <p>[작성 필요] 핵심 미해결 변수 3가지...</p>
+    <div class="outlook-grid">
+      <div class="scenario bull"><h4>🐂 Bull (확률 ~%)</h4><p>[작성 필요]</p></div>
+      <div class="scenario base"><h4>📊 Base (확률 ~%)</h4><p>[작성 필요]</p></div>
+      <div class="scenario bear"><h4>🐻 Bear (확률 ~%)</h4><p>[작성 필요]</p></div>
+    </div>
+  </div>
+
+  <div class="risk-section">
+    <h2>⚠️ 주목 리스크 TOP 5 — [Claude 작성 영역]</h2>
+    <ul class="risk-items">
+      <li class="risk-item"><span class="risk-tag high">高</span><div>[작성 필요]</div></li>
+      <li class="risk-item"><span class="risk-tag high">高</span><div>[작성 필요]</div></li>
+      <li class="risk-item"><span class="risk-tag high">高</span><div>[작성 필요]</div></li>
+      <li class="risk-item"><span class="risk-tag med">中</span><div>[작성 필요]</div></li>
+      <li class="risk-item"><span class="risk-tag med">中</span><div>[작성 필요]</div></li>
+    </ul>
+  </div>
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">데이터 캘린더</span> 다음 주 모니터링</h3>
+    <p>[Claude 작성 영역] 5~7개 이벤트...</p>
+  </div>
+</div><!-- /tab-outlook -->
+
+<!-- TAB: Sources (partial auto-fill) -->
+<div id="tab-sources" class="tab-panel">
+  <div class="sources-section">
+    <h3>1. 시장 데이터 (Quotes)</h3>
+    <ul class="sources-list">
+      <li><a href="https://finance.yahoo.com" target="_blank">Yahoo Finance (yfinance)</a> — <span class="source-meta">아시아 종목·지수·환율 2026-06-19~2026-06-26 시계열 (Snowflake MKT100 정본 미러)</span></li>
+      <li><strong>history/아시아종목.xlsx</strong> — 운용 유니버스 180종목 (중국 71 · 인도 38 · 일본 44 · 대만 5 · 홍콩 9 · 호주 2 · 베트남 10 · 인도네시아 1)</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>2. 미래에셋증권 Research Digest</h3>
+    <ul class="sources-list">
+      <li><strong>[Claude 작성]</strong> W##-3, W##-2, W##-1, W## 4건 링크 + 핵심 메시지</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>3. 미래에셋증권 핵심 단편 보고서 (원문)</h3>
+    <ul class="sources-list">
+      <li><strong>[Claude 작성]</strong> 「보고서명」 핵심 메시지 한 줄</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>4. 외부 참고 자료 (웹 검색)</h3>
+    <ul class="sources-list">
+      <li><a href="https://www.msci.com/indexes" target="_blank">MSCI Index Data</a> — <span class="source-meta">MSCI Asia · EM · ACWI 지수 기준값 (2026-W26)</span></li>
+      <li><a href="https://kr.investing.com" target="_blank">Investing.com Korea</a> — <span class="source-meta">아시아 주요 지수·환율 주간 시계열 참조</span></li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>5. 본 보고서 산출 방법론</h3>
+    <ul class="sources-list" style="list-style:none;padding-left:0">
+      <li><strong>기간 정의</strong>: 2026-W26 = 2026-06-22 ~ 2026-06-26 (5영업일)</li>
+      <li><strong>WTD 변동률</strong>: 2026-06-19 종가 → 2026-06-26 종가</li>
+      <li><strong>가중평균</strong>: Σ(비중 × WTD%) / Σ(비중)</li>
+      <li><strong>유니버스 매칭</strong>: 44/180 (24.4%) — 매칭은 종목명 정확 일치 기준</li>
+      <li><strong>제한</strong>: 미매칭 종목은 가중평균에서 제외 (Coverage 한계 명시)</li>
+      <li><strong>지수·환율</strong>: history/market_data.csv (yfinance 백필) — 동일 윈도우</li>
+    </ul>
+  </div>
+
+  <div class="ai-disclaimer">
+    ⚠️ 본 보고서는 미래에셋증권 다이제스트 및 history/market_data.csv를 기반으로 생성됐습니다.
+    수치·해석은 작성 시점 기준이며, 투자 권유가 아닙니다.
+  </div>
+</div><!-- /tab-sources -->
+
+<div class="footer">
+  Asia Weekly Brief · 2026-W26 (2026-06-22 ~ 2026-06-26) · 생성: 2026-06-28 20:00 KST · market_summary 프로젝트
+</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
