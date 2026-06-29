@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-06-29 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-06-29 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>리튬·2차전지 반등 · 바이오·헬스케어</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">리튬·2차전지 반등</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +15.40%</span><span class="chip chip-persist">지속성 43%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 리튬 +15.40%, 2차전지(생산) +14.43% 등 배터리 관련 테마가 동반 급등하며 수급 강도가 확인됩니다. Tavily에서 LG에너지솔루션·LG화학 상승과 SK온 LFP 양산(2026) 소식이 포착되어, 글로벌 밸류체인 재평가가 오늘 한국 수급으로 이어진 것으로 판단됩니다. 지속성은 43%로 높지 않지만, 오늘 강한 반등 모멘텀과 글로벌 트리거가 명확해 상담 설명력이 높습니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">오늘 리튬 테마 +15.40%, 2차전지(생산) +14.43%로 배터리 관련 섹터가 동반 급등했습니다. LG에너지솔루션과 LG화학이 강한 상승세를 보였고, 외국인 순매수가 전 세션 대비 증가하며 수급 강도가 확인됐습니다. 오전부터 관련 종목들이 상한가 행진을 펼치며 시장을 이끌었습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">한국 배터리 기업들이 LFP(리튬인산철) 시장으로 진출을 확대하면서 글로벌 밸류체인 재편에 대한 기대감이 커지고 있습니다. SK온이 2026년까지 LFP 양산 체제를 구축한다는 소식이 전해지며, 기존 NCM(니켈·코발트·망간) 중심이던 한국 배터리 업체들이 중국 업체가 주도하던 LFP 시장에서도 경쟁력을 확보할 수 있다는 신호로 받아들여졌습니다.
+
+더 큰 그림에서 보면, 올해 코스피가 6000선을 돌파하며 연간 75% 상승을 기록하는 등 한국 시장 전반의 강세 속에서 배터리 섹터가 뒤늦게 반등에 나선 측면도 있습니다. 미국과 유럽의 전기차 보조금 정책이 재조정되며 주춤했던 배터리주들이, 중국 외 공급망 다변화 수요와 LFP 신규 진출 모멘텀을 만나 오늘 강한 매수세로 이어졌습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 전기차 시장에서 중국 배터리 업체의 LFP 독점 구도가 깨지고 있다는 점이 한국 시장에 긍정적으로 작용했습니다. 미국과 유럽은 중국 의존도를 낮추기 위해 한국·일본 배터리 기업과의 협력을 강화하고 있으며, 특히 북미 IRA(인플레이션 감축법) 세액공제 요건이 '우방국 배터리 부품 사용' 비중을 높이도록 설계돼 있어 한국 기업들에게 유리한 환경이 조성되고 있습니다.
+
+SK온의 LFP 양산 발표는 단순히 한 기업의 전략 변화를 넘어, 한국이 글로벌 배터리 공급망에서 '고가 NCM만 하는 나라'에서 '전 라인업 대응 가능한 나라'로 위상이 바뀌는 신호로 해석됩니다. 이 뉴스가 오늘 외국인 매수를 자극하며 한국 배터리주 전반의 재평가로 이어진 것입니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>SK온이 2026년까지 LFP 배터리 양산을 시작한다는 발표가 나오면서, 한국 배터리 기업들이 중국이 독점하던 저가 배터리 시장에도 진출할 수 있다는 기대가 커졌습니다.</li><li>미국과 유럽이 중국산 배터리 의존도를 줄이려는 정책을 강화하고 있어, 한국 배터리 기업들이 그 빈자리를 채울 수 있다는 기대감이 오늘 주가 상승으로 이어졌습니다.</li><li>올해 한국 주식 시장이 연간 75% 올랐지만 배터리주는 상대적으로 뒤처져 있었는데, 오늘 새로운 사업 확장 소식이 나오면서 뒤늦게 반등이 시작된 것입니다.</li><li>배터리 원자재인 리튬 가격이 안정되면서 배터리 기업들의 원가 부담이 줄어든 점도 긍정적으로 작용하고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. LFP가 뭐고 왜 중요한가요?</div><div class="qa-a">A. LFP는 리튬인산철 배터리로, 니켈·코발트 대신 철을 쓰기 때문에 가격이 저렴하고 안전합니다. 그동안 중국 기업들이 독점해왔는데, SK온 같은 한국 기업이 진출하면 글로벌 전기차 업체들이 중국 외 선택지를 갖게 돼서 수주 기회가 늘어나는 구조입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 오늘 15% 오른 게 일시적인 건가요?</div><div class="qa-a">A. 단기 급등이라 조정 가능성은 있습니다. 다만 SK온의 LFP 양산 계획이 실제로 진행 중이고, 미국·유럽의 공급망 다변화 정책이 지속되는 한 중장기 흐름 자체는 긍정적입니다. 오늘 반등은 그동안 뒤처졌던 주가가 새 모멘텀을 만난 것으로 보입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 배터리 관련 펀드를 지금 추가해도 될까요?</div><div class="qa-a">A. 오늘 급등 이후라 단기 추격 매수는 변동성이 클 수 있습니다. 다만 배터리 산업이 전기차·ESS(에너지저장장치) 확대와 함께 장기 성장 산업인 건 맞고, 한국 기업들의 기술 경쟁력도 여전히 높은 편입니다. 단기 조정 시 분할 매수를 고려하는 게 리스크 관리에 유리할 수 있습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 중국 배터리 업체들이 LFP 가격을 대폭 인하하거나, 미국·유럽의 전기차 보조금 정책이 축소될 경우 한국 배터리 기업들의 수주 모멘텀이 약화될 수 있습니다. 또한 SK온의 LFP 양산 일정이 지연되거나 수율 문제가 발생하면 오늘의 기대감이 빠르게 식을 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="성장섹터 배분">[N1G0] 성장섹터배분</span><span class="fund-chip" title="AI 국내주식">[N150] AI국내주식전략</span><span class="fund-chip" title="글로벌신성장">[N4D0] 글로벌신성장액티브</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">바이오·헬스케어</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +13.57%</span><span class="chip chip-persist">지속성 43%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 제대혈 +13.57%, 오가노이드 +12.12%, 면역항암제 +11.47%, 원격진료 +11.13%, 비만치료제 +11.08% 등 바이오·헬스케어 전 분야가 동반 강세를 보입니다. Tavily에서 코스피 6000 돌파와 연간 75% 상승이 확인되며, 시장 전반 강세 속에 바이오 섹터로 자금이 유입된 것으로 보입니다. 오늘 수익률 상위권 다수 포진으로 고객 포트폴리오 내 바이오 종목 설명에 유용합니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">오늘 제대혈 테마 +13.57%, 오가노이드 +12.12%, 면역항암제 +11.47%, 원격진료 +11.13%, 비만치료제 +11.08% 등 바이오·헬스케어 전 분야가 동반 강세를 보였습니다. 코스피 전체가 6.5% 상승하며 6000선을 돌파한 가운데, 바이오 섹터는 그보다 높은 두 자릿수 수익률로 시장을 주도했습니다. 외국인과 기관이 동시에 순매수에 나서며 수급이 뒷받침됐습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">한국 주식 시장이 올해 들어 75% 상승하며 글로벌 최고 수익률을 기록하는 가운데, 그동안 상대적으로 소외됐던 바이오·헬스케어 섹터로 자금이 유입되기 시작했습니다. 특히 반도체·전기차 등 주력 업종이 고점 부담을 느끼며 차익 실현 매물이 나오자, 투자자들이 밸류에이션 부담이 덜한 바이오주로 눈을 돌린 것으로 보입니다.
+
+더 큰 그림에서 보면, 글로벌 바이오 시장에서 비만치료제·면역항암제 등 블록버스터 신약 개발 경쟁이 치열해지고 있고, 한국 바이오텍들도 해외 라이선스 아웃(기술수출) 성과를 속속 발표하며 실적 개선 기대감을 키우고 있습니다. 코스피 6000 돌파라는 역사적 이정표와 맞물려, 투자 심리가 '대형주 차익 실현 → 중소형 바이오 신규 진입'으로 전환되는 흐름이 오늘 강하게 나타났습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 헬스케어 시장에서 비만치료제 시장이 연간 1000억 달러 규모로 성장하고, 면역항암제·세포치료제 등 차세대 치료법 개발 경쟁이 가속화되면서 한국 바이오 기업들의 기술 파트너십 기회가 늘어나고 있습니다. 특히 미국 FDA가 한국 임상 데이터를 인정하는 비율이 높아지며, 한국발 신약 후보물질들이 글로벌 빅파마와 라이선스 계약을 맺는 사례가 증가하고 있습니다.
+
+오늘 한국 바이오주 강세는 단순히 국내 유동성 유입만이 아니라, 글로벌 바이오 밸류체인에서 한국 기업들의 위상이 'CMO(위탁생산)·CDMO(위탁개발생산)' 수준을 넘어 '신약 개발 주체'로 격상되고 있다는 기대감이 반영된 것입니다. 미국·유럽 투자자들이 한국 바이오텍 IPO와 2차 공모에 적극 참여하는 흐름도 오늘 외국인 매수를 뒷받침했습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>올해 한국 주식 시장이 75% 오르면서 반도체·전기차 같은 주력 업종은 이미 많이 올랐지만, 바이오는 상대적으로 덜 올라 있어 새로운 매수 수요가 들어오고 있습니다.</li><li>비만치료제와 면역항암제 시장이 전 세계적으로 빠르게 커지고 있고, 한국 바이오 기업들이 해외에 기술을 수출하는 계약이 늘어나면서 실적 기대감이 높아지고 있습니다.</li><li>코스피가 6000선을 돌파하며 투자 심리가 좋아진 상태에서, 그동안 소외됐던 중소형 바이오주로 자금이 이동하는 흐름이 오늘 뚜렷하게 나타났습니다.</li><li>미국 FDA가 한국 임상 데이터를 인정하는 비율이 높아지면서, 한국 바이오 기업들이 글로벌 신약 개발 파트너로 인정받는 사례가 늘고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 바이오주는 변동성이 크다고 들었는데 괜찮을까요?</div><div class="qa-a">A. 맞습니다. 바이오주는 임상 결과나 허가 여부에 따라 주가가 크게 움직이는 특성이 있습니다. 다만 오늘처럼 섹터 전반이 동반 상승한 경우는 특정 종목 리스크보다는 시장 전체의 자금 흐름이 바뀌는 신호일 수 있습니다. 개별 종목보다는 여러 바이오 기업에 분산 투자하는 펀드가 변동성 관리에 유리합니다.</div></div><div class="qa-block"><div class="qa-q">Q. 비만치료제가 왜 중요한가요?</div><div class="qa-a">A. 전 세계 비만 인구가 급증하면서 비만치료제 시장이 연간 1000억 달러(약 130조 원) 규모로 성장하고 있습니다. 한국 제약사들도 이 시장에 진출하기 위해 신약 개발을 진행 중이고, 성공하면 매출이 급증할 가능성이 있어 투자자들이 주목하고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 오늘 10% 넘게 오른 바이오주를 지금 사도 될까요?</div><div class="qa-a">A. 단기 급등 이후라 단기 조정 가능성은 있습니다. 바이오는 임상 결과나 기술수출 계약 같은 이벤트가 나올 때마다 주가가 크게 움직이기 때문에, 뉴스를 꾸준히 확인하면서 분할 매수하는 게 안전합니다. 장기적으로는 글로벌 헬스케어 시장 성장과 함께 한국 바이오 산업도 성장할 가능성이 있지만, 개별 종목은 신중하게 접근해야 합니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 임상 3상 실패나 FDA 승인 지연 소식이 나올 경우 관련 종목과 섹터 전체가 급락할 수 있습니다. 또한 코스피가 고점에서 조정을 받거나 외국인 매도가 증가하면, 유동성이 상대적으로 낮은 바이오주는 낙폭이 더 클 수 있습니다. 글로벌 금리 인상이 재개되면 수익 실현까지 시간이 오래 걸리는 바이오 섹터가 먼저 매도 대상이 될 가능성도 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="글로벌헬스케어">[N470] 글로벌헬스케어</span><span class="fund-chip" title="글로벌신성장">[N4D0] 글로벌신성장액티브</span><span class="fund-chip" title="성장섹터 배분">[N1G0] 성장섹터배분</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">코스피 6000 돌파하며 연간 75% 상승 속, 리튬·배터리와 바이오가 두 자릿수 급등으로 시장을 이끌었습니다.</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 이번 주 미국 연준 의장 발언과 한국 외국인 수급 지속 여부—코스피 6000 위 안착 가능성을 가를 변수입니다.</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 반도체 대형주 조정—오늘 SK하이닉스 등 반도체주가 차익 실현 매물로 하락했는데, 이 자금이 배터리·바이오로 이동한 흐름을 주목해야 합니다.</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>리튬</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+15.40%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>2</td><td>2차전지(생산)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:56px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+14.43%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>3</td><td>2차전지(나트륨이온)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:53px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+13.74%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>4</td><td>제대혈</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:52px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+13.57%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>5</td><td>2차전지(LFP/리튬인산철)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:51px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+13.10%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>6</td><td>오가노이드</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:47px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+12.12%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>7</td><td>2차전지(소재/부품)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:44px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+11.48%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>8</td><td>면역항암제</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:44px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+11.47%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>9</td><td>2차전지(전고체)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:44px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+11.45%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>10</td><td>원격진료/비대면진료(U-Healthcare)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:43px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+11.13%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>11</td><td>비만치료제</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:43px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+11.08%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>12</td><td>탄소나노튜브(CNT)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:42px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+11.01%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>13</td><td>2차전지</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:42px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.87%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>14</td><td>지역화폐</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:42px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.85%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>15</td><td>피팅(관이음쇠)/밸브</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:41px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.62%</span></div></td><td style='color:#7c8298;font-size:12px'>14%</td></tr><tr><td>16</td><td>고체산화물 연료전지(SOFC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:41px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.58%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>17</td><td>캐릭터상품</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.52%</span></div></td><td style='color:#7c8298;font-size:12px'>14%</td></tr><tr><td>18</td><td>원자력발전소 해체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.51%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>19</td><td>전력저장장치(ESS)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.49%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>20</td><td>폐배터리</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.44%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-06-29 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
