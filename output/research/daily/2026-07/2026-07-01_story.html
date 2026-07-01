@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-07-01 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-07-01 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>건설 중소형 · 고체산화물 연료전지</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">건설 중소형</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +13.07%</span><span class="chip chip-persist">지속성 57%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +13.07%로 상위 3위 수익률을 기록했으며, 7일 지속성 57%(4/7일)로 안정적 흐름을 보입니다. Tavily에서 2026년 건설 섹터가 90% 상승하며 투자자 관심이 지속된다는 글로벌 트리거가 확인되어, 수익률·지속성·뉴스 모두 교차 검증된 최우선 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">건설 중소형 테마가 오늘 +13.07%로 급등하며 전체 시장 대비 큰 폭 아웃퍼폼했습니다. 7일 중 4일 상승(57% 지속성)으로 단기 모멘텀이 이어지는 가운데, 한국 주식시장이 2026년 현재까지 90% 상승하며 글로벌 투자자들의 주목을 받고 있는 흐름 속에서 중소형 건설주들이 동반 강세를 보였습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">한국 주식시장은 2025년 70% 상승에 이어 2026년에도 90% 상승을 기록하며 주요국 중 최고 성장률을 보이고 있습니다. 주식 투자자 수가 2019년 600만 명에서 2025년 말 1,450만 명으로 급증하며 개인 투자 열풍이 계속되고 있고, 이미 두 개의 시가총액 1조 달러 기업이 탄생했습니다. 애널리스트들은 KOSPI가 2026년 예상 EPS 48% 성장을 바탕으로 6,000선(PER 14배)까지 거래될 수 있다고 전망하고 있습니다.
+
+건설 중소형 섹터는 이런 시장 전반의 강세 속에서 상대적으로 밸류에이션 매력이 부각되며 자금이 유입되고 있습니다. 대형주 중심 랠리가 지속되는 가운데 중소형 건설주들이 후발 수혜주로 재조명받고 있으며, 국내 인프라 투자 확대와 재건축·재개발 수요 기대감도 더해지고 있습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌 투자자들은 한국 시장의 높은 기업 이익 성장률과 시장 개방성에 주목하고 있습니다. 2026년 한국 시장이 주요국 중 최고 수익률을 기록하면서 외국인 자금이 지속 유입되고 있고, 특히 대형 테크주에 집중되었던 자금이 밸류에이션이 낮은 중소형주로 분산되는 흐름이 나타나고 있습니다. 선진국 금리 안정화 기대감도 한국 내수·건설 섹터에 긍정적으로 작용하며, 글로벌 유동성 환경 개선이 중소형주 랠리를 뒷받침하고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>한국 주식시장이 올해 90% 올라 전 세계에서 가장 많이 올랐고, 이 과정에서 대형주만 오르던 흐름이 중소형 건설주로도 확산되고 있습니다.</li><li>주식 투자자가 600만 명에서 1,450만 명으로 두 배 이상 늘어나면서 시장에 유입되는 자금이 많아지고, 상대적으로 저평가된 중소형 건설주들이 재평가받고 있습니다.</li><li>애널리스트들은 올해 기업 이익이 48% 늘어날 것으로 보고 있어서, 아직 덜 오른 종목들이 추가로 오를 여지가 있다고 판단하는 투자자들이 많습니다.</li><li>국내 재건축·재개발과 인프라 투자 확대 기대감이 건설 중소형주에 긍정적으로 작용하고 있으며, 외국인 자금이 계속 들어오는 것도 도움이 됩니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 건설 중소형주가 이렇게 오르는 이유가 뭔가요?</div><div class="qa-a">A. 한국 주식시장이 올해 90% 상승하며 글로벌 투자자들의 관심이 집중되고 있는데, 처음엔 대형주 위주로 올랐다가 이제 상대적으로 저평가된 중소형 건설주로 자금이 움직이고 있습니다. 국내 재건축·재개발 수요와 인프라 투자 기대감도 더해지면서 오늘 13% 넘게 오른 것입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 이 상승세가 계속 이어질까요?</div><div class="qa-a">A. 애널리스트들은 올해 기업 이익이 48% 늘어날 것으로 예상하고 있어서 시장 전체적으로는 추가 상승 여력이 있다고 봅니다. 다만 중소형 건설주는 변동성이 크고, 이미 단기간에 많이 올라서 조정이 올 수도 있습니다. 7일 중 4일만 올랐다는 것도 변동성이 있다는 의미입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 시장이 90%나 올랐으면 너무 오른 거 아닌가요?</div><div class="qa-a">A. 맞습니다. 많이 오른 건 사실이고 일부 전문가들은 단기 과열 가능성을 언급하고 있습니다. 다만 기업 실적이 뒷받침되면서 오르고 있고, PER 기준으로도 6,000선까지는 갈 수 있다는 분석이 있어서 일방적 거품이라고 보기는 어렵습니다. 변동성은 계속 클 것으로 예상됩니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 시장이 단기간에 90% 상승하면서 과열 우려가 커지고 있고, 기대 이익 성장률이 실제로 달성되지 못하거나 글로벌 경기 둔화·금리 재상승 시 급격한 조정이 올 수 있습니다. 특히 중소형주는 유동성이 낮아 하락 시 낙폭이 더 클 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="국내주식형">[N1D0] 주식형</span><span class="fund-chip" title="가치주 중심">[N140] 가치주식형</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">고체산화물 연료전지</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +10.63%</span><span class="chip chip-persist">지속성 57%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 +10.63%로 상위권 수익률을 기록했고, 7일 지속성 57%로 단기 모멘텀이 확인됩니다. Tavily에서 한국 SOFC 시장이 2026~2034년 연평균 33.9% 성장 전망이라는 구조적 성장 스토리가 뒷받침되어, 상담 시 중장기 설명력이 높은 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">고체산화물 연료전지(SOFC) 테마가 오늘 +10.63%로 큰 폭 상승했습니다. 7일 중 4일 상승(57% 지속성)으로 단기 모멘텀이 확인되고 있으며, 글로벌 SOFC 시장이 2026년 48억 달러에서 2034년 498억 달러로 연평균 33.9% 성장할 것이라는 시장 전망이 투자 심리를 자극하고 있습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">고체산화물 연료전지는 무공해 고정형 발전 기술로, 글로벌 시장이 본격 성장기에 진입하고 있습니다. 시장 조사에 따르면 SOFC 시장 규모는 2025년 18억 달러에서 2026년 48억 달러, 2034년에는 498억 달러로 급팽창할 전망입니다(CAGR 33.9%). IDTechEx는 SOFC가 탄소 제로 고정형 발전에 대한 수요 증가로 성장 국면에 진입했다고 분석했습니다.
+
+한국 기업들은 SOFC 기술 개발과 상용화에 적극 나서고 있습니다. 특히 두산퓨얼셀은 데이터센터용 SOFC 전략을 추진 중이며, 2026년 고위험·고수익 전략으로 시장 주목을 받고 있습니다. 글로벌 데이터센터 전력 수요 급증과 탄소중립 요구가 맞물리면서 SOFC가 차세대 분산전원으로 부각되고 있고, 이것이 오늘 주가 급등의 배경입니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">글로벌적으로 데이터센터 전력 소비가 폭발적으로 증가하면서 안정적이고 친환경적인 전원 확보가 시급한 과제로 떠올랐습니다. 구글, 마이크로소프트 등 빅테크 기업들이 탄소중립 목표를 세우면서 SOFC 같은 무공해 고정형 발전 기술에 대한 관심이 커지고 있습니다. 한국은 SOFC 기술 경쟁력을 보유한 몇 안 되는 국가 중 하나로, 글로벌 시장 확대가 국내 관련 기업 수주·매출 증가로 직결될 가능성이 큽니다. 특히 미국·유럽의 데이터센터 투자 확대가 한국 SOFC 기업에 수출 기회를 제공하고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>고체산화물 연료전지 시장이 올해 48억 달러에서 2034년 498억 달러로 10배 넘게 커질 것으로 예상되면서, 관련 기업들의 미래 성장 기대감이 높아지고 있습니다.</li><li>데이터센터가 전 세계적으로 급증하면서 안정적이고 친환경적인 전력 공급 기술이 필요한데, SOFC가 그 해결책 중 하나로 주목받고 있습니다.</li><li>한국 기업들이 SOFC 기술 개발에 적극 투자하고 있고, 특히 두산퓨얼셀이 데이터센터용 SOFC 사업을 추진하면서 오늘 관련 종목들이 함께 오른 것입니다.</li><li>글로벌 빅테크 기업들이 탄소중립 목표를 세우면서 무공해 발전 기술 수요가 늘고 있어, 한국 기업들의 수출 기회도 커지고 있습니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 고체산화물 연료전지가 뭔가요?</div><div class="qa-a">A. 수소나 천연가스를 연료로 쓰는 발전 장치인데, 일반 발전과 달리 공해 물질을 거의 배출하지 않고 효율도 높습니다. 특히 데이터센터처럼 24시간 안정적으로 전력이 필요한 곳에 적합해서, 글로벌 빅테크 기업들이 관심을 갖고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 시장이 10배 커진다는데 정말 가능한가요?</div><div class="qa-a">A. 시장조사 기관들이 그렇게 전망하고 있는 건 맞지만, 실제로는 기술 상용화 속도와 경제성 확보 여부에 달려 있습니다. 지금은 초기 성장 단계라 변동성이 크고, 두산퓨얼셀 같은 경우 작년에 5억6천만 달러 손실을 봤을 만큼 사업 위험도 큽니다. 기대감은 크지만 불확실성도 높은 분야입니다.</div></div><div class="qa-block"><div class="qa-q">Q. 지금 투자하기엔 너무 이른 건 아닌가요?</div><div class="qa-a">A. 맞습니다. 아직 시장 초기 단계라 실적이 본격적으로 나오려면 시간이 걸립니다. 오늘 10% 넘게 오른 것도 미래 기대감 때문이지 당장의 실적 때문은 아닙니다. 관련 기업들의 기술 개발 진행 상황, 수주 실적, 경쟁사 동향 등을 지속적으로 지켜봐야 하는 테마입니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: SOFC 기술은 아직 초기 단계로 상용화·경제성 확보까지 시간이 오래 걸릴 수 있고, 주요 기업들이 대규模 손실을 기록 중입니다. 시장 성장률이 기대에 미치지 못하거나 경쟁 기술(배터리, 기존 발전)이 우위를 점하면 투자 심리가 급랭할 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="글로벌ESG 친환경">[N4G0] 글로벌ESG</span><span class="fund-chip" title="성장섹터 배분">[N1G0] 성장섹터배분</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">한국 시장이 올해 90% 상승하며 글로벌 최고 수익률을 기록하는 가운데, 중소형 건설주와 고체산화물 연료전지 테마가 각각 13%, 10% 넘게 급등하며 개인 투자 열기가 이어지고 있습니다.</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — KOSPI 6,000선 돌파 여부와 외국인 매수세 지속 여부를 주목해야 합니다. 또한 두산퓨얼셀 등 SOFC 관련 기업들의 수주 발표 일정과 글로벌 데이터센터 투자 동향도 체크 포인트입니다.</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 반도체 장비 테마 — 한국이 글로벌 반도체 공급망 핵심 국가로 부상하면서, 시장 전반 강세 속에 반도체 장비주들도 재평가 받을 가능성이 있어 주목할 필요가 있습니다.</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>2026 하반기 신규상장</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+26.00%</span></div></td><td style='color:#7c8298;font-size:12px'>-%</td></tr><tr><td>2</td><td>전선</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:40px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+17.46%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>3</td><td>건설 중소형</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:30px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+13.07%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>4</td><td>고체산화물 연료전지(SOFC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:24px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.63%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>5</td><td>시멘트/레미콘</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:23px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+10.30%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>6</td><td>전력설비</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:22px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+9.95%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>7</td><td>아스콘(아스팔트 콘크리트)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:22px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+9.57%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>8</td><td>GTX(수도권 광역급행철도)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:21px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+9.47%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>9</td><td>자전거</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:17px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.77%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>10</td><td>해저터널(지하화/지하도로 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:17px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+7.40%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>11</td><td>초전도체</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:15px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+6.75%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>12</td><td>원자력발전</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.98%</span></div></td><td style='color:#7c8298;font-size:12px'>29%</td></tr><tr><td>13</td><td>모듈러주택</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.93%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>14</td><td>모더나(MODERNA)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.77%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>15</td><td>철도</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.67%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>16</td><td>정유</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.46%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>17</td><td>유심(USIM)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.32%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>18</td><td>우주항공산업(누리호/인공위성 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.22%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>19</td><td>LED장비</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.08%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>20</td><td>모바일게임(스마트폰)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+5.05%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-07-01 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
