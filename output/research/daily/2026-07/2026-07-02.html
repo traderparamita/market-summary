@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Theme Research · 2026-07-02 · Anthillia</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+:root {
+  --bg:#f0f2f7; --card:#fff; --border:#e2e6f0;
+  --text:#2d3148; --muted:#7c8298;
+  --primary:#F58220; --primary-light:#fff3e8;
+  --navy:#043B72;
+  --green:#1a9e6e; --green-bg:#edfaf5; --green-border:#a7f3d0;
+  --red:#dc2626; --red-bg:#fff5f5; --red-border:#fecaca;
+  --blue-bg:#f0f7ff; --blue-border:#bfdbfe;
+  --yellow-bg:#fffbeb; --yellow-border:#fde68a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.75;
+  padding:48px 24px;max-width:960px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:24px}
+.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--primary)}
+.nav .sep{color:var(--border)}
+/* header */
+.header{margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.header-badge{
+  display:inline-block;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;
+}
+.header h1{font-size:26px;font-weight:800;color:#1a1d2e;margin-bottom:6px}
+.header .meta{font-size:13px;color:var(--muted)}
+/* KPI bar */
+.kpi-bar{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:16px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+}
+.kpi-item{display:flex;flex-direction:column;align-items:flex-start;min-width:80px}
+.kpi-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:18px;font-weight:800;line-height:1.2}
+.kpi-pos{color:var(--green)} .kpi-neg{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--muted)}
+/* theme card */
+.theme-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;
+}
+.theme-header{padding:24px 28px 18px;border-bottom:1px solid var(--border)}
+.theme-name{font-size:22px;font-weight:800;color:#1a1d2e;margin-bottom:12px}
+.signal-bar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px}
+.chip-pos{color:#047857;background:#d1fae5;border:1px solid #6ee7b7}
+.chip-neg{color:var(--red);background:var(--red-bg);border:1px solid var(--red-border)}
+.chip-persist{color:var(--navy);background:#dbeafe;border:1px solid #93c5fd}
+.chip-tavily{color:#6b21a8;background:#f3e8ff;border:1px solid #d8b4fe}
+.theme-body{padding:0 28px 28px}
+/* selection reason */
+.selection-reason{
+  margin:18px 0 0;padding:12px 16px;
+  background:#f8f9fc;border-radius:10px;border-left:3px solid var(--primary);
+  font-size:13px;color:var(--muted);
+}
+/* today move */
+.today-move{
+  margin:18px 0;padding:16px 20px;
+  background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;
+}
+.move-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--green);margin-bottom:6px;
+}
+.move-text{font-size:14px;font-weight:500;line-height:1.7;color:#1a2e25}
+/* sections */
+.section{padding:16px 0;border-bottom:1px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.section-label{
+  display:inline-block;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--navy);background:#eef1f8;padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.section-text{font-size:14px;line-height:1.85;white-space:pre-wrap}
+/* talking points */
+.talking-points{
+  list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;
+}
+.talking-points li{
+  font-size:14px;line-height:1.7;padding:10px 16px;
+  background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:10px;
+  position:relative;padding-left:36px;
+}
+.talking-points li::before{
+  content:"💬";position:absolute;left:12px;top:10px;font-size:13px;
+}
+/* Q&A */
+.qa-list{display:flex;flex-direction:column;gap:14px}
+.qa-block{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
+.qa-q{
+  background:#f8f9fc;padding:10px 16px;font-size:13px;font-weight:600;
+  color:var(--navy);border-bottom:1px solid var(--border);
+}
+.qa-a{
+  padding:12px 16px;font-size:13px;line-height:1.75;background:var(--card);
+}
+/* risk / fund */
+.risk-box{
+  margin:16px 0;padding:14px 18px;
+  background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;font-size:13px;
+}
+.fund-section{margin-top:16px}
+.fund-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fund-chip{
+  font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;
+  border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px;cursor:default;
+}
+.fund-chip:hover{background:#ede2ff}
+/* summary card */
+.summary-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:24px;
+}
+.summary-card h2{
+  font-size:17px;font-weight:700;color:var(--navy);
+  margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);
+}
+.one-line{
+  font-size:16px;font-weight:700;line-height:1.6;color:#1a1d2e;
+  padding:14px 18px;background:var(--primary-light);
+  border:1px solid #fde0c0;border-radius:10px;margin-bottom:18px;
+}
+.summary-item{
+  font-size:13px;margin-bottom:10px;line-height:1.75;
+  padding:10px 14px;border-radius:8px;background:#f8f9fc;
+}
+/* naver table */
+.naver-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:20px}
+.naver-table th{
+  background:#f8f9fc;color:var(--muted);font-weight:600;
+  padding:8px 12px;text-align:left;border-bottom:2px solid var(--border);
+}
+.naver-table td{padding:8px 12px;border-bottom:1px solid var(--border)}
+.naver-table tr:last-child td{border-bottom:none}
+.naver-table .pos{color:#047857;font-weight:600}
+.naver-table .neg{color:var(--red);font-weight:600}
+/* disclaimer */
+.ai-disclaimer{
+  background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:10px;
+  padding:14px 20px;margin-top:24px;font-size:12px;color:#92400e;line-height:1.7;
+}
+.footer{text-align:center;font-size:12px;color:var(--muted);padding-top:28px;margin-top:8px}
+.footer a{color:var(--primary);text-decoration:none}
+@media(max-width:720px){
+  body{padding:24px 12px}
+  .theme-header,.theme-body{padding-left:20px;padding-right:20px}
+  .theme-name{font-size:18px}
+  .kpi-bar{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="../../../index.html">&larr; Anthillia</a>
+  <span class="sep">/</span>
+  <a href="../../index.html">Research</a>
+  <span class="sep">/</span>
+  <span>Daily Theme Research</span>
+</div>
+
+<div class="header">
+  <div class="header-badge">Daily Theme Research</div>
+  <h1>2026-07-02 오늘의 테마</h1>
+  <p class="meta">
+    Naver 테마 × Tavily 글로벌 트리거 &middot;
+    테마: <strong>건설 중소형 · 은행</strong>
+  </p>
+  
+</div>
+
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">건설 중소형</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +4.55%</span><span class="chip chip-persist">지속성 71%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 수익률 +4.55%로 1위이며, 7일 지속성 71%(5/7일)로 안정적 상승세를 보이고 있습니다. Tavily 글로벌 뉴스에서도 한국 건설 섹터의 강한 성장이 확인되며, 7일 평균 수익률 +4.21%로 단기 모멘텀이 뚜렷합니다. 고객에게 국내 인프라 투자 확대와 건설 경기 회복을 근거로 설명 가능한 핵심 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">건설 중소형주가 오늘 +4.55%로 전체 테마 중 1위 상승률을 기록했습니다. 7일 중 5일 상승(71% 지속성)하며 주간 평균 +4.21%의 강력한 단기 모멘텀을 보이고 있습니다. 대형 건설주 대비 중소형 업체들이 공공 인프라 수주 확대와 재건축 수혜 기대감에 더 큰 폭으로 올랐습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">국내 건설 섹터는 정부의 SOC(사회간접자본) 투자 확대 정책과 재건축·재개발 규제 완화 기대감이 맞물리며 상승세를 탄 상태입니다. 특히 중소형 건설사들은 지역 인프라 프로젝트와 주택 공급 확대 정책에서 직접 수혜를 볼 수 있는 구조입니다. 글로벌 뉴스에서도 한국 증시의 강세가 지속되는 가운데, 건설 섹터가 주요 상승 동력으로 언급되고 있습니다. 2026년 상반기 코스피가 사상 최고치를 경신하며 투자자들이 실적 개선이 가시화되는 내수 업종에 주목하기 시작했고, 그중에서도 건설주는 정책 수혜와 실적 모멘텀이 동시에 작동하는 대표 섹터로 부상했습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">2026년 들어 한국 증시는 아시아 지역에서 가장 뚜렷한 상승세를 보이며 글로벌 투자자들의 관심을 끌고 있습니다. 외신에서는 코스피가 역내 경쟁 지수들을 크게 앞지르며 신고점을 경신하고 있다고 보도했습니다. 글로벌 인프라 투자 확대 흐름 속에서 한국 정부의 적극적인 SOC 예산 편성이 맞물리면서, 한국 건설 섹터는 글로벌 자금 유입의 수혜를 받고 있습니다. 특히 아시아 신흥국들의 인프라 수요 증가와 연결되어, 한국 중소형 건설사들의 해외 수주 기대감도 함께 커지고 있습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>정부가 SOC 예산을 늘리고 재건축 규제 완화를 검토하면서, 중소형 건설사들이 직접 수혜를 보고 있습니다.</li><li>대형 건설사 대비 중소형사는 지역 인프라와 주택 공급 프로젝트에서 빠르게 실적이 개선될 수 있는 구조입니다.</li><li>한국 증시가 올해 아시아에서 가장 강한 상승세를 보이는 가운데, 건설 섹터는 정책과 실적 두 가지 모두에서 모멘텀이 있습니다.</li><li>7일 중 5일 상승하며 평균 +4% 이상 올랐다는 점은 단기 추세가 안정적이라는 신호입니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 건설주는 경기 민감한데, 지금 사도 괜찮을까요?</div><div class="qa-a">A. 건설주는 경기에 민감한 것이 맞습니다. 다만 현재는 정부의 SOC 투자 확대와 재건축 규제 완화 기대감이라는 정책적 요인이 작동하고 있어, 단순히 경기 사이클만으로 설명하기 어려운 상황입니다. 정책이 실제로 집행되고 수주로 이어지는지를 지켜보는 것이 중요합니다.</div></div><div class="qa-block"><div class="qa-q">Q. 중소형 건설사는 대형보다 리스크가 크지 않나요?</div><div class="qa-a">A. 중소형 건설사는 재무 건전성이나 수주 규모 면에서 대형사보다 변동성이 큰 것은 사실입니다. 하지만 지역 인프라나 소규모 재건축 프로젝트에서는 중소형사가 더 빠르게 수혜를 볼 수 있습니다. 지금처럼 정책 수혜가 집중되는 시기에는 중소형사의 실적 개선 속도가 더 빠를 수 있다는 점을 감안해야 합니다.</div></div><div class="qa-block"><div class="qa-q">Q. 건설주 상승세가 언제까지 이어질까요?</div><div class="qa-a">A. 정책 발표와 실제 수주 집행 사이에는 시차가 있습니다. 지금은 기대감 단계이고, 실제 수주가 늘어나고 실적이 개선되는 모습이 확인되는 3분기 이후까지 모멘텀이 이어질 가능성이 있습니다. 다만 정책 기대감이 꺾이거나 금리 인상 같은 외부 변수가 생기면 조정이 올 수 있습니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 정부의 SOC 예산 집행이 지연되거나 재건축 규제 완화가 무산되면 기대감이 급격히 꺾일 수 있습니다. 또한 금리 인상이나 부동산 시장 냉각 같은 거시 변수가 발생하면 건설주 전반에 부담이 될 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="국내 포커스형">[N110] 프리미엄포커스</span><span class="fund-chip" title="섹터배분">[N1G0] 성장섹터배분</span></div></div>
+  </div>
+</div>
+
+<div class="theme-card">
+  <div class="theme-header">
+    <h2 class="theme-name">은행</h2>
+    <div class="signal-bar"><span class="chip chip-pos">Naver 오늘 +3.01%</span><span class="chip chip-persist">지속성 71%</span><span class="chip chip-tavily">글로벌뉴스</span></div>
+  </div>
+  <div class="theme-body">
+    <div class="selection-reason"><strong>선정 근거</strong>: 오늘 수익률 +3.01%로 2위이며, 7일 지속성 71%(5/7일)로 꾸준한 강세를 유지하고 있습니다. 금융주 특유의 안정성과 배당 매력이 부각되는 시기로, 시장 변동성 속에서도 방어적 투자처로 주목받고 있습니다. 고객에게 금리 정책 안정화와 은행 실적 개선을 근거로 설명할 수 있는 대표 금융 테마입니다.</div>
+
+    <div class="today-move">
+      <div class="move-label">오늘의 움직임</div>
+      <div class="move-text">은행 테마는 오늘 +3.01%로 전체 테마 중 2위 상승률을 기록했습니다. 7일 중 5일 상승(71% 지속성)하며 주간 평균 +0.48%로 안정적 우상향 흐름을 이어가고 있습니다. KB금융, 신한지주 등 주요 은행지주들이 외국인 순매수와 배당 매력 부각으로 동반 상승했습니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">배경 — 왜 오늘 이 테마인가</div>
+      <div class="section-text">은행주는 2026년 상반기 한국 증시 급등 이후 투자자들이 변동성 관리 차원에서 방어적 자산으로 재주목하면서 상승세를 타고 있습니다. 글로벌 뉴스에서는 한국 증시가 지난 몇 달간 급등한 뒤 6월 초 외국인 대규모 매도(-132억 달러)로 단기 조정을 겪었다고 보도했지만, 이후 안정화되며 은행주 같은 배당 매력이 있는 금융주로 자금이 회귀하고 있습니다. 금리 정책이 안정 국면에 접어들고 은행들의 순이자마진(NIM) 방어가 예상보다 양호하다는 실적 시그널이 나오면서, 은행주는 고배당+실적 방어라는 두 가지 매력을 동시에 갖춘 섹터로 평가받고 있습니다.</div>
+    </div>
+    <div class="section">
+      <div class="section-label">글로벌 연결고리</div>
+      <div class="section-text">2026년 상반기 한국 증시는 전년 +76%에 이어 5개월 만에 비슷한 수준의 상승률을 기록하며 '세계 최고 성과 시장'이라는 평가를 받았습니다. 하지만 6월 초 외국인 투자자들이 단기간에 132억 달러를 순매도하며 코스피가 하루 -9% 급락하는 등 변동성이 크게 확대됐습니다. 이런 변동성 속에서 글로벌 자금은 고배당·저밸류에이션 섹터로 방어적 이동을 시작했고, 한국 은행주는 그 수혜를 받고 있습니다. 글로벌 금리 안정화 기대와 맞물려 은행주는 배당 수익률이 높고 실적 변동성이 상대적으로 작아, 변동성 장세에서 선호되는 자산군으로 부상했습니다.</div>
+    </div>
+
+    <div class="section"><div class="section-label">상담사 토킹포인트</div><ul class="talking-points"><li>한국 증시가 급등한 뒤 변동성이 커지자, 투자자들이 배당 수익률이 높은 은행주로 자금을 옮기고 있습니다.</li><li>은행들의 순이자마진 방어가 예상보다 양호하고, 실적이 안정적이라는 신호가 나오면서 금융주 전반에 신뢰가 회복되고 있습니다.</li><li>금리 정책이 안정 국면에 들어서면서, 금리 인하 우려가 줄고 은행주의 수익성 전망이 개선되고 있습니다.</li><li>7일 중 5일 상승하며 평균 +0.48%는 크지 않지만, 꾸준하고 안정적인 상승 흐름을 보여줍니다.</li></ul></div>
+    <div class="section"><div class="section-label">고객 Q&amp;A</div><div class="qa-list"><div class="qa-block"><div class="qa-q">Q. 은행주는 왜 지금 오르는 건가요?</div><div class="qa-a">A. 최근 한국 증시가 급등한 뒤 변동성이 커지면서, 투자자들이 배당 수익률이 높고 실적이 안정적인 은행주로 자금을 옮기고 있습니다. 또한 금리 정책이 안정화되고 은행들의 이자 수익 방어가 예상보다 양호하다는 신호가 나오면서, 은행주의 매력이 재평가받고 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 금리가 내려가면 은행주는 안 좋은 거 아닌가요?</div><div class="qa-a">A. 금리가 급격히 내려가면 은행의 순이자마진이 축소돼 수익성에 부담이 될 수 있습니다. 하지만 지금은 금리 정책이 안정 국면에 있고, 급격한 인하보다는 현 수준 유지 가능성이 높다는 전망이 우세합니다. 오히려 금리 안정은 대출 수요 회복과 부실 리스크 감소로 이어져 은행주에 긍정적일 수 있습니다.</div></div><div class="qa-block"><div class="qa-q">Q. 은행주는 단기보다 장기로 가져가야 하나요?</div><div class="qa-a">A. 은행주는 배당 수익을 목적으로 장기 보유하는 전략이 일반적으로 유리합니다. 다만 지금처럼 시장 변동성이 큰 시기에는 단기적으로도 방어 자산으로 주목받아 상승할 수 있습니다. 배당과 안정성 두 가지를 모두 원한다면 장기 보유가 적합합니다.</div></div></div></div>
+
+    <div class="risk-box">
+      <strong>리스크</strong>: 금리가 예상보다 빠르게 인하되거나, 경기 둔화로 기업 대출 부실이 증가하면 은행주 실적에 부담이 될 수 있습니다. 또한 외국인 투자자들의 추가 매도가 이어지면 시장 전반의 조정과 함께 은행주도 약세를 보일 수 있습니다.
+    </div>
+    <div class="fund-section"><div class="section-label">관련 펀드</div><div class="fund-chips"><span class="fund-chip" title="국내주식 대표">[N100] 주식성장형Ⅱ</span><span class="fund-chip" title="배당주식">[N1E0] 배당주식</span><span class="fund-chip" title="가치주식">[N1F0] 가치주식</span><span class="fund-chip" title="가치주식형">[N140] 가치주식형</span></div></div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>오늘 요약</h2>
+  <div class="one-line">한국 증시가 올해 세계 최고 성과를 내는 가운데, 정책 수혜 건설 중소형주와 배당 매력 은행주가 각각 +4.55%, +3.01% 상승하며 투자자들의 관심을 끌고 있습니다.</div>
+  <div class="summary-item"><strong>내일·이번 주 주목 변수</strong> — 한국 증시 외국인 수급 동향, 정부 SOC 예산 집행 일정 발표 여부, 주요 은행 2분기 실적 프리뷰 및 배당 정책 공시를 주목해야 합니다.</div>
+  <div class="summary-item"><strong>Naver 주목 테마</strong> — 반도체 장비주 — 글로벌 AI 반도체 수요 확대와 한국 장비 업체들의 수주 증가 기대감이 맞물리며, 건설·은행 외에 기술주 모멘텀도 함께 확인할 필요가 있습니다.</div>
+
+  <table class="naver-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Naver 테마</th>
+        <th>오늘 수익률</th>
+        <th>7일 지속성</th>
+      </tr>
+    </thead>
+    <tbody><tr><td>1</td><td>건설 중소형</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+4.55%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>2</td><td>은행</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:39px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+3.01%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>3</td><td>편의점</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:36px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.75%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>4</td><td>캐릭터상품</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:29px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+2.26%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>5</td><td>인터넷 대표주</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:16px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.28%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>6</td><td>스포츠행사 수혜(올림픽, 월드컵 등)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:15px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.14%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>7</td><td>손해보험</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.12%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>8</td><td>카지노</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.04%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>9</td><td>환율하락 수혜</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:13px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+1.01%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>10</td><td>소매유통</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.97%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>11</td><td>호텔/리조트</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.90%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>12</td><td>육계</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.87%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>13</td><td>음원/음반</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.83%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>14</td><td>겨울</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:9px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.72%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>15</td><td>자원개발</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:9px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.70%</span></div></td><td style='color:#7c8298;font-size:12px'>86%</td></tr><tr><td>16</td><td>음식료업종</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.61%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>17</td><td>건강기능식품</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.52%</span></div></td><td style='color:#7c8298;font-size:12px'>57%</td></tr><tr><td>18</td><td>생명보험</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.50%</span></div></td><td style='color:#7c8298;font-size:12px'>43%</td></tr><tr><td>19</td><td>마리화나(대마)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.49%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr><tr><td>20</td><td>항공/저가 항공사(LCC)</td><td><div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:8px;border-radius:4px;background:#047857;min-width:2px"></div><span class="pos">+0.48%</span></div></td><td style='color:#7c8298;font-size:12px'>71%</td></tr></tbody>
+  </table>
+</div>
+
+<div class="ai-disclaimer">
+  ⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다.
+  Naver 테마 데이터 및 글로벌 뉴스를 교차 분석했으나 수치·해석에 오류가 포함될 수 있으므로
+  투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.
+</div>
+
+<div class="footer">
+  AI 분석: Bedrock Claude &middot; Naver 테마 지속성 &middot; Tavily 뉴스 &middot;
+  생성: 2026-07-02 18:51 KST
+  &middot; <a href="../index.html">보고서 목록</a>
+</div>
+
+</body>
+</html>
