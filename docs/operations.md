@@ -14,7 +14,7 @@
 | `MarketSummary-OCR` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) | ✅ Active |
 | `MarketSummary-WeeklyCollect` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
 | `MarketSummary-AsiaWeekly` | `scripts/generate_asia_weekly.py` | 일 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active |
-| `MarketSummary-DailyResearch` | `scripts/generate_research.py` | 월~금 18:50 | 당일 Naver 테마 수익률 기반 일간 테마 리서치 자동 생성 | ✅ Active |
+| `MarketSummary-DailyResearch` | `scripts/generate_research.py` | 월~금 18:50 | 당일 Naver 테마 수익률 기반 일간 테마 리서치 자동 생성 | ⏸️ Disabled (2026-07-07) |
 
 월·토는 Daily 실행 안 함 (auto_market.should_skip). DailyResearch는 월~금 매일.
 
