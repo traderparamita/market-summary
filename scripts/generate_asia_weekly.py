@@ -23,6 +23,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from _utils import is_business_day
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 HISTORY_DIR = PROJECT_ROOT / "history"
 OUTPUT_DIR = PROJECT_ROOT / "output" / "summary" / "weekly"
@@ -88,11 +90,35 @@ def get_week_window(target: date) -> tuple[date, date, str]:
     return monday, friday, f"{iso_year}-W{iso_week:02d}"
 
 
-def get_prev_friday_close(friday: date, df: pd.DataFrame) -> date:
-    """Find the trading day before `monday` that has data (typically previous Friday)."""
+def get_last_trading_day_of_week(friday: date, df: pd.DataFrame) -> date:
+    """Return the actual last trading day on/before `friday` within the same week.
+
+    `friday` is not always a trading day (KR public holiday, e.g. 제헌절) — walking
+    back to the nearest KR business day that actually has KOSPI data avoids the
+    0/180 matching failure that happens when the week's nominal end date has no
+    rows collected at all (W25/W28/W29 all hit this).
+    """
     monday = friday - timedelta(days=4)
-    candidate = monday - timedelta(days=3)  # previous Friday
-    available_dates = sorted(df["DATE"].unique())
+    kospi_dates = set(
+        pd.Timestamp(x).date() for x in df.loc[df["TICKER"] == "KOSPI", "DATE"].unique()
+    )
+    d = friday
+    while d >= monday:
+        if is_business_day(d) and d in kospi_dates:
+            return d
+        d -= timedelta(days=1)
+    return friday  # no trading day found this week — caller will surface 0 matches
+
+
+def get_prev_friday_close(monday: date, df: pd.DataFrame) -> date:
+    """Find the trading day before `monday` that has data (typically previous Friday).
+
+    Excludes `SOURCE == 'computed'` rows (e.g. weekend carry-forward duplicates like
+    a Sunday-dated BD_US_10_2_SPREAD row) which can corrupt the max-date scan and
+    silently pick a non-trading date as the reference.
+    """
+    real = df[df["SOURCE"] != "computed"]
+    available_dates = sorted(real["DATE"].unique())
     available_dates = [pd.Timestamp(d).date() for d in available_dates]
     # find the latest available date strictly before `monday`
     eligible = [d for d in available_dates if d < monday]
@@ -1058,17 +1084,20 @@ def main():
     print(f"[asia-weekly] Universe: {len(universe)} stocks loaded")
 
     df = load_market()
-    ref_date = get_prev_friday_close(friday, df)
-    print(f"[asia-weekly] Reference close: {ref_date} → {friday}")
+    end_date = get_last_trading_day_of_week(friday, df)
+    if end_date != friday:
+        print(f"[asia-weekly] {friday} has no trading data (holiday?) — using {end_date} as week end")
+    ref_date = get_prev_friday_close(monday, df)
+    print(f"[asia-weekly] Reference close: {ref_date} → {end_date}")
 
     # Compute stock returns
     stock_names = universe["name"].dropna().unique().tolist()
-    stock_returns = compute_wtd_returns(df, stock_names, ref_date, friday)
+    stock_returns = compute_wtd_returns(df, stock_names, ref_date, end_date)
     print(f"[asia-weekly] Stock matches: {len(stock_returns)}/{len(stock_names)}")
 
     # Compute index/FX returns
-    index_returns = compute_wtd_returns(df, ASIA_INDICES, ref_date, friday)
-    fx_returns = compute_wtd_returns(df, ASIA_FX, ref_date, friday)
+    index_returns = compute_wtd_returns(df, ASIA_INDICES, ref_date, end_date)
+    fx_returns = compute_wtd_returns(df, ASIA_FX, ref_date, end_date)
     print(f"[asia-weekly] Index: {len(index_returns)}/{len(ASIA_INDICES)}, FX: {len(fx_returns)}/{len(ASIA_FX)}")
 
     # Country summary
@@ -1077,15 +1106,16 @@ def main():
         if info["n_matched"] > 0:
             print(f"[asia-weekly]   {c}: matched {info['n_matched']}/{info['n_universe']}, simple={info['simple_avg']:+.2f}%, weighted={info['weighted_avg']:+.2f}%")
 
-    # Business day count (KR holiday-aware via simple weekday check; refine via holidays lib if needed)
-    business_days = sum(1 for i in range((friday - monday).days + 1)
-                       if (monday + timedelta(days=i)).weekday() < 5)
+    # Business day count — actual trading days monday..end_date (KR holiday-aware)
+    business_days = sum(1 for i in range((end_date - monday).days + 1)
+                       if is_business_day(monday + timedelta(days=i)))
 
-    # Build data dict
+    # Build data dict. "friday" holds the actual last trading day used for WTD
+    # (may be earlier than the calendar Friday if it's a KR holiday, e.g. 제헌절).
     data = {
         "week":             week_label,
         "monday":           monday.isoformat(),
-        "friday":           friday.isoformat(),
+        "friday":           end_date.isoformat(),
         "ref_date":         ref_date.isoformat(),
         "n_business_days":  business_days,
         "n_universe":       len(stock_names),

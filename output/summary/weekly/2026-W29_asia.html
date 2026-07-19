@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asia Weekly Brief | 2026-W29</title>
+<meta name="description" content="2026-07-13 ~ 2026-07-16 — 아시아 중심 주간 시황 (중국·일본·대만·인도·홍콩·한국)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#f4f5f9;--card:#fff;--card2:#f0f1f6;--border:#e0e3ed;--text:#2d3148;--muted:#7c8298;--accent:#F58220;--accent2:#043B72;--up:#d92b2b;--down:#1a5fb4;--warn:#CB6015;--cn:#d92b2b;--jp:#043B72;--tw:#0f7f5a;--in:#7c4dff;--hk:#9c27b0;--kr:#F58220}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:24px;max-width:1360px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.mood-badge{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:600;background:rgba(26,95,180,0.08);color:var(--down);border:1px solid rgba(26,95,180,0.2)}
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px}
+.kpi-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
+.back-link{display:inline-block;margin-bottom:18px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500}
+.tab-bar{display:flex;gap:0;margin-bottom:26px;border-bottom:2px solid var(--border);flex-wrap:wrap}
+.tab-btn{padding:12px 24px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;font-family:inherit}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none} .tab-panel.active{display:block}
+.story-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:28px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text p{margin-bottom:14px} .story-text p:last-child{margin-bottom:0}
+.story-text strong{color:#1a1d2e}
+.story-text .hl-up{color:var(--up);font-weight:600}
+.story-text .hl-down{color:var(--down);font-weight:600}
+.story-text .hl-warn{color:var(--warn);font-weight:600}
+.story-text .hl-accent{color:var(--accent);font-weight:600}
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:170px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text);line-height:1.5}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+.country-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,0.04);border-left:5px solid var(--accent2)}
+.country-section.cn{border-left-color:var(--cn)} .country-section.jp{border-left-color:var(--jp)} .country-section.tw{border-left-color:var(--tw)} .country-section.in{border-left-color:var(--in)} .country-section.hk{border-left-color:var(--hk)} .country-section.kr{border-left-color:var(--kr)}
+.country-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.country-flag{font-size:30px}
+.country-title{font-size:20px;font-weight:700;color:#1a1d2e}
+.country-sub{font-size:13px;color:var(--muted);margin-left:auto;font-family:'JetBrains Mono',monospace}
+.country-section p{font-size:14.5px;line-height:1.85;margin-bottom:12px;color:#2d3148}
+.country-section h4{font-size:14px;font-weight:700;color:#1a1d2e;margin:14px 0 8px 0}
+.stock-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.stock-table th{font-size:11px;font-weight:600;color:var(--muted);padding:9px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border)}
+.stock-table th:first-child,.stock-table th:nth-child(2){text-align:left}
+.stock-table td{padding:7px 12px;font-size:12.5px;border-bottom:1px solid #f3f4f8;font-family:'JetBrains Mono',monospace;text-align:right}
+.stock-table td:first-child{font-weight:600;color:#1a1d2e;text-align:left;font-family:inherit}
+.stock-table td:nth-child(2){text-align:left;font-family:inherit;color:var(--muted);font-size:12px}
+.stock-table tr.gain{background:rgba(217,43,43,0.03)} .stock-table tr.loss{background:rgba(26,95,180,0.03)}
+.theme-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.theme-card h3{font-size:17px;font-weight:700;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.theme-card .theme-tag{font-size:11px;padding:3px 10px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600}
+.theme-card p{font-size:14px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.theme-side{background:var(--card2);border-radius:10px;padding:14px 16px}
+.theme-side h5{font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:8px}
+.theme-side ul{list-style:none;padding:0}
+.theme-side li{font-size:12.5px;line-height:1.7;padding:3px 0;font-family:'JetBrains Mono',monospace}
+.heatmap{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.heatmap th{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}
+.heatmap th:first-child,.heatmap th:nth-child(2){text-align:left}
+.heatmap td{padding:8px 12px;font-size:13px;border-bottom:1px solid #f3f4f8}
+.name-cell{font-weight:600;color:#1a1d2e;white-space:nowrap}
+.close-cell{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:left;white-space:nowrap}
+.heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600;background:rgba(245,130,32,0.12);color:var(--accent)}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}
+.metric-label{font-size:10px;color:var(--muted)}
+.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.outlook-card{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:12px;padding:24px 28px;margin-bottom:18px}
+.outlook-card h3{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:12px}
+.outlook-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+.scenario{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.scenario h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.scenario.bull h4{color:var(--up)} .scenario.base h4{color:var(--warn)} .scenario.bear h4{color:var(--down)}
+.scenario p{font-size:12.5px;line-height:1.7;color:#2d3148}
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.risk-section h2{font-size:16px;font-weight:700;color:#1a1d2e;margin-bottom:14px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:13px;line-height:1.7}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:2px}
+.risk-tag.high{background:rgba(26,95,180,0.15);color:var(--down)}
+.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}
+.sources-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.sources-section h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sources-list{margin:0;padding-left:18px;font-size:13px;line-height:1.8}
+.sources-list a{color:var(--accent);text-decoration:none}
+.source-meta{font-size:11px;color:var(--muted)}
+.placeholder{background:repeating-linear-gradient(45deg,#fafbfc,#fafbfc 10px,#f4f5f9 10px,#f4f5f9 20px);border:2px dashed #c8cce0;border-radius:12px;padding:32px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px}
+.placeholder strong{color:var(--accent);display:block;font-size:15px;margin-bottom:6px}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:36px;padding-top:18px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:20px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+@media(max-width:900px){
+  .insight-grid,.theme-grid,.outlook-grid,.risk-items{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back to Index</a>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Asia Weekly Brief | 2026-W29</h1>
+    <div class="date">2026-07-13 ~ 2026-07-16 · 아시아 중심 주간 시황</div>
+  </div>
+  <div class="header-right">
+    <div class="mood-badge">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--down)"></span>
+      아시아 광역 약세 — MSCI EM <span style="font-family:'JetBrains Mono',monospace">-4.05%</span>
+    </div>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi"><div class="kpi-label">코스피</div><div class="kpi-value">6,820.60</div><div class="kpi-chg down">−8.77%</div></div>
+  <div class="kpi"><div class="kpi-label">코스닥</div><div class="kpi-value">791.84</div><div class="kpi-chg down">−5.44%</div></div>
+  <div class="kpi"><div class="kpi-label">Nikkei225</div><div class="kpi-value">66,835.54</div><div class="kpi-chg down">−2.51%</div></div>
+  <div class="kpi"><div class="kpi-label">HSI 항셍</div><div class="kpi-value">25,008.60</div><div class="kpi-chg up">+3.45%</div></div>
+  <div class="kpi"><div class="kpi-label">상하이종합</div><div class="kpi-value">3,882.41</div><div class="kpi-chg down">−2.85%</div></div>
+  <div class="kpi"><div class="kpi-label">USD/KRW</div><div class="kpi-value">1,478.33</div><div class="kpi-chg down">−1.81%</div></div>
+  <div class="kpi"><div class="kpi-label">USD/JPY</div><div class="kpi-value">162.35</div><div class="kpi-chg flat">+0.00%</div></div>
+  <div class="kpi"><div class="kpi-label">USD/INR</div><div class="kpi-value">96.33</div><div class="kpi-chg up">+1.01%</div></div>
+  <div class="kpi"><div class="kpi-label">USD/CNY</div><div class="kpi-value">6.76</div><div class="kpi-chg down">−0.19%</div></div>
+  <div class="kpi"><div class="kpi-label">MSCI EM</div><div class="kpi-value">64.19</div><div class="kpi-chg down">−4.05%</div></div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('story')">Asia Story</button>
+  <button class="tab-btn" onclick="switchTab('country')">Country Drilldown</button>
+  <button class="tab-btn" onclick="switchTab('themes')">Themes</button>
+  <button class="tab-btn" onclick="switchTab('data')">Data</button>
+  <button class="tab-btn" onclick="switchTab('outlook')">Outlook</button>
+  <button class="tab-btn" onclick="switchTab('sources')">Sources</button>
+</div>
+
+<!-- TAB: Asia Story -->
+<div id="tab-story" class="tab-panel active">
+  <div class="story-hero">
+    <h2>2026-W29 한 줄 요약 — SK하이닉스發 충격이 아시아 반도체 밸류체인 전체로, 그러나 소비·EV는 정반대로</h2>
+    <div class="story-text">
+      <p>이번 주 아시아 증시는 SK하이닉스 한 종목을 둘러싼 국내외 가격 신호에서 시작된 충격이 목요일 중국 D램 업체 CXMT의 상하이 IPO 공모가 확정을 계기로 아시아 반도체 밸류체인 전체로 번진 한 주였습니다. 코스피(−8.77%)·코스닥(−5.44%)이 가장 큰 충격을 받았지만, 니케이225(−2.51%)·상하이종합(−2.85%)도 동반 약세를 보였고 MSCI EM은 −4.05%로 아시아 전역이 뚜렷한 리스크오프 국면에 들어섰습니다.</p>
+      <p>국가별 명암은 업종에 따라 극명하게 갈렸습니다. 반도체 장비·메모리 밸류체인이 집중된 중국(가중평균 −3.02%)·일본(가중평균 −1.81%)·대만(가중평균 −3.94%)은 모두 약세를 보인 반면, 홍콩(HSI +3.45%)은 텐센트·알리바바 등 대형 인터넷주와 소비·EV주 강세에 힘입어 아시아에서 유일하게 5거래일 연속 상승했습니다. 같은 중국 안에서도 반도체 장비주(Biwin Storage −22.7%, Montage Tech −21.2%, Longsys −21.1%)와 소비·EV주(메이투안 +10.8%, XPeng +10.3%, 알리바바 +6.1%, BYD +7.1%)가 정반대 방향으로 움직이는 극단적 디스퍼션이 나타났습니다.</p>
+      <p>매크로 측면에서는 주말 새 재점화된 이란-미국 호르무즈 해협 긴장이 유가를 끌어올렸다가 트럼프 대통령의 통행세 방침 철회로 주 중반 진정됐고, 美 6월 CPI 서프라이즈(헤드라인 −0.4%, 전월비)가 위험선호 회복에 일조했습니다. 달러/원은 주간 −1.81%로 원화가 강세를 보인 반면, 달러/위안은 −0.19%로 당국의 안정화 의지 아래 좁은 박스권을 유지했고, 달러인덱스는 −0.23%로 소폭 약세였습니다.</p>
+    </div>
+  </div>
+
+  <div class="causal-chain">
+    <div class="cause-node"><div class="node-label">월요일 트리거</div><div class="node-title">SK하이닉스 역프리미엄發 투매 + 이란-호르무즈 리스크 재점화</div><div class="node-detail">SK하이닉스 국내 본주가 나스닥 ADR 대비 역김치프리미엄과 잠재 물량 우려로 대규모 매도를 맞으며 코스피가 서킷브레이커까지 발동, −8.95% 폭락했습니다. 같은 날 트럼프 대통령의 호르무즈 해협 봉쇄 재개 선언으로 국제유가도 9%대 급등하며 아시아 전역에 경계감이 번졌습니다.</div><div class="node-impact down">코스피 서킷브레이커 · WTI +9.23%</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">화~수 반등</div><div class="node-title">통행세 철회·CPI 서프라이즈·바클레이즈 SK하이닉스 매수의견 — 아시아 반도체 동반 반등</div><div class="node-detail">호르무즈 통행세 방침 철회와 美 CPI 둔화(헤드라인 −0.4%)로 위험선호가 회복된 가운데, 바클레이즈가 SK하이닉스 ADR에 목표주가 330달러 매수의견을 신규 제시하며 국내외 가격 신호가 다시 반전됐습니다. 코스피·코스닥은 매수 사이드카를 동반하며 급등했고, 니케이225·상하이도 반도체·AI 대형주 저가 매수에 동반 상승했습니다.</div><div class="node-impact up">코스피 +6.24%(수) · 니케이 +1.49%(수)</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">목요일 전환</div><div class="node-title">CXMT 상하이 IPO 공모가 확정 — 메모리 공급과잉 공포, 아시아 반도체 밸류체인 동반 급락</div><div class="node-detail">중국 D램 업체 CXMT가 상하이 상장 공모가를 확정(약 86억 달러 조달)하고 코어위브의 메모리 가격 하락 헤지 검토 보도가 겹치며, 메모리 공급과잉 우려가 한국을 넘어 중국·일본·대만 반도체 장비·메모리 밸류체인 전체로 번졌습니다. 코스피는 매도 사이드카를 다시 발동하며 전일 반등분 대부분을 반납했습니다.</div><div class="node-impact down">코스피 −6.37%(목) · 中 반도체 장비주 −15~23%</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">같은 목요일 디커플링</div><div class="node-title">반도체는 급락, 소비·EV·인터넷은 오히려 급등 — 자금 순환매 뚜렷</div><div class="node-detail">같은 날 중국 안에서도 알리바바·텐센트·메이투안 등 인터넷 대형주와 BYD·XPeng 등 EV주는 오히려 큰 폭으로 상승하며, 반도체 밸류체인에서 빠져나온 자금이 소비·플랫폼 업종으로 옮겨가는 순환매가 뚜렷하게 나타났습니다.</div><div class="node-impact up">메이투안 +10.80% · XPeng +10.34%</div></div>
+    <div class="cause-arrow">→</div>
+    <div class="cause-node"><div class="node-label">주말 마감</div><div class="node-title">제헌절 국내 증시 휴장 — 목요일 종가로 한 주 마감, MSCI EM −4.05%</div><div class="node-detail">금요일은 제헌절 공휴일로 국내 증시가 휴장하며, 사실상 목요일 종가가 이번 주 아시아 전역의 마지막 가격이었습니다. MSCI EM은 주간 −4.05%로 뚜렷한 리스크오프를 반영하며 한 주를 마쳤습니다.</div><div class="node-impact down">MSCI EM −4.05%</div></div>
+  </div>
+
+  <div class="insight-grid">
+    <div class="insight-card"><span class="badge">반도체 디커플링</span><h3>같은 반도체, 국가·업종 안에서도 갈린 명암</h3><p>목요일 CXMT 상하이 IPO 공모가 확정으로 촉발된 공급과잉 공포는 중국·일본·대만 반도체 장비·메모리 밸류체인을 일제히 강타했습니다(Biwin Storage −22.7%, 무라타 −14.8%, TSMC −5.6%). 그러나 같은 시각 중국 인터넷·EV주는 정반대로 급등하며, 자금이 반도체에서 소비·플랫폼으로 옮겨가는 순환매가 이번 주 아시아 시장의 가장 뚜렷한 신호였습니다.</p></div>
+    <div class="insight-card"><span class="badge">SK하이닉스 가격 신호</span><h3>한국發 가격 신호 하나가 아시아 반도체 심리를 반복적으로 흔들었다</h3><p>월요일 역프리미엄發 투매, 수요일 바클레이즈 매수의견發 급등, 목요일 CXMT發 공급과잉 공포까지 — SK하이닉스를 둘러싼 국내외 가격 신호가 나흘 내내 아시아 반도체 밸류체인 전체의 방향을 좌우했습니다. 미래에셋증권도 SK하이닉스 목표주가를 하향(420만원)하면서도 HBM 장기 수요 근본가치는 유지한다고 평가했습니다.</p></div>
+    <div class="insight-card"><span class="badge">홍콩 나홀로 강세</span><h3>HSI, 아시아에서 유일하게 5거래일 연속 상승</h3><p>홍콩 항셍은 이번 주 +3.45%로 아시아 주요 지수 중 유일하게 플러스 마감했습니다. 텐센트(+5.17%)·알리바바(+6.08%) 등 대형 인터넷주와 AIA(+4.75%) 등 보험주가 지수를 지지했고, 반도체 비중이 낮은 지수 구성이 이번 주 조정 국면에서 오히려 방어력으로 작용했습니다.</p></div>
+    <div class="insight-card"><span class="badge">호르무즈 리스크</span><h3>지정학 리스크가 아시아 통화·유가에 남긴 여진</h3><p>주말 새 재점화됐다 하루 만에 철회된 호르무즈 통행세 방침은, 강경 조치라도 시장이 빠르게 되돌릴 수 있음을 보여줬습니다. 다만 WTI는 주간 기준으로도 여전히 두 자릿수 상승(+10%대)을 유지하며 근본적 긴장이 해소되지 않았음을 시사했고, 달러/원은 오히려 원화 강세(−1.81%)로 반응했습니다.</p></div>
+    <div class="insight-card"><span class="badge">CXMT·HBM 가격 논쟁</span><h3>공급과잉인가, HBM 가격 상승 촉매인가 — 엇갈리는 해석</h3><p>서구 매체·코어위브發 보도는 CXMT 상장을 메모리 "공급과잉" 신호로 해석해 급락을 촉발했지만, 미래에셋증권은 오히려 CXMT 상장이 HBM 가격 상승 가능성을 지지하는 재료이며 DDR5/DDR4 현물가가 40거래일 이상 연속 상승 중이라는 정반대 해석을 제시했습니다. 같은 이벤트에 대한 시장 해석 자체가 아직 정리되지 않았음을 보여주는 대목입니다.</p></div>
+    <div class="insight-card"><span class="badge">美 vs 亞 디커플링</span><h3>미국은 CPI·은행실적 호재에 견조, 아시아만 반도체發 충격 집중</h3><p>같은 한 주 동안 S&amp;P500(WTD −0.55%)·나스닥(WTD −1.52%)은 CPI 서프라이즈와 대형은행 실적 호조에 상대적으로 안정적이었던 반면, 아시아는 SK하이닉스·CXMT라는 역내 고유 이벤트에 집중적으로 노출되며 훨씬 큰 폭의 등락을 경험했습니다. 필라델피아 반도체지수도 목요일 약세를 보였지만 낙폭은 아시아 반도체주 대비 제한적이었습니다.</p></div>
+  </div>
+</div><!-- /tab-story -->
+
+<!-- TAB: Country Drilldown -->
+<div id="tab-country" class="tab-panel">
+
+  <div class="country-section cn">
+    <div class="country-head">
+      <span class="country-flag">🇨🇳</span>
+      <div>
+        <div class="country-title">중국 (China)</div>
+        <div>상하이종합 −2.85% · 달러/위안 −0.19% · 반도체 급락 vs 소비·EV 급등 극단 디스퍼션</div>
+      </div>
+      <div class="country-sub">유니버스 71종목 · CSV 매칭 52종목</div>
+    </div>
+
+    <p>중국 본토·홍콩 상장 종목을 합친 유니버스 기준 가중평균 −3.02%, 단순평균 −3.35%로 이번 주 아시아에서 가장 뚜렷한 내부 디스퍼션을 보인 시장이었습니다. 목요일 CXMT의 상하이 IPO 공모가 확정이 촉발한 메모리 공급과잉 공포가 반도체 장비·소재·메모리 밸류체인 전체를 강타했고, NAURA·AMEC 등 식각·증착 장비주부터 GigaDevice·Montage Tech 등 메모리 설계사까지 두 자릿수 급락을 피하지 못했습니다.</p>
+    <p>반면 같은 날 알리바바·텐센트·메이투안 등 대형 인터넷주와 BYD·XPeng·Li Auto 등 EV 밸류체인은 정반대로 급등하며, 반도체에서 빠져나온 자금이 소비·플랫폼 업종으로 옮겨가는 뚜렷한 순환매를 보였습니다. 미래에셋증권은 이번 주 中 반도체 ETF(HK 03191)가 +3.8%, 中 인터넷·테크 ETF가 +8.4%·+6.9% 상승하며 반도체와 비반도체 사이 뚜렷한 차별화가 나타났다고 진단했습니다.</p>
+
+    <h4>📉 W29 약세주 TOP 10</h4>
+    <table class="stock-table">
+      <thead><tr><th>종목</th><th>WTD %</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Biwin Storage</td><td class="loss">−22.72%</td><td>NAND 메모리 모듈</td></tr>
+        <tr><td>Montage Tech</td><td class="loss">−21.24%</td><td>DDR5 메모리 IF</td></tr>
+        <tr><td>Longsys</td><td class="loss">−21.10%</td><td>NAND 메모리 모듈(Lexar)</td></tr>
+        <tr><td>Hwatsing</td><td class="loss">−20.39%</td><td>CMP 평탄화 장비</td></tr>
+        <tr><td>Jingsheng Mech</td><td class="loss">−18.08%</td><td>잉곳 성장(SiC)</td></tr>
+        <tr><td>Huagong Tech</td><td class="loss">−17.32%</td><td>레이저·광통신 장비</td></tr>
+        <tr><td>Han's Laser</td><td class="loss">−17.04%</td><td>레이저 가공 장비</td></tr>
+        <tr><td>AMEC</td><td class="loss">−16.82%</td><td>식각·CVD 장비</td></tr>
+        <tr><td>Hangzhou Chang Chuan</td><td class="loss">−16.80%</td><td>반도체 테스트</td></tr>
+        <tr><td>GigaDevice</td><td class="loss">−15.91%</td><td>NOR Flash·MCU</td></tr>
+      </tbody>
+    </table>
+
+    <h4>🚀 W29 폭등주 TOP 10</h4>
+    <table class="stock-table">
+      <thead><tr><th>종목</th><th>WTD %</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Suzhou Dongshan</td><td class="gain">+10.94%</td><td>PCB·광통신 부품</td></tr>
+        <tr><td>Meituan</td><td class="gain">+10.80%</td><td>음식 배달·로컬 서비스</td></tr>
+        <tr><td>XPeng</td><td class="gain">+10.34%</td><td>NEV(전기차)</td></tr>
+        <tr><td>Kuaishou</td><td class="gain">+9.01%</td><td>숏폼 비디오</td></tr>
+        <tr><td>BYD</td><td class="gain">+7.13%</td><td>EV 통합(배터리+자동차)</td></tr>
+        <tr><td>TongFu</td><td class="gain">+7.05%</td><td>반도체 패키징(OSAT)</td></tr>
+        <tr><td>Xiaomi</td><td class="gain">+6.42%</td><td>스마트폰·EV SU7</td></tr>
+        <tr><td>Li Auto</td><td class="gain">+6.28%</td><td>NEV(전기차)</td></tr>
+        <tr><td>Alibaba</td><td class="gain">+6.08%</td><td>이커머스·클라우드</td></tr>
+        <tr><td>JD.com</td><td class="gain">+5.99%</td><td>이커머스</td></tr>
+      </tbody>
+    </table>
+
+    <p>가중평균(−3.02%)이 단순평균(−3.35%)보다 소폭 양호했던 것은 비중이 큰 텐센트(+5.17%, 비중 2.66%)·알리바바(+6.08%, 비중 2.44%)가 지수 방어에 기여했기 때문입니다. 반도체 자립 테마 자체보다 개별 기업의 공급과잉 노출도에 따라 등락폭이 갈린 한 주로 평가됩니다.</p>
+  </div>
+
+  <div class="country-section jp">
+    <div class="country-head">
+      <span class="country-flag">🇯🇵</span>
+      <div>
+        <div class="country-title">일본 (Japan)</div>
+        <div>Nikkei225 −2.51% · 반도체 장비·소재 약세 주도, 종합상사·메가뱅크는 견조</div>
+      </div>
+      <div class="country-sub">유니버스 44종목 · CSV 매칭 32종목</div>
+    </div>
+
+    <p>가중평균 −1.81%, 단순평균 −2.19%로 중국·대만보다는 낙폭이 제한적이었지만, 반도체 SPE(장비·소재) 종목군의 약세가 뚜렷했습니다. 무라타·르네사스·SUMCO·롬 등 소재·부품·후공정 관련주가 아시아發 반도체 공급과잉 우려를 이어받아 두 자릿수 낙폭을 기록했습니다.</p>
+    <p>반면 미쓰이·미쓰비시상사 등 종합상사, 미즈호FG 등 메가뱅크, 도요타 등 자동차·수출주는 상대적으로 견조했습니다. 반도체 의존도가 낮은 업종으로 자금이 옮겨가는 로테이션이 중국과 유사한 패턴으로 나타난 것으로 풀이됩니다.</p>
+
+    <h4>📉 W29 약세주 TOP 7</h4>
+    <table class="stock-table">
+      <thead><tr><th>종목</th><th>WTD %</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Murata</td><td class="loss">−14.81%</td><td>MLCC·전자부품</td></tr>
+        <tr><td>Renesas</td><td class="loss">−13.08%</td><td>자동차용 MCU</td></tr>
+        <tr><td>SUMCO</td><td class="loss">−12.01%</td><td>실리콘 웨이퍼</td></tr>
+        <tr><td>Rohm</td><td class="loss">−10.73%</td><td>SiC 파워반도체</td></tr>
+        <tr><td>TDK</td><td class="loss">−8.97%</td><td>전자부품·배터리</td></tr>
+        <tr><td>Kokusai Electric</td><td class="loss">−8.76%</td><td>박막 증착 장비</td></tr>
+        <tr><td>Resonac</td><td class="loss">−7.77%</td><td>반도체 후공정 소재</td></tr>
+      </tbody>
+    </table>
+
+    <h4>🚀 W29 강세주 TOP 6</h4>
+    <table class="stock-table">
+      <thead><tr><th>종목</th><th>WTD %</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>Lasertec</td><td class="gain">+4.48%</td><td>EUV 마스크 검사</td></tr>
+        <tr><td>Mitsui</td><td class="gain">+3.99%</td><td>종합상사</td></tr>
+        <tr><td>SCREEN</td><td class="gain">+3.42%</td><td>세정 장비</td></tr>
+        <tr><td>Recruit</td><td class="gain">+3.06%</td><td>인재·구인 플랫폼</td></tr>
+        <tr><td>Toyota</td><td class="gain">+3.05%</td><td>자동차 1위</td></tr>
+        <tr><td>Mitsubishi Corp</td><td class="gain">+2.74%</td><td>종합상사</td></tr>
+      </tbody>
+    </table>
+
+    <p>같은 반도체 장비 카테고리 안에서도 Lasertec(EUV 검사, +4.48%)과 SCREEN(세정, +3.42%)은 강세를, Murata·Renesas 등 소재·부품주는 약세를 보이며 세부 업종별 온도차가 뚜렷했습니다.</p>
+  </div>
+
+  <div class="country-section tw">
+    <div class="country-head">
+      <span class="country-flag">🇹🇼</span>
+      <div>
+        <div class="country-title">대만 (Taiwan)</div>
+        <div>TWSE 데이터 지연(미확인) · TSMC −5.61%, 반도체 비중 절반의 시장 전체가 조정</div>
+      </div>
+      <div class="country-sub">유니버스 5종목 · CSV 매칭 5종목(전체)</div>
+    </div>
+
+    <p>가중평균 −3.94%, 단순평균 −1.35%로 두 값의 격차가 컸는데, 이는 단일 비중이 가장 큰 TSMC(비중 2.78%, −5.61%)가 지수를 크게 끌어내렸기 때문입니다. TSMC는 6월 매출이 사상 최대치를 기록하는 등 펀더멘털은 여전히 견고했지만, 아시아發 반도체 밸류체인 전반의 공급과잉 우려를 피해가지 못했습니다.</p>
+    <p>반면 서버 전원·EMS 업종인 델타일렉트로닉스(+1.33%)와 혼하이/폭스콘(+2.11%)은 오히려 상승하며, 같은 대만 안에서도 파운드리·장비와 조립·전원 공급망 사이에 온도차가 나타났습니다.</p>
+
+    <h4>대만 5종목 전체</h4>
+    <table class="stock-table">
+      <thead><tr><th>종목</th><th>WTD %</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>TSMC</td><td class="loss">−5.61%</td><td>파운드리 1위(단일 비중 최대)</td></tr>
+        <tr><td>AVC</td><td class="loss">−5.32%</td><td>AI 서버 방열·쿨링</td></tr>
+        <tr><td>ASE Tech</td><td class="gain">+0.74%</td><td>후공정·테스트(OSAT)</td></tr>
+        <tr><td>Delta Electronics</td><td class="gain">+1.33%</td><td>서버 전원공급·UPS</td></tr>
+        <tr><td>Hon Hai/Foxconn</td><td class="gain">+2.11%</td><td>EMS 최대(Apple·NVIDIA)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="country-section in">
+    <div class="country-head">
+      <span class="country-flag">🇮🇳</span>
+      <div>
+        <div class="country-title">인도 (India)</div>
+        <div>데이터 제약 — NIFTY50 및 대다수 종목 이번 주 종가 미확인</div>
+      </div>
+      <div class="country-sub">유니버스 38종목 · CSV 매칭 1종목(가중치 0.02%)</div>
+    </div>
+
+    <p><strong>데이터 한계 고지</strong>: 이번 주 인도 종목·지수 대부분이 CSV에 종가 데이터가 반영되지 않아(NIFTY50 포함), 매칭된 종목은 MakeMyTrip 1건(비중 0.02%, −7.54%)에 그쳤습니다. 유니버스 매칭률이 38종목 중 1종목으로 극히 낮아, 인도 시장의 이번 주 전반적 흐름에 대해서는 신뢰할 만한 결론을 내릴 수 없습니다. 국가별 종합 표의 인도 가중·단순 평균(−7.54%)은 이 단일 종목 수치이므로 시장 대표성이 없다는 점에 유의해야 합니다.</p>
+  </div>
+
+  <div class="country-section hk">
+    <div class="country-head">
+      <span class="country-flag">🇭🇰</span>
+      <div>
+        <div class="country-title">홍콩 (Hong Kong)</div>
+        <div>HSI +3.45% — 아시아 유일 5거래일 연속 상승, 개별 종목 매칭은 제한적</div>
+      </div>
+      <div class="country-sub">유니버스 9종목 · CSV 매칭 1종목(가중치 0.21%)</div>
+    </div>
+
+    <p>홍콩 항셍지수(HSI) 자체는 +3.45%로 이번 주 아시아 주요 지수 중 유일하게 플러스 마감했습니다. 다만 아시아종목.xlsx 유니버스에 포함된 홍콩 개별 종목(주로 중소형 부동산·콩글로머릿)은 AIA(+4.75%, 비중 0.21%) 1건만 매칭돼, 지수 상승의 구체적 종목별 기여도는 이번 리포트의 유니버스로는 확인이 제한적입니다. 지수 상승은 앞서 중국 섹션에서 다룬 텐센트·알리바바 등 대형 인터넷주(HSI 편입, 아시아종목.xlsx 分類상 중국으로 집계)가 견인한 것으로 추정됩니다.</p>
+  </div>
+
+  <div class="country-section kr">
+    <div class="country-head">
+      <span class="country-flag">🇰🇷</span>
+      <div>
+        <div class="country-title">한국 (Korea) — 참고용 컨텍스트</div>
+        <div>코스피 −8.77% · 코스닥 −5.44% · 이번 주 아시아 반도체 충격의 진앙</div>
+      </div>
+      <div class="country-sub">아시아종목.xlsx 유니버스 미포함 — 상세 종목은 글로벌 주간 보고서 참조</div>
+    </div>
+
+    <p>아시아종목.xlsx 유니버스에는 한국이 포함되지 않지만, 이번 주 한국 시장의 극단적 변동성은 아시아 전역 반도체 심리의 1차 진앙이었습니다. 월요일 SK하이닉스 역프리미엄發 서킷브레이커(−8.95%), 수요일 바클레이즈 매수의견發 매수 사이드카(+6.24%), 목요일 CXMT發 매도 사이드카(−6.37%)까지 나흘 만에 극단적 등락을 모두 겪었습니다. 상세 종목별 등락률·수급 데이터는 글로벌 주간 보고서(<a href="2026-W29.html">2026-W29.html</a>)를 참조하시기 바랍니다.</p>
+  </div>
+
+</div><!-- /tab-country -->
+
+<!-- TAB: Themes -->
+<div id="tab-themes" class="tab-panel">
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">Theme #1</span> 반도체 vs 비반도체 디커플링</h3>
+    <p>이번 주 아시아 시장을 관통한 가장 뚜렷한 패턴은 반도체 장비·메모리 밸류체인과 소비·인터넷·EV 업종 사이의 극단적 디스퍼션이었습니다. 목요일 CXMT의 상하이 IPO 공모가 확정이 메모리 공급과잉 공포를 촉발하며 중국·일본·대만 반도체 관련주가 일제히 두 자릿수 낙폭을 기록한 반면, 같은 날 중국 인터넷·EV 대형주는 정반대로 급등했습니다.</p>
+    <p>핵심 촉매는 세 가지로 요약됩니다: ① CXMT 상하이 상장(자금조달 약 86억 달러)이 촉발한 공급 확대 우려, ② 코어위브의 메모리 가격 하락 헤지 검토 보도(로이터), ③ 반도체 밸류에이션 부담론이 이미 지난주부터 누적돼 있던 상태에서의 촉발.</p>
+
+    <div class="theme-grid">
+      <div class="theme-side" style="border-left:3px solid var(--down);padding-left:12px">
+        <h5 style="color:var(--down)">반도체 폭락주</h5>
+        <ul>
+          <li>Biwin Storage −22.7% (中)</li>
+          <li>Montage Tech −21.2% (中)</li>
+          <li>무라타 −14.8% (日)</li>
+          <li>TSMC −5.6% (台)</li>
+        </ul>
+      </div>
+      <div class="theme-side" style="border-left:3px solid var(--up);padding-left:12px">
+        <h5 style="color:var(--up)">소비·EV·인터넷 폭등주</h5>
+        <ul>
+          <li>메이투안 +10.8% (中)</li>
+          <li>XPeng +10.3% (中)</li>
+          <li>BYD +7.1% (中)</li>
+          <li>알리바바 +6.1% (中)</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>이런 디커플링은 반도체 업황 자체에 대한 시장의 확신이 아직 견고하지 않으며, 새로운 공급 정보 하나에도 자금이 빠르게 업종을 넘나든다는 점을 시사합니다.</p>
+  </div>
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">Theme #2</span> SK하이닉스 가격 신호 — 아시아 반도체 심리의 진앙</h3>
+    <p>월요일 역김치프리미엄發 투매(코스피 서킷브레이커), 수요일 바클레이즈 매수의견發 급등(매수 사이드카), 목요일 CXMT發 재차 급락(매도 사이드카)까지 — SK하이닉스를 둘러싼 국내외 가격 신호가 나흘 내내 한국을 넘어 아시아 반도체 밸류체인 전체의 심리를 좌우했습니다.</p>
+    <p>미래에셋증권은 SK하이닉스 목표주가를 420만원으로 하향(2Q26F 영업이익 −12% 조정)하면서도, 2026년 영업이익 293조원·2027년 449조원 전망은 유지하며 HBM 장기 수요 근본가치는 훼손되지 않았다고 평가했습니다. 7/1~10일 한국 반도체 수출은 전년 동기 대비 53.9% 증가한 298억 달러로 해당 기간 기준 역대 최대를 기록해, 급락이 업황 자체보다 밸류에이션·가격 신호發 과잉반응이었을 가능성을 시사합니다.</p>
+  </div>
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">Theme #3</span> CXMT·HBM 가격을 둘러싼 엇갈린 해석</h3>
+    <p>같은 이벤트(CXMT 상하이 IPO)를 두고 시장의 해석이 정반대로 갈렸습니다. 서구 매체·코어위브發 보도는 이를 메모리 "공급과잉" 신호로 해석해 아시아 반도체주 급락을 촉발했습니다.</p>
+    <p>반면 미래에셋증권은 정반대 해석을 제시했습니다: DDR5/DDR4 현물가격이 40거래일 이상 연속 상승 중이며, CXMT 상장 자체가 오히려 HBM 가격 상승 가능성을 지지하는 재료라는 것입니다. TSMC의 6월 매출이 사상 최대치(YoY +67.9%)를 기록한 점도 반도체 수요 자체는 견고하다는 근거로 제시됐습니다.</p>
+    <p>이런 해석 차이는 다음 주 이후 메모리 가격 데이터와 삼성전자·SK하이닉스의 2분기 실적 가이던스(7월 말)가 나와야 정리될 가능성이 큽니다.</p>
+  </div>
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">Theme #4</span> 지정학 리스크 — 호르무즈, 재점화됐다 하루 만에 진정</h3>
+    <p>주말 새 트럼프 대통령의 호르무즈 해협 봉쇄 재개 선언으로 재점화됐던 이란-미국 긴장은, 20% 통행세 방침이 발표 하루 만에 철회되며 빠르게 진정됐습니다. 국제유가는 장중 고점을 반납했지만 주간 기준으로는 여전히 두 자릿수 상승(WTI +10.47%)을 유지해, 근본적 리스크가 완전히 해소된 것은 아니라는 신호를 남겼습니다.</p>
+    <p>이 이벤트는 최근 아시아 시장이 지정학 헤드라인에 즉각 반응하면서도, 실제 정책 변화(또는 철회)가 확인되면 빠르게 되돌리는 패턴을 다시 한번 보여줬습니다.</p>
+  </div>
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">Theme #5</span> 통화 — 원화 강세 vs 위안 안정, 아시아 통화 디커플링</h3>
+    <p>달러/원은 이번 주 −1.81%로 아시아 주요 통화 중 가장 뚜렷한 강세를 보인 반면, 달러/위안은 −0.19%로 당국의 안정화 의지 아래 좁은 박스권을 유지했습니다. 달러/인도루피는 오히려 +1.01% 약세(루피 절하)를 보이며 아시아 통화 사이에서도 방향이 엇갈렸습니다.</p>
+    <p>달러인덱스(DXY)는 美 CPI 서프라이즈에 힘입어 주간 −0.23% 약세를 보였는데, 원화가 이 흐름에 가장 민감하게 반응한 것은 이번 주 SK하이닉스 관련 외국인 자금 유출입과도 맞물려 있는 것으로 풀이됩니다.</p>
+  </div>
+
+</div><!-- /tab-themes -->
+
+<!-- TAB: Data (auto-filled) -->
+<div id="tab-data" class="tab-panel">
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:8px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 지수 2026-W29 변동률</h2>
+  <table class="heatmap">
+    <thead><tr><th>지수</th><th>국가/지역</th><th>2026-07-10 종가</th><th>2026-07-16 종가</th><th>WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="name-cell">HSI 항셍</td><td class="close-cell">홍콩</td><td class="close-cell">24,175.12</td><td class="close-cell">25,008.60</td><td class="heat-cell up">+3.45%</td></tr>
+      <tr><td class="name-cell">Nikkei225</td><td class="close-cell">일본</td><td class="close-cell">68,557.73</td><td class="close-cell">66,835.54</td><td class="heat-cell down">−2.51%</td></tr>
+      <tr><td class="name-cell">상하이종합</td><td class="close-cell">중국 본토</td><td class="close-cell">3,996.16</td><td class="close-cell">3,882.41</td><td class="heat-cell down">−2.85%</td></tr>
+      <tr><td class="name-cell">MSCI EM</td><td class="close-cell">신흥국 전체</td><td class="close-cell">66.90</td><td class="close-cell">64.19</td><td class="heat-cell down">−4.05%</td></tr>
+      <tr><td class="name-cell">코스닥</td><td class="close-cell">한국</td><td class="close-cell">837.43</td><td class="close-cell">791.84</td><td class="heat-cell down">−5.44%</td></tr>
+      <tr><td class="name-cell">코스피</td><td class="close-cell">한국</td><td class="close-cell">7,475.94</td><td class="close-cell">6,820.60</td><td class="heat-cell down">−8.77%</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 통화 2026-W29 변동률</h2>
+  <table class="heatmap">
+    <thead><tr><th>통화쌍</th><th>2026-07-10</th><th>2026-07-16</th><th>WTD %</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td class="name-cell">USD/KRW</td><td class="close-cell">1,505.5800</td><td class="close-cell">1,478.3300</td><td class="heat-cell down">−1.81%</td><td style="font-size:12px;color:var(--muted)">원</td></tr>
+      <tr><td class="name-cell">USD/JPY</td><td class="close-cell">162.3430</td><td class="close-cell">162.3480</td><td class="heat-cell flat">+0.00%</td><td style="font-size:12px;color:var(--muted)">엔</td></tr>
+      <tr><td class="name-cell">USD/INR</td><td class="close-cell">95.3700</td><td class="close-cell">96.3350</td><td class="heat-cell up">+1.01%</td><td style="font-size:12px;color:var(--muted)">루피</td></tr>
+      <tr><td class="name-cell">USD/CNY</td><td class="close-cell">6.7760</td><td class="close-cell">6.7630</td><td class="heat-cell down">−0.19%</td><td style="font-size:12px;color:var(--muted)">위안</td></tr>
+      <tr><td class="name-cell">DXY</td><td class="close-cell">100.9700</td><td class="close-cell">100.7330</td><td class="heat-cell down">−0.23%</td><td style="font-size:12px;color:var(--muted)">달러지수</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 종목 2026-W29 TOP 20</h2>
+  <table class="heatmap">
+    <thead><tr><th>#</th><th>종목</th><th>국가</th><th>비중%</th><th>2026-07-10</th><th>2026-07-16</th><th>WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="close-cell">1</td><td class="name-cell">Suzhou Dongshan</td><td class="close-cell">중국</td><td class="close-cell">0.05</td><td class="close-cell">242.30</td><td class="close-cell">268.80</td><td class="heat-cell up">+10.94%</td></tr>
+      <tr><td class="close-cell">2</td><td class="name-cell">Meituan</td><td class="close-cell">중국</td><td class="close-cell">0.25</td><td class="close-cell">78.70</td><td class="close-cell">87.20</td><td class="heat-cell up">+10.80%</td></tr>
+      <tr><td class="close-cell">3</td><td class="name-cell">XPeng</td><td class="close-cell">중국</td><td class="close-cell">0.08</td><td class="close-cell">51.25</td><td class="close-cell">56.55</td><td class="heat-cell up">+10.34%</td></tr>
+      <tr><td class="close-cell">4</td><td class="name-cell">Kuaishou</td><td class="close-cell">중국</td><td class="close-cell">0.12</td><td class="close-cell">43.04</td><td class="close-cell">46.92</td><td class="heat-cell up">+9.01%</td></tr>
+      <tr><td class="close-cell">5</td><td class="name-cell">BYD</td><td class="close-cell">중국</td><td class="close-cell">1.61</td><td class="close-cell">84.90</td><td class="close-cell">90.95</td><td class="heat-cell up">+7.13%</td></tr>
+      <tr><td class="close-cell">6</td><td class="name-cell">TongFu</td><td class="close-cell">중국</td><td class="close-cell">0.28</td><td class="close-cell">70.95</td><td class="close-cell">75.95</td><td class="heat-cell up">+7.05%</td></tr>
+      <tr><td class="close-cell">7</td><td class="name-cell">Xiaomi</td><td class="close-cell">중국</td><td class="close-cell">0.63</td><td class="close-cell">25.84</td><td class="close-cell">27.50</td><td class="heat-cell up">+6.42%</td></tr>
+      <tr><td class="close-cell">8</td><td class="name-cell">Li Auto</td><td class="close-cell">중국</td><td class="close-cell">0.08</td><td class="close-cell">47.42</td><td class="close-cell">50.40</td><td class="heat-cell up">+6.28%</td></tr>
+      <tr><td class="close-cell">9</td><td class="name-cell">Alibaba</td><td class="close-cell">중국</td><td class="close-cell">2.44</td><td class="close-cell">110.20</td><td class="close-cell">116.90</td><td class="heat-cell up">+6.08%</td></tr>
+      <tr><td class="close-cell">10</td><td class="name-cell">JD.com</td><td class="close-cell">중국</td><td class="close-cell">0.16</td><td class="close-cell">110.20</td><td class="close-cell">116.80</td><td class="heat-cell up">+5.99%</td></tr>
+      <tr><td class="close-cell">11</td><td class="name-cell">Bank Mandiri</td><td class="close-cell">인도네시아</td><td class="close-cell">0.20</td><td class="close-cell">4,080.00</td><td class="close-cell">4,310.00</td><td class="heat-cell up">+5.64%</td></tr>
+      <tr><td class="close-cell">12</td><td class="name-cell">Zijin Gold Intl</td><td class="close-cell">중국</td><td class="close-cell">0.21</td><td class="close-cell">98.30</td><td class="close-cell">103.50</td><td class="heat-cell up">+5.29%</td></tr>
+      <tr><td class="close-cell">13</td><td class="name-cell">Tencent</td><td class="close-cell">중국</td><td class="close-cell">2.66</td><td class="close-cell">460.20</td><td class="close-cell">484.00</td><td class="heat-cell up">+5.17%</td></tr>
+      <tr><td class="close-cell">14</td><td class="name-cell">CATL</td><td class="close-cell">중국</td><td class="close-cell">1.64</td><td class="close-cell">348.76</td><td class="close-cell">366.20</td><td class="heat-cell up">+5.00%</td></tr>
+      <tr><td class="close-cell">15</td><td class="name-cell">AIA</td><td class="close-cell">홍콩</td><td class="close-cell">0.21</td><td class="close-cell">72.65</td><td class="close-cell">76.10</td><td class="heat-cell up">+4.75%</td></tr>
+      <tr><td class="close-cell">16</td><td class="name-cell">Lasertec</td><td class="close-cell">일본</td><td class="close-cell">0.21</td><td class="close-cell">44,380.00</td><td class="close-cell">46,370.00</td><td class="heat-cell up">+4.48%</td></tr>
+      <tr><td class="close-cell">17</td><td class="name-cell">WuXi AppTec</td><td class="close-cell">중국</td><td class="close-cell">0.09</td><td class="close-cell">155.10</td><td class="close-cell">162.00</td><td class="heat-cell up">+4.45%</td></tr>
+      <tr><td class="close-cell">18</td><td class="name-cell">Horizon Robotics</td><td class="close-cell">중국</td><td class="close-cell">0.37</td><td class="close-cell">4.42</td><td class="close-cell">4.61</td><td class="heat-cell up">+4.30%</td></tr>
+      <tr><td class="close-cell">19</td><td class="name-cell">Mitsui</td><td class="close-cell">일본</td><td class="close-cell">0.02</td><td class="close-cell">4,556.00</td><td class="close-cell">4,738.00</td><td class="heat-cell up">+3.99%</td></tr>
+      <tr><td class="close-cell">20</td><td class="name-cell">Trip.com</td><td class="close-cell">중국</td><td class="close-cell">0.08</td><td class="close-cell">329.40</td><td class="close-cell">342.20</td><td class="heat-cell up">+3.89%</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">아시아 종목 2026-W29 BOTTOM 20</h2>
+  <table class="heatmap">
+    <thead><tr><th>#</th><th>종목</th><th>국가</th><th>비중%</th><th>2026-07-10</th><th>2026-07-16</th><th>WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="close-cell">1</td><td class="name-cell">Biwin Storage</td><td class="close-cell">중국</td><td class="close-cell">0.41</td><td class="close-cell">388.50</td><td class="close-cell">300.25</td><td class="heat-cell down">−22.72%</td></tr>
+      <tr><td class="close-cell">2</td><td class="name-cell">Montage Tech</td><td class="close-cell">중국</td><td class="close-cell">0.73</td><td class="close-cell">268.06</td><td class="close-cell">211.13</td><td class="heat-cell down">−21.24%</td></tr>
+      <tr><td class="close-cell">3</td><td class="name-cell">Longsys</td><td class="close-cell">중국</td><td class="close-cell">0.29</td><td class="close-cell">587.60</td><td class="close-cell">463.59</td><td class="heat-cell down">−21.10%</td></tr>
+      <tr><td class="close-cell">4</td><td class="name-cell">Hwatsing</td><td class="close-cell">중국</td><td class="close-cell">0.27</td><td class="close-cell">324.60</td><td class="close-cell">258.43</td><td class="heat-cell down">−20.39%</td></tr>
+      <tr><td class="close-cell">5</td><td class="name-cell">Jingsheng Mech</td><td class="close-cell">중국</td><td class="close-cell">0.27</td><td class="close-cell">47.28</td><td class="close-cell">38.73</td><td class="heat-cell down">−18.08%</td></tr>
+      <tr><td class="close-cell">6</td><td class="name-cell">Huagong Tech</td><td class="close-cell">중국</td><td class="close-cell">0.07</td><td class="close-cell">158.07</td><td class="close-cell">130.69</td><td class="heat-cell down">−17.32%</td></tr>
+      <tr><td class="close-cell">7</td><td class="name-cell">Han's Laser</td><td class="close-cell">중국</td><td class="close-cell">0.11</td><td class="close-cell">130.30</td><td class="close-cell">108.10</td><td class="heat-cell down">−17.04%</td></tr>
+      <tr><td class="close-cell">8</td><td class="name-cell">AMEC</td><td class="close-cell">중국</td><td class="close-cell">0.83</td><td class="close-cell">434.51</td><td class="close-cell">361.42</td><td class="heat-cell down">−16.82%</td></tr>
+      <tr><td class="close-cell">9</td><td class="name-cell">Hangzhou Chang Chuan</td><td class="close-cell">중국</td><td class="close-cell">0.41</td><td class="close-cell">352.31</td><td class="close-cell">293.13</td><td class="heat-cell down">−16.80%</td></tr>
+      <tr><td class="close-cell">10</td><td class="name-cell">GigaDevice</td><td class="close-cell">중국</td><td class="close-cell">0.88</td><td class="close-cell">612.00</td><td class="close-cell">514.61</td><td class="heat-cell down">−15.91%</td></tr>
+      <tr><td class="close-cell">11</td><td class="name-cell">Hua Hong Semi</td><td class="close-cell">중국</td><td class="close-cell">0.61</td><td class="close-cell">185.50</td><td class="close-cell">157.40</td><td class="heat-cell down">−15.15%</td></tr>
+      <tr><td class="close-cell">12</td><td class="name-cell">Murata</td><td class="close-cell">일본</td><td class="close-cell">0.06</td><td class="close-cell">9,860.00</td><td class="close-cell">8,400.00</td><td class="heat-cell down">−14.81%</td></tr>
+      <tr><td class="close-cell">13</td><td class="name-cell">Piotech</td><td class="close-cell">중국</td><td class="close-cell">0.31</td><td class="close-cell">832.00</td><td class="close-cell">722.00</td><td class="heat-cell down">−13.22%</td></tr>
+      <tr><td class="close-cell">14</td><td class="name-cell">Renesas</td><td class="close-cell">일본</td><td class="close-cell">0.22</td><td class="close-cell">4,762.00</td><td class="close-cell">4,139.00</td><td class="heat-cell down">−13.08%</td></tr>
+      <tr><td class="close-cell">15</td><td class="name-cell">NAURA Tech</td><td class="close-cell">중국</td><td class="close-cell">1.05</td><td class="close-cell">801.00</td><td class="close-cell">702.76</td><td class="heat-cell down">−12.26%</td></tr>
+      <tr><td class="close-cell">16</td><td class="name-cell">SUMCO</td><td class="close-cell">일본</td><td class="close-cell">0.12</td><td class="close-cell">5,244.00</td><td class="close-cell">4,614.00</td><td class="heat-cell down">−12.01%</td></tr>
+      <tr><td class="close-cell">17</td><td class="name-cell">Rohm</td><td class="close-cell">일본</td><td class="close-cell">0.12</td><td class="close-cell">5,600.00</td><td class="close-cell">4,999.00</td><td class="heat-cell down">−10.73%</td></tr>
+      <tr><td class="close-cell">18</td><td class="name-cell">Hygon Info Tech</td><td class="close-cell">중국</td><td class="close-cell">0.91</td><td class="close-cell">353.00</td><td class="close-cell">320.40</td><td class="heat-cell down">−9.24%</td></tr>
+      <tr><td class="close-cell">19</td><td class="name-cell">Dawning Info</td><td class="close-cell">중국</td><td class="close-cell">0.11</td><td class="close-cell">107.50</td><td class="close-cell">97.66</td><td class="heat-cell down">−9.15%</td></tr>
+      <tr><td class="close-cell">20</td><td class="name-cell">Lenovo</td><td class="close-cell">중국</td><td class="close-cell">0.18</td><td class="close-cell">24.48</td><td class="close-cell">22.26</td><td class="heat-cell down">−9.07%</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:18px;font-weight:700;color:#1a1d2e;margin:22px 0 14px 0;padding-bottom:6px;border-bottom:2px solid #F58220">국가별 종합</h2>
+  <table class="heatmap">
+    <thead><tr><th>국가</th><th>매칭/유니버스</th><th>비중 합계</th><th>단순평균 WTD %</th><th>가중평균 WTD %</th></tr></thead>
+    <tbody>
+      <tr><td class="name-cell">🇮🇩 인도네시아</td><td class="close-cell">1/1</td><td class="close-cell">0.20%</td><td class="heat-cell up">+5.64%</td><td class="heat-cell up">+5.64%</td></tr>
+      <tr><td class="name-cell">🇭🇰 홍콩</td><td class="close-cell">1/9</td><td class="close-cell">0.21%</td><td class="heat-cell up">+4.75%</td><td class="heat-cell up">+4.75%</td></tr>
+      <tr><td class="name-cell">🇦🇺 호주</td><td class="close-cell">1/2</td><td class="close-cell">0.21%</td><td class="heat-cell up">+0.44%</td><td class="heat-cell up">+0.44%</td></tr>
+      <tr><td class="name-cell">🇹🇼 대만</td><td class="close-cell">5/5</td><td class="close-cell">3.72%</td><td class="heat-cell down">−1.35%</td><td class="heat-cell down">−3.94%</td></tr>
+      <tr><td class="name-cell">🇻🇳 베트남</td><td class="close-cell">10/10</td><td class="close-cell">0.35%</td><td class="heat-cell down">−2.04%</td><td class="heat-cell down">−2.19%</td></tr>
+      <tr><td class="name-cell">🇯🇵 일본</td><td class="close-cell">32/44</td><td class="close-cell">4.74%</td><td class="heat-cell down">−2.19%</td><td class="heat-cell down">−1.81%</td></tr>
+      <tr><td class="name-cell">🇨🇳 중국</td><td class="close-cell">52/71</td><td class="close-cell">26.57%</td><td class="heat-cell down">−3.35%</td><td class="heat-cell down">−3.02%</td></tr>
+      <tr><td class="name-cell">🇮🇳 인도</td><td class="close-cell">1/38</td><td class="close-cell">0.02%</td><td class="heat-cell down">−7.54%</td><td class="heat-cell down">−7.54%</td></tr>
+    </tbody>
+  </table>
+</div><!-- /tab-data -->
+
+<!-- TAB: Outlook (다음 주) -->
+<div id="tab-outlook" class="tab-panel">
+  <div class="outlook-card">
+    <h3>2026-W29 다음 주(W30) 시나리오</h3>
+    <p>핵심 미해결 변수 3가지: ① 메모리 공급과잉 vs HBM 가격 상승 논쟁이 어느 쪽으로 정리될지, ② 삼성전자·SK하이닉스 2분기 실적 가이던스(7월 말)가 반도체 밸류에이션 부담을 완화할지, ③ 이란-미국 지정학 긴장이 완전히 해소될지 재점화될지.</p>
+    <div class="outlook-grid">
+      <div class="scenario bull"><h4>🐂 Bull (확률 25%)</h4><p>메모리 공급과잉 우려가 과도한 반응이었음이 확인되고(CXMT 실제 양산 지연 등), 테슬라·알파벳 실적(7/22)이 AI 자본지출 기대를 재확인하면 아시아 반도체 밸류체인이 이번 주 낙폭을 상당 부분 되돌릴 수 있습니다. 이란-미국 리스크 추가 완화 시 유가 안정과 함께 위험선호가 강화될 수 있습니다.</p></div>
+      <div class="scenario base"><h4>📊 Base (확률 50%)</h4><p>메모리 공급과잉과 수요 기대가 팽팽히 맞서며 반도체 밸류체인 변동성이 지속되는 가운데, 삼성전자·SK하이닉스 실적 가이던스 확인 전까지는 아시아 반도체주가 박스권 등락을 보일 가능성이 큽니다. 中 소비·인터넷주는 상대적으로 견조한 흐름을 이어갈 것으로 예상됩니다.</p></div>
+      <div class="scenario bear"><h4>🐻 Bear (확률 25%)</h4><p>CXMT 등 中 메모리 업체의 실제 증설이 가시화되며 공급과잉 우려가 실적으로 확인되거나, 이란-미국 군사 충돌이 재점화될 경우 아시아 반도체 밸류체인 전반의 조정이 심화되고 MSCI EM 추가 하락 압력이 커질 수 있습니다.</p></div>
+    </div>
+  </div>
+
+  <div class="risk-section">
+    <h2>⚠️ 주목 리스크 TOP 5</h2>
+    <ul class="risk-items">
+      <li class="risk-item"><span class="risk-tag high">高</span><div><strong>메모리 공급과잉 우려 지속:</strong> CXMT의 대규모 증설·자금조달이 실제 양산 확대로 이어질 경우 아시아 반도체 밸류체인 전반에 추가 하락 압력이 가중될 수 있습니다.</div></li>
+      <li class="risk-item"><span class="risk-tag high">高</span><div><strong>이란-미국 확전 재점화:</strong> 통행세 철회로 일시 완화됐지만 근본적 갈등은 미해소 — 추가 군사 조치 시 유가·아시아 통화 변동성이 재급등할 수 있습니다.</div></li>
+      <li class="risk-item"><span class="risk-tag high">高</span><div><strong>SK하이닉스 국내외 가격 괴리 지속:</strong> ADR-본주 가격 신호 차이가 반복적으로 아시아 반도체 심리를 흔든 만큼, 괴리가 좁혀지지 않는 한 유사한 급등락이 재현될 수 있습니다.</div></li>
+      <li class="risk-item"><span class="risk-tag med">中</span><div><strong>중국 반도체 vs 소비 로테이션 지속 여부:</strong> 이번 주 나타난 극단적 디스퍼션이 다음 주에도 이어질 경우 지수 방향성 판단이 더 어려워질 수 있습니다.</div></li>
+      <li class="risk-item"><span class="risk-tag med">中</span><div><strong>인도 데이터 공백 장기화:</strong> NIFTY50 및 인도 종목 데이터 지연이 지속될 경우 인도 시장에 대한 신뢰할 만한 분석이 계속 제한될 수 있습니다.</div></li>
+    </ul>
+  </div>
+
+  <div class="theme-card">
+    <h3><span class="theme-tag">데이터 캘린더</span> W30 (7/20~7/24) 모니터링</h3>
+    <ul>
+      <li><strong>7/22(수)</strong> — 테슬라·알파벳(구글) 2분기 실적 발표. AI 자본지출 가이던스가 반도체 밸류체인 심리에 직접 영향.</li>
+      <li><strong>7/24(금)</strong> — 두산로보틱스·현대로템 2분기 실적 발표(한국).</li>
+      <li><strong>주 후반</strong> — CXMT 상하이 상장 이후 후속 보도, 메모리 현물가 추이 지속 확인 필요.</li>
+      <li><strong>7/28~29</strong> — FOMC(W30 이후) 앞둔 금리 경로 재평가 시작 가능성.</li>
+      <li><strong>7/29</strong> — SK하이닉스 2분기 정식 실적 콘퍼런스콜(W30 직후) — 반도체 밸류체인 방향성의 핵심 분기점.</li>
+      <li>이란-미국 관계 관련 추가 보도, 호르무즈 해협 통행 실질적 차질 여부 지속 모니터링.</li>
+    </ul>
+  </div>
+</div><!-- /tab-outlook -->
+
+<!-- TAB: Sources (partial auto-fill) -->
+<div id="tab-sources" class="tab-panel">
+  <div class="sources-section">
+    <h3>1. 시장 데이터 (Quotes)</h3>
+    <ul class="sources-list">
+      <li><strong>history/market_data.csv</strong> — Snowflake MKT100 정본 미러 <span class="source-meta">아시아 종목·지수·환율 2026-07-10~2026-07-16 시계열</span></li>
+      <li><strong>history/아시아종목.xlsx</strong> — 운용 유니버스 180종목 (중국 71 · 인도 38 · 일본 44 · 대만 5 · 홍콩 9 · 호주 2 · 베트남 10 · 인도네시아 1)</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>2. 미래에셋증권 Research Digest</h3>
+    <ul class="sources-list">
+      <li><a href="../../securities/digest/digest_2026-W29.html">2026-W29 Digest</a> — 반도체 조정과 대응(SK하이닉스 목표가 하향·TSMC 최대매출·HBM 가격 논쟁), 전력 솔루션(HD현대일렉트릭·LS일렉트릭 신규 커버리지), 2Q26 실적 시즌(현대건설·SK텔레콤·기아·현대모비스)</li>
+      <li><a href="../../securities/digest/digest_2026-W25.html">2026-W25 Digest</a> — 직전 이용 가능한 다이제스트(W26~W28 자료 미수집으로 W25가 최근 참조본)</li>
+      <li><strong>비고</strong>: W26~W28 다이제스트는 수집 공백으로 이번 리포트에서 참조하지 못함</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>3. 미래에셋증권 핵심 단편 보고서 (원문)</h3>
+    <ul class="sources-list">
+      <li>「SK하이닉스(000660_매수) 시선을 약간만 아래로」(07/14) — 목표주가 420만원 하향, 2Q26F OP −12% 조정에도 26~27년 HBM 장기 수요 근본가치 재확인</li>
+      <li>「Market Issue: SK하이닉스 급락 코멘트」(07/13) — 월요일 급락 당일 코멘트</li>
+      <li>「글로벌_한국 ETF 시장 동향: 이란 긴장 재부각. 글로벌 반도체 조정 속 견조한 중국 반도체」(07/13, 2026.7.6~7.12) — 中 반도체 ETF +3.8% vs 中 인터넷·테크 ETF +8.4%·+6.9% 차별화 데이터</li>
+      <li>「Monthly Quantum #6: 어디서 많이 본 그림」(07/16)</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>4. 외부 참고 자료 (웹 검색)</h3>
+    <ul class="sources-list">
+      <li><a href="https://finance.yahoo.com/markets/stocks/articles/cxmts-shanghai-ipo-more-200-114816593.html" target="_blank">CXMT's $8.6 billion Shanghai IPO draws less frenzied demand amid China tech selloff</a> — Yahoo Finance</li>
+      <li><a href="https://www.newspim.com/news/view/20260716001020" target="_blank">[GAM] 中 CXMT 메모리 위협론? 월가가 덤덤한 3가지 이유</a> — 뉴스핌 · 2026-07-16</li>
+      <li><a href="https://www.g-enews.com/article/Securities/2026/07/202607160713483964e250e8e188_1" target="_blank">마이크론 8% 급락… 중국 반도체 CXMT IPO에 메모리 시장 판도 흔들리나</a> — 글로벌이코노믹 · 2026-07-16</li>
+      <li><a href="https://m.joseilbo.com/news/view.htm?newsid=572119" target="_blank">中 CXMT 14조 IPO, 삼전·SK에 위협일까…주가·실적 영향 따져보니</a> — 조세일보 · 2026-07-16</li>
+      <li><a href="https://qz.com/kospi-iran-strait-hormuz-sk-hynix-wall-street-071326" target="_blank">Iran closed the Strait of Hormuz. SK Hynix lost its IPO gains. Bank earnings are up next</a> — Quartz · 2026-07-13</li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>5. 본 보고서 산출 방법론</h3>
+    <ul class="sources-list" style="list-style:none;padding-left:0">
+      <li><strong>기간 정의</strong>: 2026-W29 = 2026-07-13 ~ 2026-07-16 (4영업일)</li>
+      <li><strong>WTD 변동률</strong>: 2026-07-10 종가 → 2026-07-16 종가</li>
+      <li><strong>가중평균</strong>: Σ(비중 × WTD%) / Σ(비중)</li>
+      <li><strong>유니버스 매칭</strong>: 103/180 (57.2%) — 매칭은 종목명 정확 일치 기준</li>
+      <li><strong>제한</strong>: 미매칭 종목은 가중평균에서 제외 (Coverage 한계 명시)</li>
+      <li><strong>지수·환율</strong>: history/market_data.csv (yfinance 백필) — 동일 윈도우</li>
+    </ul>
+  </div>
+
+  <div class="ai-disclaimer">
+    ⚠️ 본 보고서는 미래에셋증권 다이제스트 및 history/market_data.csv를 기반으로 생성됐습니다.
+    수치·해석은 작성 시점 기준이며, 투자 권유가 아닙니다.
+  </div>
+</div><!-- /tab-sources -->
+
+<div class="footer">
+  Asia Weekly Brief · 2026-W29 (2026-07-13 ~ 2026-07-16) · 생성: 2026-07-19 20:11 KST · market_summary 프로젝트
+</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
