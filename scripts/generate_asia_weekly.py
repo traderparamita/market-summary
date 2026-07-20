@@ -159,28 +159,43 @@ def compute_wtd_returns(
     df: pd.DataFrame,
     tickers: list[str],
     ref_date: date,
-    end_date: date,
+    week_end: date,
 ) -> dict[str, dict]:
-    """Compute WTD% for each ticker. Returns dict: {ticker: {start, end, pct}}."""
+    """Compute WTD% for each ticker using ref_date's close vs each ticker's own
+    last available close on/before `week_end`.
+
+    Only Korea observes 제헌절-style KR-only holidays — other markets (US, Europe,
+    Japan, China, Taiwan, India, HK) trade normally on those days. A single shared
+    end_date (e.g. forcing everything to Thursday when Friday is a KR holiday)
+    silently truncates a real trading day for every non-KR ticker. Resolving the
+    end date per-ticker lets KOSPI/KOSDAQ fall back to Thursday while everything
+    else picks up Friday's actual close.
+    """
     sub = df[df["TICKER"].isin(tickers)].copy()
     piv = sub.pivot_table(index="DATE", columns="TICKER", values="CLOSE", aggfunc="first").sort_index()
 
     result = {}
     ref_ts = pd.Timestamp(ref_date)
-    end_ts = pd.Timestamp(end_date)
+    week_end_ts = pd.Timestamp(week_end)
     for t in tickers:
         if t not in piv.columns:
             continue
         s = piv[t].dropna()
-        if ref_ts in s.index and end_ts in s.index:
-            sv = float(s.loc[ref_ts])
-            ev = float(s.loc[end_ts])
-            if sv > 0:
-                result[t] = {
-                    "start": round(sv, 4),
-                    "end":   round(ev, 4),
-                    "pct":   round((ev / sv - 1) * 100, 4),
-                }
+        if ref_ts not in s.index:
+            continue
+        eligible_end = s.index[s.index <= week_end_ts]
+        if len(eligible_end) == 0:
+            continue
+        end_ts = eligible_end.max()
+        sv = float(s.loc[ref_ts])
+        ev = float(s.loc[end_ts])
+        if sv > 0:
+            result[t] = {
+                "start": round(sv, 4),
+                "end":   round(ev, 4),
+                "pct":   round((ev / sv - 1) * 100, 4),
+                "end_date": end_ts.date().isoformat(),
+            }
     return result
 
 
@@ -200,6 +215,7 @@ def build_country_summary(
                     "pct":    stock_returns[name]["pct"],
                     "start":  stock_returns[name]["start"],
                     "end":    stock_returns[name]["end"],
+                    "end_date": stock_returns[name].get("end_date"),
                 })
         if not rows:
             summary[country] = {
@@ -308,11 +324,14 @@ def render_html(data: dict) -> str:
         pct = d["pct"]
         cls = "up" if pct > 0.05 else ("down" if pct < -0.05 else "flat")
         sign = "+" if pct > 0 else "−" if pct < 0 else ""
+        end_note = ""
+        if d.get("end_date") and d["end_date"] != data["friday"]:
+            end_note = f' <span style="font-size:10px;color:var(--muted)">({d["end_date"]})</span>'
         idx_rows.append(
             f'<tr><td class="name-cell">{label}</td>'
             f'<td class="close-cell">{region}</td>'
             f'<td class="close-cell">{d["start"]:,.2f}</td>'
-            f'<td class="close-cell">{d["end"]:,.2f}</td>'
+            f'<td class="close-cell">{d["end"]:,.2f}{end_note}</td>'
             f'<td class="heat-cell {cls}">{sign}{abs(pct):.2f}%</td></tr>'
         )
     index_table = "\n      ".join(idx_rows)
@@ -326,10 +345,13 @@ def render_html(data: dict) -> str:
         pct = d["pct"]
         cls = "up" if pct > 0.05 else ("down" if pct < -0.05 else "flat")
         sign = "+" if pct > 0 else "−" if pct < 0 else ""
+        end_note = ""
+        if d.get("end_date") and d["end_date"] != data["friday"]:
+            end_note = f' <span style="font-size:10px;color:var(--muted)">({d["end_date"]})</span>'
         fx_rows.append(
             f'<tr><td class="name-cell">{label}</td>'
             f'<td class="close-cell">{d["start"]:,.4f}</td>'
-            f'<td class="close-cell">{d["end"]:,.4f}</td>'
+            f'<td class="close-cell">{d["end"]:,.4f}{end_note}</td>'
             f'<td class="heat-cell {cls}">{sign}{abs(pct):.2f}%</td>'
             f'<td style="font-size:12px;color:var(--muted)">{name}</td></tr>'
         )
@@ -347,13 +369,16 @@ def render_html(data: dict) -> str:
         pct = s["pct"]
         cls = "up" if pct > 0 else "down"
         sign = "+" if pct > 0 else "−"
+        end_note = ""
+        if s.get("end_date") and s["end_date"] != data["friday"]:
+            end_note = f' <span style="font-size:10px;color:var(--muted)">({s["end_date"]})</span>'
         return (
             f'<tr><td class="close-cell">{idx}</td>'
             f'<td class="name-cell">{s["name"]}</td>'
             f'<td class="close-cell">{s["country"]}</td>'
             f'<td class="close-cell">{s["weight"]:.2f}</td>'
             f'<td class="close-cell">{s["start"]:,.2f}</td>'
-            f'<td class="close-cell">{s["end"]:,.2f}</td>'
+            f'<td class="close-cell">{s["end"]:,.2f}{end_note}</td>'
             f'<td class="heat-cell {cls}">{sign}{abs(pct):.2f}%</td></tr>'
         )
 
@@ -1084,20 +1109,21 @@ def main():
     print(f"[asia-weekly] Universe: {len(universe)} stocks loaded")
 
     df = load_market()
-    end_date = get_last_trading_day_of_week(friday, df)
-    if end_date != friday:
-        print(f"[asia-weekly] {friday} has no trading data (holiday?) — using {end_date} as week end")
+    kr_last_trading_day = get_last_trading_day_of_week(friday, df)
+    if kr_last_trading_day != friday:
+        print(f"[asia-weekly] {friday} — no KR trading (holiday); KOSPI/KOSDAQ fall back to {kr_last_trading_day}, other markets still use their own Friday close")
     ref_date = get_prev_friday_close(monday, df)
-    print(f"[asia-weekly] Reference close: {ref_date} → {end_date}")
+    print(f"[asia-weekly] Reference close: {ref_date} → per-ticker close on/before {friday}")
 
-    # Compute stock returns
+    # Compute stock returns — week_end is the true calendar Friday; each ticker
+    # resolves its own last available close on/before it (see compute_wtd_returns).
     stock_names = universe["name"].dropna().unique().tolist()
-    stock_returns = compute_wtd_returns(df, stock_names, ref_date, end_date)
+    stock_returns = compute_wtd_returns(df, stock_names, ref_date, friday)
     print(f"[asia-weekly] Stock matches: {len(stock_returns)}/{len(stock_names)}")
 
     # Compute index/FX returns
-    index_returns = compute_wtd_returns(df, ASIA_INDICES, ref_date, end_date)
-    fx_returns = compute_wtd_returns(df, ASIA_FX, ref_date, end_date)
+    index_returns = compute_wtd_returns(df, ASIA_INDICES, ref_date, friday)
+    fx_returns = compute_wtd_returns(df, ASIA_FX, ref_date, friday)
     print(f"[asia-weekly] Index: {len(index_returns)}/{len(ASIA_INDICES)}, FX: {len(fx_returns)}/{len(ASIA_FX)}")
 
     # Country summary
@@ -1106,16 +1132,17 @@ def main():
         if info["n_matched"] > 0:
             print(f"[asia-weekly]   {c}: matched {info['n_matched']}/{info['n_universe']}, simple={info['simple_avg']:+.2f}%, weighted={info['weighted_avg']:+.2f}%")
 
-    # Business day count — actual trading days monday..end_date (KR holiday-aware)
-    business_days = sum(1 for i in range((end_date - monday).days + 1)
+    # Business day count — actual trading days monday..friday (KR holiday-aware)
+    business_days = sum(1 for i in range((friday - monday).days + 1)
                        if is_business_day(monday + timedelta(days=i)))
 
-    # Build data dict. "friday" holds the actual last trading day used for WTD
-    # (may be earlier than the calendar Friday if it's a KR holiday, e.g. 제헌절).
+    # Build data dict. "friday" is the true calendar Friday (upper bound for WTD).
+    # Individual index/fx/stock entries carry their own "end_date" when it differs
+    # (e.g. KOSPI/KOSDAQ stay on Thursday's close on a KR-only holiday like 제헌절).
     data = {
         "week":             week_label,
         "monday":           monday.isoformat(),
-        "friday":           end_date.isoformat(),
+        "friday":           friday.isoformat(),
         "ref_date":         ref_date.isoformat(),
         "n_business_days":  business_days,
         "n_universe":       len(stock_names),
