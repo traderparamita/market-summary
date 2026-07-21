@@ -713,16 +713,29 @@ def _is_in_forward_container(text: str, position: int) -> bool:
 
 
 def _is_in_macro_block(text: str, position: int) -> bool:
-    """주어진 위치가 <div class="macro-block"> 안에 있는지.
+    """주어진 위치가 macro 탭(구 <div class="macro-block"> 또는 현행 <div id="tab-macro">) 안에 있는지.
 
     Macro 탭은 직전 주(W##) narrative 로 주간 단위로 작성되어 일간 보고서에
-    그대로 주입된다. 따라서 일간 보고서의 macro-block 내부 WTD/MTD/bp 수치는
+    그대로 주입된다. 따라서 일간 보고서의 macro 탭 내부 WTD/MTD/bp 수치는
     일간 rolling 값과 일치하지 않는 것이 정상 — 검증 대상에서 제외.
 
-    균형 카운트: macro-block 시작부터 position 까지 <div / </div> 갯수를 비교해
-    아직 닫히지 않은 상태이면 안에 있다고 판정.
+    구버전 generate.py 는 <div class="macro-block"> 으로 감쌌으나, 현행 템플릿은
+    <div id="tab-macro" class="tab-panel"> ~ </div><!-- /tab-macro --> 로 tab 전체를 감싼다
+    (macro-block CSS 클래스는 <style> 정의만 남고 실제 wrapper div 로는 더 이상 쓰이지 않음).
+    두 패턴을 모두 확인한다.
     """
     backward = text[:position]
+
+    # 현행 템플릿: <div id="tab-macro"> ~ <!-- /tab-macro --> 명시적 닫힘 주석으로 판정
+    tab_open_idx = backward.rfind('<div id="tab-macro"')
+    if tab_open_idx == -1:
+        tab_open_idx = backward.rfind("<div id='tab-macro'")
+    if tab_open_idx != -1:
+        close_idx = text.find("<!-- /tab-macro -->", tab_open_idx)
+        if close_idx != -1 and tab_open_idx < position < close_idx:
+            return True
+
+    # 구버전 템플릿: <div class="macro-block"> 균형 카운트
     open_idx = backward.rfind('<div class="macro-block"')
     if open_idx == -1:
         open_idx = backward.rfind("<div class='macro-block'")
