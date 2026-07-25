@@ -59,9 +59,10 @@ scripts/
 └── macos/                            # macOS launchd (레거시 참고용)
 
 db/
+├── MKT_PG.sql           # RDS PostgreSQL mkt000/mkt100/mkt200 DDL (현행 정본 스키마)
 ├── MKT.sql              # Snowflake MKT100/MKT200 DDL (레거시 참조용)
 ├── FND.sql              # Snowflake FND 계열 DDL (market-strategy 참조용)
-└── migrate.py           # 스키마 생성/마이그레이션 유틸
+└── migrate.py           # Snowflake DDL 마이그레이션 유틸 (레거시)
 
 views/                   # 섹터·국가 분석 엔진 (레거시 — generate_sector_country.py 전용)
 ```

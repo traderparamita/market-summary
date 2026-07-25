@@ -2,7 +2,7 @@
 US 2Y / 10Y / 10-2 Spread 데이터를 investing.com(investiny)으로 교체하는 백필 스크립트.
 
 - 교체 범위: 2020-01-01 ~ 오늘 (그 이전은 yfinance 원본 유지)
-- 대상: history/market_data.csv + Snowflake MKT100_MARKET_DAILY
+- 대상: history/market_data.csv + RDS mkt100_market_daily
 - BD_US_10_2_SPREAD는 신규 추가 (computed)
 
 사용법:
@@ -100,24 +100,19 @@ def update_csv(new_rows: pd.DataFrame, dry_run: bool):
         print(f"  CSV saved: {HISTORY_CSV}")
 
 
-def update_snowflake(new_rows: pd.DataFrame, dry_run: bool):
-    from snowflake_loader import upsert_rows
+def update_rds(new_rows: pd.DataFrame, dry_run: bool):
+    from rds_loader import upsert_rows
 
-    # CSV 컬럼명 → Snowflake 컬럼명 변환
-    COL_MAP = {
-        "DATE": "일자", "INDICATOR_CODE": "지표코드", "CATEGORY": "카테고리",
-        "TICKER": "티커", "CLOSE": "종가", "OPEN": "시가", "HIGH": "고가",
-        "LOW": "저가", "VOLUME": "거래량", "SOURCE": "소스",
-    }
-    sf_df = new_rows.rename(columns=COL_MAP)
-    sf_df["일자"] = pd.to_datetime(sf_df["일자"]).dt.date
+    # rds_loader.upsert_rows 는 CSV 스키마(DATE/INDICATOR_CODE/... 대문자) DataFrame 을 그대로 받는다.
+    rds_df = new_rows.copy()
+    rds_df["DATE"] = pd.to_datetime(rds_df["DATE"])
 
-    dates = sorted(sf_df["일자"].astype(str).unique())
-    print(f"  Snowflake: {len(sf_df)} rows across {len(dates)} dates")
+    dates = sorted(rds_df["DATE"].dt.date.astype(str).unique())
+    print(f"  RDS: {len(rds_df)} rows across {len(dates)} dates")
 
     if not dry_run:
-        n = upsert_rows(sf_df)
-        print(f"  Snowflake upserted: {n} rows")
+        n = upsert_rows(rds_df)
+        print(f"  RDS upserted: {n} rows")
 
 
 def main():
@@ -156,9 +151,9 @@ def main():
     print("\n--- CSV ---")
     update_csv(combined, dry_run)
 
-    # 5. Snowflake 업데이트
-    print("\n--- Snowflake ---")
-    update_snowflake(combined, dry_run)
+    # 5. RDS 업데이트
+    print("\n--- RDS ---")
+    update_rds(combined, dry_run)
 
     print("\nDone.")
 

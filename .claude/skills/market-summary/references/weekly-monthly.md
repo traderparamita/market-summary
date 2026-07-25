@@ -129,7 +129,7 @@
 
 ### 데이터 소스
 
-- **Snowflake MKT100 / MKT200 단일 정본** (via `market_source.load_long` / `load_macro_long`). CSV (`history/market_data.csv`, `history/macro_indicators.csv`) 는 legacy fallback
+- **RDS `mkt100_market_daily` / `mkt200_macro_daily` 단일 정본** (via `market_source.load_long` / `load_macro_long`). CSV (`history/market_data.csv`, `history/macro_indicators.csv`) 는 legacy fallback
 - 분기 매크로 데이터 백필이 필요하면 `.venv/bin/python -m collectors.macro --start YYYY-MM-DD` 으로 FRED + ECOS 재수집 → MKT200 upsert
 
 ---

@@ -160,7 +160,7 @@ Stage 2에서 충분한 신뢰가 쌓인 후에만 전환한다:
 
 4. **실패에 안전하게** — Agent가 잘못된 판단을 해도 손실이 제한되도록 위험 한도(position limit, drawdown limit, turnover cap)를 하드코딩한다.
 
-5. **단일 데이터 소스** — `history/market_data.csv`와 Snowflake가 모든 단계의 공통 데이터 기반. 새로운 Agent가 추가돼도 같은 데이터를 읽는다.
+5. **단일 데이터 소스** — `history/market_data.csv`와 RDS가 모든 단계의 공통 데이터 기반. 새로운 Agent가 추가돼도 같은 데이터를 읽는다.
 
 ---
 
@@ -168,7 +168,7 @@ Stage 2에서 충분한 신뢰가 쌓인 후에만 전환한다:
 
 ```
 [Stage 1] ██████████████████████ 완료 (2026-04)
-           - 120개 지표 일간 수집 + Snowflake 단일 정본
+           - 120개 지표 일간 수집 + RDS 단일 정본
            - Daily/Weekly/Monthly Story 완전 자동화 (훅 자동 수정 루프)
            - launchd 스케줄 자동 실행
 

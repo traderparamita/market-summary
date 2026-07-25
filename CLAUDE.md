@@ -24,22 +24,22 @@
 ## 환경
 
 - Python 3.12 (`.venv/` 로컬 venv, 시스템 python 금지)
-- 환경변수 (`.env`): `ECOS_API_KEY`, `FRED_API_KEY`, `SNOWFLAKE_*` (6개), `AWS_*` (4개), `TELEGRAM_*` (3개)
-- 새 환경 1회 셋업: `.venv/bin/python snowflake_loader.py --download`
+- 환경변수 (`.env`): `ECOS_API_KEY`, `FRED_API_KEY`, `RDS_*` (5개), `AWS_*` (4개), `TELEGRAM_*` (3개)
+- 새 환경 1회 셋업: `.venv/bin/python rds_loader.py --download`
 
 ## 보고서 구성
 
 일간 HTML 보고서 **7개 탭**: CS Story · PM Story · Market Story · Stocks · Data Dashboard · Macro & Events · Sources
 
 - **Stocks 탭**: `generate.py`가 KR Top20 + US Top20 + Asia Top20 표 자동 생성. `STOCKS_STORY_PLACEHOLDER`를 Claude가 3~5단락으로 채움
-- **데이터 정본**: Snowflake `MKT100_MARKET_DAILY`. 모든 reader는 `market_source` 경유. CSV는 fallback
-- `generate.py` dual-write는 `--start` 없는 일간 수집에만 작동. 전체 재수집은 `snowflake_loader.py --truncate`
+- **데이터 정본**: RDS PostgreSQL `mkt100_market_daily`. 모든 reader는 `market_source` 경유. CSV는 fallback
+- `generate.py`의 RDS 통합 upsert는 `--start` 없는 일간 수집에만 작동. 전체 재수집은 `rds_loader.py --truncate`
 
 ## 상세 문서
 
 - [docs/structure.md](docs/structure.md) — 파일 구조·핵심 함수·설정·로그
 - [docs/operations.md](docs/operations.md) — 자동화 스케줄·운영·복구 절차
-- [docs/data-sources.md](docs/data-sources.md) — 수집 대상·CSV 스키마·Snowflake 연동
+- [docs/data-sources.md](docs/data-sources.md) — 수집 대상·CSV 스키마·RDS 연동
 - [docs/research.md](docs/research.md) — 일간 테마 리서치 파이프라인
 - [docs/asia-weekly.md](docs/asia-weekly.md) — Asia Weekly Brief
 - [docs/verify-numbers.md](docs/verify-numbers.md) — 수치 자동 검증

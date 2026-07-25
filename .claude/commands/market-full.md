@@ -56,29 +56,29 @@ description: "market_summary Part A: 데이터 수집 → Dashboard → Market S
 ```
 
 **내부 동작 (참고용 — 별도로 실행하지 않는다)**:
-- `generate.py` 파이프라인 (Snowflake 중심으로 재구성됨):
+- `generate.py` 파이프라인 (RDS 중심으로 재구성됨):
   - **Step 1a**: `collect_market.fetch_data()` — core 56+ 지표 수집 → CSV append
   - **Step 1b**: Aux collectors 일간 실행 (`_run_aux_collectors`)
     - `collectors.sector_etfs` — SC_US_*, FA_US_*, US Bond ETFs (yfinance)
     - `collectors.krx_sectors` — IX_KR_* (pykrx KOSPI200 GICS)
     - `collectors.valuation` — VAL_KR_* (pykrx KOSPI PER/PBR/DY)
-    - 각 collector 가 CSV append 후 Snowflake 자체 upsert (`[SNOWFLAKE]` 마커)
-  - **Step 1c**: 통합 Snowflake upsert — CSV 의 `target_date` 전체 행을 읽어 MKT100 에 upsert
-  - **Step 2**: `build_report_data()` — **MKT100 (Snowflake)** 에서 읽어 메트릭 계산
+    - 각 collector 가 CSV append 후 RDS 자체 upsert (`[RDS]` 마커)
+  - **Step 1c**: 통합 RDS upsert — CSV 의 최근 7일 행을 읽어 `mkt100_market_daily` 에 upsert
+  - **Step 2**: `build_report_data()` — **mkt100_market_daily (RDS)** 에서 읽어 메트릭 계산
   - HTML 생성 + 주간·월간 자동 갱신
 
-- 데이터 소스: **Snowflake MKT100_MARKET_DAILY 가 단일 정본**. CSV 는 legacy fallback (simulate.py 시뮬레이션 모드에서만 활용, `SNOWFLAKE_DISABLE=1`).
+- 데이터 소스: **RDS `mkt100_market_daily` 가 단일 정본**. CSV 는 legacy fallback (simulate.py 시뮬레이션 모드에서만 활용, `RDS_DISABLE=1`).
 
 실패 시 오류 로그 확인 후 재시도 또는 사용자에게 보고 후 **즉시 중단**. `collect_market.py`를 별도로 실행하지 않는다.
 
-**Snowflake 적재 결과 확인 (필수)**:
-- 실행 출력에서 `[SNOWFLAKE]` 로 시작하는 줄을 반드시 찾아 기록한다. 보통 여러 줄 출력됨:
-  - `[SNOWFLAKE] OK source=collect_sector_etfs rows=N` (aux 각각)
-  - `[SNOWFLAKE] OK source=collect_krx_sectors rows=N`
-  - `[SNOWFLAKE] OK source=collect_valuation rows=N`
-  - `[SNOWFLAKE] OK date=YYYY-MM-DD rows=N` (Step 1c 통합 upsert, 가장 중요)
-- 완료 보고 Step 1~2 셀에 통합 upsert 행수(`Snowflake N행`)를 표기한다.
-- `[SNOWFLAKE] FAILED` 가 있으면 완료 보고 셀에 `⚠ Snowflake 실패: <reason>` 표기 + 하단 경고 블록.
+**RDS 적재 결과 확인 (필수)**:
+- 실행 출력에서 `[RDS]` 로 시작하는 줄을 반드시 찾아 기록한다. 보통 여러 줄 출력됨:
+  - `[RDS] OK source=collect_sector_etfs rows=N` (aux 각각)
+  - `[RDS] OK source=collect_krx_sectors rows=N`
+  - `[RDS] OK source=collect_valuation rows=N`
+  - `[RDS] OK date=YYYY-MM-DD window=... rows=N` (Step 1c 통합 upsert, 가장 중요)
+- 완료 보고 Step 1~2 셀에 통합 upsert 행수(`RDS N행`)를 표기한다.
+- `[RDS] FAILED` 가 있으면 완료 보고 셀에 `⚠ RDS 실패: <reason>` 표기 + 하단 경고 블록.
 - `[AUX] FAILED collector=...` 은 보조 수집 실패 — core 데이터는 영향 없음, 경고 표기만.
 - 이 필드는 **스킵·생략 불가**. `✅ 성공 (N rows)` 같은 모호한 표기만으로는 안 된다.
 
@@ -161,7 +161,7 @@ CS/PM/Stocks/검증/push 는 `/market-full-b` (Part B) 가 담당한다.
 
 ```
 Step 0:    Telegram 시작    — ✅ 전송 / ⚠ 실패(계속)
-Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, Snowflake M행) / ❌ 실패(<reason>)
+Step 1~2:  Data Dashboard   — ✅ 성공 (CSV N행, RDS M행) / ❌ 실패(<reason>)
 Step 3:    일간 Story        — ✅ 성공 (Sources: N건) / ❌ 실패
 Step 3-E:  Catalysts Ledger  — ✅ N건 발행 / ⊘ 없음 / ⚠ 실패(계속)
 Step 4/6:  주간·월간 Dashboard — ✅ 자동 갱신 확인

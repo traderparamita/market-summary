@@ -248,7 +248,7 @@
   <div class="sources-section">
     <h3>1. 시장 데이터 (Quotes)</h3>
     <ul class="sources-list">
-      <li><strong>history/market_data.csv</strong> — Snowflake 정본 미러</li>
+      <li><strong>history/market_data.csv</strong> — RDS mkt100_market_daily 정본 미러</li>
       <li><strong>history/아시아종목.xlsx</strong> — 운용 유니버스 180종목</li>
     </ul>
   </div>

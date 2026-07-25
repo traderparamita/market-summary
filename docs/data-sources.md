@@ -16,7 +16,7 @@
 `collectors/collect_market.py`의 `TICKERS` dict에 86개 yfinance 티커가 선언되어 있고,
 `fetch_kr_rates()`로 ECOS에서 KR 금리 5개를 별도 수집하여 일간 수집 대상은 총 91개.
 `INDICATOR_CODES` dict에 88개 `(category, ticker) → 지표코드` 매핑이 정의되어 있다.
-매핑이 없는 티커(VKOSPI, KR 5Y, KR 30Y)는 보고서에는 표시되지만 CSV/Snowflake 적재에서 스킵된다.
+매핑이 없는 티커(VKOSPI, KR 5Y, KR 30Y)는 보고서에는 표시되지만 CSV/RDS 적재에서 스킵된다.
 
 #### Equity (18 티커 → 18 지표)
 
@@ -333,8 +333,8 @@ DATE, INDICATOR_CODE, CATEGORY, REGION, VALUE, UNIT, SOURCE
 
 | 테이블 | 용도 | CSV 대응 |
 |--------|------|----------|
-| `market_daily` | 시장 데이터 (단일 정본) | `market_data.csv` |
-| `macro_daily` | 거시지표 | `macro_indicators.csv` |
+| `mkt100_market_daily` | 시장 데이터 (단일 정본) | `market_data.csv` |
+| `mkt200_macro_daily` | 거시지표 | `macro_indicators.csv` |
 
 ### 컬럼 매핑
 
@@ -389,7 +389,7 @@ load_macro_long(start, end, codes)  # macro_daily → macro_indicators.csv fallb
 | ECOS (한국은행) | KR 금리, KR 거시지표 | API 키 | `ECOS_API_KEY` |
 | FRED (미 연준) | US/글로벌 거시지표 | API 키 | `FRED_API_KEY` |
 | pykrx (KRX) | KOSPI 200 섹터 지수, 밸류에이션 | KRX 계정 | `KRX_ID`, `KRX_PW` |
-| Snowflake | 데이터 정본 저장소 | 계정 | `SNOWFLAKE_*` (6개) |
+| RDS PostgreSQL | 데이터 정본 저장소 | 계정 | `RDS_*` (5개) |
 | AWS S3 | 펀드/증권 보고서 저장 | IAM 키 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` |
 | Telegram | 수집 완료/실패 알림 | Bot 토큰 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` |
 | 미래에셋증권 BBS | 상세분석 PDF 스크래핑 | 불필요 | — |

@@ -43,7 +43,7 @@
 
 **검증 대상 화이트리스트 (14개 핵심 stocks)**: `_data.json` stocks 카테고리에 매일 들어오는 종목으로 한정 — Apple · MSFT · NVIDIA · Alphabet · Amazon · META · Tesla · Broadcom · Palantir · Samsung(삼성전자) · TSMC · Alibaba · Tencent · Meituan.
 
-> **왜 14개로 제한하나?** 한국 KOSPI200 종목·미국 S&P500 종목 등 보고서에 등장하는 100+개 종목은 우리 CSV/Snowflake 에 없어 자동 검증 자료가 없다. 자료 있는 14개만 결정론적으로 검증하고, 그 외 종목은 출처 인용으로 신뢰도를 위임한다 (메인 Story 의 Sources 탭 / OCR 1차 자료).
+> **왜 14개로 제한하나?** 한국 KOSPI200 종목·미국 S&P500 종목 등 보고서에 등장하는 100+개 종목은 우리 CSV/RDS 에 없어 자동 검증 자료가 없다. 자료 있는 14개만 결정론적으로 검증하고, 그 외 종목은 출처 인용으로 신뢰도를 위임한다 (메인 Story 의 Sources 탭 / OCR 1차 자료).
 
 **가드 (false positive 차단)**:
 - `CITATION_KEYWORDS` (어제·전일·전주·돌파·치솟·급등·급락·최고치 등) 윈도우에 있으면 스킵

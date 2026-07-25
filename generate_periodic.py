@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3.12
 """
 Weekly / Monthly / Quarterly Market Summary Report Generator
-- Snowflake MKT100 (CSV fallback) 기준으로 주간·월간·분기 HTML 보고서 생성
+- RDS mkt100_market_daily (CSV fallback) 기준으로 주간·월간·분기 HTML 보고서 생성
 """
 
 import json
@@ -33,7 +33,7 @@ HISTORY_CSV = os.path.join(os.path.dirname(__file__), "history", "market_data.cs
 
 
 def load_market_data():
-    """MKT100 (Snowflake) → 중첩 dict 로드. CSV fallback 지원.
+    """mkt100_market_daily (RDS) → 중첩 dict 로드. CSV fallback 지원.
 
     스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, ...
 
@@ -903,7 +903,7 @@ def generate_monthly_reports(year=2026):
 
 
 def generate_quarterly_reports(year=2026, only_quarter=None):
-    """분기 보고서 생성 (Snowflake MKT100 → CSV fallback).
+    """분기 보고서 생성 (RDS mkt100_market_daily → CSV fallback).
 
     only_quarter: 1~4 지정 시 해당 분기만 생성. None 이면 전체 분기.
     """

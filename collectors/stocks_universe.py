@@ -456,20 +456,20 @@ def collect_stocks_universe(
             from rds_loader import _alert_failure
             _alert_failure(source="collect_stocks_universe", reason=str(e)[:200])
         except Exception:
-            print(f"[SNOWFLAKE] FAILED source=collect_stocks_universe reason={str(e)[:200]}")
+            print(f"[RDS] FAILED source=collect_stocks_universe reason={str(e)[:200]}")
 
     return len(new_rows)
 
 
 def upsert_mkt000_seed() -> int:
-    """MKT000_MARKET_INDICATOR 에 KR_TOP50 + US_TOP50 + ASIA_TOP 신규 종목 dim 행 등록.
+    """mkt000_market_indicator 에 KR_TOP50 + US_TOP50 + ASIA_TOP 신규 종목 dim 행 등록.
 
     이미 등록된 코드는 건너뜀 (idempotent). 신규 환경 셋업·재현용.
     """
     try:
         from rds_loader import get_connection
     except Exception as e:
-        print(f"[SEED] snowflake_loader import 실패: {e}")
+        print(f"[SEED] rds_loader import 실패: {e}")
         return 0
 
     rows: list[tuple] = []
@@ -501,7 +501,7 @@ def upsert_mkt000_seed() -> int:
 
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute('SELECT "지표코드" FROM FDE_DB.PUBLIC.MKT000_MARKET_INDICATOR WHERE "카테고리" = \'STOCK\'')
+    cur.execute("SELECT indicator_code FROM mkt000_market_indicator WHERE category = 'STOCK'")
     existing = {r[0] for r in cur.fetchall()}
     new_rows = [r for r in rows if r[0] not in existing]
     if not new_rows:
@@ -509,9 +509,9 @@ def upsert_mkt000_seed() -> int:
         print(f"[SEED] 이미 등록됨 — 신규 0건 (existing STOCK={len(existing)})")
         return 0
 
-    sql = ('INSERT INTO FDE_DB.PUBLIC.MKT000_MARKET_INDICATOR '
-           '("지표코드","카테고리","티커","지표명","지표명_EN","하위카테고리","단위","변동단위",'
-           ' "소스","소스_티커","소스_폴백","비고","정렬순서","사용여부") '
+    sql = ('INSERT INTO mkt000_market_indicator '
+           '(indicator_code, category, ticker, name_kr, name_en, sub_category, unit, change_unit, '
+           ' source, source_ticker, source_fallback, note, sort_order, is_active) '
            'VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)')
     cur.executemany(sql, new_rows)
     conn.commit()

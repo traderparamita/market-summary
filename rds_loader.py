@@ -243,6 +243,37 @@ def sync_macro_rows(new_rows: list[dict], *, source: str) -> int:
         return 0
 
 
+def download_csv(out_path: Optional[str] = None) -> int:
+    """mkt100_market_daily → history/market_data.csv 덤프.
+
+    RDS 가 단일 정본이므로 git 에 CSV 를 추적하지 않는 환경에서
+    clone 후 한 번 실행해 로컬 CSV 를 생성한다.
+
+    Args:
+        out_path: 저장 경로. None 이면 history/market_data.csv.
+
+    Returns:
+        다운로드한 행 수.
+    """
+    if out_path is None:
+        out_path = os.path.join(BASE_DIR, "history", "market_data.csv")
+
+    print(f"[DOWNLOAD] {TABLE} → {out_path} ...")
+    conn = get_connection()
+    try:
+        sql = f"SELECT {', '.join(_DB_COLUMNS)} FROM {TABLE} ORDER BY indicator_code, date"
+        df = pd.read_sql(sql, conn)
+    finally:
+        conn.close()
+
+    df.columns = _CSV_COLUMNS
+    df["VOLUME"] = df["VOLUME"].astype("Int64")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    df.to_csv(out_path, index=False)
+    print(f"[DOWNLOAD] {len(df):,}행 → {out_path}")
+    return len(df)
+
+
 def upsert_rows(df: pd.DataFrame, target_date: Optional[str] = None) -> int:
     """ON CONFLICT upsert — 다른 collector가 쓴 행을 보존한다.
 
@@ -290,3 +321,17 @@ def upsert_rows(df: pd.DataFrame, target_date: Optional[str] = None) -> int:
         raise
     finally:
         conn.close()
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="market_data.csv ↔ RDS mkt100_market_daily")
+    parser.add_argument("csv", nargs="?", default=os.path.join(BASE_DIR, "history", "market_data.csv"))
+    parser.add_argument("--truncate", action="store_true", help="업로드 전 TRUNCATE (CSV → RDS)")
+    parser.add_argument("--download", action="store_true",
+                        help="RDS → CSV 덤프 (clone 후 로컬 CSV 재생성용)")
+    args = parser.parse_args()
+    if args.download:
+        download_csv(args.csv)
+    else:
+        bulk_load_csv(args.csv, truncate=args.truncate)

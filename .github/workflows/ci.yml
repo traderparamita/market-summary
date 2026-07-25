@@ -44,7 +44,8 @@ jobs:
           python -c "
           import generate
           import generate_periodic
-          import snowflake_loader
+          import rds_loader
+          import market_source
           import simulate
           print('all modules imported')
           "
@@ -81,14 +82,15 @@ jobs:
           print(f'HISTORY_CSV_COLUMNS: {HISTORY_CSV_COLUMNS}')
           "
 
-      - name: Smoke-test snowflake_loader constants
+      - name: Smoke-test rds_loader constants
         run: |
           python -c "
-          from snowflake_loader import COL_MAP, TABLE
-          assert TABLE == 'MKT100_MARKET_DAILY'
-          assert COL_MAP['DATE'] == '일자'
-          assert COL_MAP['INDICATOR_CODE'] == '지표코드'
-          assert COL_MAP['CLOSE'] == '종가'
-          assert len(COL_MAP) == 10
-          print('snowflake_loader constants OK')
+          from rds_loader import TABLE, _CSV_COLUMNS, _DB_COLUMNS
+          assert TABLE == 'mkt100_market_daily', TABLE
+          assert _CSV_COLUMNS[0] == 'DATE'
+          assert _CSV_COLUMNS[1] == 'INDICATOR_CODE'
+          assert _CSV_COLUMNS[-1] == 'SOURCE'
+          assert _DB_COLUMNS[0] == 'date'
+          assert len(_CSV_COLUMNS) == len(_DB_COLUMNS) == 10
+          print('rds_loader constants OK')
           "

@@ -986,7 +986,7 @@ def generate_index():
 
 
 def _run_aux_collectors(target_date: str) -> None:
-    """Auxiliary collectors 일간 실행 (CSV + Snowflake 동시 적재).
+    """Auxiliary collectors 일간 실행 (CSV + RDS 동시 적재).
 
     daily market-full 에서 MKT100 이 단일 소스가 되려면 보조 지표들도 매일 수집돼야 한다.
     각 collector 는 dedup 로직이 있어 중복 호출해도 이미 있는 행은 건너뛴다.
@@ -1061,7 +1061,7 @@ def main(target_date=None, start_date=None):
 
     # Step 1b: 보조 수집기 일간 실행 (pykrx KR 섹터 지수 + KOSPI 밸류에이션 + 추가 ETF)
     #   - 전체 재수집(--start) 시에는 실행 안 함 (별도 백필 권장).
-    #   - 각 collector 내부에서 CSV append + Snowflake upsert 자동 수행.
+    #   - 각 collector 내부에서 CSV append + RDS upsert 자동 수행.
     _log("\n  [Step 1b] 보조 수집기 실행 중...")
     if not start_date:
         _run_aux_collectors(target_date)

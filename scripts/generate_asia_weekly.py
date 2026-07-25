@@ -678,7 +678,7 @@ body{{font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic',-apple-s
   <div class="sources-section">
     <h3>1. 시장 데이터 (Quotes)</h3>
     <ul class="sources-list">
-      <li><strong>history/market_data.csv</strong> — Snowflake MKT100 정본 미러 <span class="source-meta">아시아 종목·지수·환율 {data['ref_date']}~{data['friday']} 시계열</span></li>
+      <li><strong>history/market_data.csv</strong> — RDS mkt100_market_daily 정본 미러 <span class="source-meta">아시아 종목·지수·환율 {data['ref_date']}~{data['friday']} 시계열</span></li>
       <li><strong>history/아시아종목.xlsx</strong> — 운용 유니버스 180종목 (중국 71 · 인도 38 · 일본 44 · 대만 5 · 홍콩 9 · 호주 2 · 베트남 10 · 인도네시아 1)</li>
     </ul>
   </div>
@@ -1061,7 +1061,7 @@ def _inject_sources(html: str, data: dict, ai_sections: str, digest_items: str =
     sources_inner = f"""  <div class="sources-section">
     <h3>1. 시장 데이터 (Quotes)</h3>
     <ul class="sources-list">
-      <li><strong>history/market_data.csv</strong> — Snowflake MKT100 정본 미러 <span class="source-meta">아시아 종목·지수·환율 {data['ref_date']}~{data['friday']} 시계열</span></li>
+      <li><strong>history/market_data.csv</strong> — RDS mkt100_market_daily 정본 미러 <span class="source-meta">아시아 종목·지수·환율 {data['ref_date']}~{data['friday']} 시계열</span></li>
       <li><strong>history/아시아종목.xlsx</strong> — 운용 유니버스 {data['n_universe']}종목</li>
       <li><strong>매칭 현황</strong>: {data['n_matched']}/{data['n_universe']} ({100*data['n_matched']/data['n_universe']:.1f}%) — {match_summary}</li>
     </ul>
@@ -1254,7 +1254,7 @@ def generate_pm_index():
 <body>
   <a href="../../summary/index.html" class="back">← Market Summary</a>
   <h1>🌏 Asia Weekly</h1>
-  <p class="sub">아시아 주간 시황 브리프 — 매주 일요일 발행</p>
+  <p class="sub">아시아 주간 시황 브리프 — 매주 토요일 발행</p>
   <ul>
 {items_html}  </ul>
 </body>
@@ -1276,7 +1276,7 @@ def generate_pm_hub():
             "href": "asia_weekly/",
             "icon": "🌏",
             "title": "Asia Weekly",
-            "desc": "아시아 주간 시황 브리프 — 매주 일요일 발행",
+            "desc": "아시아 주간 시황 브리프 — 매주 토요일 발행",
         },
     ]
 

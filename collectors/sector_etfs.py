@@ -133,7 +133,7 @@ def collect_sector_etfs(
     else:
         print("\n  → 신규 데이터 없음")
 
-    # Snowflake dual-write (best-effort)
+    # RDS dual-write (best-effort)
     try:
         from rds_loader import sync_new_rows
         sync_new_rows(new_rows, source="collect_sector_etfs")
@@ -142,7 +142,7 @@ def collect_sector_etfs(
             from rds_loader import _alert_failure
             _alert_failure(source="collect_sector_etfs", reason=str(e)[:200])
         except Exception:
-            print(f"[SNOWFLAKE] FAILED source=collect_sector_etfs reason={str(e)[:200]}")
+            print(f"[RDS] FAILED source=collect_sector_etfs reason={str(e)[:200]}")
 
     return len(new_rows)
 

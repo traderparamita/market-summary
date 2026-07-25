@@ -120,7 +120,7 @@ def collect_valuation(start: str = "2010-01-01", end: str = "9999-12-31") -> int
     else:
         print("\n  → 신규 데이터 없음")
 
-    # Snowflake dual-write (best-effort)
+    # RDS dual-write (best-effort)
     try:
         from rds_loader import sync_new_rows
         sync_new_rows(new_rows, source="collect_valuation")
@@ -129,7 +129,7 @@ def collect_valuation(start: str = "2010-01-01", end: str = "9999-12-31") -> int
             from rds_loader import _alert_failure
             _alert_failure(source="collect_valuation", reason=str(e)[:200])
         except Exception:
-            print(f"[SNOWFLAKE] FAILED source=collect_valuation reason={str(e)[:200]}")
+            print(f"[RDS] FAILED source=collect_valuation reason={str(e)[:200]}")
 
     return len(new_rows)
 

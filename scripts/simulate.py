@@ -67,9 +67,9 @@ def run_simulation():
         row_count = sum(1 for _ in open(tmp_csv)) - 1
         print(f"  CSV rows (up to {sim_date}): {row_count}")
 
-        # 1-B) 시뮬레이션 모드: Snowflake 읽기 비활성화 → market_source / build_report_data 가
-        #       패치된 CSV (tmp_csv) 만 읽도록 강제. Snowflake 는 실시간 데이터만 보유.
-        os.environ["SNOWFLAKE_DISABLE"] = "1"
+        # 1-B) 시뮬레이션 모드: RDS 읽기 비활성화 → market_source / build_report_data 가
+        #       패치된 CSV (tmp_csv) 만 읽도록 강제. RDS 는 실시간 데이터만 보유.
+        os.environ["RDS_DISABLE"] = "1"
 
         # 2) 모듈 임포트 전에 OUTPUT_DIR과 HISTORY_CSV를 패치
         #    매번 fresh import를 위해 캐시 제거
@@ -92,7 +92,7 @@ def run_simulation():
         generate.OUTPUT_DIR = SIM_DIR
         # generate.HISTORY_CSV는 collect_market에서 import한 심볼이므로
         # collect_market 패치만으로 build_report_data가 tmp_csv를 읽음
-        generate.HISTORY_CSV = tmp_csv  # snowflake_loader 등 로컬 참조용
+        generate.HISTORY_CSV = tmp_csv  # rds_loader 등 로컬 참조용
 
         import generate_periodic
         generate_periodic.OUTPUT_DIR = SIM_DIR

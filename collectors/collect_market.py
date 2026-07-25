@@ -44,7 +44,7 @@ except ImportError:
 HISTORY_DIR = os.path.join(_PROJECT_ROOT, "history")
 HISTORY_CSV = os.path.join(HISTORY_DIR, "market_data.csv")
 
-# CSV 스키마 (Snowflake MKT100_MARKET_DAILY 1:1)
+# CSV 스키마 (RDS mkt100_market_daily 1:1)
 HISTORY_CSV_COLUMNS = [
     "DATE", "INDICATOR_CODE", "CATEGORY", "TICKER",
     "CLOSE", "OPEN", "HIGH", "LOW", "VOLUME", "SOURCE",
@@ -301,10 +301,10 @@ def _load_stocks_universe():
 _STOCKS_TICKERS, _STOCKS_INDICATOR_CODES = _load_stocks_universe()
 TICKERS["stocks"] = _STOCKS_TICKERS
 
-# (category, ticker) -> Snowflake MKT000_MARKET_INDICATOR.지표코드
+# (category, ticker) -> RDS mkt000_market_indicator.indicator_code
 # 56개 지표. TICKERS/fetch_kr_rates에 추가되는 항목은 여기도 함께 업데이트.
 # 누락된 (cat, ticker)는 lookup이 None 이 되어 CSV에 빈 값으로 기록되고
-# Snowflake 적재에서 스킵된다 (ex. VKOSPI는 TICKERS에 있으나 MKT000에 없음).
+# RDS 적재에서 스킵된다 (ex. VKOSPI는 TICKERS에 있으나 mkt000에 없음).
 INDICATOR_CODES = {
     ("equity", "KOSPI"):     "EQ_KOSPI",
     ("equity", "KOSDAQ"):    "EQ_KOSDAQ",
@@ -866,12 +866,12 @@ def fetch_kr_rates(start_date=None, end_date=None):
 
 
 def build_report_data(target_date):
-    """MKT100_MARKET_DAILY (Snowflake) 에서 읽어 지표를 계산하여 보고서 데이터 dict 반환.
+    """mkt100_market_daily (RDS) 에서 읽어 지표를 계산하여 보고서 데이터 dict 반환.
 
     스키마: DATE, INDICATOR_CODE, CATEGORY, TICKER, CLOSE, OPEN, HIGH, LOW, VOLUME, SOURCE
 
-    Snowflake 접속 실패 시 market_source 가 자동으로 CSV fallback.
-    simulate.py 는 SNOWFLAKE_DISABLE=1 을 세팅해 CSV 경로 (cutoff 패치) 를 강제한다.
+    RDS 접속 실패 시 market_source 가 자동으로 CSV fallback.
+    simulate.py 는 RDS_DISABLE=1 을 세팅해 CSV 경로 (cutoff 패치) 를 강제한다.
     """
     import pandas as pd
     from market_source import load_long

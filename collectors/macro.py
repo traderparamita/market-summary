@@ -5,7 +5,8 @@ appends to history/macro_indicators.csv.
 
 Usage:
     python -m collectors.macro --start 2010-01-01
-    python -m collectors.macro --start 2010-01-01 --snowflake  # Also upload to Snowflake
+
+RDS mkt200_macro_daily upsert 는 run_collection 안에서 항상 수행된다 (멱등).
 """
 
 import argparse
@@ -218,10 +219,10 @@ def collect_indicator(code: str, info: dict, start_date: str) -> pd.DataFrame:
 
 
 def run_collection(start_date: str = "2010-01-01", verbose: bool = True) -> int:
-    """Run macro collection: FRED/ECOS → CSV dedup append → MKT200 upsert.
+    """Run macro collection: FRED/ECOS → CSV dedup append → mkt200_macro_daily upsert.
 
-    Returns number of new rows appended to CSV. Snowflake upsert always runs
-    (idempotent). Safe to call daily — collect_macro 의 dedup + Snowflake upsert
+    Returns number of new rows appended to CSV. RDS upsert always runs
+    (idempotent). Safe to call daily — collect_macro 의 dedup + RDS upsert
     가 모두 멱등이라 중복 호출 안전.
     """
     indicators = load_indicators()
@@ -257,11 +258,11 @@ def run_collection(start_date: str = "2010-01-01", verbose: bool = True) -> int:
         if verbose:
             print("\nNo new data to add.")
 
-    # MKT200_MACRO_DAILY upsert — new rows 없어도 최신 날짜 데이터는 항상 적재
+    # mkt200_macro_daily upsert — new rows 없어도 최신 날짜 데이터는 항상 적재
     try:
         import sys as _sys
         from pathlib import Path as _Path
-        # snowflake_loader.py 는 market_summary/ 프로젝트 루트에 있음
+        # rds_loader.py 는 market_summary/ 프로젝트 루트에 있음
         # collectors/macro.py 기준 parent.parent = market_summary/
         _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
         from rds_loader import sync_macro_rows
@@ -270,24 +271,24 @@ def run_collection(start_date: str = "2010-01-01", verbose: bool = True) -> int:
             # 새 데이터가 있으면 그것만 upsert
             rows_to_sync = new_df.to_dict("records")
             if verbose:
-                print(f"[SNOWFLAKE] Upserting {len(rows_to_sync)} new rows ...")
+                print(f"[RDS] Upserting {len(rows_to_sync)} new rows ...")
         else:
-            # new rows 없으면 CSV에서 최신 날짜 행을 upsert (항상 Snowflake 동기화)
+            # new rows 없으면 CSV에서 최신 날짜 행을 upsert (항상 RDS 동기화)
             full_csv = pd.read_csv(HISTORY_CSV)
             latest_date = full_csv["DATE"].max()
             latest_rows = full_csv[full_csv["DATE"] == latest_date]
             rows_to_sync = latest_rows.to_dict("records")
             if verbose:
-                print(f"[SNOWFLAKE] No new rows — syncing latest date {latest_date} ({len(rows_to_sync)} rows) ...")
+                print(f"[RDS] No new rows — syncing latest date {latest_date} ({len(rows_to_sync)} rows) ...")
 
         sync_macro_rows(rows_to_sync, source="collect_macro")
     except Exception as e:
         try:
             from rds_loader import _alert_failure
             _alert_failure(source="collect_macro", reason=str(e)[:200],
-                           table="MKT200_MACRO_DAILY")
+                           table="mkt200_macro_daily")
         except Exception:
-            print(f"[SNOWFLAKE] FAILED source=collect_macro reason={str(e)[:200]}")
+            print(f"[RDS] FAILED source=collect_macro reason={str(e)[:200]}")
 
     return n
 
@@ -305,7 +306,6 @@ def collect_macro(start: str = "2010-01-01", end: str | None = None) -> int:
 def main():
     parser = argparse.ArgumentParser(description="Collect macro indicators")
     parser.add_argument("--start", default="2010-01-01", help="Start date (YYYY-MM-DD)")
-    parser.add_argument("--snowflake", action="store_true", help="Upload to Snowflake")
     args = parser.parse_args()
 
     run_collection(start_date=args.start, verbose=True)

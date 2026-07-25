@@ -163,7 +163,7 @@ def collect_krx_sectors(
     else:
         print("\n  → 신규 데이터 없음")
 
-    # Snowflake dual-write (best-effort) — RDS fallback 경유 행은 제외
+    # RDS dual-write (best-effort) — RDS fallback 경유 행은 제외
     rds_rows = [r for r in new_rows if r.get("SOURCE") != "rds_pull"]
     if rds_rows:
         try:
@@ -174,7 +174,7 @@ def collect_krx_sectors(
                 from rds_loader import _alert_failure
                 _alert_failure(source="collect_krx_sectors", reason=str(e)[:200])
             except Exception:
-                print(f"[SNOWFLAKE] FAILED source=collect_krx_sectors reason={str(e)[:200]}")
+                print(f"[RDS] FAILED source=collect_krx_sectors reason={str(e)[:200]}")
 
     return len(new_rows)
 

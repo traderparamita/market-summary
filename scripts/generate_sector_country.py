@@ -64,7 +64,7 @@ HISTORY_CSV = ROOT / "history" / "market_data.csv"
 
 
 def _load_price_series(indicator_code: str, date_str: str, days: int = 60) -> dict:
-    """특정 지표의 최근 N일 가격 시계열 반환 (MKT100 Snowflake, CSV fallback)."""
+    """특정 지표의 최근 N일 가격 시계열 반환 (RDS mkt100_market_daily, CSV fallback)."""
     from market_source import load_long
 
     df = load_long(codes=[indicator_code], end=date_str)

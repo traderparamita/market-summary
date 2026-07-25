@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """build_report_data + generate_html + _inject_existing_story 만 호출하는 핫패치 재생성 스크립트.
 
-fetch_data (yfinance/외부 API) 는 호출하지 않음 — CSV/Snowflake 의 현재 데이터로
+fetch_data (yfinance/외부 API) 는 호출하지 않음 — CSV/RDS 의 현재 데이터로
 ISO WTD/MTD 를 다시 계산하여 _data.json 과 HTML 의 데이터 박스만 갱신, Story 는 보존.
 
 사용:
