@@ -80,9 +80,9 @@ def prev_business_day() -> str:
 
 
 def should_skip() -> bool:
-    """월요일·토요일은 스킵 (일요일이 금요일 보고서 담당)."""
+    """월요일·일요일은 스킵 (토요일이 금요일 보고서 담당)."""
     wd = datetime.now(KST).date().weekday()
-    return wd in (0, 5)  # 0=월, 5=토
+    return wd in (0, 6)  # 0=월, 6=일
 
 
 # ─────────────────────────────────────────────────────────────
@@ -324,7 +324,7 @@ def main() -> None:
         date_str = sys.argv[1]          # 수동 지정 (테스트용)
     else:
         if should_skip():
-            print("월요일/토요일입니다. 실행을 건너뜁니다.")
+            print("월요일/일요일입니다. 실행을 건너뜁니다.")
             return
         date_str = prev_business_day()  # 전 영업일 자동 계산
 

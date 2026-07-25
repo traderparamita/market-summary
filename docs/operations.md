@@ -6,40 +6,41 @@
 
 ## 1. 자동화 개요
 
-다섯 개의 Windows Task Scheduler 태스크가 백그라운드로 동작한다. 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`.
+네 개의 Windows Task Scheduler 태스크가 백그라운드로 동작한다. 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`.
 
 | 태스크 | 스크립트 | 스케줄 (KST) | 역할 | 상태 |
 |--------|----------|-------------|------|------|
-| `MarketSummary-Daily` | `scripts/auto_market.py` | 일 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ✅ Active |
-| `MarketSummary-OCR` | `scripts/generate_ocr_story.py` | 월~금 08:30 | 미래에셋 PDF → `_ocr.html` 1차 자료 보존 (월요일은 금요일분 처리) | ✅ Active |
-| `MarketSummary-WeeklyCollect` | `scripts/collect_weekly.py` | 일 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
-| `MarketSummary-AsiaWeekly` | `scripts/generate_asia_weekly.py` | 일 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active |
+| `MarketSummary-Daily` | `scripts/auto_market.py` | 토 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ✅ Active |
+| `MarketSummary-WeeklyCollect` | `scripts/collect_weekly.py` | 토 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
+| `MarketSummary-AsiaWeekly` | `scripts/generate_asia_weekly.py` | 토 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active |
 | `MarketSummary-DailyResearch` | `scripts/generate_research.py` | 월~금 18:50 | 당일 Naver 테마 수익률 기반 일간 테마 리서치 자동 생성 | ⏸️ Disabled (2026-07-07) |
 
-월·토는 Daily 실행 안 함 (auto_market.should_skip). DailyResearch는 월~금 매일.
+> **주말 잡 요일 변경 (2026-07-25)**: 금요일 보고서 + 주간/월간 + 증권 수집 + 아시아 주간 3개 잡을 **일요일 → 토요일**로 앞당김. `auto_market.should_skip()`도 월·토 스킵 → **월·일 스킵**으로 함께 수정(토요일에 실제로 돌게). 토요일 저녁이면 금요일 미국장 마감(토 05:00 KST경) 후라 데이터가 확보돼 있어 문제없음.
+
+> `MarketSummary-OCR` (`scripts/generate_ocr_story.py`)는 2026-07-25 자동화에서 제거됨. Task Scheduler에는 이미 등록돼 있지 않았고, `setup_windows_tasks.ps1`의 재등록 목록에서도 제외했다. `_ocr.html` 생성이 다시 필요하면 스크립트를 수동 실행.
+
+월·일은 Daily 실행 안 함 (auto_market.should_skip). DailyResearch는 월~금 매일.
 
 > **EC2 병행 운영 (2026-06~)**: Anthillia EC2 (54.180.225.122)가 06:30 KST에 `generate.py`를 실행해 데이터 수집 + RDS upsert를 선행한다. 로컬이 06:50에 시작할 때 RDS가 이미 채워진 상태. EC2는 `MALife-AI/market-summary` (private repo)로 push, 로컬은 `traderparamita/market-summary` (GitHub Pages)로 push — 별도 레포라 충돌 없음.
 
 ### 1.1 요일별 실행 순서
 
 ```
-─ 일요일 ────────────────────────────────────────
+─ 토요일 ────────────────────────────────────────
 18:50 → auto_market.py        (금요일 보고서 = 일/주/월 + RDS drift 검증)
 19:30 → collect_weekly.py     (주간 증권사 수집 + PRISM + Digest + Index + Fund + push)
 20:00 → generate_asia_weekly  (아시아 주간 브리프 스켈레톤)
 
+─ 일요일 ────────────────────────────────────────
+(자동화 없음)
+
 ─ 월요일 ────────────────────────────────────────
-08:30 → market-ocr (금요일 발간분 PDF OCR)
 18:50 → generate_research.py  (당일 테마 리서치 → output/research/daily/)
   + (수동) Asia Weekly Story 본문 작성 → `/asia-weekly` 또는 자연어 트리거
 
 ─ 화·수·목·금 ──────────────────────────────────
 06:50 → auto_market.py (전 영업일 보고서)
-08:30 → market-ocr (전 영업일 PDF OCR)
 18:50 → generate_research.py  (당일 테마 리서치)
-
-─ 토요일 ────────────────────────────────────────
-(자동화 없음)
 ```
 
 ### 1.4 태스크 일괄 등록 (새 환경 1회)
@@ -75,18 +76,18 @@ claude --dangerously-skip-permissions -p "/market-full 2026-05-08"
 
 ## 2. 누락 시 수동 복구
 
-### 2.1 케이스: 컴퓨터가 꺼져 있어 일요일 자동화가 실행 안 됨
+### 2.1 케이스: 컴퓨터가 꺼져 있어 토요일 자동화가 실행 안 됨
 
-가장 흔한 케이스. 다음 영업일 직전(보통 월요일 저녁 또는 화요일 출근 전)에 발견.
+가장 흔한 케이스. 다음 영업일 직전(보통 일/월요일 저녁 또는 화요일 출근 전)에 발견.
 
 **복구 절차** — 두 워크플로우를 순서대로 수동 실행:
 
 ```bash
-# (1) 일 18:50 워크플로우 — 금요일 보고서 + 주간/월간
+# (1) 토 18:50 워크플로우 — 금요일 보고서 + 주간/월간
 # Claude Code CLI 안에서 슬래시 커맨드로 실행:
 /market-full 2026-05-08
 
-# (2) 일 19:30 워크플로우 — 증권/PRISM/디지스트/Index
+# (2) 토 19:30 워크플로우 — 증권/PRISM/디지스트/Index
 .venv/bin/python scripts/collect_weekly.py
 ```
 
@@ -183,7 +184,7 @@ logs/
 ├── market-full-YYYY-MM-DD.log   # /market-full Step별 진행 상태
 ├── ocr_story.log                # OCR Story 생성
 ├── verify_numbers.log           # 수치 검증 누적 로그
-└── securities_reports.log       # 일요일 19:30 워크플로우
+└── securities_reports.log       # 토요일 19:30 워크플로우
 ```
 
 ### 4.2 주요 마커 검색

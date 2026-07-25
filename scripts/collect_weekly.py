@@ -1,4 +1,4 @@
-"""주간 보고서 수집 러너 — 매주 일요일 19:30 KST 실행.
+"""주간 보고서 수집 러너 — 매주 토요일 19:30 KST 실행.
 
 1. MVP PRISM 보고서 (collect_prism_reports.py)
 2. 주간 리서치 다이제스트 (generate_securities_digest.py)
