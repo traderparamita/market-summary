@@ -40,9 +40,9 @@
 - [docs/structure.md](docs/structure.md) — 파일 구조·핵심 함수·설정·로그
 - [docs/operations.md](docs/operations.md) — 자동화 스케줄·운영·복구 절차
 - [docs/data-sources.md](docs/data-sources.md) — 수집 대상·CSV 스키마·RDS 연동
-- [docs/research.md](docs/research.md) — 일간 테마 리서치 파이프라인
-- [docs/asia-weekly.md](docs/asia-weekly.md) — Asia Weekly Brief
+- [docs/page/research.md](docs/page/research.md) — 일간 테마 리서치 파이프라인
+- [docs/page/asia-weekly.md](docs/page/asia-weekly.md) — Asia Weekly Brief
 - [docs/verify-numbers.md](docs/verify-numbers.md) — 수치 자동 검증
 - [docs/output-structure.md](docs/output-structure.md) — output/ 디렉터리 구조
-- [docs/fund-analysis.md](docs/fund-analysis.md) — Fund S3 저장소
+- [docs/page/fund-analysis.md](docs/page/fund-analysis.md) — Fund S3 저장소
 - [docs/VISION.md](docs/VISION.md) — 프로젝트 비전

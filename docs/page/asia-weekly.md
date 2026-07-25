@@ -41,5 +41,5 @@
 
 ## 자동화
 
-`MarketSummary-AsiaWeekly` 태스크가 매주 일요일 20:00 KST 호출 (collect_weekly 30분 마진).  
+`MarketSummary-AsiaWeekly` 태스크가 매주 토요일 20:00 KST 호출 (collect_weekly 30분 마진).  
 데이터 준비만 자동, Story 본문은 Claude 수동.

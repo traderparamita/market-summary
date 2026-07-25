@@ -1,6 +1,6 @@
 """scripts/auto_market.py — 일일 시장 보고서 완전 자동화
 
-일 18:50 + 화~금 06:50 KST macOS launchd가 이 스크립트를 실행한다.
+토 18:50 + 화~금 06:50 KST Windows Task Scheduler가 이 스크립트를 실행한다 (월·일 스킵).
 
   claude --dangerously-skip-permissions -p "/market-full DATE"
 
@@ -72,7 +72,7 @@ KEY_METRICS = [
 def prev_business_day() -> str:
     """실행 시점 기준 전 영업일 = 보고서 대상 날짜.
 
-    일요일 18:50 실행 → 직전 영업일 (보통 금요일, 공휴일이면 그 전)
+    토요일 18:50 실행 → 직전 영업일 (보통 금요일, 공휴일이면 그 전)
     화~금  06:50 실행 → 직전 영업일 (보통 전날, 공휴일이면 그 전)
     """
     today = datetime.now(KST).date()

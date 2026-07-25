@@ -292,7 +292,7 @@ generate.py main()
 - **대상**: 미래에셋증권 상세분석 게시판 (categoryId=1521) PDF 보고서
 - **소스**: `https://securities.miraeasset.com/bbs/board/message/list.do` (requests + BeautifulSoup 스크래핑)
 - **적재**: S3 `s3://mai-life-fund-documents-.../miraeasset-securities/YYYY-MM/`
-- **스케줄**: 매주 일요일 19:30 KST (launchd), 직전 영업주(월~금) 보고서 수집
+- **스케줄**: 매주 토요일 19:30 KST (Windows Task Scheduler), 직전 영업주(월~금) 보고서 수집
 - **중복 방지**: S3 기존 키 조회 → attachmentId 기반 스킵
 - **실행**: `.venv/bin/python scripts/collect_securities_reports.py [--week-of YYYY-MM-DD] [--dry-run]`
 

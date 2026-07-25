@@ -206,7 +206,7 @@ Exit code: 0 = pass, 1 = violation, 2 = CSV missing.
 
 ## 운영 가이드
 
-1. **매일 자동 실행**: 일 18:50 + 화~금 06:50 KST `auto_market.py` → `/market-full` → Step 7.7 → Stop 훅까지 2중 검증.
+1. **매일 자동 실행**: 토 18:50 + 화~금 06:50 KST `auto_market.py` → `/market-full` → Step 7.7 → Stop 훅까지 2중 검증.
 2. **위반 알림 받으면**: Telegram 메시지의 `보고서 vs 실제 vs 차이` 확인 → 해당 파일을 직접 Edit → `/market-deploy` 또는 다음 자동 실행 대기.
 3. **새 자산 alias 필요 시**: `scripts/verify_report_numbers.py`의 `ASSET_ALIASES` + `PRICE_RANGE` 사전 보강.
 4. **자유서술 검증 필요 시 (Phase 2-B 후속)**: 본문 작성을 표준 패턴(`{자산} ±N%(종가)`)으로 통일 + 인용 표기 시 `어제(M/D)` 같은 명시.

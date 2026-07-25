@@ -321,7 +321,7 @@ Pre-signed URL이 만료되면 인덱스 페이지의 PDF 링크가 끊긴다 �
 
 - [docs/data-sources.md](data-sources.md) — 수집 대상·소스·CSV·RDS 스키마
 - [docs/verify-numbers.md](verify-numbers.md) — 수치 자동 검증 (패턴·가드)
-- [docs/fund-analysis.md](fund-analysis.md) — Fund S3 저장소·pre-signed URL
+- [docs/page/fund-analysis.md](page/fund-analysis.md) — Fund S3 저장소·pre-signed URL
 - [docs/output-structure.md](output-structure.md) — `output/` 디렉터리 트리
 - `CLAUDE.md` — 프로젝트 전체 개요·구조·실행법
 - `.claude/commands/` — `/market-full`, `/market-data`, `/market-deploy`, `/research`, `/weekly-pm` 등 슬래시 커맨드 정의
