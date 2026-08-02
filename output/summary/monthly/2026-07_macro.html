@@ -1,0 +1,141 @@
+<style>
+.macro-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:900px){.macro-kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.macro-kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.macro-kpi-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.macro-kpi-value{font-size:22px;font-weight:700;color:#1a1d2e;margin-bottom:4px}
+.macro-kpi-value.up{color:#d92b2b}
+.macro-kpi-value.dn{color:#1a5fb4}
+.macro-kpi-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.macro-review-list{list-style:none;padding:0;margin:0}
+.macro-review-list li{font-size:14px;color:#2d3148;line-height:1.8;padding:7px 0;border-bottom:1px dashed var(--border)}
+.macro-review-list li:last-child{border-bottom:none}
+.event-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.event-table th{background:#f0f1f6;padding:9px 12px;text-align:left;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0.5px}
+.event-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.65}
+.event-table tr:last-child td{border-bottom:none}
+.event-table tr:hover td{background:#f8f9fc}
+.imp-high{background:#fde8e8;color:#d92b2b;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px}
+.imp-med{background:#fff3e0;color:#e65100;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px}
+.imp-low{background:#e8f4fd;color:#1a5fb4;font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px}
+.rates-list{list-style:none;padding:0;margin:0}
+.rates-list li{font-size:14px;color:#2d3148;line-height:1.8;padding:6px 0;border-bottom:1px dashed var(--border)}
+.rates-list li:last-child{border-bottom:none}
+.macro-next-vars{background:#eef4fb;border-left:3px solid #043B72;border-radius:6px;padding:12px 16px;margin-top:12px;font-size:13.5px}
+.macro-next-vars strong{color:#043B72}
+.macro-next-vars ul{margin:6px 0 0 14px;line-height:1.8}
+</style>
+
+<!-- ── KPI 카드 그리드 ── -->
+<div class="macro-kpi-grid">
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">US 10년 국채금리</div>
+    <div class="macro-kpi-value up">4.745%</div>
+    <div class="macro-kpi-desc">월초(6/30) 4.418% → 월말 4.745%(<span class="hl-up">+33bp MTD</span>). 매파적 FOMC(7/29 9-3 동결)와 유가 급등發 인플레 우려로 장기금리가 상승.</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">VIX (공포지수)</div>
+    <div class="macro-kpi-value dn">15.99</div>
+    <div class="macro-kpi-desc">월중 20.66(7/29)까지 급등했으나 월말 클라우드 실적 반등에 진정. 코스피 -22% 급락에도 글로벌 시스템 리스크로 번지지 않음.</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">WTI 원유 (월말)</div>
+    <div class="macro-kpi-value up">$84.67</div>
+    <div class="macro-kpi-desc">월간 <span class="hl-up">+20.91%</span>($70.03→$84.67). 미국·이란 지정학 재점화로 주중 배럴당 100달러를 돌파, 코로나 이후 최대 월간 상승권.</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">달러/원 환율 (월말)</div>
+    <div class="macro-kpi-value dn">1,442원</div>
+    <div class="macro-kpi-desc">월간 <span class="hl-up">-6.88%</span>(원화 강세). 코스피 -22% 폭락에도 원화가 강세를 유지, 이번 충격이 통화·거시 위기가 아님을 시사.</div>
+  </div>
+</div>
+
+<!-- ── 이번 달 핵심 거시지표 리뷰 ── -->
+<div class="macro-section">
+  <h2>이번 달 핵심 거시지표 리뷰 (2026년 7월)</h2>
+  <ul class="macro-review-list">
+    <li>🇰🇷 <strong>코스피 롤러코스터 개막(7/2~8)</strong>: 6월 사상 최고 직후 반도체 밸류에이션 피크아웃 경계에 7/2 <span class="hl-down">-7.89%</span> 급락 → 7/3 <span class="hl-up">+5.76%</span> 되돌림 → 7/8 <span class="hl-down">-5.35%</span>. AI·메모리 고밸류 되감기가 지수를 지배하기 시작.</li>
+    <li>🇰🇷 <strong>SK하이닉스 ADR 역프리미엄·물량 부담(7/13)</strong>: 나스닥 ADR 역(逆)프리미엄과 잠재 발행 물량 우려에 코스피가 <span class="hl-down">-8.95%</span> 폭락, 7,000선이 무너지고 서킷브레이커 발동.</li>
+    <li>🇨🇳 <strong>중국 CXMT 상하이 IPO 공모가 확정(7/16)</strong>: 메모리 공급과잉·중국 자립 공포가 재점화되며 코스피 <span class="hl-down">-6.37%</span>, 니케이도 5%대 급락. 삼성·SK하이닉스 동반 약세.</li>
+    <li>🇮🇷 <strong>미국·이란 지정학 재점화(7/21~)</strong>: 중동 긴장에 국제유가가 주중 배럴당 100달러를 돌파, 유가발 인플레·마진·금리 상승 압력이 커짐.</li>
+    <li>🇰🇷 <strong>'검은 금요일'(7/24)</strong>: 코스피 <span class="hl-down">-5.72%</span> 급락, 외국인·기관이 5조원 넘게 순매도. 유가·지정학 충격이 반도체 되감기에 더해짐.</li>
+    <li>🇨🇳 <strong>CXMT 상하이 데뷔 +466%(7/27)</strong>: 공모가 대비 <span class="hl-up">+466%</span> 폭등, 약 86억 달러 조달로 2026 아시아 최대 IPO. 시총이 마이크론의 절반에 육박하며 한국 메모리를 직접 겨냥.</li>
+    <li>🇰🇷 <strong>코스피 6,000선 붕괴(7/28)</strong>: CXMT 공포와 간밤 미 반도체 급락이 겹쳐 하루 <span class="hl-down">-10.84%</span> 폭락, 사상 첫 이틀 연속 서킷브레이커의 첫날.</li>
+    <li>🇰🇷 <strong>SK하이닉스 실적 실망(7/29)</strong>: 2분기 매출 79.32조원(<span class="hl-up">+257% YoY</span>)으로 사상 최대였으나 영업이익이 컨센서스를 하회, '피크아웃' 논쟁에 코스피 <span class="hl-down">-5.98%</span>·사상 첫 연속 서킷브레이커.</li>
+    <li>🇺🇸 <strong>매파적 FOMC(7/29)</strong>: 기준금리 <span style="font-weight:600">3.50~3.75%</span> 동결이나 9대 3 표결(3명 인상 주장)의 매파적 동결. 유가 급등과 겹쳐 다우 <span class="hl-down">-2.19%</span>, VIX <span class="hl-down">+13.45%</span>로 공포가 미국까지 확산.</li>
+    <li>🇺🇸 <strong>미국·이란 긴장에 유가 급등(7/29)</strong>: 브렌트유가 <span class="hl-up">+8.09%</span> 뛰며 90달러를 재돌파, 매파 Fed와 겹쳐 인플레·금리 부담이 한꺼번에 되살아남.</li>
+    <li>🇺🇸 <strong>클라우드 실적 서프라이즈(7/30~31, 장후)</strong>: 아마존 AWS <span class="hl-up">+37%</span>·MS Azure <span class="hl-up">+43%</span> 성장으로 'AI 투자가 실제 매출로 이어진다'는 확인. 메모리 밸류에이션 공포가 되돌려짐.</li>
+    <li>🇰🇷 <strong>코스피 역대 최대 반등(7/31)</strong>: 클라우드 실적이 'AI 수익성' 의구심을 해소하자 코스피가 하루 <span class="hl-up">+17.91%</span> 폭등, 역대 최대 일간 상승률로 한 달을 마감.</li>
+  </ul>
+</div>
+
+<!-- ── 이번 달 이벤트 테이블 ── -->
+<div class="macro-section">
+  <h2>2026년 7월 주요 이벤트 일람</h2>
+  <table class="event-table">
+    <thead>
+      <tr><th>날짜</th><th>지역</th><th>이벤트</th><th>결과</th><th>중요도</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>7/2 (목)</td><td>🇰🇷 한국</td><td>반도체 밸류에이션 되감기 개막</td><td>코스피 <span class="hl-down">-7.89%</span> — 롤러코스터 장세 시작</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/3 (금)</td><td>🇰🇷 한국</td><td>삼성 파운드리 AI 수주 기대(Anthropic·Meta 보도)</td><td>코스피 <span class="hl-up">+5.76%</span> 되돌림</td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>7/8 (수)</td><td>🇰🇷 한국</td><td>반도체 고밸류 되감기 지속</td><td>코스피 <span class="hl-down">-5.35%</span></td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>7/10 (금)</td><td>🇰🇷 한국</td><td>반도체 센티먼트 반등 — 매수 사이드카 발동</td><td>코스피·코스닥 급반등(코스닥 <span class="hl-up">+5.47%</span>)</td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>7/13 (월)</td><td>🇰🇷 한국</td><td>SK하이닉스 나스닥 ADR 역프리미엄·물량 부담</td><td>코스피 <span class="hl-down">-8.95%</span>(서킷브레이커), 7,000선 붕괴</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/15 (수)</td><td>🇰🇷 한국</td><td>SK하이닉스 ADR 미국서 +27% 급등</td><td>코스피 7,300 회복</td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>7/16 (목)</td><td>🇨🇳 중국</td><td>CXMT 상하이 IPO 공모가 확정 — 메모리 공급과잉 공포</td><td>코스피 <span class="hl-down">-6.37%</span>, 니케이 5%대 급락</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/22 (수)</td><td>🇺🇸 미국</td><td>알파벳·테슬라 등 빅테크 2분기 실적</td><td>코스피 <span class="hl-up">+0.74%</span>(장중 7,000 터치)</td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>7/24 (금)</td><td>🇮🇷 중동</td><td>美·이란 지정학·유가 $100 돌파 — '검은 금요일'</td><td>코스피 <span class="hl-down">-5.72%</span>, 외국인·기관 5조원+ 순매도</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/27 (월)</td><td>🇨🇳 중국</td><td>CXMT 상하이 데뷔 — 공모가 대비 +466% 폭등</td><td>2026 아시아 최대 IPO(~86억달러), 마이크론 시총 절반 육박</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/28 (화)</td><td>🇰🇷 한국</td><td>CXMT·간밤 미 반도체 급락 여파</td><td>코스피 <span class="hl-down">-10.84%</span>, 6,000선 붕괴(연속 서킷브레이커 1일차)</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/29 (수)</td><td>🇰🇷 한국</td><td>SK하이닉스 2분기 실적(매출 +257% YoY이나 영업익 컨센 하회)</td><td>코스피 <span class="hl-down">-5.98%</span> — 사상 첫 이틀 연속 서킷브레이커</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/29 (수)</td><td>🇺🇸 미국</td><td>FOMC — 매파적 동결(9-3, 3명 인상 주장) + 유가 급등</td><td>동결 3.50~3.75% · 다우 <span class="hl-down">-2.19%</span> · VIX <span class="hl-down">+13.45%</span> · 브렌트 <span class="hl-up">+8.09%</span></td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>7/31 (금)</td><td>🇺🇸 미국</td><td>아마존 AWS(+37%)·MS Azure(+43%) 클라우드 실적 서프라이즈</td><td>'AI 수익성' 확인 → 코스피 <span class="hl-up">+17.91%</span> 역대 최대 일간 반등</td><td><span class="imp-high">HIGH</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── 다음 달 이벤트 캘린더 ── -->
+<div class="macro-section">
+  <h2>다음 달 주목할 이벤트 (2026년 8월)</h2>
+  <table class="event-table">
+    <thead>
+      <tr><th>날짜</th><th>지역</th><th>이벤트</th><th>예상</th><th>중요도</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>8/7 (금)</td><td>🇺🇸 미국</td><td>7월 고용보고서(NFP)</td><td>컨센서스 미확정 — Fed 인하 경로의 핵심 변수</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>8/12 (수)</td><td>🇺🇸 미국</td><td>7월 CPI(소비자물가)</td><td>유가 급등의 인플레 전가 여부 주목</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>8/13 (목)</td><td>🇺🇸 미국</td><td>7월 PPI(생산자물가)</td><td>컨센서스 미확정</td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>8/20~22 (목~토)</td><td>🌐 미국</td><td>잭슨홀 경제정책 심포지엄</td><td>Warsh 의장 기조연설 — 매파 기조 지속/완화 여부</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>8/26 (수, 장후)</td><td>🇺🇸 미국</td><td>엔비디아(NVDA) 분기 실적</td><td>AI 데이터센터 수요·캐펙스 가늠자 — 반도체 방향타</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>8/28 (금)</td><td>🇺🇸 미국</td><td>7월 PCE(연준 선호 물가지표)</td><td>컨센서스 미확정</td><td><span class="imp-high">HIGH</span></td></tr>
+      <tr><td>8월 하순</td><td>🇰🇷 한국</td><td>한국은행 금융통화위원회</td><td>2.50% 동결 컨센서스(잠정)</td><td><span class="imp-med">MED</span></td></tr>
+      <tr><td>8월 중</td><td>🇰🇷 한국</td><td>2분기 실적시즌 마무리 + 코스피 반등 지속 여부</td><td>7/31 역대급 반등의 추세 전환 여부 확인</td><td><span class="imp-med">MED</span></td></tr>
+    </tbody>
+  </table>
+  <div class="macro-next-vars">
+    <strong>8월 최대 변수 3가지:</strong>
+    <ul>
+      <li>코스피 반등의 지속성 — 7/31 역대 최대 반등이 추세 전환인지, 기술적 반등에 그칠지 여부</li>
+      <li>매파 Fed 경로 — 잭슨홀(8/20~22)에서 인하 지연·추가 매파 신호가 나올지 여부</li>
+      <li>유가·중동 정세 — 미·이란 긴장 재악화 시 유가·인플레·금리 부담 재점화 가능</li>
+    </ul>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:10px;">※ 8월은 FOMC·ECB·BOJ 정례회의가 없는 달로, 데이터(NFP·CPI·PCE)와 잭슨홀·엔비디아 실적이 방향을 좌우합니다.</p>
+</div>
+
+<!-- ── 주요 금리·스프레드 현황 ── -->
+<div class="macro-section">
+  <h2>주요 금리·스프레드 현황 (2026-07-31 기준)</h2>
+  <ul class="rates-list">
+    <li>🇺🇸 <strong>Fed 기준금리</strong>: <span style="font-weight:600">3.50~3.75%</span> — 7/29 매파적 동결(9-3 표결, 3명 인상 주장). 인하 지연 신호로 해석됨</li>
+    <li>🇰🇷 <strong>한국은행 기준금리</strong>: <span style="font-weight:600">2.50%</span> — 7월 동결(잠정)</li>
+    <li>🇪🇺 <strong>ECB 예금금리</strong>: <span style="font-weight:600">2.25%</span> — 6월 인상 후 유지(잠정)</li>
+    <li>🇺🇸 <strong>US 10년 국채금리</strong>: <span style="font-weight:600">4.745%</span>(6/30: 4.418% → <span class="hl-up">+33bp MTD</span>) — 매파 FOMC·유가 급등發 인플레 우려로 상승</li>
+    <li>🇺🇸 <strong>US 2년 국채금리</strong>: <span style="font-weight:600">3.682%</span>(6/30: 3.732% → <span class="hl-down">-5bp MTD</span>) — 경기 둔화·인하 기대에 단기물은 소폭 하락</li>
+    <li>🇺🇸 <strong>US 30년 국채금리</strong>: <span style="font-weight:600">5.275%</span>(6/30: 4.902% → <span class="hl-up">+37bp MTD</span>) — 장기물 급등</li>
+    <li>🇺🇸 <strong>미국 장단기 금리차(10Y-2Y)</strong>: 약 <span style="font-weight:600">106bp</span>(6/30: 약 69bp) — 장기금리 급등이 주도한 큰 폭의 커브 스티프닝</li>
+    <li>🇰🇷 <strong>한국 국고 3년/10년</strong>: <span style="font-weight:600">3.758% / 4.015%</span> — 위험회피에 원화 채권은 강세(금리 하락)</li>
+    <li>💳 <strong>크레딧 스프레드</strong>: 코스피 -22% 급락에도 미국 IG·HY 스프레드와 VIX(월말 15.99)는 안정권을 유지 — 이번 조정이 한국 반도체 밸류에이션에 국한된 국지적 충격이며 글로벌 시스템 리스크로 번지지 않았음을 시사</li>
+  </ul>
+</div>
