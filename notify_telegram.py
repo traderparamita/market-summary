@@ -19,6 +19,7 @@ load_dotenv(ROOT / ".env")
 BOT_TOKEN     = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID       = os.getenv("TELEGRAM_CHAT_ID", "")
 ANTHILLIA_ID  = os.getenv("ANTHILLIA_CHAT_ID", "")  # LL 두 개. 빈 값이면 이중 발송 안 함
+SA_ID         = os.getenv("TELEGRAM_SA_CHAT_ID", "")  # 아침 완성 브리핑만 추가 발송 (include_sa=True 호출 시)
 GITHUB_PAGES = "https://traderparamita.github.io/market-summary"
 
 
@@ -124,7 +125,7 @@ def build_message(date_str: str, data: dict, is_weekly: bool, is_monthly: bool) 
     return "\n".join(lines)
 
 
-def send(message: str) -> bool:
+def send(message: str, include_sa: bool = False) -> bool:
     if not BOT_TOKEN or not CHAT_ID:
         print("⚠ TELEGRAM_BOT_TOKEN 또는 TELEGRAM_CHAT_ID 미설정 — 전송 스킵")
         return False
@@ -133,6 +134,9 @@ def send(message: str) -> bool:
     chat_ids = [CHAT_ID]
     if ANTHILLIA_ID and ANTHILLIA_ID != CHAT_ID:
         chat_ids.append(ANTHILLIA_ID)
+    # SA 채팅은 아침 완성 브리핑에만 추가 (include_sa=True). 시작 알림·위반 경보 등에는 발송 안 함.
+    if include_sa and SA_ID and SA_ID not in chat_ids:
+        chat_ids.append(SA_ID)
     success = True
     for cid in chat_ids:
         try:
@@ -210,7 +214,7 @@ def main():
         data = json.load(f)
 
     message = build_message(date_str, data, args.weekly, args.monthly)
-    send(message)
+    send(message, include_sa=True)
 
 
 if __name__ == "__main__":
