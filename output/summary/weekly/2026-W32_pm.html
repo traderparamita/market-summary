@@ -1,0 +1,294 @@
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+  /* ── Outlook 블록 신규 클래스 ── */
+  .outlook-divider{border-top:2px solid #043B72;margin-top:32px;padding-top:24px;margin-bottom:20px}
+  .outlook-divider h2{font-size:18px;color:#043B72;margin-bottom:6px}
+  .outlook-divider .cs-subtitle{font-size:12px;color:var(--muted)}
+  .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  @media (max-width:900px){.scenario-grid{grid-template-columns:1fr}}
+  .scenario-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px}
+  .scenario-card.bull{border-left:4px solid #d92b2b}
+  .scenario-card.base{border-left:4px solid #F58220;background:linear-gradient(180deg,#fff5eb 0%,#fff 60%);box-shadow:0 2px 8px rgba(245,130,32,0.08)}
+  .scenario-card.bear{border-left:4px solid #1a5fb4}
+  .scenario-card h3{font-size:15px;font-weight:700;margin-bottom:8px}
+  .scen-prob{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .scen-trigger,.scen-impact{font-size:13.5px;color:#2d3148;margin-bottom:8px;line-height:1.7}
+  .scen-trigger ul,.scen-impact ul{list-style:none;padding-left:0;margin:4px 0 0 0}
+  .scen-trigger li,.scen-impact li{padding-left:10px;position:relative;margin-bottom:3px}
+  .scen-trigger li::before,.scen-impact li::before{content:'·';position:absolute;left:0;color:#043B72}
+  .scen-impact .pm-up{color:#d92b2b;font-weight:600}
+  .scen-impact .pm-dn{color:#1a5fb4;font-weight:600}
+  .outlook-section-title{font-size:15px;font-weight:700;color:#043B72;margin:20px 0 12px}
+  .outlook-position{background:#eef4fb;border:1px solid var(--border);border-left:4px solid #043B72;border-radius:10px;padding:18px 24px;margin-top:20px}
+  .outlook-position h3{font-size:14px;color:#043B72;margin-bottom:10px}
+  .outlook-position ul{list-style:none;padding-left:0;margin:0}
+  .outlook-position li{padding:4px 0;font-size:13.5px}
+  .outlook-position .pos-note{font-size:12px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프 (주간)</h2>
+  <div class="pm-subtitle">2026 W32 · 8/3~8/7 · 지역·자산군별 주간 요지 + 핵심 수치</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> 코스피가 대형 반도체 수급에 하루 단위로 방향이 뒤집힌 롤러코스터 한 주. KOSPI <span class="pm-num">6,258.77</span> · WTD <span class="pm-dn">−5.10%</span> · YTD <span class="pm-up">+45.23%</span>로 마감한 반면, 나스닥 WTD <span class="pm-up">+5.19%</span>·S&amp;P500 WTD <span class="pm-up">+3.58%</span>로 극명한 한·미 디커플링. 코스닥은 WTD <span class="pm-up">+10.98%</span>로 홀로 크게 아웃퍼폼.</p>
+    <p><strong>Key drivers:</strong> 8/3 반도체 차익실현 급락 → 8/5 SK하이닉스 ADR發 폭등(오전 매수 사이드카) → 8/6 샌디스크 NAND 경계發 메모리 붕괴(SK하이닉스 <span class="pm-dn">−10.37%</span>·삼성전자 <span class="pm-dn">−6.30%</span>); 중동 지정학 완화(호르무즈 임시 재개통 근접)發 유가 급락(WTI WTD <span class="pm-dn">−7.67%</span>)과 디스인플레이션 기대에 얹힌 귀금속 랠리(금 WTD <span class="pm-up">+7.20%</span>·은 <span class="pm-up">+9.97%</span>).</p>
+    <p><strong>Watch:</strong> NAND發 메모리 경계의 HBM·D램 확산 여부; 삼성전자·SK하이닉스 쏠림에 따른 지수 변동성; 호르무즈 합의 이행·재긴장; 미 빅테크 랠리 지속성.</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">6,258.77</span> · WTD <span class="pm-dn">−5.10%</span> · YTD <span class="pm-up">+45.23%</span>; KOSDAQ <span class="pm-num">798.81</span> · WTD <span class="pm-up">+10.98%</span> — 코스닥이 주간 16%p 이상 아웃퍼폼</li>
+      <li>주중 리듬: 최대 하락일 월 8/3 <span class="pm-dn">−5.12%</span> ↔ 최대 상승일 수 8/5 <span class="pm-up">+3.76%</span> — 대형 반도체 오버나이트 신호에 방향이 매일 반전</li>
+      <li>이벤트: 8/3 반도체 차익실현 급락 → 8/5 SK하이닉스 ADR發 폭등(매수 사이드카) → 8/6 샌디스크 NAND 경계에 SK하이닉스 <span class="pm-dn">−10.37%</span>·삼성전자 <span class="pm-dn">−6.30%</span> 붕괴</li>
+      <li>8/7 마무리: SK하이닉스 <span class="pm-dn">−4.88%</span> 추가 약세, 삼성전자 <span class="pm-up">+0.22%</span> 진정; 에너지/화학·배터리·헬스케어 순환매로 저변 견조</li>
+      <li>USD/KRW <span class="pm-num">1,407.45</span> · WTD <span class="pm-dn">−2.40%</span>(원화 강세) — 주식 급락 주간에도 원화 강세로 외국인 환헤지 부담 완화</li>
+    </ul>
+    <div class="pm-note">대형 반도체(삼성전자·SK하이닉스) 쏠림이 지수 변동성을 증폭 — 방향보다 진폭 자체가 리스크. 지수 급락과 별개로 코스닥·비반도체 breadth는 양호.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>DXY <span class="pm-num">99.60</span> · WTD <span class="pm-dn">−0.20%</span> — 완만한 달러 약세, 원화 등 신흥통화 강세 지지</li>
+      <li>유가 급락: WTI <span class="pm-num">78.18</span> · WTD <span class="pm-dn">−7.67%</span>, 브렌트 <span class="pm-num">83.55</span> · WTD <span class="pm-dn">−7.29%</span> — 중동 지정학 완화(호르무즈 임시 재개통 근접), 주중 최대 낙폭은 화 8/4(WTI <span class="pm-dn">−6.15%</span>)</li>
+      <li>귀금속·산업금속 랠리: 금 <span class="pm-num">4,340.70</span> · WTD <span class="pm-up">+7.20%</span>, 은 <span class="pm-num">63.33</span> · WTD <span class="pm-up">+9.97%</span>, 구리 <span class="pm-num">6.57</span> · WTD <span class="pm-up">+2.08%</span> — 주 중반 랠리 정점</li>
+      <li>VIX <span class="pm-num">14.90</span> · WTD <span class="pm-dn">−6.82%</span> — 국내 지수 급락에도 글로벌 저변동성 유지(패닉 부재)</li>
+    </ul>
+    <div class="pm-note">디스인플레이션 트레이드 — 유가↓(공급 불안 완화)와 귀금속↑(디스인플레이션·달러 약세)이 서로 다른 동력으로 동시 진행.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>Nikkei225 <span class="pm-num">65,606.71</span> · WTD <span class="pm-up">+1.93%</span>, Shanghai <span class="pm-num">3,940.04</span> · WTD <span class="pm-up">+2.81%</span>, HSI <span class="pm-num">25,668.03</span> · WTD <span class="pm-dn">−0.84%</span></li>
+      <li>TWSE <span class="pm-num">44,225.91</span> · WTD <span class="pm-up">+2.57%</span>, NIFTY50 <span class="pm-num">24,570.65</span> · WTD <span class="pm-up">+0.77%</span> — 홍콩만 약세, 나머지 역내는 유가 하락·미 강세에 동반 상승</li>
+      <li>주중 이벤트: 일본 반도체 장비주(어드반테스트·도쿄일렉트론) 주 후반(목 8/6) 약세 정점 — NAND·메모리 경계에 SPE 동조</li>
+      <li>USD/JPY <span class="pm-num">157.745</span> — 엔 약세 흐름 유지, 일본 수출주 지지 요인</li>
+    </ul>
+    <div class="pm-note">역내 광범위 강세 속 홍콩 인터넷주만 부진, 일본은 SPE가 메모리 경계에 노출되며 상단이 제한.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&amp;P500 <span class="pm-num">7,757.64</span> · WTD <span class="pm-up">+3.58%</span>, NASDAQ <span class="pm-num">26,690.62</span> · WTD <span class="pm-up">+5.19%</span>, Russell2K <span class="pm-num">3,034.49</span> · WTD <span class="pm-up">+3.52%</span></li>
+      <li>주중 리듬: 8/4 3대 지수 주중 신고가 경신(최대 상승 국면) — 유가 급락·디스인플레이션 기대가 밸류에이션 지지</li>
+      <li>주도주: 빅테크·팔란티어(8/7 <span class="pm-up">+10.32%</span>)·테슬라 강세 — 모멘텀·AI 테마 랠리 지속</li>
+      <li>VIX <span class="pm-num">14.90</span> · WTD <span class="pm-dn">−6.82%</span> 저변동성; 한·미 디커플링 확인(코스피 WTD <span class="pm-dn">−5.10%</span> vs 나스닥 WTD <span class="pm-up">+5.19%</span>)</li>
+    </ul>
+    <div class="pm-note">유가 급락·디스인플레이션 기대·빅테크 랠리 3박자로 미 증시가 주중 신고가 — 로직·AI 비중이 메모리發 국내 약세와 운명이 갈림.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50 <span class="pm-num">6,523.86</span> · WTD <span class="pm-up">+2.61%</span>, DAX <span class="pm-num">26,319.45</span> · WTD <span class="pm-up">+2.69%</span></li>
+      <li>CAC40 <span class="pm-num">8,714.93</span> · WTD <span class="pm-up">+2.41%</span>, FTSE100 <span class="pm-num">10,901.10</span> · WTD <span class="pm-up">+0.30%</span> — 대륙 증시 사상 최고 부근</li>
+      <li>주중 흐름: 유가 하락(에너지 비용↓)·미 기술주 동조 강세로 주 후반 상승 가속</li>
+      <li>EUR/USD <span class="pm-num">1.156</span>, GBP/USD <span class="pm-num">1.349</span> — 완만한 달러 약세 반영</li>
+    </ul>
+    <div class="pm-note">에너지 비용 하락 + 미 기술주 동조로 유럽도 강세에 동참, 아시아 반도체 약세와 디커플.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.71%</span>, US 10Y <span class="pm-num">4.66%</span>, US 30Y <span class="pm-num">5.211%</span> — 주간 yield 소폭 하락(가격 상승, <span class="pm-up">yield-down</span>)</li>
+      <li>미 커브: 10Y-2Y 약 <span class="pm-num">+95bp</span> — 주간 커브 플래트닝(단기 대비 장기 상대 강세)</li>
+      <li>KR 3Y <span class="pm-num">3.746%</span>, KR 10Y <span class="pm-num">3.964%</span> — 주간 소폭 하락(<span class="pm-up">yield-down</span>), 원화 강세와 동반 우호</li>
+      <li>채권 ETF 주간: TLT <span class="pm-up">+0.62%</span>, AGG <span class="pm-up">+0.24%</span>, HYG <span class="pm-up">+0.16%</span>, LQD <span class="pm-up">+0.28%</span>, EMB <span class="pm-up">+0.61%</span> — 전 구간 소폭 상승</li>
+    </ul>
+    <div class="pm-note">위험자산 우호적 금리 환경 — 주간 yield 하락·커브 플래트닝에 크레딧(HY·IG)까지 동반 강세, 위험선호 훼손 신호 부재.</div>
+  </div>
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 상세 내러티브는 Market Story, 고객 설명은 CS Story 탭을 참고하세요.
+</div>
+
+<!-- ── Outlook 블록 시작 (주간 회고 6섹션 직후) ── -->
+<div class="outlook-divider">
+  <h2>📈 다음 주(W33) Outlook</h2>
+  <div class="cs-subtitle">시나리오 · 자산군별 Watch &amp; Trigger · 통합 리스크 · 포지셔닝 — 작성 시점(8/8) 기준 forward 시각</div>
+</div>
+
+<!-- Part 1: 시나리오 3카드 -->
+<div class="scenario-grid">
+  <div class="scenario-card bull">
+    <h3>🟢 Bull</h3>
+    <div class="scen-prob">확률: 낮음</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>삼성전자·SK하이닉스 반등 확인 + NAND 경계가 국지 쇼크로 소멸</li>
+        <li>호르무즈 재개통 합의 순조 이행 → 유가 추가 안정</li>
+        <li>미 빅테크 실적·모멘텀 랠리 지속</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI 반도체 주도 반등, <span class="pm-num">6,500</span> 재도전</li>
+        <li>S&amp;P500 신고가 경신 지속</li>
+        <li>USD/KRW <span class="pm-num">1,390</span> 하향(원화 강세)</li>
+        <li>유가 추가 하락·디스인플레이션 강화, US 10Y <span class="pm-num">4.5%</span>대 하향 안정</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scenario-card base">
+    <h3>🟡 Base (유력)</h3>
+    <div class="scen-prob">확률: 중간(유력)</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>메모리 경계 잔존하나 확산 제한 + 삼성·SK 등락 반복</li>
+        <li>호르무즈 합의 대체로 이행되나 잡음 상존</li>
+        <li>빅테크 랠리 완만 지속 vs 밸류 부담 병존</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI <span class="pm-num">6,200~6,500</span> 등락(반도체 수급 의존)</li>
+        <li>S&amp;P500 완만 상승·고점 부근 숨고르기</li>
+        <li>USD/KRW <span class="pm-num">1,400~1,420</span> 박스</li>
+        <li>유가 <span class="pm-num">78~83</span> 안정, US 10Y <span class="pm-num">4.6~4.7%</span> 박스</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scenario-card bear">
+    <h3>🔴 Bear</h3>
+    <div class="scen-prob">확률: 낮음~중간</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>NAND 경계가 HBM·D램 이익 눈높이 조정으로 확산</li>
+        <li>호르무즈 재긴장 → 유가 급반등·지정학 프리미엄 복원</li>
+        <li>빅테크 밸류 되돌림·모멘텀주 차익실현</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI <span class="pm-num">6,000</span> 하회 시험, 반도체 추가 약세</li>
+        <li>S&amp;P500 조정·나스닥 변동성 확대</li>
+        <li>USD/KRW <span class="pm-num">1,430</span>+ (달러·안전선호 강세)</li>
+        <li>유가 급반등, US 10Y 상승 압력·안전선호</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Part 2: PM 6섹션 Watch & Trigger -->
+<h3 class="outlook-section-title">📍 자산군별 Watch &amp; Trigger</h3>
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>삼성전자·SK하이닉스 반등 확인 여부가 지수 방향 최대 변수 — NAND·D램·HBM 현물가 동향 주시</li>
+      <li>Watch: KOSPI <span class="pm-num">6,000</span> 지지·<span class="pm-num">6,500</span> 저항; 코스닥 상대강도 지속 여부</li>
+      <li>Trigger: SK하이닉스 반등·메모리 가격 안정 → 반도체 주도 회복 / 추가 <span class="pm-dn">−5%</span>대 급락 → 지수 <span class="pm-num">6,000</span> 하회 시험</li>
+      <li>USD/KRW <span class="pm-num">1,400</span> 하향 유지 시 외국인 순매수 우호</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>유가·호르무즈 합의 이행이 디스인플레이션 트레이드 지속 관건</li>
+      <li>Watch: WTI <span class="pm-num">75</span> 지지·<span class="pm-num">85</span> 저항; 호르무즈 재개통 이행 뉴스 흐름</li>
+      <li>Trigger: 호르무즈 재긴장 → 유가 급반등·인플레 우려 재점화 / 유가 추가 하락 → 귀금속·리스크자산 우호 지속</li>
+      <li>DXY <span class="pm-num">99~100</span> 박스; 미 물가·고용 지표 결과에 민감</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>일본 SPE(어드반테스트·도쿄일렉트론)가 메모리 경계에 동조 지속할지 관찰</li>
+      <li>중국 인터넷·AI(알리바바·텐센트) 실적·정책 모멘텀 점검</li>
+      <li>Watch: Nikkei <span class="pm-num">65,000</span> 지지; USD/JPY <span class="pm-num">158</span> 상향 이탈 시 엔약세 부담</li>
+      <li>Trigger: 엔 추가 약세 → 일본 수출주 지지 / 중국 부양 강화 → 본토·홍콩 반등</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>빅테크 실적·가이던스 지속성 + 팔란티어·테슬라 등 모멘텀주 밸류 부담</li>
+      <li>Watch: S&amp;P500 신고가 부근 저항·<span class="pm-num">7,600</span> 지지; VIX <span class="pm-num">15</span> 하회 지속 여부</li>
+      <li>Trigger: VIX <span class="pm-num">20</span> 재돌파 → 리스크오프 전환 / 빅테크 랠리 지속 → 신고가 경신</li>
+      <li>미 물가·소매판매 등 지표가 금리·밸류에이션에 영향</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>ECB 정책 경로·에너지 비용 하락 수혜 지속 여부</li>
+      <li>Watch: STOXX50·DAX 사상 최고 부근 차익실현 압력; EUR/USD <span class="pm-num">1.15</span> 지지</li>
+      <li>Trigger: 유가 재급등 → 에너지주 강세·인플레 부담 / 미 기술주 조정 → 유럽 동조 하락</li>
+      <li>에너지주·방산·기술주 순환 관찰</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>미 커브(10Y-2Y) 플래트닝 지속 여부 + 크레딧 스프레드 안정성 점검</li>
+      <li>Watch: US 10Y <span class="pm-num">4.5%</span> 지지·<span class="pm-num">4.8%</span> 저항; 10Y-2Y <span class="pm-num">90bp</span> 유지 여부</li>
+      <li>Trigger: 유가·물가 재상승 → 장기물 금리 상승(<span class="pm-dn">yield-up</span>)·베어스팁 / 리스크오프 → 안전선호·금리 하락(<span class="pm-up">yield-down</span>)</li>
+      <li>KR 3Y·10Y 소폭 하락 흐름 지속 시 국내 채권 우호</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Part 3: 통합 리스크 -->
+<div class="risk-section" style="margin-top:20px;">
+  <h3>⚠️ 주요 리스크 (Forward)</h3>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high">High</span>
+      <strong>NAND 경계의 HBM·D램 확산:</strong> 이번 주 NAND發 충격이 메모리 전반의 이익 눈높이 하향으로 번질 경우, KOSPI 대형 반도체와 SOX가 동반 압력. 트리거는 메모리 현물가 추가 약세·추가 가이던스 하향.
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">Med</span>
+      <strong>호르무즈 합의 미이행·재긴장:</strong> 걷혔던 지정학 프리미엄이 되돌아오며 유가 급반등 시, 디스인플레이션 트레이드 역전·인플레 우려 재점화 → 귀금속·리스크자산 되돌림.
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">Med</span>
+      <strong>미 빅테크 밸류 부담:</strong> 신고가 부근에서 실적 실망·모멘텀주(팔란티어·테슬라) 차익실현이 겹치면 나스닥 조정·VIX 급등 → 한·미 동조 약세 전환 위험.
+    </li>
+  </ul>
+</div>
+
+<!-- Part 4: 포지셔닝 박스 -->
+<div class="outlook-position">
+  <h3>🎯 포지셔닝 시사점 (Base 시나리오 하 합리적 포지션)</h3>
+  <ul>
+    <li>한국 — N (Watch: KOSPI <span class="pm-num">6,000</span> 지지·메모리 반등 확인); 코스닥·비반도체 상대 선호</li>
+    <li>미국 — N~OW (빅테크 랠리 지속되나 신고가 부근 밸류 부담, 분산 관점)</li>
+    <li>유럽 — N (에너지 비용 하락 수혜 vs 사상 최고 부근 차익 압력 상쇄)</li>
+    <li>아시아/중국 — N (일본 SPE 리스크 vs 중국 AI 모멘텀 혼재)</li>
+    <li>채권 — N~OW (커브 플래트닝·크레딧 우호, 듀레이션 중립 유지)</li>
+    <li>원자재/FX — 귀금속 상대 선호(디스인플레이션·달러 약세), 유가 방향성 중립</li>
+  </ul>
+  <div class="pos-note">위 항목은 매수/매도 권유가 아니라 Base 시나리오 하에서 합리적이라고 판단되는 OW/N/UW 관점입니다. 시나리오 트리거 충족 여부에 따라 관점은 조정됩니다.</div>
+</div>
+<!-- ── Outlook 블록 끝 ── -->
