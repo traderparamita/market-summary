@@ -1,0 +1,267 @@
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+  .outlook-divider{border-top:2px solid #043B72;margin-top:32px;padding-top:24px;margin-bottom:20px}
+  .outlook-divider h2{font-size:18px;color:#043B72;margin-bottom:6px}
+  .outlook-divider .cs-subtitle{font-size:12px;color:var(--muted)}
+  .scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+  @media (max-width:900px){.scenario-grid{grid-template-columns:1fr}}
+  .scenario-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px}
+  .scenario-card.bull{border-left:4px solid #d92b2b}
+  .scenario-card.base{border-left:4px solid #F58220;background:linear-gradient(180deg,#fff5eb 0%,#fff 60%);box-shadow:0 2px 8px rgba(245,130,32,0.08)}
+  .scenario-card.bear{border-left:4px solid #1a5fb4}
+  .scenario-card h3{font-size:15px;font-weight:700;margin-bottom:8px}
+  .scen-prob{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .scen-trigger,.scen-impact{font-size:13px;color:#2d3148;margin-bottom:8px;line-height:1.65}
+  .scen-trigger ul,.scen-impact ul{list-style:none;padding-left:0;margin:4px 0 0 0}
+  .scen-trigger li,.scen-impact li{padding-left:10px;position:relative;margin-bottom:3px}
+  .scen-trigger li::before,.scen-impact li::before{content:'·';position:absolute;left:0;color:#043B72}
+  .outlook-section-title{font-size:15px;font-weight:700;color:#043B72;margin:20px 0 12px}
+  .outlook-position{background:#eef4fb;border:1px solid var(--border);border-left:4px solid #043B72;border-radius:10px;padding:18px 24px;margin-top:20px}
+  .outlook-position h3{font-size:14px;color:#043B72;margin-bottom:10px}
+  .outlook-position ul{list-style:none;padding-left:0}
+  .outlook-position li{padding:4px 0;font-size:13.5px}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프 (주간)</h2>
+  <div class="pm-subtitle">2026 W33 (8/10~8/14) · 5/5 영업일 · 회고 + 다음 주 Outlook</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> 물가·AI 훈풍에 반도체 대형주가 주간을 관통, KOSPI <span class="pm-num">6,977.94</span> WTD <span class="pm-up">+11.49%</span>로 5거래일 연속 상승·7주 만의 반등 주간 완성(KOSDAQ WTD <span class="pm-up">+8.24%</span>). 미국은 신고가 부근이라 완만(S&amp;P500 WTD <span class="pm-up">+0.36%</span>), 중화권은 인터넷 붕괴로 디커플링(HSI WTD <span class="pm-dn">−2.15%</span>).</p>
+    <p><strong>Key drivers:</strong> 8/7 美 7월 고용 쇼크(NFP <span class="pm-dn">−23k</span>) → 긴축 우려 후퇴; 8/11 CoreWeave 실적 서프라이즈 → AI capex 우려 완화; 8/12 CPI·8/13 PPI 연타 진정 → 9월 인상 확률 <span class="pm-num">55%→35%</span>; 정부 반도체 지원책·외국인 순매수(수 2.84조원).</p>
+    <p><strong>Watch (다음 주):</strong> 8/17 광복절 대체휴일(KOSPI 휴장, 4영업일 주); 美 반도체 장비주(BRCM·AMAT <span class="pm-dn">−5%대</span>) 약세의 한·일 전이; 잭슨홀·FOMC 의사록; 유가 반등(WTI WTD <span class="pm-up">+5.40%</span>)·호르무즈 재긴장; 중국 인터넷 실적 여진.</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">6,977.94</span> WTD <span class="pm-up">+11.49%</span> · MTD <span class="pm-up">+5.80%</span> · YTD <span class="pm-up">+61.92%</span> — 5거래일 연속·장중 7,000 회복</li>
+      <li>주중 리듬: 월 <span class="pm-up">+0.65%</span> → 화 <span class="pm-up">+0.73%</span> → 수 <span class="pm-up">+3.68%</span>(최대 상승일, 23번째 사이드카) → 목 <span class="pm-up">+3.56%</span> → 금 <span class="pm-up">+2.42%</span></li>
+      <li>KOSDAQ <span class="pm-num">864.65</span> WTD <span class="pm-up">+8.24%</span> · MTD <span class="pm-up">+20.13%</span>; 정보기술 업종 WTD <span class="pm-up">+18.43%</span> 주도</li>
+      <li>주도주: SK하이닉스 WTD <span class="pm-up">+15.68%</span>·삼성전자, 금요일 현대차 <span class="pm-up">+8.24%</span>·SK텔레콤 <span class="pm-up">+10.32%</span>로 리더십 확산</li>
+      <li>수급/정책: 외국인 순매수(수 약 2.84조원) 견인 · 8/11 정부 5조 반도체 특별펀드·576조 메가프로젝트 · USD/KRW <span class="pm-num">1,416.48</span> WTD <span class="pm-dn">+0.64%</span></li>
+    </ul>
+    <div class="pm-note">7주 만의 반등이나 6월 사상 최고(9,114선) 대비 회복 국면. 외국인 수급 연속성이 관건.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>美 7월 CPI <span class="pm-num">3.54%</span>(YoY)·근원 <span class="pm-num">2.79%</span> 둔화(8/12) → 예상 부합</li>
+      <li>美 7월 PPI <span class="pm-num">4.7%</span>(예상 4.9% 하회)·전월 보합(8/13) → 이틀째 소프트 인플레</li>
+      <li>美 7월 고용 NFP <span class="pm-dn">−23k</span>·실업률 4.1%(8/7 발표) → 9월 인상 확률 <span class="pm-num">55%→35%</span></li>
+      <li>WTI <span class="pm-num">$82.40</span> WTD <span class="pm-up">+5.40%</span>·Brent WTD <span class="pm-up">+5.95%</span> — 호르무즈 재점화(월, 사우디 정유 피격)</li>
+      <li>Gold <span class="pm-num">$4,380</span> WTD <span class="pm-up">+0.91%</span>·Silver WTD <span class="pm-up">+2.61%</span> · DXY <span class="pm-num">99.67</span> WTD <span class="pm-up">+0.07%</span></li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>Nikkei225 <span class="pm-num">68,713.80</span> WTD <span class="pm-up">+4.74%</span> — 반도체 강세 동조, 주중 최고 종가 경신</li>
+      <li>TWSE <span class="pm-num">45,811</span> WTD <span class="pm-up">+3.58%</span> · Shanghai <span class="pm-num">3,927.18</span> WTD <span class="pm-dn">−0.33%</span> · NIFTY50 WTD <span class="pm-dn">−0.83%</span></li>
+      <li>HSI <span class="pm-num">25,116.85</span> WTD <span class="pm-dn">−2.15%</span> — 텐센트·PDD(목)에 이어 금요일 JD닷컴 <span class="pm-dn">−10.41%</span> 실적 쇼크</li>
+      <li>RBA 기준금리 <span class="pm-num">4.35%</span> 만장일치 동결(8/11, 매파적)</li>
+      <li>USD/JPY <span class="pm-num">159.31</span> WTD <span class="pm-dn">+0.99%</span> · USD/CNY <span class="pm-num">6.732</span> WTD <span class="pm-up">−0.22%</span></li>
+    </ul>
+    <div class="pm-note">반도체(한·일)와 인터넷·소비(중화권)의 아시아 내 디커플링 심화.</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&amp;P500 <span class="pm-num">7,785.76</span> WTD <span class="pm-up">+0.36%</span> · MTD <span class="pm-up">+3.95%</span> — 수·목 이틀 연속 사상 최고 뒤 금요일 숨 고르기(<span class="pm-dn">−0.17%</span>)</li>
+      <li>NASDAQ <span class="pm-num">26,729.16</span> WTD <span class="pm-up">+0.14%</span> · Russell2K WTD <span class="pm-up">+1.12%</span>(중소형주 상대 강세)</li>
+      <li>반도체: 마이크론 <span class="pm-up">+4.23%</span>(목) 메모리 강세, 금요일 AMD <span class="pm-up">+6.50%</span> vs 브로드컴 <span class="pm-dn">−5.94%</span>·AMAT <span class="pm-dn">−5.12%</span> 차별화</li>
+      <li>실적: 시스코 <span class="pm-dn">−8.40%</span>(목, 총마진 66.3% 축소) — AI 수주에도 마진 압박 부각</li>
+      <li>VIX <span class="pm-num">14.25</span> WTD <span class="pm-dn">−4.36%</span> — 낮은 변동성 레짐 유지</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>DAX <span class="pm-num">26,440.31</span> WTD <span class="pm-up">+0.46%</span> — 사상 최고 부근, 주간 유럽 주도</li>
+      <li>STOXX50 <span class="pm-num">6,539.59</span> WTD <span class="pm-up">+0.24%</span> · CAC40 WTD <span class="pm-dn">−0.90%</span> · FTSE100 <span class="pm-num">10,750.10</span> WTD <span class="pm-dn">−1.39%</span></li>
+      <li>영국 2분기 GDP 성장 둔화 확인(8/13) · 유로존 2Q GDP 2차 <span class="pm-up">+0.4%</span></li>
+      <li>ECB 예금금리 <span class="pm-num">2.25%</span> 유지 · EUR/USD <span class="pm-num">1.157</span> WTD <span class="pm-up">+0.09%</span> · GBP/USD <span class="pm-num">1.354</span> WTD <span class="pm-up">+0.37%</span></li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 10Y <span class="pm-num">4.696%</span>(WTD <span class="pm-dn">+3.6bp</span>), US 2Y <span class="pm-num">3.697%</span>(WTD <span class="pm-up">−1.3bp</span>), US 30Y <span class="pm-num">5.265%</span>(WTD <span class="pm-dn">+5.4bp</span>)</li>
+      <li>10Y-2Y <span class="pm-num">+100bp</span>(WTD <span class="pm-dn">+4.9bp</span>) — 위험선호 회복 속 베어 스티프닝</li>
+      <li>KR 3Y <span class="pm-num">3.796%</span>(WTD <span class="pm-dn">+5.0bp</span>), KR 10Y <span class="pm-num">4.047%</span>(WTD <span class="pm-dn">+8.3bp</span>) · KR 기준금리 2.75%</li>
+      <li>TLT <span class="pm-num">82.04</span> WTD <span class="pm-dn">−0.87%</span> · AGG WTD <span class="pm-dn">−0.12%</span> 장기채 약세</li>
+      <li>IG(LQD) WTD <span class="pm-dn">−0.40%</span> · HY(HYG) WTD <span class="pm-up">+0.13%</span> · EMB WTD <span class="pm-dn">−0.20%</span> — 크레딧 견조</li>
+    </ul>
+    <div class="pm-note">주간 커브 스티프닝, 크레딧 스프레드는 안정. 위험선호 회복과 정합.</div>
+  </div>
+</div>
+
+<!-- ── Outlook 블록 시작 ── -->
+<div class="outlook-divider">
+  <h2>📈 다음 주(W34) Outlook</h2>
+  <div class="cs-subtitle">시나리오·Watch·리스크·포지셔닝 — 2026-08-14 작성 시점 기준 forward 시각 (W34 = 8/17~8/21, 8/17 광복절 대체휴일)</div>
+</div>
+
+<div class="scenario-grid">
+  <div class="scenario-card bull">
+    <h3>🟢 Bull</h3>
+    <div class="scen-prob">확률: 낮음</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>외국인 순매수 지속 + 美 반도체 장비주(SOX) 안정</li>
+        <li>잭슨홀에서 완화적 시그널 + 유가 $80 하회</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI 7,000 안착·재도전</li>
+        <li>S&amp;P500 신고가 연장</li>
+        <li>USD/KRW 1,400 하향 시도</li>
+        <li>10Y 4.6% 하회, 유가 안정</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scenario-card base">
+    <h3>🟡 Base (유력)</h3>
+    <div class="scen-prob">확률: 유력</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>급반등 후 숨 고르기 — 반도체 주도는 유지되나 변동성 확대</li>
+        <li>물가 진정 지속 vs 유가 반등이 상쇄</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI 6,800~7,100 등락(차익 소화)</li>
+        <li>S&amp;P500 고점 부근 횡보</li>
+        <li>USD/KRW 1,410~1,430</li>
+        <li>유가 $80~85, 10Y 4.6~4.8%</li>
+      </ul>
+    </div>
+  </div>
+  <div class="scenario-card bear">
+    <h3>🔴 Bear</h3>
+    <div class="scen-prob">확률: 중간</div>
+    <div class="scen-trigger">
+      <strong>트리거:</strong>
+      <ul>
+        <li>美 반도체 장비주 약세의 한·일 전이(SOX 조정)</li>
+        <li>유가 재급등發 물가 재점화 + 외국인 차익 실현</li>
+      </ul>
+    </div>
+    <div class="scen-impact">
+      <strong>자산 함의:</strong>
+      <ul>
+        <li>KOSPI 6,800 이탈·되돌림</li>
+        <li>S&amp;P500 고점 대비 되밀림</li>
+        <li>USD/KRW 1,440 상향</li>
+        <li>10Y 4.8% 상회, 유가 $90 재돌파</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h3 class="outlook-section-title">📍 자산군별 Watch &amp; Trigger (W34)</h3>
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li><strong>8/17(월) 광복절 대체휴일 휴장</strong> — 4영업일 주(8/18~8/21)</li>
+      <li>Watch: KOSPI 7,000 안착·6,800 지지, 외국인 순매수 지속 여부</li>
+      <li>Trigger: 외국인 순매도 전환 → 급반등분 되돌림 / 6,800 이탈 → 반등 신뢰 훼손</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>잭슨홀 심포지엄(통상 8월 하순) 파월 발언 · FOMC 7월 의사록</li>
+      <li>Watch: 9월 인상/동결 확률(현 35%), WTI $85 라인</li>
+      <li>Trigger: 유가 $90 재돌파 → 물가 우려 재점화 → 인상 확률 반등</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>일본 2분기 GDP 속보치 · 중국 인터넷 실적 여진(JD 쇼크)</li>
+      <li>Watch: 항셍 25,000 지지, Nikkei 사상 최고 지속 여부</li>
+      <li>Trigger: 알리바바·텐센트 추가 실적 실망 → 중화권 디레이팅 확산</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>미 소매판매 후속·주간 실업수당 · 엔비디아 실적 시즌 접근(8월 말)</li>
+      <li>Watch: S&amp;P500 7,800 지지, 반도체 장비주(SOX) 방향</li>
+      <li>Trigger: 장비주 추가 약세 → AI 하드웨어 내 로테이션 심화</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>S&amp;P 글로벌 PMI 플래시(통상 하순) · ECB 위원 발언</li>
+      <li>Watch: DAX 사상 최고 경신 여부, EUR/USD 1.16 상향</li>
+      <li>Trigger: PMI 위축 확인 → 경기민감주 차익 / DXY 반등 시 유럽 상단 제한</li>
+    </ul>
+  </div>
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>Watch: 美 10Y 4.6~4.8% 레인지, 커브 스티프닝 지속 여부, HY 스프레드</li>
+      <li>Trigger: 10Y 4.8% 상향 돌파 → 성장주 밸류에이션 부담</li>
+      <li>Trigger: 크레딧 스프레드 확대 전환 → 위험선호 위축 신호</li>
+    </ul>
+  </div>
+</div>
+
+<div class="risk-section">
+  <h3>⚠ 주요 리스크 (Outlook)</h3>
+  <ul class="risk-items">
+    <li class="risk-item"><span class="risk-tag high">High</span> <strong>美 반도체 장비주 약세 전이:</strong> 브로드컴·AMAT 등 <span class="hl-down">−5%대</span> 약세가 SOX 조정으로 번지면, 급반등한 코스피 반도체가 되돌림에 노출됩니다.</li>
+    <li class="risk-item"><span class="risk-tag med">Med</span> <strong>유가 반등發 물가 재점화:</strong> 주간 WTI <span class="hl-up">+5.40%</span>·호르무즈 재긴장이 이어지면 진정된 인플레·9월 인상 우려가 되살아나며 위험선호가 흔들릴 수 있습니다.</li>
+    <li class="risk-item"><span class="risk-tag med">Med</span> <strong>중국 인터넷 디레이팅:</strong> JD닷컴 실적 쇼크가 알리바바·텐센트로 확산되면 항셍이 추가 약세를 보이며 아시아 리스크선호가 위축될 수 있습니다.</li>
+  </ul>
+</div>
+
+<div class="outlook-position">
+  <h3>🎯 포지셔닝 시사점 (Base 시나리오)</h3>
+  <ul>
+    <li>🇰🇷 한국 — N (Watch: KOSPI 7,000 안착·외국인 수급, 급반등 소화 국면)</li>
+    <li>🇺🇸 미국 — N (신고가 부근 횡보, 반도체 장비주 방향 확인 후 판단)</li>
+    <li>🌏 아시아(중국) — UW (인터넷 실적 여진·JD 쇼크 확산 리스크)</li>
+    <li>🇪🇺 유럽 — N (DAX 주도 지속 vs 매수 재료 부족의 균형)</li>
+    <li>💵 채권 — 듀레이션 N (커브 스티프닝·10Y 레인지 상단 경계)</li>
+  </ul>
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 회고 6섹션 + 다음 주 Outlook 으로 구성됩니다.
+</div>
+<!-- ── Outlook 블록 끝 ── -->

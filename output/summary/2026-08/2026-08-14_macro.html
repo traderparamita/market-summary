@@ -1,0 +1,264 @@
+<style>
+  .macro-kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+  .macro-kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .macro-kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:2px}
+  .macro-kpi-value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#1a1d2e}
+  .macro-kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+  .macro-kpi-date{font-size:10px;color:var(--muted);margin-top:2px}
+  .macro-evt-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);margin-bottom:20px}
+  .macro-evt-table th{background:var(--accent2);color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:600}
+  .macro-evt-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+  .macro-evt-table tr:last-child td{border-bottom:none}
+  .macro-evt-table tr:hover td{background:var(--card2)}
+  .macro-imp-high{color:var(--up);font-weight:700}
+  .macro-imp-med{color:var(--warn);font-weight:600}
+  .macro-imp-low{color:var(--muted)}
+  .macro-section-title{font-size:16px;font-weight:700;color:var(--accent2);margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+</style>
+
+<div class="macro-section-title">📊 W32 핵심 매크로 지표</div>
+
+<div class="macro-kpi-grid">
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 7월 고용(NFP)</div>
+    <div class="macro-kpi-value">−23k</div>
+    <div class="macro-kpi-chg down">실업률 4.1% — 8/7(금) 발표, 노동시장 둔화 확인</div>
+    <div class="macro-kpi-date">2026-07 FRED 기준</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 연방기금금리(FFR)</div>
+    <div class="macro-kpi-value">3.63%</div>
+    <div class="macro-kpi-chg flat">7월 FOMC 동결(3.50~3.75%). 고용 둔화로 인하 기대 자극</div>
+    <div class="macro-kpi-date">2026-07 FRED 실효금리</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 6월 CPI(YoY)</div>
+    <div class="macro-kpi-value">3.73%</div>
+    <div class="macro-kpi-chg down">근원 CPI 2.81% — 여전히 목표(2%) 상회</div>
+    <div class="macro-kpi-date">2026-06 FRED 기준</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 근원 PCE(YoY)</div>
+    <div class="macro-kpi-value">3.29%</div>
+    <div class="macro-kpi-chg down">전월 3.41% → 소폭 둔화. 3%대 상방 잔존</div>
+    <div class="macro-kpi-date">2026-06 FRED 기준</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 10Y 국채</div>
+    <div class="macro-kpi-value">4.66%</div>
+    <div class="macro-kpi-chg down">WTD −4bp — 고용 둔화·유가 급락에 하락</div>
+    <div class="macro-kpi-date">2026-08-07 FRED 기준</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 10Y−2Y 커브</div>
+    <div class="macro-kpi-value">+0.46%p</div>
+    <div class="macro-kpi-chg flat">WTD +1bp — 완만한 스팁, 정상(우상향) 유지</div>
+    <div class="macro-kpi-date">2026-08-07 FRED 기준</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">미 HY 스프레드</div>
+    <div class="macro-kpi-value">2.71%p</div>
+    <div class="macro-kpi-chg down">WTD −7bp(축소) — 크레딧 안정, 위험선호 유지</div>
+    <div class="macro-kpi-date">2026-08-06 FRED 기준</div>
+  </div>
+  <div class="macro-kpi-card">
+    <div class="macro-kpi-label">VIX(변동성지수)</div>
+    <div class="macro-kpi-value">14.90</div>
+    <div class="macro-kpi-chg down">WTD −6.05%(15.86→14.90) — 공포 진정</div>
+    <div class="macro-kpi-date">2026-08-07 FRED 기준</div>
+  </div>
+</div>
+
+<div class="macro-section-title">🔍 이번 주 핵심 거시지표 리뷰 (8/3~8/7)</div>
+<ul style="font-size:13.5px;line-height:1.9;color:#2d3148;padding-left:20px;">
+  <li><strong>미 7월 고용(NFP, 비농업 신규고용) −23k</strong> — 8/7(금, 매월 첫째 금요일 발표) 공개된 이번 주 최대 지표입니다. 일자리가 늘기는커녕 오히려 2.3만 개 <em>줄었다</em>는 뜻으로, 노동시장이 확연히 식고 있음을 보여줍니다. 통상 이런 '나쁜 소식'이 '좋은 소식'으로 해석되는데, 고용 둔화가 곧 <strong>금리 인하 기대</strong>를 자극하기 때문입니다. 실제 같은 날 미 국채 금리 하락·주가 상승·VIX 하락으로 이어졌습니다.</li>
+  <li><strong>미 7월 실업률 4.1%</strong> — 전월 4.2%에서 소폭 개선됐지만, 고용 감소(−23k)와 함께 보면 '구직 포기(경제활동참가 축소)'로 실업률이 낮아졌을 가능성이 있어 마냥 좋게 볼 수는 없습니다.</li>
+  <li><strong>미 6월 CPI(소비자물가지수, YoY) 3.73%</strong> — 소비자가 사는 물건·서비스 가격의 1년 상승률입니다. 연준 목표 2%를 여전히 크게 웃돕니다. 다만 5월 4.27%에서는 뚜렷이 둔화했습니다.</li>
+  <li><strong>미 6월 근원 CPI(Core, 변동성 큰 에너지·식품 제외) 2.81%</strong> — 물가의 '기조'를 보는 지표로 5월 2.96%→2.81%로 내려왔습니다. 그래도 3% 부근으로 끈적한(sticky) 흐름이 남아 있습니다.</li>
+  <li><strong>미 6월 근원 PCE(개인소비지출 물가, 연준이 가장 신뢰하는 인플레 지표) 3.29%</strong> — 전월 3.41%에서 둔화했으나 여전히 3%대 상방입니다. 물가가 '느리게' 내려오는 국면이라는 점이 인하 시점을 늦추는 변수입니다.</li>
+  <li><strong>미 7월 FOMC(연방공개시장위원회, 미 기준금리 회의) 동결</strong> — 7/29 3.50~3.75% 동결(9-3 표결)이 이번 주 정책 배경입니다. 이후 8/7 고용 쇼크가 겹치며 시장의 인하 기대가 다시 살아났습니다.</li>
+  <li><strong>OPEC+ 8월 증산(+18.8만b/d)·IEA 사상 최대 공급과잉 경고</strong> — 8/3 산유국 협의체(OPEC+)의 증산 결정에 국제에너지기구(IEA)의 초과공급(하루 약 296만 배럴) 경고가 겹쳐 WTI −5.44%·브렌트 −7.33% 급락했습니다. <strong>유가 급락 = 디스인플레이션(물가 둔화)</strong> 재료로, 이번 주 채권·주식에 우호적으로 작용했습니다.</li>
+  <li><strong>미-이란 호르무즈 지정학 완화</strong> — 8/3 트럼프의 직접협상 발언, 8/5 베센트 재무장관의 '합의 임박' 발언, 8/6 이란-오만 항로 부분 합의(완전 재개가 아닌 2~4개월 한시)로 이어지며 지정학 리스크 프리미엄이 빠졌습니다. 8/6엔 유가가 3일 낙폭을 되돌려 WTI +4.20% 반등했습니다.</li>
+  <li><strong>미 6월 공장주문(Factory Orders)·무역수지</strong> — 8/4 발표. 공장주문은 예상 하회(miss), 무역수지는 예상 상회(beat)로 엇갈렸습니다. 유가 추가 급락과 맞물려 같은 날 미 3대 지수는 신고가를 경신했습니다.</li>
+  <li><strong>AMD 2분기 실적(8/4, 장 마감 후)</strong> — 매출 $11.5B·EPS 1.66으로 컨센서스 상회(beat). AI 반도체 수요를 재확인시켰습니다.</li>
+  <li><strong>SanDisk(샌디스크) 실적·가이던스 쇼크(8/5)</strong> — 매출 가이던스가 컨센서스를 하회(miss)하며 웨스턴디지털이 동반 급락, <strong>NAND(낸드)·메모리 업황 경계</strong>를 촉발했습니다. 이 여파가 8/6 국내 SK하이닉스 −10.37% 급락으로 전이됐습니다(아래 '구조적 이슈' 참조).</li>
+  <li><strong>금·은 디스인플레 랠리</strong> — 8/5 금 +4.2%·은 +4.19%로 한 달 최고를 기록했습니다. 지정학 헤지가 아니라 '유가 급락→물가·실질금리 하락' 기대를 반영한 움직임이라는 점이 특징입니다.</li>
+</ul>
+
+<div class="macro-section-title">📅 이번 주 주요 이벤트 (8/3~8/7)</div>
+
+<table class="macro-evt-table">
+  <thead>
+    <tr><th>날짜</th><th>지역</th><th>이벤트</th><th>결과/성격</th><th>중요도</th><th>시장 반응 요약</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>8/3 (월)</td>
+      <td>🌐 글로벌</td>
+      <td>OPEC+ 8월 증산(+18.8만b/d) + IEA 사상 최대 공급과잉 경고</td>
+      <td><span class="macro-imp-high">유가 급락</span></td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>WTI −5.44%·브렌트 −7.33%. 디스인플레 기대로 위험자산 우호. VIX 15.86.</td>
+    </tr>
+    <tr>
+      <td>8/3 (월)</td>
+      <td>🇺🇸🇮🇷</td>
+      <td>트럼프, 미-이란 직접협상 개시 발언 — 호르무즈 정상화 기대</td>
+      <td><span class="macro-imp-high">지정학 완화</span></td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>중동 리스크 프리미엄 완화로 유가 4%+ 추가 하락.</td>
+    </tr>
+    <tr>
+      <td>8/4 (화)</td>
+      <td>🇺🇸</td>
+      <td>미 6월 공장주문(Factory Orders)·무역수지(Trade Balance)</td>
+      <td><span class="macro-imp-med">공장주문 miss / 무역 beat</span></td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>유가 추가 급락(WTI −6%대)과 맞물려 미 3대 지수 신고가.</td>
+    </tr>
+    <tr>
+      <td>8/4 (화, 마감 후)</td>
+      <td>🇺🇸</td>
+      <td>AMD 2분기 실적 — 매출 $11.5B·EPS 1.66</td>
+      <td><span class="macro-imp-med">beat(상회)</span></td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>AI 반도체 수요 재확인. 위험선호 뒷받침.</td>
+    </tr>
+    <tr>
+      <td>8/5 (수)</td>
+      <td>🇺🇸🇮🇷</td>
+      <td>베센트 재무장관 "미-이란 호르무즈 재개 합의 임박" 발언</td>
+      <td><span class="macro-imp-med">지정학 완화</span></td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>유가 프리미엄 소멸 지속. 금 +4.2%·은 +4.19% 한 달 최고(디스인플레 트레이드).</td>
+    </tr>
+    <tr>
+      <td>8/5 (수, 마감 후)</td>
+      <td>🇺🇸</td>
+      <td>SanDisk(샌디스크) 실적·가이던스 컨센서스 하회 → 웨스턴디지털 동반 급락</td>
+      <td><span class="macro-imp-high">miss(가이던스 쇼크)</span></td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>NAND·메모리 업황 경계 촉발 — 아시아 메모리주로 전이(구조적 이슈).</td>
+    </tr>
+    <tr>
+      <td>8/6 (목)</td>
+      <td>🇮🇷🇴🇲</td>
+      <td>이란-오만 호르무즈 항로 부분 합의(완전 재개 아닌 2~4개월 한시)</td>
+      <td><span class="macro-imp-med">유가 반등</span></td>
+      <td><span class="macro-imp-med">MED</span></td>
+      <td>유가 3일 낙폭 되돌림 WTI +4.20%·브렌트 +5.23%. 국내 SK하이닉스 −10.37% 메모리 붕괴.</td>
+    </tr>
+    <tr>
+      <td>8/7 (금)</td>
+      <td>🇺🇸</td>
+      <td><strong>미 7월 고용(NFP) −23k · 실업률 4.1%</strong></td>
+      <td><span class="macro-imp-high">고용 감소(둔화)</span></td>
+      <td><span class="macro-imp-high">HIGH</span></td>
+      <td>노동시장 둔화 → 인하 기대 자극. 미 국채 금리 하락·주가 상승·VIX 14.90 하락과 정합. 메모리 쇼크 이틀째 순환매.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="macro-section-title">🧩 놓치기 쉬운 구조적 이슈 — 메모리 공급과잉 논쟁의 현실화(NAND 가이던스 쇼크)</div>
+<div style="font-size:13.5px;line-height:1.8;color:#2d3148;background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--warn);border-radius:8px;padding:14px 16px;margin-bottom:20px;">
+  <strong>스레드 회수(직전 2~3주):</strong> W30 macro는 中 CXMT(창신메모리, 중국 최대 D램 업체)의 상하이 상장發 D램 <strong>공급과잉</strong>을 'W30 최대 변수 ②(★★★)'로 예고했고, 7/27 상장 당일 공모가 대비 +466% 폭등하며 공포가 증폭됐습니다. 이어 W31은 SK하이닉스(7/29 실적 miss)·삼성전자(7/30 어닝 서프라이즈 후 반납)를 최대 변수로 지목했습니다.<br>
+  <strong>W32 현실화:</strong> 이 논쟁이 이번 주 <strong>SanDisk/웨스턴디지털의 NAND(낸드) 가이던스 쇼크(8/5)</strong>로 실제 실적 지표를 통해 표면화됐습니다. 여파는 곧바로 국내로 전이돼 <strong>SK하이닉스가 8/6~8/7 이틀간 −15% 안팎</strong>(8/6 −10.37%) 급락, 메모리 밸류체인 전반의 경계로 확산됐습니다.<br>
+  <strong>이월(W33):</strong> 이제 관건은 SK하이닉스·삼성전자의 <strong>반등 여부와 NAND/D램 가격 방향</strong>입니다. 아래 W33 캘린더 '최대 변수 ②'로 이어집니다.
+</div>
+
+<div class="macro-section-title">📆 다음 주(W33) 주요 캘린더 (8/10~8/14)</div>
+
+<table class="macro-evt-table">
+  <thead>
+    <tr><th>날짜</th><th>지역</th><th>이벤트</th><th>예상/성격</th><th>중요도</th><th>한 줄 설명</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>8/10 (월)</td>
+      <td>🇺🇸</td>
+      <td>뉴욕 연은 소비자기대 서베이(1년 기대인플레)</td>
+      <td>—</td>
+      <td><span class="macro-imp-low">★</span></td>
+      <td>가계가 예상하는 물가 심리. CPI를 앞둔 참고 지표입니다.</td>
+    </tr>
+    <tr>
+      <td>8/11 (화)</td>
+      <td>🇺🇸</td>
+      <td>NFIB 소기업 낙관지수 · 7월 연방 재정수지</td>
+      <td>—</td>
+      <td><span class="macro-imp-low">★</span></td>
+      <td>중소기업 체감경기. CPI 발표 하루 전 워밍업 지표입니다.</td>
+    </tr>
+    <tr>
+      <td>8/12 (수)</td>
+      <td>🇺🇸</td>
+      <td><strong>미 7월 CPI(소비자물가지수)</strong></td>
+      <td>유가 급락 반영 둔화 여부</td>
+      <td><span class="macro-imp-high">★★★</span></td>
+      <td>W33 최대 지표. 8월 초 유가 급락이 반영돼 물가가 더 식었을지가 인하 경로를 가릅니다.</td>
+    </tr>
+    <tr>
+      <td>8/13 (목)</td>
+      <td>🇺🇸</td>
+      <td><strong>미 7월 PPI(생산자물가지수)</strong></td>
+      <td>—</td>
+      <td><span class="macro-imp-med">★★</span></td>
+      <td>기업이 물건을 팔 때 받는 도매 물가. CPI의 선행·확인 지표입니다.</td>
+    </tr>
+    <tr>
+      <td>8/13 (목)</td>
+      <td>🇺🇸</td>
+      <td>주간 신규 실업수당 청구(Initial Jobless Claims)</td>
+      <td>—</td>
+      <td><span class="macro-imp-med">★★</span></td>
+      <td>매주 나오는 실업 속보. 7월 NFP −23k 이후 노동시장 둔화의 후속 확인입니다.</td>
+    </tr>
+    <tr>
+      <td>8/14 (금)</td>
+      <td>🇺🇸</td>
+      <td>미 7월 소매판매(Retail Sales)</td>
+      <td>—</td>
+      <td><span class="macro-imp-med">★★</span></td>
+      <td>소비자 지갑이 얼마나 열렸는지. 고용 둔화 속 소비 체력을 보여줍니다.</td>
+    </tr>
+    <tr>
+      <td>8/14 (금)</td>
+      <td>🇺🇸</td>
+      <td>미시간대 소비자심리 예비치 · 7월 산업생산</td>
+      <td>—</td>
+      <td><span class="macro-imp-low">★</span></td>
+      <td>소비 심리와 제조업 생산. 기대인플레 항목도 함께 확인합니다.</td>
+    </tr>
+    <tr>
+      <td>지속</td>
+      <td>🇰🇷🌐</td>
+      <td><strong>메모리 공급과잉 논쟁 — SK하이닉스·삼성전자 반등 여부</strong></td>
+      <td>NAND/D램 가격 방향</td>
+      <td><span class="macro-imp-high">★★★</span></td>
+      <td>W32 NAND 쇼크(SanDisk/WD)로 −15% 급락한 메모리주의 안정·반등이 국내 지수 방향을 좌우합니다.</td>
+    </tr>
+    <tr>
+      <td>지속</td>
+      <td>🇮🇷🇴🇲</td>
+      <td>호르무즈 부분 합의(2~4개월 한시) 이행·유가</td>
+      <td>—</td>
+      <td><span class="macro-imp-med">★★</span></td>
+      <td>한시 합의가 실제로 지켜지는지가 유가·물가 안정의 관건입니다.</td>
+    </tr>
+  </tbody>
+</table>
+<div style="font-size:13px;color:var(--muted);margin-top:10px;">
+  <strong>W33 최대 변수:</strong> ① 8/12 미 7월 CPI가 8월 초 유가 급락을 반영해 뚜렷이 둔화될지(→ 9월 인하 기대 강화 여부) ② 메모리 공급과잉 논쟁 지속·SK하이닉스/삼성전자 반등 여부(W32 NAND 쇼크의 향방) ③ 이란-오만 호르무즈 한시 합의(2~4개월)의 이행과 유가 재상승 리스크 ④ 미 노동시장 둔화(7월 NFP −23k)의 후속 확인(주간 실업수당·소매판매)과 이에 따른 인하 기대의 지속성.
+</div>
+
+<div class="macro-section-title">📉 주요 금리·스프레드 현황 (8/7 기준 · WTD 변화, macro_indicators/FRED)</div>
+<ul style="font-size:13.5px;line-height:1.85;color:#2d3148;padding-left:20px;">
+  <li><strong>미 연방기금금리(FFR) 3.63%(실효)</strong> — 7월 FOMC 3.50~3.75% 동결. <strong>한국 기준금리 2.75%</strong>, <strong>ECB(유럽중앙은행) 예금금리 2.25%</strong>로 이번 주 정책금리는 모두 변동 없었습니다.</li>
+  <li><strong>미 10Y(10년 국채) 4.66%</strong>(WTD −4bp) — 유가 급락·8/7 고용 둔화가 겹쳐 장기금리가 내렸습니다. 주중 4.63%까지 하락 후 소폭 되돌림했습니다.</li>
+  <li><strong>미 2Y(2년 국채) 약 4.25%</strong>(주중 4.18%까지 하락 후 되돌림, WTD 대체로 보합) — 통화정책 기대를 민감하게 반영하는 단기물로, 인하 기대가 살아나며 주중 눌렸습니다.</li>
+  <li><strong>미 10Y−2Y 커브 +0.46%p(약 46bp)</strong>(WTD +1bp) — 장·단기 금리차가 정상(우상향)을 유지하며 완만히 가팔라졌습니다(불 스팁 성향).</li>
+  <li><strong>미 HY 스프레드(고위험 회사채 가산금리) 약 2.71%p(271bp)</strong>(WTD −7bp, 축소) — 스프레드 축소는 <strong>위험선호 유지</strong> 신호입니다. <strong>IG 스프레드(투자등급) 0.78%p(78bp)</strong>는 주간 내내 보합으로 크레딧 시장은 안정적이었습니다.</li>
+  <li><strong>10Y 기대인플레(BEI, 채권시장이 반영한 향후 물가) 2.25%</strong>(WTD −2bp) — 유가 급락이 기대인플레를 소폭 끌어내렸습니다. <strong>10Y 실질금리 약 2.43%</strong>는 보합권입니다.</li>
+  <li><strong>SOFR(담보부 초단기 조달금리, 무위험 단기 지표) 약 3.65%</strong> — 단기 자금시장은 안정적입니다. <strong>30년 모기지(주택담보대출) 금리 6.69%</strong>로 주택금리는 여전히 높은 수준입니다.</li>
+  <li><strong>VIX(변동성지수, '공포지수') 14.90</strong>(WTD −6.05%, 15.86→14.90) — 유가 급락·크레딧 안정·고용발 인하 기대가 겹치며 변동성이 진정됐습니다. 15 아래는 시장이 비교적 편안하다는 신호입니다.</li>
+</ul>
