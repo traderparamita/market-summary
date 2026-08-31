@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Summary | 2026-08-31</title>
+<meta name="description" content="글로벌 시장 요약 보고서 — 2026-08-31 (Equity · Bonds · FX · Commodities · Risk)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Market Summary | 2026-08-31">
+<meta property="og:description" content="글로벌 시장 요약 보고서 — 2026-08-31 (Equity · Bonds · FX · Commodities · Risk)">
+<meta property="og:image" content="https://traderparamita.github.io/market-summary/og-image.png?v=20260410-1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://traderparamita.github.io/market-summary/2026-08/2026-08-31.html">
+<meta property="og:site_name" content="Market Summary">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Market Summary | 2026-08-31">
+<meta name="twitter:description" content="글로벌 시장 요약 보고서 — 2026-08-31">
+<meta name="twitter:image" content="https://traderparamita.github.io/market-summary/og-image.png?v=20260410-1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#f4f5f9; --card:#fff; --card2:#f0f1f6;
+  --border:#e0e3ed; --text:#2d3148; --muted:#7c8298;
+  --accent:#F58220; --accent2:#043B72;
+  --up:#d92b2b; --down:#1a5fb4; --warn:#CB6015;
+  --gold:#b8860b; --oil:#d35400;
+}
+::selection{background:#F58220;color:#ffffff}
+::-moz-selection{background:#F58220;color:#ffffff}
+/* Story Hero keeps original blue — brand accents apply elsewhere */
+.story-hero{border-left-color:#3b6ee6!important}
+.story-hero h2{color:#3b6ee6!important}
+.story-text .hl-accent{color:#3b6ee6!important}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Spoqa Han Sans Neo','Spoqa Han Sans','Malgun Gothic','맑은 고딕',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;padding:24px;max-width:1360px;margin:0 auto;
+}
+
+/* ── Header ── */
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+.header-left h1{font-size:26px;font-weight:700;color:#1a1d2e;margin-bottom:2px}
+.header-left .date{font-size:13px;color:var(--muted);letter-spacing:1px}
+.header-right{display:flex;gap:20px;align-items:center}
+.mood-badge{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:24px;font-size:13px;font-weight:600}
+
+/* ── KPI Strip ── */
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:28px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:1px}
+.kpi-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.kpi-chg{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+
+/* ── Top Movers ── */
+.movers-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.movers-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.movers-card h3{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px}
+.mover-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f1f5}
+.mover-item:last-child{border:none}
+.mover-name{font-size:13px;font-weight:500}
+.mover-val{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+/* ── Heatmap Table ── */
+.heatmap-section{margin-bottom:28px}
+.heatmap-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.heatmap-section h2 .badge{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--card2);color:var(--muted);font-weight:500}
+.heatmap-section h2 .src-tag{font-size:10px;padding:2px 8px;border-radius:10px;background:#f0f1f5;color:#9a9db5;font-weight:400;margin-left:6px;letter-spacing:0.3px}
+.heatmap{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.heatmap th{font-size:11px;font-weight:600;color:var(--muted);padding:10px 12px;text-align:right;background:var(--card2);border-bottom:1px solid var(--border);white-space:nowrap}
+.heatmap th:first-child,.heatmap th:nth-child(2),.heatmap th:nth-child(3){text-align:left}
+.heatmap td{padding:8px 12px;font-size:13px;border-bottom:1px solid #f3f4f8}
+.heatmap tr:last-child td{border-bottom:none}
+.name-cell{font-weight:600;color:#1a1d2e;white-space:nowrap;min-width:100px}
+.close-cell{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:left;white-space:nowrap}
+.spark-cell{text-align:center;padding:4px 8px}
+.heat-cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;border-radius:0;transition:all 0.15s}
+.heatmap tr:hover{filter:brightness(0.97)}
+
+/* ── Charts ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.chart-card .title{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:12px}
+.chart-box{position:relative;height:260px}
+
+/* ── Risk ── */
+.risk-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.risk-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.risk-card .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.risk-card .value{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.risk-card .desc{font-size:11px;font-weight:600;margin-top:2px}
+.risk-card .bar-track{height:6px;background:#ecedf2;border-radius:3px;margin-top:8px;overflow:hidden}
+.risk-card .bar-fill{height:100%;border-radius:3px}
+
+/* ── Tabs ── */
+.tab-bar{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border)}
+.tab-btn{padding:12px 28px;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Story Tab ── */
+.story-hero{background:linear-gradient(135deg,#eef1f8,#e8e5f3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:32px}
+.story-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.story-text{font-size:16px;color:#2d3148;line-height:1.9}
+.story-text strong{color:#1a1d2e}.story-text .hl-up{color:var(--up);font-weight:600}.story-text .hl-down{color:var(--down);font-weight:600}.story-text .hl-warn{color:var(--warn);font-weight:600}.story-text .hl-accent{color:var(--accent);font-weight:600}
+
+.causal-chain{display:flex;align-items:stretch;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:8px}
+.cause-node{flex:1;min-width:160px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cause-node .node-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cause-node .node-title{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:4px}
+.cause-node .node-detail{font-size:12px;color:var(--text)}
+.cause-node .node-impact{margin-top:8px;font-size:17px;font-weight:700}
+.cause-arrow{display:flex;align-items:center;padding:0 4px;color:var(--muted);font-size:18px;flex-shrink:0}
+
+.session-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px}
+.session-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.session-block::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.session-block.asia::before{background:linear-gradient(90deg,#d48b07,#e06818)}
+.session-block.europe::before{background:linear-gradient(90deg,#F58220,#043B72)}
+.session-block.us::before{background:linear-gradient(90deg,#043B72,#7F9FC3)}
+.session-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.session-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.session-icon.asia{background:rgba(212,139,7,0.1)}.session-icon.europe{background:rgba(59,110,230,0.1)}.session-icon.us{background:rgba(107,92,231,0.1)}
+.session-name{font-size:15px;font-weight:600;color:#1a1d2e}
+.session-time{font-size:11px;color:var(--muted)}
+.session-verdict{display:inline-block;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600;margin-bottom:10px}
+.verdict-up{background:rgba(13,155,106,0.1);color:var(--up)}.verdict-down{background:rgba(217,48,79,0.1);color:var(--down)}.verdict-mixed{background:rgba(212,139,7,0.1);color:var(--warn)}
+.session-events{list-style:none}.session-events li{font-size:12px;padding:6px 0 6px 12px;border-bottom:1px solid #f3f4f8;position:relative}
+.session-events li:last-child{border:none}.session-events li::before{content:'';position:absolute;left:0;top:12px;width:4px;height:4px;border-radius:50%;background:var(--muted)}
+.session-events .ev-time{color:var(--muted);font-size:10px;font-weight:600}
+.session-kpi{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.s-kpi{text-align:center;padding:6px;border-radius:6px;background:var(--card2)}
+.s-kpi-label{font-size:10px;color:var(--muted)}.s-kpi-value{font-size:15px;font-weight:700}
+
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.insight-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.insight-card .badge{position:absolute;top:14px;right:14px;padding:2px 10px;border-radius:16px;font-size:11px;font-weight:600}
+.insight-card h3{font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:10px;padding-right:50px}
+.insight-card p{font-size:13px;color:var(--text);line-height:1.8}
+.insight-card .metric-row{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.metric-item{flex:1;text-align:center}.metric-label{font-size:10px;color:var(--muted)}.metric-value{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+
+.cross-asset{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:28px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.cross-asset h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:6px}
+.cross-asset .sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.af-map{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:10px 6px}
+.af-node{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;min-width:120px}
+.af-node-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.af-node-value{font-size:18px;font-weight:700;color:#1a1d2e;font-family:'JetBrains Mono',monospace}
+.af-node-chg{font-size:12px;font-weight:600}
+.af-arrow{text-align:center;color:var(--muted);font-size:12px;line-height:1.3}
+.af-arrow .arr{font-size:16px;display:block}.af-arrow .lbl{font-size:10px}
+
+.risk-section{background:linear-gradient(135deg,#fdf2f4,#f8f5ff);border:1px solid rgba(217,48,79,0.12);border-radius:12px;padding:28px;margin-bottom:28px}
+.risk-section h2{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:16px}
+.risk-items{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.6);font-size:12px;line-height:1.6}
+.risk-tag{flex-shrink:0;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-top:1px}
+.risk-tag.high{background:rgba(217,48,79,0.15);color:var(--down)}.risk-tag.med{background:rgba(212,139,7,0.15);color:var(--warn)}.risk-tag.low{background:rgba(45,180,100,0.15);color:#2d7d46}
+
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
+.ai-disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;padding:12px 16px;background:rgba(0,0,0,0.03);border-radius:8px;line-height:1.6}
+
+/* ── Macro Tab ── */
+.macro-header{background:linear-gradient(135deg,#f0f4ff,#e8edf8);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:18px 24px;margin-bottom:20px}
+.macro-header h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.macro-header .mh-sub{font-size:12px;color:var(--muted)}
+.macro-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.macro-block h3{font-size:15px;font-weight:700;color:#1a1d2e;margin-bottom:10px;padding-bottom:7px;border-bottom:1.5px solid var(--border)}
+.macro-block ul{margin:0;padding-left:18px;font-size:13px;color:#2d3148;line-height:1.85}
+.macro-block li{margin-bottom:3px}
+.macro-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.macro-kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center}
+.macro-kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.macro-kpi-value{font-size:16px;font-weight:700;color:#1a1d2e}
+.macro-kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.event-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.event-table th{background:#f7f8fc;font-size:12px;font-weight:600;color:var(--muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.event-table td{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:#2d3148}
+.event-table tr:last-child td{border-bottom:none}
+.imp-high{color:var(--down);font-weight:700}.imp-med{color:#d47f00;font-weight:600}.imp-low{color:var(--muted)}
+.macro-section{margin-bottom:32px}
+.macro-section h2{font-size:16px;font-weight:700;color:var(--accent2);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+
+/* ── Sources ── */
+.sources-header{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.sources-header h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.sources-sub{font-size:12px;color:var(--muted)}
+.sources-section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 22px;margin-bottom:12px}
+.sources-section h3{font-size:14px;font-weight:700;color:#1a1d2e;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sources-list{list-style:none;padding-left:0;margin:0;font-size:13px;line-height:1.85}
+.sources-list li{padding:4px 0;color:#2d3148}
+.sources-list a{color:#043B72;text-decoration:none}
+.sources-list a:hover{text-decoration:underline}
+.source-meta{color:var(--muted);font-size:12px}
+
+/* ── CS Story ── */
+.cs-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}
+.cs-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.cs-hero .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+.cs-text{font-size:16px;color:#2d3148;line-height:1.9}
+.cs-text p{margin-bottom:14px}
+.cs-text p:last-child{margin-bottom:0}
+.cs-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.cs-section h3{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}
+.cs-section p{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+.cs-section p:last-child{margin-bottom:0}
+.cs-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+.cs-funds-desc{font-size:13px;color:var(--muted);margin-bottom:12px}
+.cs-fund-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cs-fund-chip{display:inline-block;font-size:12px;font-weight:600;color:#6b21a8;background:#f8f0ff;border:1px solid #e9d5ff;padding:4px 12px;border-radius:16px}
+.cs-fund-chip em{font-style:normal;font-weight:400;color:#7c8298}
+
+/* ── PM Story ── */
+.pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+.pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+.pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+.pm-tl p{margin-bottom:8px}
+.pm-tl p:last-child{margin-bottom:0}
+.pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+.pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.pm-section ul{list-style:none;padding:0;margin:0}
+.pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+.pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+.pm-section li:last-child{margin-bottom:0}
+.pm-section .pm-num{font-weight:600;color:#1a1d2e}
+.pm-section .pm-up{color:#d92b2b;font-weight:600}
+.pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+.pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+
+@media(max-width:900px){
+  .session-grid,.insight-grid,.chart-grid,.movers-row{grid-template-columns:1fr}
+  .causal-chain{flex-direction:column}.cause-arrow{transform:rotate(90deg);padding:4px 0}
+  .af-map{grid-template-columns:1fr}.risk-items{grid-template-columns:1fr}
+  .pm-grid{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-left">
+    <h1>Daily Market Summary</h1>
+    <div class="date">Mon, 2026-08-31</div>
+  </div>
+  <div class="header-right">
+    <div class="mood-badge" style="background:#f0fdf4;color:#0d9b6a;border:1px solid #0d9b6a33">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0d9b6a"></span>
+      VIX 14.9 &mdash; Complacent
+    </div>
+  </div>
+</div>
+
+<!-- ══ TABS ══ -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('cs')">CS Story</button>
+  <button class="tab-btn" onclick="switchTab('pm')">PM Story</button>
+  <button class="tab-btn" onclick="switchTab('story')">Market Story</button>
+  <button class="tab-btn" onclick="switchTab('stocks')">Stocks</button>
+  <button class="tab-btn" onclick="switchTab('data')">Data Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('macro')">Macro &amp; Events</button>
+  <button class="tab-btn" onclick="switchTab('sources')">Sources</button>
+</div>
+
+<!-- ══════ TAB 1: DATA ══════ -->
+<div id="tab-data" class="tab-panel">
+
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">코스피</div>
+    <div class="kpi-value">6,820</div>
+    <div class="kpi-chg up">+0.46%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">S&P500</div>
+    <div class="kpi-value">7,686</div>
+    <div class="kpi-chg down">-0.33%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">나스닥</div>
+    <div class="kpi-value">26,371</div>
+    <div class="kpi-chg down">-0.12%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">니케이</div>
+    <div class="kpi-value">66,312</div>
+    <div class="kpi-chg down">-0.14%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">미국10년</div>
+    <div class="kpi-value">4.76%</div>
+    <div class="kpi-chg up">+0.81%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">달러/원</div>
+    <div class="kpi-value">1,367</div>
+    <div class="kpi-chg down">-0.63%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">WTI유</div>
+    <div class="kpi-value">$86.31</div>
+    <div class="kpi-chg up">+3.49%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">금</div>
+    <div class="kpi-value">$4,497.30</div>
+    <div class="kpi-chg up">+0.43%</div>
+  </div>
+</div>
+<div class="movers-row">
+<div class="movers-card"><h3>상승 Top 3</h3>
+<div class="mover-item"><span class="mover-name">테슬라(Tesla)</span><span class="mover-val up">+5.51%</span></div>
+<div class="mover-item"><span class="mover-name">WTI유(WTI)</span><span class="mover-val up">+3.49%</span></div>
+<div class="mover-item"><span class="mover-name">구리(Copper)</span><span class="mover-val up">+1.94%</span></div>
+</div>
+<div class="movers-card"><h3>하락 Top 3</h3>
+<div class="mover-item"><span class="mover-name">마이크로소프트(Microsoft)</span><span class="mover-val down">-1.22%</span></div>
+<div class="mover-item"><span class="mover-name">구글(Alphabet)</span><span class="mover-val down">-2.09%</span></div>
+<div class="mover-item"><span class="mover-name">아마존(Amazon)</span><span class="mover-val down">-2.50%</span></div>
+</div>
+</div>
+<div class="heatmap-section">
+<h2>주식(Equity) <span class="badge">14</span> <span class="src-tag">yfinance · FinanceDataReader · investiny</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">코스피(KOSPI)</td>
+          <td class="close-cell">6,820</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,19.9 8.4,12.6 12.6,21.8 16.8,23.0 21.1,21.7 25.3,20.3 29.5,13.2 33.7,6.0 37.9,1.0 42.1,4.3 46.3,16.5 50.5,4.8 54.7,3.0 58.9,9.6 63.2,8.2 67.4,6.2 71.6,3.0 75.8,6.8 80.0,5.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="5.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.46%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.46%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.40%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+58.25%</td>
+        </tr><tr>
+          <td class="name-cell">코스닥(KOSDAQ)</td>
+          <td class="close-cell">834</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,15.5 8.4,12.2 12.6,11.9 16.8,12.4 21.1,2.8 25.3,2.2 29.5,2.0 33.7,1.6 37.9,1.0 42.1,6.3 46.3,7.9 50.5,5.1 54.7,11.8 58.9,9.9 63.2,7.5 67.4,7.5 71.6,5.7 75.8,5.5 80.0,6.2" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.2" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.49%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.49%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+15.91%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-11.77%</td>
+        </tr><tr>
+          <td class="name-cell">S&P500</td>
+          <td class="close-cell">7,686</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.7 4.2,11.6 8.4,13.4 12.6,6.8 16.8,7.5 21.1,10.9 25.3,8.1 29.5,1.0 33.7,2.8 37.9,8.5 42.1,16.0 46.3,13.7 50.5,23.0 54.7,18.4 58.9,21.4 63.2,18.0 67.4,18.3 71.6,10.5 75.8,13.2 80.0,16.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.7" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.33%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.33%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.62%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+12.07%</td>
+        </tr><tr>
+          <td class="name-cell">나스닥(NASDAQ)</td>
+          <td class="close-cell">26,371</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,6.8 4.2,12.7 8.4,13.2 12.6,4.0 16.8,6.3 21.1,10.5 25.3,6.8 29.5,1.0 33.7,3.0 37.9,5.2 42.1,14.7 46.3,13.7 50.5,20.7 54.7,17.7 58.9,23.0 63.2,18.4 67.4,19.0 71.6,8.0 75.8,11.8 80.0,12.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.6" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.12%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.12%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.93%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+13.49%</td>
+        </tr><tr>
+          <td class="name-cell">러셀2000(Russell2K)</td>
+          <td class="close-cell">2,956</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,7.2 4.2,10.7 8.4,14.2 12.6,7.7 16.8,11.0 21.1,9.1 25.3,5.5 29.5,4.1 33.7,1.0 37.9,3.1 42.1,11.0 46.3,8.0 50.5,16.0 54.7,11.0 58.9,15.4 63.2,12.5 67.4,13.3 71.6,11.7 75.8,19.9 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.54%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.54%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.86%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+17.87%</td>
+        </tr><tr>
+          <td class="name-cell">유로스톡스50(STOXX50)</td>
+          <td class="close-cell">6,420</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,11.8 4.2,13.4 8.4,9.2 12.6,5.6 16.8,3.6 21.1,1.0 25.3,3.8 29.5,1.9 33.7,2.9 37.9,4.5 42.1,14.9 46.3,18.9 50.5,22.7 54.7,15.9 58.9,18.3 63.2,17.0 67.4,14.5 71.6,22.2 75.8,12.0 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.01%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.01%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.98%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+8.38%</td>
+        </tr><tr>
+          <td class="name-cell">영국FTSE(FTSE100) <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span></td>
+          <td class="close-cell">10,824</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,6.3 4.2,3.6 8.4,2.6 12.6,5.1 16.8,1.0 21.1,5.7 25.3,7.9 29.5,9.3 33.7,16.5 37.9,19.3 42.1,23.0 46.3,21.9 50.5,20.1 54.7,19.6 58.9,11.3 63.2,6.7 67.4,2.8 71.6,3.8 75.8,14.2 80.0,10.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.4" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.07%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.40%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+8.77%</td>
+        </tr><tr>
+          <td class="name-cell">독일DAX(DAX)</td>
+          <td class="close-cell">26,258</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.8 4.2,17.6 8.4,17.1 12.6,10.3 16.8,10.2 21.1,7.7 25.3,9.9 29.5,11.1 33.7,5.8 37.9,9.6 42.1,17.5 46.3,18.9 50.5,23.0 54.7,17.2 58.9,18.4 63.2,12.4 67.4,11.6 71.6,8.6 75.8,1.0 80.0,12.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.17%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.17%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.45%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.00%</td>
+        </tr><tr>
+          <td class="name-cell">프랑스CAC(CAC40)</td>
+          <td class="close-cell">8,334</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.2 4.2,4.1 8.4,2.5 12.6,1.6 16.8,1.0 21.1,1.6 25.3,3.8 29.5,5.1 33.7,5.8 37.9,8.9 42.1,12.7 46.3,13.1 50.5,15.8 54.7,14.1 58.9,15.8 63.2,16.5 67.4,15.3 71.6,23.0 75.8,18.6 80.0,22.2" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="22.2" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.79%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.79%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.06%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.70%</td>
+        </tr><tr>
+          <td class="name-cell">상해종합(Shanghai)</td>
+          <td class="close-cell">3,986</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,15.7 8.4,12.8 12.6,7.6 16.8,4.1 21.1,8.4 25.3,6.8 29.5,9.3 33.7,9.3 37.9,2.0 42.1,1.0 46.3,13.6 50.5,12.4 54.7,12.2 58.9,15.2 63.2,14.2 67.4,11.2 71.6,5.5 75.8,6.0 80.0,1.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.6" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.86%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.86%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+4.02%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.92%</td>
+        </tr><tr>
+          <td class="name-cell">항셍(HSI)</td>
+          <td class="close-cell">25,567</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.9 4.2,3.4 8.4,12.8 12.6,9.5 16.8,2.8 21.1,9.8 25.3,15.1 29.5,16.1 33.7,23.0 37.9,14.7 42.1,14.3 46.3,13.7 50.5,8.7 54.7,1.0 58.9,13.1 63.2,13.3 67.4,9.8 71.6,11.9 75.8,11.5 80.0,11.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.9" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.07%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.07%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.23%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.93%</td>
+        </tr><tr>
+          <td class="name-cell">니케이225(Nikkei225)</td>
+          <td class="close-cell">66,312</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,22.2 8.4,12.8 12.6,15.2 16.8,15.6 21.1,10.1 25.3,7.8 29.5,4.7 33.7,3.0 37.9,1.0 42.1,8.1 46.3,16.7 50.5,13.1 54.7,13.9 58.9,15.9 63.2,14.5 67.4,12.9 71.6,13.4 75.8,12.3 80.0,12.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.14%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.14%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.03%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+27.93%</td>
+        </tr><tr>
+          <td class="name-cell">인도NIFTY(NIFTY50) <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span></td>
+          <td class="close-cell">24,091</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,13.4 4.2,1.0 8.4,6.0 12.6,5.7 16.8,5.3 21.1,7.4 25.3,7.0 29.5,10.6 33.7,11.7 37.9,13.0 42.1,13.9 46.3,16.4 50.5,20.6 54.7,23.0 58.9,18.1 63.2,17.5 67.4,18.5 71.6,14.9 75.8,18.9 80.0,22.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="22.6" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.66%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.20%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-7.86%</td>
+        </tr><tr>
+          <td class="name-cell">대만가권(TWSE) <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span></td>
+          <td class="close-cell">45,975</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,21.0 8.4,21.2 12.6,11.7 16.8,13.3 21.1,14.6 25.3,9.3 29.5,7.8 33.7,4.8 37.9,1.0 42.1,2.6 46.3,2.2 50.5,6.4 54.7,10.9 58.9,9.2 63.2,7.0 67.4,10.5 71.6,7.5 75.8,2.4 80.0,1.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.4" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.66%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+6.62%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+56.65%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>MSCI 지수 <span class="badge">5</span> <span class="src-tag">yfinance (ETF proxy)</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">MSCI 선진국(MSCI World)</td>
+          <td class="close-cell">209</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.6 4.2,15.1 8.4,18.2 12.6,7.2 16.8,9.3 21.1,11.8 25.3,7.8 29.5,1.0 33.7,2.8 37.9,7.4 42.1,17.6 46.3,14.7 50.5,23.0 54.7,15.6 58.9,19.1 63.2,14.1 67.4,16.2 71.6,10.4 75.8,13.4 80.0,17.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.1" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.29%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.29%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.68%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+11.96%</td>
+        </tr><tr>
+          <td class="name-cell">MSCI 전세계(MSCI ACWI)</td>
+          <td class="close-cell">161</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.2 4.2,18.3 8.4,21.9 12.6,10.2 16.8,13.1 21.1,15.0 25.3,8.3 29.5,1.0 33.7,2.7 37.9,6.6 42.1,22.0 46.3,16.7 50.5,23.0 54.7,15.7 58.9,21.0 63.2,13.3 67.4,14.8 71.6,9.3 75.8,13.1 80.0,16.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.25%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.25%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.72%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+12.77%</td>
+        </tr><tr>
+          <td class="name-cell">MSCI 신흥국(MSCI EM)</td>
+          <td class="close-cell">67.02</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.7 4.2,17.1 8.4,23.0 12.6,17.8 16.8,21.8 21.1,19.5 25.3,10.8 29.5,8.9 33.7,9.5 37.9,3.5 42.1,20.3 46.3,13.7 50.5,9.4 54.7,5.2 58.9,13.7 63.2,4.1 67.4,4.8 71.6,1.0 75.8,5.0 80.0,6.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.18%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.18%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+4.57%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+19.17%</td>
+        </tr><tr>
+          <td class="name-cell">MSCI 중남미(MSCI LATAM)</td>
+          <td class="close-cell">34.90</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.4 4.2,2.3 8.4,4.3 12.6,7.6 16.8,8.7 21.1,17.2 25.3,19.5 29.5,20.9 33.7,18.9 37.9,18.4 42.1,23.0 46.3,18.1 50.5,17.6 54.7,6.9 58.9,5.9 63.2,1.0 67.4,3.0 71.6,3.9 75.8,7.2 80.0,4.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.4" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.72%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.72%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.33%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+13.20%</td>
+        </tr><tr>
+          <td class="name-cell">MSCI 유럽중동(MSCI EMEA)</td>
+          <td class="close-cell">70.50</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,20.0 8.4,19.9 12.6,10.6 16.8,10.3 21.1,14.2 25.3,15.0 29.5,18.4 33.7,17.7 37.9,15.5 42.1,19.2 46.3,8.5 50.5,7.8 54.7,1.0 58.9,5.0 63.2,1.0 67.4,3.8 71.6,4.2 75.8,7.0 80.0,7.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.31%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.31%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+10.81%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.59%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>채권·금리(Bonds & Rates) <span class="badge">8</span> <span class="src-tag">investing.com(US 2Y·10Y·Spread) · ECOS(한국은행)</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">한국 CD 91일(KR CD 91D)</td>
+          <td class="close-cell">3.12%</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,23.0 8.4,23.0 12.6,23.0 16.8,23.0 21.1,23.0 25.3,23.0 29.5,21.9 33.7,23.0 37.9,21.9 42.1,23.0 46.3,21.9 50.5,21.9 54.7,20.8 58.9,19.7 63.2,20.8 67.4,18.6 71.6,2.1 75.8,1.0 80.0,2.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="2.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-1 bp</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-1 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+17 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+35 bp</td>
+        </tr><tr>
+          <td class="name-cell">한국 국채3년(KR 3Y)</td>
+          <td class="close-cell">3.84%</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.3 4.2,14.5 8.4,23.0 12.6,14.3 16.8,13.8 21.1,10.0 25.3,6.5 29.5,8.5 33.7,9.7 37.9,7.9 42.1,1.8 46.3,7.6 50.5,6.1 54.7,1.0 58.9,3.1 63.2,3.9 67.4,5.5 71.6,12.8 75.8,8.8 80.0,2.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="2.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+5 bp</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+5 bp</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+8 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+90 bp</td>
+        </tr><tr>
+          <td class="name-cell">한국 국채10년(KR 10Y)</td>
+          <td class="close-cell">4.05%</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.0 4.2,13.1 8.4,23.0 12.6,18.4 16.8,17.6 21.1,14.2 25.3,8.8 29.5,10.7 33.7,11.7 37.9,8.2 42.1,1.1 46.3,5.8 50.5,6.1 54.7,1.0 58.9,5.8 63.2,9.1 67.4,9.8 71.6,16.5 75.8,11.2 80.0,7.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.6" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+3 bp</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+3 bp</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+4 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+81 bp</td>
+        </tr><tr>
+          <td class="name-cell">한국 장단기 스프레드(KR 10-3 Spread)</td>
+          <td class="close-cell">22 bp</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,3.8 8.4,9.7 12.6,20.9 16.8,19.9 21.1,20.6 25.3,14.3 29.5,14.3 33.7,13.9 37.9,8.3 42.1,4.1 46.3,1.7 50.5,6.9 54.7,6.2 58.9,15.0 63.2,23.0 67.4,20.2 71.6,19.5 75.8,14.6 80.0,20.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.9" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-2 bp</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-2 bp</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4 bp</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-9 bp</td>
+        </tr><tr>
+          <td class="name-cell">미국 국채2년(US 2Y)</td>
+          <td class="close-cell">3.73%</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.8 4.2,3.8 8.4,1.0 12.6,10.0 16.8,6.7 21.1,1.8 25.3,11.2 29.5,12.0 33.7,15.2 37.9,12.8 42.1,12.0 46.3,14.0 50.5,12.8 54.7,10.0 58.9,12.8 63.2,12.0 67.4,18.1 71.6,23.0 75.8,1.8 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0 bp</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0 bp</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+5 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+26 bp</td>
+        </tr><tr>
+          <td class="name-cell">미국 국채10년(US 10Y)</td>
+          <td class="close-cell">4.76%</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,21.4 4.2,23.0 8.4,14.7 12.6,16.3 16.8,10.2 21.1,12.5 25.3,12.8 29.5,19.2 33.7,10.7 37.9,6.3 42.1,9.1 46.3,17.4 50.5,10.7 54.7,4.1 58.9,9.4 63.2,19.5 67.4,15.6 71.6,14.4 75.8,6.9 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+4 bp</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+4 bp</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+1 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+58 bp</td>
+        </tr><tr>
+          <td class="name-cell">미국 국채30년(US 30Y)</td>
+          <td class="close-cell">5.25%</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,20.4 4.2,23.0 8.4,16.7 12.6,17.0 16.8,11.7 21.1,12.8 25.3,11.1 29.5,16.7 33.7,8.1 37.9,1.0 42.1,4.9 46.3,19.7 50.5,12.7 54.7,6.3 58.9,13.7 63.2,23.0 67.4,21.1 71.6,20.2 75.8,17.8 80.0,10.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+4 bp</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+4 bp</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-3 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+39 bp</td>
+        </tr><tr>
+          <td class="name-cell">미국 장단기 스프레드(US 10-2 Spread)</td>
+          <td class="close-cell">103 bp</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,22.2 4.2,23.0 8.4,15.6 12.6,13.6 16.8,8.6 21.1,13.0 25.3,9.6 29.5,15.9 33.7,5.7 37.9,2.1 42.1,5.4 46.3,13.1 50.5,6.7 54.7,1.0 58.9,5.4 63.2,16.2 67.4,9.7 71.6,6.5 75.8,6.5 80.0,1.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.3" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3 bp</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4 bp</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+33 bp</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>채권 ETF(Bond ETF) <span class="badge">8</span> <span class="src-tag">yfinance</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">미국 종합채권(AGG)</td>
+          <td class="close-cell">$97.41</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,11.0 4.2,9.6 8.4,17.7 12.6,12.7 16.8,23.0 21.1,20.8 25.3,17.7 29.5,10.2 33.7,16.0 37.9,22.7 42.1,19.9 46.3,6.6 50.5,15.8 54.7,19.9 58.9,14.1 63.2,1.0 67.4,5.5 71.6,6.3 75.8,15.8 80.0,18.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="18.3" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.08%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.08%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.04%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.49%</td>
+        </tr><tr>
+          <td class="name-cell">미국 장기국채(TLT)</td>
+          <td class="close-cell">$82.52</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,7.7 4.2,5.8 8.4,10.8 12.6,8.3 16.8,15.7 21.1,14.3 25.3,15.1 29.5,10.1 33.7,15.8 37.9,23.0 42.1,19.8 46.3,5.7 50.5,12.7 54.7,15.8 58.9,10.4 63.2,1.0 67.4,2.7 71.6,4.5 75.8,7.1 80.0,10.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.8" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.43%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.43%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.33%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.12%</td>
+        </tr><tr>
+          <td class="name-cell">미국 중기국채(IEI)</td>
+          <td class="close-cell">$116.17</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,10.7 4.2,9.2 8.4,18.2 12.6,11.1 16.8,20.8 21.1,17.4 25.3,14.1 29.5,4.0 33.7,9.6 37.9,11.8 42.1,9.9 46.3,4.7 50.5,11.1 54.7,15.5 58.9,12.6 63.2,1.0 67.4,6.2 71.6,9.6 75.8,22.6 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.02%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.02%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.27%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.77%</td>
+        </tr><tr>
+          <td class="name-cell">미국 단기국채(SHY)</td>
+          <td class="close-cell">$81.89</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.3 4.2,14.8 8.4,23.0 12.6,13.6 16.8,18.6 21.1,17.3 25.3,13.6 29.5,4.8 33.7,7.3 37.9,7.3 42.1,6.0 46.3,2.9 50.5,6.0 54.7,7.3 58.9,7.9 63.2,1.0 67.4,3.5 71.6,4.8 75.8,16.1 80.0,16.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td><td class="heat-cell" style="background:#f7f8fa;color:#6b7280">0.00%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.13%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.31%</td>
+        </tr><tr>
+          <td class="name-cell">미국 물가연동채(TIP)</td>
+          <td class="close-cell">$106.82</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.9 4.2,17.3 8.4,20.6 12.6,15.1 16.8,20.8 21.1,20.0 25.3,19.2 29.5,13.2 33.7,17.6 37.9,23.0 42.1,16.8 46.3,4.3 50.5,4.0 54.7,14.0 58.9,10.8 63.2,1.0 67.4,4.3 71.6,6.2 75.8,18.7 80.0,21.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.6" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.11%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.11%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.75%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.77%</td>
+        </tr><tr>
+          <td class="name-cell">투자등급 회사채(LQD)</td>
+          <td class="close-cell">$106.21</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.8 4.2,3.2 8.4,10.4 12.6,6.9 16.8,18.1 21.1,17.5 25.3,15.1 29.5,6.9 33.7,15.1 37.9,23.0 42.1,20.4 46.3,6.5 50.5,16.3 54.7,18.9 58.9,13.8 63.2,1.0 67.4,2.4 71.6,3.4 75.8,10.6 80.0,13.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="13.4" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.13%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.13%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.04%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.50%</td>
+        </tr><tr>
+          <td class="name-cell">하이일드 채권(HYG)</td>
+          <td class="close-cell">$79.81</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.8 4.2,20.3 8.4,23.0 12.6,15.8 16.8,22.2 21.1,20.7 25.3,15.8 29.5,7.4 33.7,11.2 37.9,15.8 42.1,20.0 46.3,11.2 50.5,18.4 54.7,15.8 58.9,11.6 63.2,1.0 67.4,2.1 71.6,3.7 75.8,9.7 80.0,6.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.3" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.09%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.09%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.42%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.39%</td>
+        </tr><tr>
+          <td class="name-cell">신흥국 채권(EMB)</td>
+          <td class="close-cell">$94.77</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,5.8 4.2,7.2 8.4,13.7 12.6,5.2 16.8,17.1 21.1,17.4 25.3,14.0 29.5,1.6 33.7,10.9 37.9,21.3 42.1,23.0 46.3,9.2 50.5,22.2 54.7,20.7 58.9,16.8 63.2,1.0 67.4,3.3 71.6,8.3 75.8,15.7 80.0,19.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.1" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.13%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.13%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.12%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.27%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>환율(FX) <span class="badge">8</span> <span class="src-tag">investiny(investing.com) · FinanceDataReader</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">달러인덱스(DXY)</td>
+          <td class="close-cell">99.41</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.8 4.2,6.5 8.4,1.4 12.6,8.2 16.8,4.3 21.1,4.0 25.3,1.0 29.5,1.7 33.7,7.5 37.9,8.6 42.1,7.5 46.3,23.0 50.5,21.7 54.7,22.3 58.9,19.5 63.2,21.2 67.4,16.7 71.6,17.3 75.8,6.7 80.0,11.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.7" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.27%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.27%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.39%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.00%</td>
+        </tr><tr>
+          <td class="name-cell">달러/원(USD/KRW)</td>
+          <td class="close-cell">1,367</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,3.6 8.4,3.4 12.6,8.7 16.8,5.1 21.1,7.1 25.3,5.4 29.5,4.9 33.7,5.5 37.9,5.9 42.1,7.0 46.3,15.8 50.5,13.6 54.7,16.3 58.9,17.7 63.2,17.8 67.4,16.6 71.6,18.4 75.8,20.0 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.63%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.63%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.21%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.25%</td>
+        </tr><tr>
+          <td class="name-cell">유로/달러(EUR/USD)</td>
+          <td class="close-cell">1.16</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,18.6 8.4,23.0 12.6,18.6 16.8,20.1 21.1,20.1 25.3,23.0 29.5,23.0 33.7,17.1 37.9,17.1 42.1,15.7 46.3,1.0 50.5,1.0 54.7,1.0 58.9,2.5 63.2,1.0 67.4,3.9 71.6,3.9 75.8,14.2 80.0,9.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="9.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.26%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.26%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.78%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.11%</td>
+        </tr><tr>
+          <td class="name-cell">파운드/달러(GBP/USD)</td>
+          <td class="close-cell">1.35</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,20.8 8.4,23.0 12.6,18.6 16.8,16.4 21.1,17.5 25.3,17.5 29.5,18.6 33.7,13.1 37.9,12.1 42.1,14.3 46.3,6.5 50.5,3.2 54.7,1.0 58.9,2.2 63.2,1.0 67.4,7.6 71.6,7.6 75.8,13.1 80.0,12.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.07%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.07%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.44%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.59%</td>
+        </tr><tr>
+          <td class="name-cell">호주달러(AUD/USD)</td>
+          <td class="close-cell">0.72</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,20.4 4.2,19.2 8.4,23.0 12.6,23.0 16.8,19.2 21.1,19.2 25.3,19.2 29.5,19.2 33.7,15.2 37.9,15.2 42.1,15.2 46.3,10.1 50.5,12.7 54.7,4.9 58.9,7.5 63.2,6.2 67.4,3.6 71.6,1.0 75.8,1.0 80.0,4.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.42%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.42%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.99%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.50%</td>
+        </tr><tr>
+          <td class="name-cell">달러/엔(USD/JPY)</td>
+          <td class="close-cell">160</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,22.4 4.2,23.0 8.4,16.0 12.6,22.6 16.8,8.6 21.1,8.3 25.3,7.1 29.5,6.1 33.7,7.8 37.9,8.7 42.1,5.3 46.3,19.1 50.5,10.5 54.7,12.1 58.9,10.2 63.2,9.0 67.4,8.4 71.6,7.4 75.8,1.0 80.0,3.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="3.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.18%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.18%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.49%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.96%</td>
+        </tr><tr>
+          <td class="name-cell">달러/위안(USD/CNY)</td>
+          <td class="close-cell">6.72</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,5.0 4.2,5.0 8.4,3.4 12.6,1.0 16.8,6.6 21.1,7.4 25.3,7.4 29.5,7.4 33.7,9.8 37.9,3.4 42.1,8.6 46.3,17.0 50.5,19.4 54.7,17.0 58.9,21.8 63.2,23.0 67.4,21.8 71.6,22.2 75.8,16.2 80.0,17.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.4" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.03%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.03%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.39%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.93%</td>
+        </tr><tr>
+          <td class="name-cell">USD/INR</td>
+          <td class="close-cell">95.15</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.0 4.2,23.0 8.4,23.0 12.6,16.0 16.8,16.7 21.1,12.0 25.3,15.7 29.5,11.7 33.7,12.3 37.9,11.0 42.1,3.3 46.3,1.0 50.5,2.7 54.7,3.0 58.9,1.3 63.2,12.7 67.4,12.7 71.6,8.3 75.8,10.3 80.0,21.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="21.7" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.33%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.33%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.24%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+5.77%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>원자재(Commodities) <span class="badge">6</span> <span class="src-tag">investiny(investing.com) · yfinance · NYMEX/COMEX/ICE front-month 선물</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">WTI유(WTI)</td>
+          <td class="close-cell">$86.31</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,22.9 4.2,23.0 8.4,17.0 12.6,17.1 16.8,9.3 21.1,7.5 25.3,8.7 29.5,11.3 33.7,9.1 37.9,4.0 42.1,5.2 46.3,5.3 50.5,1.8 54.7,1.0 58.9,4.1 63.2,11.5 67.4,10.0 71.6,6.9 75.8,7.2 80.0,1.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.6" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.49%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.49%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.56%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+50.58%</td>
+        </tr><tr>
+          <td class="name-cell">브렌트유(Brent)</td>
+          <td class="close-cell">$88.53</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,22.0 8.4,16.0 12.6,16.0 16.8,9.7 21.1,8.1 25.3,9.0 29.5,11.0 33.7,8.7 37.9,4.8 42.1,4.8 46.3,4.3 50.5,2.0 54.7,1.0 58.9,3.7 63.2,12.6 67.4,11.6 71.6,8.7 75.8,7.6 80.0,8.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="8.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.87%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.87%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.76%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+45.73%</td>
+        </tr><tr>
+          <td class="name-cell">금(Gold)</td>
+          <td class="close-cell">$4,497.30</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,16.4 8.4,16.8 12.6,15.2 16.8,11.1 21.1,11.9 25.3,10.3 29.5,12.7 33.7,11.7 37.9,10.4 42.1,13.3 46.3,6.1 50.5,6.3 54.7,3.0 58.9,1.2 63.2,1.0 67.4,3.6 71.6,3.3 75.8,10.0 80.0,9.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="9.3" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.43%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.43%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+9.73%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.11%</td>
+        </tr><tr>
+          <td class="name-cell">은(Silver)</td>
+          <td class="close-cell">$67.20</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,17.7 8.4,18.7 12.6,15.4 16.8,9.9 21.1,12.1 25.3,10.7 29.5,12.7 33.7,12.2 37.9,10.1 42.1,15.2 46.3,7.3 50.5,5.1 54.7,3.2 58.9,3.3 63.2,4.1 67.4,5.2 71.6,1.0 75.8,7.5 80.0,7.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.31%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.31%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.32%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.37%</td>
+        </tr><tr>
+          <td class="name-cell">구리(Copper)</td>
+          <td class="close-cell">$6.69</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.8 4.2,1.0 8.4,3.3 12.6,14.4 16.8,9.5 21.1,10.1 25.3,11.6 29.5,12.9 33.7,11.6 37.9,11.6 42.1,23.0 46.3,19.0 50.5,20.9 54.7,13.7 58.9,11.7 63.2,3.8 67.4,4.7 71.6,5.2 75.8,15.0 80.0,5.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="5.4" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.94%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.94%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.78%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.21%</td>
+        </tr><tr>
+          <td class="name-cell">천연가스(Nat Gas)</td>
+          <td class="close-cell">$2.93</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.8 4.2,20.3 8.4,23.0 12.6,20.8 16.8,12.2 21.1,14.5 25.3,11.1 29.5,15.6 33.7,16.9 37.9,17.9 42.1,11.1 46.3,11.9 50.5,13.2 54.7,10.8 58.9,10.1 63.2,7.3 67.4,2.8 71.6,2.8 75.8,4.1 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.42%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.42%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+4.91%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-19.04%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section"><h2>Risk Dashboard <span class="src-tag">yfinance · FinanceDataReader</span></h2></div>
+<div class="risk-strip">
+<div class="risk-card">
+  <div class="label">VIX</div>
+  <div class="value" style="color:#0d9b6a">14.9</div>
+  <div class="desc" style="color:#0d9b6a">Complacent</div>
+  <div class="bar-track"><div class="bar-fill" style="width:30%;background:#0d9b6a"></div></div>
+</div>
+<div class="risk-card">
+  <div class="label">VIX3M</div>
+  <div class="value">17.5</div>
+  <div class="desc up">+0.29%</div>
+</div>
+<div class="risk-card">
+  <div class="label">HYG</div>
+  <div class="value">79.8</div>
+  <div class="desc up">+0.09%</div>
+</div>
+<div class="risk-card">
+  <div class="label">EMB</div>
+  <div class="value">94.8</div>
+  <div class="desc down">-0.13%</div>
+</div>
+</div>
+
+<!-- ══ CHARTS ══ -->
+<div class="chart-grid">
+  <div class="chart-card">
+    <div class="title">Equity: Daily Change (%)</div>
+    <div class="chart-box"><canvas id="eqChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Stocks: Daily Change (%)</div>
+    <div class="chart-box"><canvas id="stChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Daily vs Weekly (Cross-Asset)</div>
+    <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="title">Commodity YTD (%)</div>
+    <div class="chart-box"><canvas id="cmChart"></canvas></div>
+  </div>
+</div>
+
+
+</div><!-- /tab-data -->
+
+<!-- ══════ TAB: STOCKS ══════ -->
+<div id="tab-stocks" class="tab-panel">
+
+<div class="story-hero">
+  <h2>오늘의 종목 이야기</h2>
+  <div class="story-text">
+    <p>주말 미국·이란 무력충돌로 유가가 급등하며 아시아가 리스크오프로 출발했지만, 종목 단위로는 <strong>지정학 급락을 되돌린 반도체 대장주</strong>와 <strong>그간 강했던 방산·원전·중공업 테마주의 차익실현</strong>이 극명하게 갈렸습니다. 반도체 안에서도 중국 자립주(캄브리콘 <span class="hl-up">+6.3%</span>)는 오르고 후공정·장비주(ASE테크 <span class="hl-down">−6.0%</span>·어드반테스트 <span class="hl-down">−4.5%</span>)는 밀리는 디스퍼션이 두드러졌고, 유가 급등에 미국 에너지주(엑슨모빌 <span class="hl-up">+2.7%</span>)가 강세를 보였습니다.<br><br></p>
+
+    <p><strong>🇰🇷 한국</strong>: 코스피가 장중 <span class="hl-down">−3.5%</span> 급락을 딛고 종가 <span class="hl-up">+0.46%</span>로 V자 반등한 배경에는 삼성전자(<span class="hl-up">+1.17%</span>, HBM4 공개)와 SK하이닉스(<span class="hl-up">+1.27%</span>)를 향한 저가매수가 있었습니다. LG전자(<span class="hl-up">+7.44%</span>)·SK이노베이션(<span class="hl-up">+7.36%</span>)·POSCO Future M(<span class="hl-up">+7.62%</span>) 등 개별 소재·가전주도 강했습니다. 반면 8월 내내 랠리를 주도했던 방산·원전·중공업은 지정학 헤드라인에도 오히려 차익실현 매물이 쏟아지며 두산에너빌리티(<span class="hl-down">−6.46%</span>)·효성중공업(<span class="hl-down">−6.03%</span>)·고려아연(<span class="hl-down">−7.13%</span>)·LIG넥스원(<span class="hl-down">−5.45%</span>)·한화에어로스페이스(<span class="hl-down">−4.75%</span>)가 급락해, 대장 반도체와 테마 성장주가 갈리는 K자 분기가 선명했습니다.<br><br></p>
+
+    <p><strong>🇺🇸 미국</strong>: 유가 급등(WTI <span class="hl-up">+3.49%</span>)의 직접 수혜로 셰브런(<span class="hl-up">+2.12%</span>)·엑슨모빌(<span class="hl-up">+2.71%</span>) 등 에너지주가 지수를 방어했습니다. 테슬라(<span class="hl-up">+5.51%</span>)·마이크론(<span class="hl-up">+2.77%</span>)이 강세를 보였고, 엔비디아(<span class="hl-up">+1.48%</span>)가 버티며 한국 반도체 반등과 연동됐습니다. 반면 마이크로소프트(<span class="hl-down">−1.22%</span>)·애플(<span class="hl-down">−0.89%</span>) 등 일부 빅테크는 금리 상승 부담에 약세를 보이며 지수를 눌렀습니다.<br><br></p>
+
+    <p><strong>🇯🇵 일본</strong>: 반도체 후공정·장비주가 차익실현에 밀려 어드반테스트(<span class="hl-down">−4.48%</span>)·디스코(<span class="hl-down">−2.07%</span>)가 약세를 보인 반면, AI 인프라 수요에 노출된 후지쿠라(<span class="hl-up">+3.07%</span>)·마크니카(<span class="hl-up">+3.72%</span>)는 오르며 같은 반도체 밸류체인 안에서도 방향이 엇갈렸습니다. 리쿠르트(<span class="hl-up">+2.33%</span>)·미즈호FG(<span class="hl-up">+1.61%</span>) 등 내수·금융주는 견조했습니다.<br><br></p>
+
+    <p><strong>🇨🇳 중국</strong>: 미·중 마찰 속 반도체 자립·AI 베팅이 다시 불붙으며 AI 스타트업 MiniMax(<span class="hl-up">+16.18%</span>)가 폭등하고 캄브리콘(<span class="hl-up">+6.26%</span>)·하이곤(<span class="hl-up">+3.43%</span>) 등 AI 칩 설계주가 강세를 보였습니다. 반대로 전기차 BYD(<span class="hl-down">−5.17%</span>)와 부동산·소비주(C&amp;D International <span class="hl-down">−16.43%</span>·WH그룹 <span class="hl-down">−5.90%</span>·쯔진골드 <span class="hl-down">−5.71%</span>)는 크게 밀리며 성장·경기 민감 업종 간 디스퍼션이 컸습니다.<br><br></p>
+
+    <p><strong>🇹🇼 대만 · 🇭🇰 홍콩</strong>: 대만은 TSMC(<span class="hl-down">−0.53%</span>)가 보합권에 머문 가운데 OSAT 후공정 대장 ASE테크(<span class="hl-down">−5.96%</span>)가 일본 장비주와 함께 차익실현에 급락했습니다. 홍콩은 금리 상승 부담에 부동산주 헨더슨랜드(<span class="hl-down">−7.32%</span>)·케리부동산(<span class="hl-down">−5.19%</span>)이 약세를 이끌었습니다.<br><br></p>
+  </div>
+</div>
+
+<div class="heatmap-section">
+<h2>한국 주식(Korean Stocks · Top 20) <span class="badge">20</span> <span class="src-tag">FinanceDataReader · KOSPI 시총순</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">삼성전자(Samsung)</td>
+          <td class="close-cell">260,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.9 4.2,18.7 8.4,16.2 12.6,22.8 16.8,22.6 21.1,23.0 25.3,18.9 29.5,12.1 33.7,6.8 37.9,4.0 42.1,6.6 46.3,15.5 50.5,5.5 54.7,1.0 58.9,11.5 63.2,11.5 67.4,9.5 71.6,7.6 75.8,11.5 80.0,10.2" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.2" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.17%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.17%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.95%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+102.33%</td>
+        </tr><tr>
+          <td class="name-cell">SK하이닉스(SK Hynix)</td>
+          <td class="close-cell">1,674,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.6 4.2,11.9 8.4,5.4 12.6,17.7 16.8,22.9 21.1,23.0 25.3,22.6 29.5,17.0 33.7,10.7 37.9,7.0 42.1,5.8 46.3,17.3 50.5,3.8 54.7,1.0 58.9,5.2 63.2,4.7 67.4,4.0 71.6,1.0 75.8,6.5 80.0,5.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="5.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.27%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.27%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.56%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+147.72%</td>
+        </tr><tr>
+          <td class="name-cell">SK스퀘어(SK Square)</td>
+          <td class="close-cell">1,037,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.2 4.2,10.6 8.4,4.6 12.6,19.8 16.8,23.0 21.1,22.0 25.3,22.4 29.5,14.3 33.7,4.8 37.9,1.0 42.1,3.0 46.3,16.4 50.5,4.2 54.7,4.2 58.9,9.0 63.2,10.6 67.4,10.8 71.6,9.8 75.8,13.9 80.0,13.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="13.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.88%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.88%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.10%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+164.54%</td>
+        </tr><tr>
+          <td class="name-cell">LG에너지솔루션(LG Energy Solution)</td>
+          <td class="close-cell">378,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,18.6 8.4,16.1 12.6,12.7 16.8,7.4 21.1,4.7 25.3,9.3 29.5,7.9 33.7,5.4 37.9,4.0 42.1,10.6 46.3,8.3 50.5,8.1 54.7,13.2 58.9,6.7 63.2,11.1 67.4,10.6 71.6,3.7 75.8,3.8 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.16%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.16%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+15.24%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+4.71%</td>
+        </tr><tr>
+          <td class="name-cell">현대차(Hyundai Motor)</td>
+          <td class="close-cell">403,500</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,22.8 4.2,23.0 8.4,18.6 12.6,20.3 16.8,21.9 21.1,17.4 25.3,19.2 29.5,16.8 33.7,13.5 37.9,1.0 42.1,7.5 46.3,15.2 50.5,13.9 54.7,14.8 58.9,15.2 63.2,12.6 67.4,17.4 71.6,21.9 75.8,20.5 80.0,19.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.00%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.00%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.99%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+35.77%</td>
+        </tr><tr>
+          <td class="name-cell">두산에너빌리티(Doosan Enerbility)</td>
+          <td class="close-cell">82,500</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,17.3 8.4,13.0 12.6,13.7 16.8,12.9 21.1,9.9 25.3,12.1 29.5,9.5 33.7,8.8 37.9,7.0 42.1,12.1 46.3,13.9 50.5,14.2 54.7,17.0 58.9,17.3 63.2,9.1 67.4,3.6 71.6,3.5 75.8,1.0 80.0,7.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-6.46%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-6.46%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+22.95%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+9.71%</td>
+        </tr><tr>
+          <td class="name-cell">한화에어로스페이스(Hanwha Aerospace)</td>
+          <td class="close-cell">1,102,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,16.0 8.4,15.7 12.6,11.8 16.8,8.3 21.1,3.7 25.3,8.2 29.5,3.4 33.7,1.0 37.9,3.1 42.1,4.2 46.3,1.7 50.5,2.5 54.7,9.3 58.9,7.6 63.2,7.9 67.4,9.1 71.6,3.9 75.8,3.3 80.0,7.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="7.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.75%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.75%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+20.17%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.49%</td>
+        </tr><tr>
+          <td class="name-cell">삼성바이오로직스(Samsung Biologics)</td>
+          <td class="close-cell">1,518,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,16.7 8.4,15.0 12.6,12.2 16.8,7.3 21.1,5.7 25.3,1.0 29.5,8.1 33.7,6.3 37.9,8.2 42.1,10.2 46.3,8.7 50.5,5.1 54.7,7.9 58.9,5.3 63.2,3.8 67.4,2.2 71.6,2.8 75.8,15.5 80.0,11.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.15%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.15%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.22%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-9.80%</td>
+        </tr><tr>
+          <td class="name-cell">삼성전기(Samsung Electro-Mechanics)</td>
+          <td class="close-cell">1,458,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,22.8 8.4,12.8 12.6,20.2 16.8,17.3 21.1,17.6 25.3,18.3 29.5,14.0 33.7,4.2 37.9,1.0 42.1,7.9 46.3,11.0 50.5,10.5 54.7,15.1 58.9,15.0 63.2,12.4 67.4,14.3 71.6,11.1 75.8,9.0 80.0,6.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.60%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.60%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+27.67%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+440.00%</td>
+        </tr><tr>
+          <td class="name-cell">HD현대중공업(HD Hyundai Heavy)</td>
+          <td class="close-cell">449,500</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.4 4.2,14.1 8.4,7.1 12.6,7.7 16.8,7.9 21.1,1.0 25.3,10.4 29.5,10.6 33.7,10.6 37.9,6.9 42.1,12.3 46.3,16.5 50.5,16.1 54.7,22.1 58.9,21.4 63.2,19.0 67.4,19.0 71.6,17.5 75.8,21.0 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.64%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.64%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-6.55%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-10.21%</td>
+        </tr><tr>
+          <td class="name-cell">삼성물산(Samsung C&T)</td>
+          <td class="close-cell">376,500</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,21.0 4.2,23.0 8.4,15.5 12.6,19.5 16.8,18.8 21.1,18.9 25.3,16.4 29.5,12.5 33.7,10.2 37.9,9.0 42.1,9.0 46.3,15.6 50.5,7.5 54.7,1.0 58.9,10.3 63.2,9.6 67.4,3.4 71.6,7.0 75.8,7.2 80.0,6.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.40%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.40%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.11%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+53.67%</td>
+        </tr><tr>
+          <td class="name-cell">기아(Kia)</td>
+          <td class="close-cell">131,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.1 4.2,18.1 8.4,13.3 12.6,12.4 16.8,10.6 21.1,9.8 25.3,11.4 29.5,9.6 33.7,7.1 37.9,1.0 42.1,7.4 46.3,13.3 50.5,15.9 54.7,16.2 58.9,15.4 63.2,10.6 67.4,15.5 71.6,23.0 75.8,20.3 80.0,16.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.34%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.34%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.68%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+13.39%</td>
+        </tr><tr>
+          <td class="name-cell">삼성생명(Samsung Life)</td>
+          <td class="close-cell">306,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.0 4.2,22.0 8.4,15.3 12.6,18.0 16.8,23.0 21.1,20.9 25.3,17.2 29.5,11.8 33.7,16.4 37.9,12.4 42.1,8.5 46.3,22.8 50.5,14.1 54.7,1.0 58.9,18.9 63.2,19.1 67.4,8.9 71.6,9.9 75.8,8.7 80.0,10.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.3" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.29%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.29%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.77%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+95.78%</td>
+        </tr><tr>
+          <td class="name-cell">KB금융(KB Financial)</td>
+          <td class="close-cell">173,300</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.8 4.2,12.4 8.4,9.7 12.6,7.0 16.8,1.0 21.1,6.7 25.3,13.8 29.5,14.6 33.7,11.7 37.9,11.2 42.1,11.2 46.3,14.1 50.5,23.0 54.7,17.0 58.9,18.7 63.2,14.1 67.4,13.8 71.6,11.7 75.8,6.9 80.0,4.5" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.5" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.99%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.99%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.85%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+42.94%</td>
+        </tr><tr>
+          <td class="name-cell">삼성SDI(Samsung SDI)</td>
+          <td class="close-cell">577,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,19.5 8.4,18.4 12.6,18.6 16.8,14.8 21.1,12.2 25.3,14.8 29.5,11.7 33.7,11.6 37.9,8.2 42.1,11.4 46.3,11.6 50.5,10.1 54.7,12.6 58.9,8.3 63.2,7.8 67.4,8.2 71.6,1.9 75.8,1.7 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.05%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.05%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+45.34%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+119.81%</td>
+        </tr><tr>
+          <td class="name-cell">HD현대일렉트릭(HD Hyundai Electric)</td>
+          <td class="close-cell">781,000</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,16.6 8.4,8.3 12.6,9.9 16.8,9.8 21.1,9.7 25.3,13.2 29.5,6.8 33.7,6.4 37.9,3.7 42.1,6.4 46.3,11.3 50.5,12.1 54.7,16.3 58.9,16.0 63.2,16.2 67.4,14.1 71.6,1.0 75.8,2.0 80.0,6.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.05%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.05%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+14.18%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.17%</td>
+        </tr><tr>
+          <td class="name-cell">LS ELECTRIC(LS Electric)</td>
+          <td class="close-cell">207,500</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,22.1 4.2,16.2 8.4,6.1 12.6,12.5 16.8,13.5 21.1,8.4 25.3,12.2 29.5,8.4 33.7,4.7 37.9,9.8 42.1,8.1 46.3,12.8 50.5,14.7 54.7,23.0 58.9,19.4 63.2,17.3 67.4,13.2 71.6,1.0 75.8,4.4 80.0,9.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="9.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.26%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.26%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+12.28%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+111.50%</td>
+        </tr><tr>
+          <td class="name-cell">미래에셋증권(Mirae Asset Securities)</td>
+          <td class="close-cell">34,700</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,19.3 8.4,14.1 12.6,17.0 16.8,20.0 21.1,8.6 25.3,12.7 29.5,8.1 33.7,1.0 37.9,2.8 42.1,8.8 46.3,16.4 50.5,9.9 54.7,17.3 58.9,16.1 63.2,11.3 67.4,9.0 71.6,9.9 75.8,9.7 80.0,16.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="16.4" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.01%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.01%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.43%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+42.42%</td>
+        </tr><tr>
+          <td class="name-cell">신한지주(Shinhan Financial)</td>
+          <td class="close-cell">108,900</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.0 4.2,20.0 8.4,16.8 12.6,7.4 16.8,1.0 21.1,9.9 25.3,14.6 29.5,16.3 33.7,9.4 37.9,7.4 42.1,9.7 46.3,13.4 50.5,23.0 54.7,15.6 58.9,17.6 63.2,9.7 67.4,7.4 71.6,4.0 75.8,1.7 80.0,3.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="3.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.73%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.73%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+8.14%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+44.47%</td>
+        </tr><tr>
+          <td class="name-cell">셀트리온(Celltrion)</td>
+          <td class="close-cell">188,900</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,20.2 8.4,16.7 12.6,13.0 16.8,9.7 21.1,8.4 25.3,1.0 29.5,7.6 33.7,7.6 37.9,8.4 42.1,12.7 46.3,13.7 50.5,13.7 54.7,15.2 58.9,13.8 63.2,17.2 67.4,14.3 71.6,15.9 75.8,16.4 80.0,17.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.8" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.94%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.94%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.18%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-6.72%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>미국 주식(US Stocks · Top 20) <span class="badge">20</span> <span class="src-tag">yfinance · S&P500 시총순</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">엔비디아(NVIDIA)</td>
+          <td class="close-cell">$220.78</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.1 4.2,10.9 8.4,11.1 12.6,5.5 16.8,12.8 21.1,12.8 25.3,5.4 29.5,4.0 33.7,4.2 37.9,4.3 42.1,10.3 46.3,12.8 50.5,13.6 54.7,16.0 58.9,23.0 63.2,17.9 67.4,21.7 71.6,1.0 75.8,12.8 80.0,9.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="9.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.48%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.48%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+9.98%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.91%</td>
+        </tr><tr>
+          <td class="name-cell">구글(Alphabet)</td>
+          <td class="close-cell">$339.35</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,9.7 8.4,12.4 12.6,14.4 16.8,12.6 21.1,20.4 25.3,20.6 29.5,19.0 33.7,19.2 37.9,20.3 42.1,20.2 46.3,19.9 50.5,22.2 54.7,19.9 58.9,18.0 63.2,18.6 67.4,21.5 71.6,22.3 75.8,18.8 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.09%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.09%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.71%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.75%</td>
+        </tr><tr>
+          <td class="name-cell">애플(Apple)</td>
+          <td class="close-cell">$316.85</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.0 4.2,12.0 8.4,10.2 12.6,9.0 16.8,15.4 21.1,19.6 25.3,23.0 29.5,19.2 33.7,18.4 37.9,18.8 42.1,13.2 46.3,4.6 50.5,11.6 54.7,14.1 58.9,12.8 63.2,13.4 67.4,8.9 71.6,7.5 75.8,1.0 80.0,4.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="4.6" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.89%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.89%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.57%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+17.02%</td>
+        </tr><tr>
+          <td class="name-cell">마이크로소프트(Microsoft)</td>
+          <td class="close-cell">$507.29</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,14.7 4.2,18.3 8.4,10.1 12.6,10.0 16.8,5.9 21.1,7.4 25.3,15.0 29.5,12.0 33.7,13.0 37.9,23.0 42.1,22.2 46.3,20.4 50.5,22.5 54.7,21.1 58.9,18.4 63.2,15.4 67.4,12.4 71.6,6.6 75.8,1.0 80.0,5.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="5.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.22%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.22%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+9.16%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.51%</td>
+        </tr><tr>
+          <td class="name-cell">아마존(Amazon)</td>
+          <td class="close-cell">$259.77</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.7 4.2,6.5 8.4,6.9 12.6,4.6 16.8,1.0 21.1,6.9 25.3,11.9 29.5,14.1 33.7,16.5 37.9,17.9 42.1,19.8 46.3,13.3 50.5,19.1 54.7,20.6 58.9,17.1 63.2,18.2 67.4,18.9 71.6,23.0 75.8,12.7 80.0,19.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.4" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.50%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.50%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.35%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+14.69%</td>
+        </tr><tr>
+          <td class="name-cell">브로드컴(Broadcom)</td>
+          <td class="close-cell">$370.34</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.9 4.2,3.9 8.4,3.2 12.6,1.0 16.8,2.6 21.1,4.6 25.3,4.6 29.5,4.0 33.7,11.6 37.9,11.8 42.1,15.6 46.3,20.9 50.5,20.4 54.7,19.1 58.9,22.0 63.2,22.7 67.4,23.0 71.6,18.1 75.8,19.0 80.0,18.5" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="18.5" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.42%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.42%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.87%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+6.76%</td>
+        </tr><tr>
+          <td class="name-cell">메타(META)</td>
+          <td class="close-cell">$572.34</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,5.4 4.2,5.1 8.4,4.7 12.6,3.8 16.8,2.7 21.1,1.0 25.3,9.0 29.5,2.6 33.7,4.7 37.9,13.0 42.1,23.0 46.3,22.1 50.5,22.1 54.7,20.5 58.9,16.9 63.2,12.5 67.4,10.1 71.6,12.1 75.8,9.4 80.0,11.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.6" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.98%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.98%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.81%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-11.93%</td>
+        </tr><tr>
+          <td class="name-cell">테슬라(Tesla)</td>
+          <td class="close-cell">$367.95</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.4 4.2,22.1 8.4,23.0 12.6,18.9 16.8,17.8 21.1,17.0 25.3,19.4 29.5,13.7 33.7,12.7 37.9,14.0 42.1,15.1 46.3,8.6 50.5,11.4 54.7,3.3 58.9,9.6 63.2,9.0 67.4,11.1 71.6,7.0 75.8,9.7 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+5.51%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+5.51%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+18.23%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-16.01%</td>
+        </tr><tr>
+          <td class="name-cell">Palantir</td>
+          <td class="close-cell">$186.38</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.1 4.2,21.2 8.4,23.0 12.6,11.4 16.8,9.1 21.1,9.3 25.3,12.1 29.5,6.3 33.7,9.9 37.9,11.0 42.1,11.7 46.3,9.1 50.5,10.0 54.7,5.7 58.9,8.6 63.2,10.9 67.4,7.4 71.6,1.3 75.8,1.1 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.05%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.05%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+51.45%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+11.03%</td>
+        </tr><tr>
+          <td class="name-cell">Walmart</td>
+          <td class="close-cell">$104.87</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,8.3 4.2,7.0 8.4,7.5 12.6,7.8 16.8,6.5 21.1,5.5 25.3,1.0 29.5,1.5 33.7,2.2 37.9,3.8 42.1,2.3 46.3,3.8 50.5,21.0 54.7,21.2 58.9,16.7 63.2,18.5 67.4,20.2 71.6,23.0 75.8,22.2 80.0,19.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.3" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.73%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.73%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.69%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-6.81%</td>
+        </tr><tr>
+          <td class="name-cell">Berkshire</td>
+          <td class="close-cell">$504.03</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,9.0 4.2,7.9 8.4,4.1 12.6,6.0 16.8,1.0 21.1,9.5 25.3,13.7 29.5,15.7 33.7,17.6 37.9,21.4 42.1,18.3 46.3,20.5 50.5,22.3 54.7,23.0 58.9,17.4 63.2,17.4 67.4,17.0 71.6,17.8 75.8,17.0 80.0,17.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.6" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.19%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.19%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.47%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.45%</td>
+        </tr><tr>
+          <td class="name-cell">Eli Lilly</td>
+          <td class="close-cell">$1,156.73</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,15.8 8.4,12.8 12.6,13.6 16.8,7.5 21.1,9.7 25.3,9.0 29.5,10.5 33.7,14.4 37.9,14.0 42.1,8.3 46.3,1.0 50.5,5.8 54.7,4.3 58.9,5.5 63.2,7.2 67.4,13.1 71.6,14.9 75.8,15.1 80.0,17.5" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.5" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.52%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.52%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.69%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.25%</td>
+        </tr><tr>
+          <td class="name-cell">JPMorgan</td>
+          <td class="close-cell">$356.02</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,13.4 4.2,10.6 8.4,15.3 12.6,13.4 16.8,9.7 21.1,6.1 25.3,1.0 29.5,4.3 33.7,4.8 37.9,7.8 42.1,4.1 46.3,13.8 50.5,23.0 54.7,22.9 58.9,15.2 63.2,14.7 67.4,15.0 71.6,18.7 75.8,13.2 80.0,15.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="15.8" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.45%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.45%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.20%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+10.44%</td>
+        </tr><tr>
+          <td class="name-cell">Micron</td>
+          <td class="close-cell">$958.73</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.4 4.2,18.3 8.4,20.0 12.6,20.6 16.8,23.0 21.1,21.9 25.3,15.7 29.5,10.0 33.7,6.8 37.9,1.0 42.1,11.4 46.3,11.9 50.5,6.5 54.7,7.6 58.9,15.8 63.2,12.5 67.4,11.7 71.6,12.1 75.8,12.5 80.0,8.7" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="8.7" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.77%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.77%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.49%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+204.08%</td>
+        </tr><tr>
+          <td class="name-cell">AMD</td>
+          <td class="close-cell">$470.72</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,14.0 8.4,11.4 12.6,13.5 16.8,18.4 21.1,16.7 25.3,13.7 29.5,13.7 33.7,2.5 37.9,5.5 42.1,13.2 46.3,19.6 50.5,18.5 54.7,17.1 58.9,23.0 63.2,15.0 67.4,14.4 71.6,15.9 75.8,19.9 80.0,18.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="18.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.10%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+1.10%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.14%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+110.64%</td>
+        </tr><tr>
+          <td class="name-cell">ExxonMobil</td>
+          <td class="close-cell">$160.95</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,19.5 4.2,23.0 8.4,18.1 12.6,20.9 16.8,10.6 21.1,10.6 25.3,10.7 29.5,12.4 33.7,10.2 37.9,8.1 42.1,1.9 46.3,3.1 50.5,1.0 54.7,2.6 58.9,4.2 63.2,9.4 67.4,13.1 71.6,15.7 75.8,15.3 80.0,8.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="8.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.71%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.71%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.54%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+32.10%</td>
+        </tr><tr>
+          <td class="name-cell">Visa</td>
+          <td class="close-cell">$379.37</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,13.7 4.2,14.6 8.4,12.9 12.6,19.8 16.8,20.8 21.1,19.5 25.3,22.5 29.5,17.3 33.7,18.4 37.9,23.0 42.1,18.3 46.3,17.2 50.5,17.0 54.7,12.4 58.9,2.5 63.2,1.0 67.4,1.2 71.6,4.9 75.8,3.2 80.0,5.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="5.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.58%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.58%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.62%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+9.72%</td>
+        </tr><tr>
+          <td class="name-cell">Intel</td>
+          <td class="close-cell">$89.51</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,5.7 4.2,5.5 8.4,7.0 12.6,4.7 16.8,10.0 21.1,9.7 25.3,5.6 29.5,1.0 33.7,3.6 37.9,2.4 42.1,11.0 46.3,16.0 50.5,16.8 54.7,19.4 58.9,23.0 63.2,22.7 67.4,21.8 71.6,16.9 75.8,20.2 80.0,20.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.1" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.04%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.04%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.76%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+127.30%</td>
+        </tr><tr>
+          <td class="name-cell">Oracle</td>
+          <td class="close-cell">$149.12</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,17.3 4.2,19.4 8.4,20.8 12.6,15.3 16.8,9.0 21.1,17.7 25.3,5.6 29.5,1.0 33.7,9.9 37.9,15.9 42.1,21.9 46.3,20.3 50.5,23.0 54.7,16.2 58.9,22.4 63.2,18.8 67.4,12.4 71.6,7.7 75.8,9.3 80.0,12.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.15%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.15%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+14.82%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-23.34%</td>
+        </tr><tr>
+          <td class="name-cell">J&J</td>
+          <td class="close-cell">$265.85</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,19.8 8.4,20.6 12.6,17.9 16.8,14.8 21.1,17.2 25.3,15.9 29.5,14.5 33.7,16.5 37.9,14.1 42.1,3.7 46.3,1.0 50.5,8.2 54.7,4.8 58.9,1.5 63.2,1.3 67.4,5.1 71.6,10.1 75.8,7.4 80.0,10.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.82%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.82%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.71%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+28.89%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>아시아 종목(Asian Stocks · Top 20) <span class="badge">20</span> <span class="src-tag">yfinance · 아시아종목.xlsx 운용 유니버스 (중국·일본·대만·인도·홍콩·베트남·호주·인니)</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">Tencent</td>
+          <td class="close-cell">453</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.9 4.2,1.0 8.4,6.5 12.6,6.6 16.8,5.5 21.1,10.0 25.3,13.9 29.5,22.6 33.7,23.0 37.9,20.3 42.1,22.0 46.3,20.0 50.5,18.2 54.7,15.8 58.9,23.0 63.2,22.2 67.4,20.7 71.6,19.7 75.8,16.6 80.0,17.5" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.5" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.48%</td><td class="heat-cell" style="background:#eff6ff;color:#1e40af">-0.48%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.67%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-27.29%</td>
+        </tr><tr>
+          <td class="name-cell">Cambricon Tech</td>
+          <td class="close-cell">1,112</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,12.6 4.2,7.0 8.4,4.0 12.6,1.0 16.8,8.2 21.1,11.4 25.3,10.0 29.5,10.0 33.7,11.2 37.9,5.2 42.1,4.6 46.3,15.2 50.5,19.0 54.7,16.7 58.9,23.0 63.2,19.1 67.4,18.1 71.6,15.5 75.8,15.6 80.0,9.4" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="9.4" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+6.26%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+6.26%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.56%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+19.36%</td>
+        </tr><tr>
+          <td class="name-cell">Alibaba</td>
+          <td class="close-cell">114</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,4.2 4.2,1.0 8.4,6.2 12.6,7.1 16.8,3.0 21.1,3.4 25.3,8.8 29.5,9.7 33.7,12.6 37.9,9.3 42.1,3.0 46.3,6.5 50.5,3.7 54.7,8.2 58.9,23.0 63.2,20.6 67.4,17.2 71.6,18.8 75.8,21.0 80.0,20.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="20.6" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.26%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.26%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.39%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-23.36%</td>
+        </tr><tr>
+          <td class="name-cell">SMIC</td>
+          <td class="close-cell">70.75</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,17.4 8.4,22.9 12.6,19.7 16.8,21.1 21.1,23.0 25.3,18.6 29.5,18.3 33.7,11.5 37.9,2.5 42.1,1.0 46.3,6.9 50.5,8.8 54.7,8.0 58.9,20.0 63.2,17.7 67.4,13.8 71.6,10.5 75.8,12.9 80.0,11.6" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="11.6" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.86%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.86%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+11.86%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.79%</td>
+        </tr><tr>
+          <td class="name-cell">CATL</td>
+          <td class="close-cell">364</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,6.3 4.2,1.0 8.4,10.1 12.6,10.1 16.8,7.0 21.1,8.8 25.3,7.0 29.5,5.7 33.7,7.0 37.9,3.8 42.1,5.7 46.3,9.5 50.5,11.7 54.7,8.4 58.9,10.1 63.2,16.0 67.4,14.8 71.6,18.0 75.8,20.4 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.34%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.34%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-8.03%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.17%</td>
+        </tr><tr>
+          <td class="name-cell">BYD</td>
+          <td class="close-cell">87.20</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,2.2 4.2,1.0 8.4,14.2 12.6,13.2 16.8,6.0 21.1,14.6 25.3,15.0 29.5,19.0 33.7,19.5 37.9,13.5 42.1,13.7 46.3,15.6 50.5,7.7 54.7,3.2 58.9,4.3 63.2,1.7 67.4,5.0 71.6,9.5 75.8,7.2 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.17%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.17%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-7.38%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-11.70%</td>
+        </tr><tr>
+          <td class="name-cell">Ping An Insurance</td>
+          <td class="close-cell">56.55</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.8 4.2,1.0 8.4,4.8 12.6,5.6 16.8,7.7 21.1,12.3 25.3,14.2 29.5,14.4 33.7,19.2 37.9,18.2 42.1,23.0 46.3,20.9 50.5,21.9 54.7,10.7 58.9,8.5 63.2,9.6 67.4,2.9 71.6,5.3 75.8,6.9 80.0,8.8" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="8.8" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.62%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.62%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.58%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-15.34%</td>
+        </tr><tr>
+          <td class="name-cell">NAURA Tech</td>
+          <td class="close-cell">700</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,11.5 8.4,9.4 12.6,7.1 16.8,5.1 21.1,8.6 25.3,5.1 29.5,10.4 33.7,10.4 37.9,3.7 42.1,1.0 46.3,16.7 50.5,16.8 54.7,16.3 58.9,17.9 63.2,19.7 67.4,19.7 71.6,15.4 75.8,20.4 80.0,19.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="19.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.33%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.33%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.86%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+47.48%</td>
+        </tr><tr>
+          <td class="name-cell">Hygon Info Tech</td>
+          <td class="close-cell">254</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,7.9 4.2,3.3 8.4,2.6 12.6,1.0 16.8,2.8 21.1,4.0 25.3,3.7 29.5,4.3 33.7,6.0 37.9,3.4 42.1,6.3 46.3,13.2 50.5,17.7 54.7,17.8 58.9,23.0 63.2,22.6 67.4,22.9 71.6,17.9 75.8,18.0 80.0,15.2" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="15.2" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.43%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+3.43%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-8.34%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+12.38%</td>
+        </tr><tr>
+          <td class="name-cell">GigaDevice</td>
+          <td class="close-cell">406</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,15.6 8.4,15.8 12.6,7.7 16.8,11.2 21.1,11.4 25.3,8.7 29.5,10.9 33.7,7.6 37.9,1.0 42.1,2.8 46.3,11.1 50.5,11.1 54.7,9.7 58.9,16.6 63.2,13.1 67.4,13.9 71.6,9.2 75.8,12.8 80.0,10.5" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.5" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.31%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.31%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.24%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+72.27%</td>
+        </tr><tr>
+          <td class="name-cell">AMEC</td>
+          <td class="close-cell">362</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,12.0 8.4,11.0 12.6,9.4 16.8,3.3 21.1,10.6 25.3,5.7 29.5,8.6 33.7,7.4 37.9,3.9 42.1,1.0 46.3,8.2 50.5,10.0 54.7,10.8 58.9,12.1 63.2,13.1 67.4,9.3 71.6,7.1 75.8,9.6 80.0,10.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.36%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-1.36%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+5.23%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.28%</td>
+        </tr><tr>
+          <td class="name-cell">Montage Tech</td>
+          <td class="close-cell">205</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.3 4.2,9.4 8.4,11.8 12.6,7.0 16.8,12.8 21.1,12.9 25.3,7.0 29.5,10.6 33.7,9.4 37.9,1.0 42.1,5.3 46.3,17.5 50.5,18.1 54.7,17.1 58.9,23.0 63.2,21.2 67.4,16.8 71.6,3.1 75.8,8.7 80.0,14.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="14.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.78%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.78%</td><td class="heat-cell" style="background:#fff5f5;color:#b91c1c">+0.02%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+60.43%</td>
+        </tr><tr>
+          <td class="name-cell">Xiaomi</td>
+          <td class="close-cell">27.62</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,7.9 4.2,9.9 8.4,15.0 12.6,13.7 16.8,10.1 21.1,16.3 25.3,18.2 29.5,21.3 33.7,23.0 37.9,21.3 42.1,19.4 46.3,11.2 50.5,9.2 54.7,1.0 58.9,8.8 63.2,9.2 67.4,4.6 71.6,11.0 75.8,8.8 80.0,10.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.1" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.72%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.72%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.03%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-31.43%</td>
+        </tr><tr>
+          <td class="name-cell">Hua Hong Semi</td>
+          <td class="close-cell">123</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,7.9 4.2,4.3 8.4,7.0 12.6,4.4 16.8,6.6 21.1,9.0 25.3,3.5 29.5,1.0 33.7,10.7 37.9,5.2 42.1,11.5 46.3,20.2 50.5,21.2 54.7,19.6 58.9,23.0 63.2,22.1 67.4,18.0 71.6,15.0 75.8,16.2 80.0,14.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="14.9" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.99%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+1.99%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.13%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+51.29%</td>
+        </tr><tr>
+          <td class="name-cell">Zhongji Innolight</td>
+          <td class="close-cell">852</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,1.0 4.2,10.3 8.4,9.4 12.6,13.8 16.8,20.7 21.1,17.9 25.3,13.6 29.5,13.6 33.7,10.9 37.9,3.6 42.1,5.2 46.3,16.8 50.5,15.7 54.7,10.9 58.9,20.0 63.2,23.0 67.4,22.4 71.6,20.5 75.8,21.5 80.0,22.3" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="22.3" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.75%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.75%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-5.56%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+36.79%</td>
+        </tr><tr>
+          <td class="name-cell">Sieyuan Electric</td>
+          <td class="close-cell">140</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.1 4.2,12.4 8.4,12.6 12.6,12.1 16.8,10.1 21.1,11.3 25.3,9.8 29.5,9.0 33.7,9.5 37.9,1.0 42.1,1.4 46.3,7.2 50.5,5.9 54.7,4.3 58.9,5.1 63.2,7.9 67.4,7.5 71.6,16.2 75.8,21.4 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.14%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-2.14%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-10.47%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-7.30%</td>
+        </tr><tr>
+          <td class="name-cell">Futu Holdings</td>
+          <td class="close-cell">122</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,18.7 4.2,17.5 8.4,23.0 12.6,18.7 16.8,19.0 21.1,22.4 25.3,22.4 29.5,22.9 33.7,22.3 37.9,18.2 42.1,19.1 46.3,18.3 50.5,15.1 54.7,4.6 58.9,12.1 63.2,2.6 67.4,1.0 71.6,3.7 75.8,4.0 80.0,6.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="6.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.71%</td><td class="heat-cell" style="background:#bfdbfe;color:#1e3a5f">-1.71%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+16.19%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-30.46%</td>
+        </tr><tr>
+          <td class="name-cell">Biwin Storage</td>
+          <td class="close-cell">236</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,14.3 8.4,14.4 12.6,7.7 16.8,9.3 21.1,9.2 25.3,7.7 29.5,13.2 33.7,9.3 37.9,1.0 42.1,3.0 46.3,15.1 50.5,13.4 54.7,11.0 58.9,18.5 63.2,17.2 67.4,19.7 71.6,11.3 75.8,15.5 80.0,12.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="12.9" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.00%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.00%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+4.23%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+89.81%</td>
+        </tr><tr>
+          <td class="name-cell">Hangzhou Chang Chuan</td>
+          <td class="close-cell">279</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,23.0 4.2,12.9 8.4,10.3 12.6,8.5 16.8,6.6 21.1,9.3 25.3,7.0 29.5,9.1 33.7,8.6 37.9,1.0 42.1,1.6 46.3,12.5 50.5,11.4 54.7,10.0 58.9,13.2 63.2,16.1 67.4,11.2 71.6,7.9 75.8,10.9 80.0,10.1" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="10.1" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.69%</td><td class="heat-cell" style="background:#fef2f2;color:#b91c1c">+0.69%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+7.47%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+163.24%</td>
+        </tr><tr>
+          <td class="name-cell">Horizon Robotics</td>
+          <td class="close-cell">4.72</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,3.2 4.2,3.4 8.4,4.1 12.6,10.7 16.8,6.5 21.1,6.3 25.3,1.0 29.5,8.5 33.7,10.5 37.9,11.4 42.1,23.0 46.3,20.4 50.5,17.3 54.7,12.0 58.9,21.9 63.2,20.8 67.4,22.3 71.6,21.9 75.8,21.9 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.53%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.53%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-8.70%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-47.50%</td>
+        </tr></tbody></table></div>
+<div class="heatmap-section">
+<h2>기타 종목(ADR · HK · 기타) <span class="badge">4</span></h2>
+<table class="heatmap">
+<thead><tr><th>종목</th><th>종가</th><th>20일 추이</th><th>일간</th><th>주간</th><th>월간</th><th>연초대비</th></tr></thead>
+<tbody>
+<tr>
+          <td class="name-cell">BHP Group <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span></td>
+          <td class="close-cell">$61.52</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,16.8 4.2,16.8 8.4,17.4 12.6,17.9 16.8,16.1 21.1,16.5 25.3,16.3 29.5,16.1 33.7,18.2 37.9,19.5 42.1,23.0 46.3,19.6 50.5,19.5 54.7,20.2 58.9,15.5 63.2,9.5 67.4,11.1 71.6,10.0 75.8,5.9 80.0,1.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="1.0" r="2.5" fill="#d92b2b"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+6.16%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+14.52%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+37.00%</td>
+        </tr><tr>
+          <td class="name-cell">Eternal/Zomato <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span></td>
+          <td class="close-cell">$237.82</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.3 4.2,10.0 8.4,10.1 12.6,8.1 16.8,4.1 21.1,1.0 25.3,3.7 29.5,6.4 33.7,7.6 37.9,9.7 42.1,8.8 46.3,14.9 50.5,10.7 54.7,13.7 58.9,7.1 63.2,5.9 67.4,6.8 71.6,16.0 75.8,21.1 80.0,23.0" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="23.0" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-7.24%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-3.73%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-16.20%</td>
+        </tr><tr>
+          <td class="name-cell">M&M <span style="font-size:10px;color:#c87f00;font-weight:400;background:#fff5e0;padding:1px 5px;border-radius:3px;">데이터 지연</span></td>
+          <td class="close-cell">$3,176.00</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,8.6 4.2,10.8 8.4,12.3 12.6,10.9 16.8,9.2 21.1,15.6 25.3,22.4 29.5,23.0 33.7,18.8 37.9,19.7 42.1,15.5 46.3,19.1 50.5,19.1 54.7,18.5 58.9,11.6 63.2,5.6 67.4,1.0 71.6,3.7 75.8,9.3 80.0,13.9" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="13.9" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#f7f8fa;color:#7c8298">0.00%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-4.64%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.53%</td><td class="heat-cell" style="background:#93c5fd;color:#1e3a5f">-15.55%</td>
+        </tr><tr>
+          <td class="name-cell">TSMC</td>
+          <td class="close-cell">$415.32</td>
+          <td class="spark-cell"><svg width="80" height="24" viewBox="0 0 80 24"><polyline points="0.0,15.6 4.2,18.9 8.4,14.5 12.6,12.5 16.8,14.2 21.1,10.4 25.3,2.9 29.5,1.5 33.7,5.9 37.9,1.0 42.1,19.5 46.3,20.9 50.5,16.8 54.7,13.7 58.9,23.0 63.2,15.3 67.4,15.0 71.6,4.9 75.8,15.2 80.0,17.5" fill="none" stroke="#F58220" stroke-width="1.5" stroke-linecap="round"/><circle cx="80.0" cy="17.5" r="2.5" fill="#1a5fb4"/></svg></td>
+          <td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.53%</td><td class="heat-cell" style="background:#dbeafe;color:#1e40af">-0.53%</td><td class="heat-cell" style="background:#fde8e8;color:#991b1b">+2.74%</td><td class="heat-cell" style="background:#fbd5d5;color:#991b1b">+30.31%</td>
+        </tr></tbody></table></div>
+
+
+</div><!-- /tab-stocks -->
+
+<!-- ══════ TAB 2: STORY ══════ -->
+<div id="tab-story" class="tab-panel">
+
+<!-- ── 1. Story Hero ── -->
+<div class="story-hero">
+  <h2>오늘의 시장 이야기</h2>
+  <div class="story-text">
+    <strong>주말 사이 미국·이란의 무력충돌 소식에 유가가 급등하며 아시아가 리스크오프로 출발했지만, 코스피는 장중 <span class="hl-down">−3.5%</span> 급락을 딛고 종가 <span class="hl-up">+0.46%</span>(6,820.02)로 되돌린 극적인 하루였습니다 — 미국 증시는 에너지주 강세 속 소폭 밀렸으나 8월을 상승으로 마무리했습니다.</strong><br><br>
+
+    <strong>아시아 세션</strong>은 미국이 이란 라라크섬의 이란군을 타격하고 이란이 요르단 내 미군기지를 공격했다는 주말 소식에 지정학 리스크가 되살아나며 위험회피로 출발했습니다. 코스피는 6,613.58로 갭다운 출발해 장중 6,547.76(전일 대비 <span class="hl-down">−3.5%</span>)까지 밀렸으나, 삼성전자의 차세대 HBM4 공개와 반도체 저가매수(SK하이닉스 <span class="hl-up">+1.27%</span>)에 힘입어 종가 6,820.02(<span class="hl-up">+0.46%</span>)로 사실상 고가 부근에서 V자 반등했습니다. 코스닥은 <span class="hl-down">−0.49%</span>(834.29)로 소폭 밀렸고, 닛케이 <span class="hl-down">−0.14%</span>(66,311.93)·항셍 <span class="hl-down">−0.07%</span>은 보합, 상하이는 <span class="hl-up">+0.86%</span>(3,986.30)로 견조했습니다. 대만 ASE테크(<span class="hl-down">−5.96%</span>)·일본 어드반테스트(<span class="hl-down">−4.48%</span>) 등 반도체 후공정·장비주는 차익실현에 밀렸습니다.<br><br>
+
+    <strong>유럽 세션</strong>은 영국 증시가 여름 은행 공휴일로 휴장한 가운데, 유가·금리 상승 부담을 소화하며 하락했습니다. 독일 소비자물가 발표를 앞두고 DAX가 <span class="hl-down">−1.17%</span>(26,258.11)로 역내 최약세를 보였고, CAC40 <span class="hl-down">−0.79%</span>(8,334.50)·유로스톡스50 <span class="hl-down">−1.01%</span>(6,420.16)이 함께 밀렸습니다.<br><br>
+
+    <strong>미국 세션</strong>은 이란 사태 지속에 3대 지수가 하락 출발했으나, 에너지 섹터가 지수를 방어했습니다. 유가 급등(WTI <span class="hl-up">+3.49%</span>·$86.31)에 셰브런 <span class="hl-up">+2.12%</span>·엑슨모빌 <span class="hl-up">+2.71%</span> 등이 오르며 에너지 섹터가 <span class="hl-up">+2.04%</span> 독주한 반면, 유틸리티(<span class="hl-down">−1.17%</span>)·산업재(<span class="hl-down">−1.13%</span>)·커뮤니케이션(<span class="hl-down">−1.35%</span>)이 약세를 보였습니다. 엔비디아가 <span class="hl-up">+1.48%</span>로 버티며 기술 섹터(<span class="hl-up">+0.44%</span>)는 선방했고, S&amp;P500 <span class="hl-down">−0.33%</span>(7,686.14)·나스닥 <span class="hl-down">−0.12%</span>(26,370.89)·러셀2000 <span class="hl-down">−0.54%</span>이 소폭 밀렸습니다. VIX는 <span class="hl-down">+3.4%</span> 오른 14.92로 상승했으나 여전히 낮은 수준에서 8월을 마쳤습니다.
+  </div>
+</div>
+
+<!-- ── 2. Causal Chain ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 흐름 — 하나의 체인으로 이해하기</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">미국·이란 무력충돌 → 유가 급등·리스크오프 → 코스피 장중 급락 후 V자 반등 → 에너지주 강세·유틸리티 약세 → 3대 지수 소폭 하락하나 8월 상승 마감</div>
+<div class="causal-chain">
+  <div class="cause-node">
+    <div class="node-label">지정학 (중동)</div>
+    <div class="node-title">미국·이란 무력충돌 재점화</div>
+    <div class="node-detail">미국이 이란 라라크섬의 이란군을 타격하고 이란이 요르단 미군기지를 공격했다는 주말 소식에, 한 달여 만에 양국 충돌이 재개되며 호르무즈 해협 공급 우려가 되살아났습니다.</div>
+    <div class="node-impact down">위험회피 ▲</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">원자재</div>
+    <div class="node-title">유가 3%대 급등 · $86 돌파</div>
+    <div class="node-detail">공급 차질 우려에 WTI가 +3.49% 올라 $86.31로 마감했습니다. 지정학 프리미엄이 유가에 집중 반영됐습니다.</div>
+    <div class="node-impact up">유가 ▲</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">증시 (한국)</div>
+    <div class="node-title">코스피 장중 −3.5% → 종가 +0.46%</div>
+    <div class="node-detail">리스크오프로 갭다운 출발해 6,547.76까지 밀렸으나, 삼성전자 HBM4 공개·반도체 저가매수로 종가 6,820.02까지 되돌린 V자 반등을 그렸습니다.</div>
+    <div class="node-impact up">코스피 ▲</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">섹터 (미국)</div>
+    <div class="node-title">에너지 독주 · 유틸리티 약세</div>
+    <div class="node-detail">유가 급등에 셰브런·엑슨모빌이 오르며 에너지 섹터가 +2.04% 독주한 반면, 금리 민감 유틸리티(−1.17%)는 밀렸습니다.</div>
+    <div class="node-impact up">에너지 ▲</div>
+  </div>
+  <div class="cause-arrow">→</div>
+  <div class="cause-node">
+    <div class="node-label">증시 (미국)</div>
+    <div class="node-title">지수 소폭 하락 · 8월은 상승 마감</div>
+    <div class="node-detail">S&amp;P500(−0.33%)·나스닥(−0.12%)이 밀렸지만, 8월 전체로는 S&amp;P +2.62%·나스닥 +3.93%로 상승 마무리했습니다.</div>
+    <div class="node-impact flat">지수 ▽ / 월간 ▲</div>
+  </div>
+</div>
+
+<!-- ── 3. Session Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">세계 시장은 릴레이처럼 돌아갑니다</div>
+<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">8/31(월) — 아시아는 급락 후 V자 반등, 유럽은 유가·금리 부담에 하락, 미국은 에너지 강세 속 소폭 하락하며 8월 상승 마감</div>
+<div class="session-grid">
+  <div class="session-block asia">
+    <div class="session-header">
+      <div class="session-icon asia">🇰🇷</div>
+      <div>
+        <div class="session-name">아시아 세션</div>
+        <div class="session-time">한국 09:00 ~ 15:30</div>
+      </div>
+    </div>
+    <span class="session-verdict verdict-up">지정학 급락을 딛고 코스피 V자 반등</span>
+    <ul class="session-events">
+      <li><span class="ev-time">09:00</span> 미국·이란 무력충돌 소식에 코스피 6,613.58 갭다운 출발</li>
+      <li><span class="ev-time">10:30</span> 장중 6,547.76(<span class="hl-down">−3.5%</span>)까지 급락, 지정학 위험회피 확산</li>
+      <li><span class="ev-time">15:30</span> 삼성 HBM4·반도체 저가매수로 코스피 <span class="hl-up">+0.46%</span>(6,820.02) V자 마감</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">KOSPI</div><div class="s-kpi-value up">+0.46%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">KOSDAQ</div><div class="s-kpi-value down">−0.49%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">Shanghai</div><div class="s-kpi-value up">+0.86%</div></div>
+    </div>
+  </div>
+
+  <div class="session-block europe">
+    <div class="session-header">
+      <div class="session-icon europe">🇪🇺</div>
+      <div>
+        <div class="session-name">유럽 세션</div>
+        <div class="session-time">16:00 ~ 01:30</div>
+      </div>
+    </div>
+    <span class="session-verdict verdict-down">런던 휴장 속 유가·금리 부담에 하락</span>
+    <ul class="session-events">
+      <li><span class="ev-time">16:00</span> 영국 증시 여름 은행 공휴일로 휴장, 얇은 거래 속 약세 출발</li>
+      <li><span class="ev-time">20:00</span> 유가·금리 상승 부담, 독일 CPI 발표 대기</li>
+      <li><span class="ev-time">01:30</span> DAX <span class="hl-down">−1.17%</span>·CAC40 <span class="hl-down">−0.79%</span>·유로스톡스50 <span class="hl-down">−1.01%</span> 마감</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">DAX</div><div class="s-kpi-value down">−1.17%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">CAC40</div><div class="s-kpi-value down">−0.79%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">STOXX50</div><div class="s-kpi-value down">−1.01%</div></div>
+    </div>
+  </div>
+
+  <div class="session-block us">
+    <div class="session-header">
+      <div class="session-icon us">🇺🇸</div>
+      <div>
+        <div class="session-name">미국 세션</div>
+        <div class="session-time">22:30 ~ 06:00</div>
+      </div>
+    </div>
+    <span class="session-verdict verdict-down">에너지 독주 속 지수 소폭 하락 · 8월 상승 마감</span>
+    <ul class="session-events">
+      <li><span class="ev-time">22:30</span> 이란 사태 지속에 3대 지수 하락 출발, 유가 <span class="hl-up">+3.49%</span> $86 돌파</li>
+      <li><span class="ev-time">00:00</span> 셰브런 <span class="hl-up">+2.12%</span>·엑슨모빌 <span class="hl-up">+2.71%</span>, 에너지 섹터 <span class="hl-up">+2.04%</span> 독주</li>
+      <li><span class="ev-time">06:00</span> S&amp;P500 <span class="hl-down">−0.33%</span>·나스닥 <span class="hl-down">−0.12%</span> 마감, VIX 14.92로 8월 마무리</li>
+    </ul>
+    <div class="session-kpi">
+      <div class="s-kpi"><div class="s-kpi-label">S&amp;P500</div><div class="s-kpi-value down">−0.33%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">NASDAQ</div><div class="s-kpi-value down">−0.12%</div></div>
+      <div class="s-kpi"><div class="s-kpi-label">Russell2K</div><div class="s-kpi-value down">−0.54%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 4. Insight Grid ── -->
+<div style="margin-bottom:12px;font-size:15px;font-weight:600;color:#1a1d2e;">오늘의 핵심 학습</div>
+<div class="insight-grid">
+  <div class="insight-card">
+    <span class="badge">코스피 V자</span>
+    <div style="font-weight:600;color:#1a1d2e;margin-bottom:8px;">장중 −3.5%를 되돌린 반도체의 힘</div>
+    <div style="font-size:13px;color:#2d3148;line-height:1.7;">코스피는 미국·이란 충돌 소식에 갭다운 출발해 장중 6,547.76까지 3.5% 급락했지만, 종가는 오히려 6,820.02(+0.46%)로 고가 부근에서 마감했습니다. 삼성전자의 차세대 HBM4 공개와 SK하이닉스(+1.27%) 등 반도체 저가매수가 반등을 이끌었습니다. 지정학 헤드라인에 갭다운으로 반응하되 실적·기술 모멘텀이 있는 대장주로 되돌리는 최근 한국 증시의 복원력을 보여준 하루였습니다.</div>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">장중 저가</div><div class="metric-value down">6,547.76</div></div><div class="metric-item"><div class="metric-label">종가</div><div class="metric-value up">6,820.02 (+0.46%)</div></div></div>
+  </div>
+  <div class="insight-card">
+    <span class="badge">에너지 독주</span>
+    <div style="font-weight:600;color:#1a1d2e;margin-bottom:8px;">지정학 프리미엄은 유가와 에너지주에 집중됐다</div>
+    <div style="font-size:13px;color:#2d3148;line-height:1.7;">이번 지정학 충격은 증시 전반의 공포보다 유가와 에너지주에 집중 반영됐습니다. WTI가 +3.49% 올라 $86를 넘자 셰브런(+2.12%)·엑슨모빌(+2.71%)이 상승하며 에너지 섹터만 홀로 +2.04% 올랐습니다. 반면 금리 민감 업종인 유틸리티(−1.17%)·산업재(−1.13%)는 약세를 보여, 시장이 이번 이벤트를 '전면적 위험회피'가 아닌 '공급 충격에 따른 섹터 재배치'로 소화했음을 시사합니다.</div>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">WTI</div><div class="metric-value up">$86.31 (+3.49%)</div></div><div class="metric-item"><div class="metric-label">에너지 섹터</div><div class="metric-value up">+2.04%</div></div></div>
+  </div>
+  <div class="insight-card">
+    <span class="badge">8월 결산</span>
+    <div style="font-weight:600;color:#1a1d2e;margin-bottom:8px;">하락 마감했지만 8월은 상승의 달이었다</div>
+    <div style="font-size:13px;color:#2d3148;line-height:1.7;">마지막 거래일은 하락이었지만, 8월 전체로 보면 위험자산이 강했던 달이었습니다. 코스피는 월간 +3.40%(YTD +58.25%), 코스닥은 +15.91%로 뚜렷한 강세를 보였고, 금(+9.73%)·은(+16.32%) 등 귀금속도 크게 올랐습니다. 원/달러는 8월 한 달 −3.83% 하락(원화 강세)해 외국인 자금 환경도 우호적이었습니다.</div>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">코스피 월간</div><div class="metric-value up">+3.40%</div></div><div class="metric-item"><div class="metric-label">원/달러 월간</div><div class="metric-value up">−3.83%</div></div></div>
+  </div>
+  <div class="insight-card">
+    <span class="badge">낮은 VIX</span>
+    <div style="font-weight:600;color:#1a1d2e;margin-bottom:8px;">지정학 충격에도 공포지수는 낮게 유지됐다</div>
+    <div style="font-size:13px;color:#2d3148;line-height:1.7;">중동 무력충돌이라는 헤드라인에도 VIX는 +3.4% 오르는 데 그쳐 14.92로 여전히 낮은 수준을 지켰습니다. 유가가 3%대 급등하고 코스피가 장중 3.5% 급락했음에도 미국 증시 낙폭은 0.3%대에 머물렀고, 엔비디아(+1.48%)는 오히려 올랐습니다. 시장이 이번 충돌을 아직 '국지적·공급 측' 이벤트로 보고 있음을 반영하지만, 확전 시 낮은 변동성은 빠르게 되돌려질 수 있는 지점입니다.</div>
+    <div class="metric-row"><div class="metric-item"><div class="metric-label">VIX</div><div class="metric-value down">14.92 (+3.4%)</div></div><div class="metric-item"><div class="metric-label">엔비디아</div><div class="metric-value up">+1.48%</div></div></div>
+  </div>
+</div>
+
+<!-- ── 5. Risk Section ── -->
+<div class="risk-section" style="margin-top:20px;">
+  <h3>⚠️ 주목할 리스크</h3>
+  <ul class="risk-items">
+    <li class="risk-item">
+      <span class="risk-tag high">높음</span>
+      <strong>중동 지정학 확전:</strong> 미국·이란의 무력충돌이 한 달여 만에 재개됐습니다 — 호르무즈 해협 등 핵심 원유 수송로로 충돌이 번지면 유가 급등·인플레 재점화·글로벌 리스크오프가 다시 촉발될 수 있습니다.
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">중간</span>
+      <strong>이번 주 미 고용지표:</strong> 주 후반 미국 고용보고서 발표가 예정돼 있어, 결과에 따라 9월 통화정책 경로에 대한 기대가 크게 흔들릴 수 있습니다.
+    </li>
+    <li class="risk-item">
+      <span class="risk-tag med">중간</span>
+      <strong>코스피 변동성:</strong> 이날 장중 진폭이 4%포인트를 넘었습니다 — 지정학 헤드라인에 갭다운으로 민감하게 반응하는 구조여서, 단기 변동성 확대에 유의할 필요가 있습니다.
+    </li>
+  </ul>
+</div>
+
+<!-- ── 6. WTD / MTD Progress ── -->
+<div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">주간 누적 (W36 · 1/5 영업일 경과 · 전주 금요일 8/28 종가 대비)</h3>
+    <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+      <li>핵심 지수: KOSPI <span class="hl-up">+0.46%</span>, S&amp;P500 <span class="hl-down">−0.33%</span>, NASDAQ <span class="hl-down">−0.12%</span>, 러셀2000 <span class="hl-down">−0.54%</span></li>
+      <li>원자재: WTI <span class="hl-up">+3.49%</span>, 금 <span class="hl-up">+0.43%</span>, 은 <span class="hl-up">+0.31%</span>, 구리 <span class="hl-up">+1.94%</span></li>
+      <li>FX: DXY <span class="hl-down">−0.27%</span>, 원/달러 <span class="hl-down">−0.63%</span></li>
+      <li>주 초반 흐름: 미국·이란 충돌로 유가가 급등하며 리스크오프로 출발했으나, 코스피는 반도체 저가매수로 급락을 되돌렸습니다.</li>
+    </ul>
+  </div>
+
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <h3 style="font-size:14px;font-weight:600;color:#1a1d2e;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">월간 누적 (8월 · 마지막 영업일 · 월간 마감 · 7월 말 종가 대비)</h3>
+    <ul style="font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
+      <li>핵심 지수: KOSPI <span class="hl-up">+3.40%</span>, KOSDAQ <span class="hl-up">+15.91%</span>, S&amp;P500 <span class="hl-up">+2.62%</span>, NASDAQ <span class="hl-up">+3.93%</span></li>
+      <li>원자재: 금 <span class="hl-up">+9.73%</span>, 은 <span class="hl-up">+16.32%</span>, 구리 <span class="hl-up">+2.78%</span>, WTI <span class="hl-up">+1.94%</span></li>
+      <li>FX: DXY <span class="hl-down">−0.39%</span>, 원/달러 <span class="hl-down">−3.83%</span>(원화 강세)</li>
+      <li>월간 테마: 8월은 코스닥·귀금속이 두드러진 위험자산 강세의 달이었으며, 원화 강세가 외국인 수급 환경을 뒷받침했습니다.</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /tab-story -->
+
+<!-- ══════ TAB 3: CS STORY ══════ -->
+<div id="tab-cs" class="tab-panel active">
+
+<style>
+  .cs-hero{background:linear-gradient(135deg,#fff5eb,#fde9d3);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:28px 32px;margin-bottom:24px}
+  .cs-hero h2{font-size:13px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+  .cs-hero .cs-subtitle{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .cs-text{font-size:16px;color:#2d3148;line-height:1.9}
+  .cs-text p{margin-bottom:14px}
+  .cs-text p:last-child{margin-bottom:0}
+  .cs-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .cs-section h3{font-size:17px;font-weight:600;color:#1a1d2e;margin-bottom:10px}
+  .cs-section p{font-size:15px;color:#2d3148;line-height:1.85;margin-bottom:10px}
+  .cs-section p:last-child{margin-bottom:0}
+  .cs-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:12px;margin-top:8px}
+</style>
+
+<div class="cs-hero">
+  <h2>CS Story — 고객 설명용</h2>
+  <div class="cs-subtitle">2026-08-31 (월) · 수치 대신 맥락·흐름 중심</div>
+  <div class="cs-text">
+    <p>주말 사이 미국과 이란이 다시 무력으로 충돌했다는 소식이 전해지면서, 아시아 증시는 불안한 마음으로 한 주를 시작했습니다. 한 달여 만에 되살아난 중동 리스크에 국제유가가 크게 뛰었고, 위험을 피하려는 움직임이 아시아 장 초반을 지배했습니다. 코스피는 장 시작과 함께 크게 밀려 한때 급락했지만, 삼성전자가 차세대 메모리(HBM4)를 공개하고 저가에 반도체를 사려는 매수세가 몰리면서 오후 들어 낙폭을 모두 되돌려 상승으로 마감하는 극적인 하루를 그렸습니다.</p>
+    <p>유럽은 이날 영국 증시가 여름 은행 공휴일로 문을 닫아 거래가 얇았고, 오른 유가와 금리 부담을 소화하며 대체로 약세를 보였습니다. 특히 독일은 소비자물가 발표를 앞두고 관망 심리가 짙어 역내에서 가장 부진했습니다.</p>
+    <p>미국 증시는 중동 사태가 이어지는 가운데 하락 출발했지만, 유가 급등의 수혜를 받은 에너지 기업들이 지수를 떠받쳤습니다. 정유·에너지주가 홀로 강하게 오른 반면 금리에 민감한 유틸리티·산업재는 약했고, 대표 반도체주는 오히려 버티면서 지수 낙폭은 크지 않았습니다. 결국 마지막 거래일은 소폭 하락으로 끝났지만, 미국 증시는 8월 한 달 전체로는 상승으로 마무리했습니다.</p>
+  </div>
+</div>
+
+<div class="cs-section">
+  <h3>🇰🇷 지정학 급락을 되돌린 반도체의 복원력</h3>
+  <p>이날 코스피는 중동發 악재에 장 초반 큰 폭으로 밀렸지만, 종가는 오히려 고점 부근에서 상승 마감했습니다. 삼성전자의 차세대 메모리 공개와 SK하이닉스를 향한 저가 매수가 반등의 원동력이었습니다.</p>
+  <p>지정학 헤드라인이 나오면 일단 갭을 벌리며 하락하되, 실적과 기술 경쟁력을 갖춘 대장주로 되돌리는 최근 한국 증시의 복원력이 다시 확인된 하루였습니다. 다만 중소형주가 몰린 코스닥은 소폭 밀리며 대형 반도체주와는 다른 흐름을 보였습니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🛢️ 지정학 프리미엄은 유가와 에너지주에 집중됐다</h3>
+  <p>이번 충격은 증시 전반의 공포로 번지기보다 유가와 에너지 관련주에 집중적으로 반영됐습니다. 호르무즈 해협 등 원유 수송로에 대한 공급 우려가 커지자 국제유가가 튀어 올랐고, 미국의 셰브런·엑슨모빌 같은 에너지 대기업 주가가 강세를 보였습니다.</p>
+  <p>반대로 금리에 민감한 유틸리티와 산업재는 약세를 보였습니다. 시장이 이번 사건을 '전면적인 위험 회피'라기보다 '공급 충격에 따른 업종 간 자리바꿈'으로 소화했다는 신호로 읽힙니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>🇺🇸 공포지수는 낮게 유지됐지만, 확전은 변수</h3>
+  <p>중동 무력충돌이라는 큰 헤드라인에도 미국의 변동성지수(공포지수)는 소폭 오르는 데 그쳐 여전히 낮은 수준을 지켰습니다. 유가가 급등하고 코스피가 장중 크게 흔들렸는데도 미국 증시의 낙폭은 얕았고, 대표 반도체주는 오히려 상승했습니다.</p>
+  <p>시장이 아직 이번 충돌을 '국지적이고 공급 측면에 국한된' 사건으로 보고 있다는 뜻입니다. 그러나 낮은 변동성은 상황이 확대되면 빠르게 되돌려질 수 있는 지점이기도 해, 주 후반 예정된 미국 고용지표와 함께 눈여겨봐야 할 대목입니다.</p>
+</div>
+
+<div class="cs-section">
+  <h3>📅 이번 주·이번 달 관점</h3>
+  <p>8월의 마지막 거래일은 하락이었지만, 한 달 전체로 보면 위험자산이 강했던 달이었습니다. 코스피와 코스닥이 뚜렷한 강세를 보였고, 금·은 같은 귀금속도 크게 올랐으며, 원화가 달러 대비 강해지면서 외국인 자금이 들어오기 좋은 환경도 뒷받침됐습니다. 8월은 성장주와 귀금속이 주도한 위험자산 강세의 달로 요약됩니다.</p>
+  <p>새로 시작된 이번 주는 중동 사태의 확전 여부와 주 후반 미국 고용지표가 9월 통화정책 기대를 어느 방향으로 움직일지가 관전 포인트입니다.</p>
+  <p class="cs-footer">CS Story 는 Market Story 를 수치 대신 맥락·흐름 중심으로 재구성한 고객 설명용 버전입니다. 구체적 수치는 Market Story / Data Dashboard 탭을 참고하세요.</p>
+</div>
+
+</div><!-- /tab-cs -->
+
+<!-- ══════ TAB 4: PM STORY ══════ -->
+<div id="tab-pm" class="tab-panel">
+
+<style>
+  .pm-hero{background:linear-gradient(135deg,#eef4fb,#dde9f6);border:1px solid var(--border);border-left:4px solid #043B72;border-radius:12px;padding:24px 28px;margin-bottom:20px}
+  .pm-hero h2{font-size:13px;color:#043B72;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .pm-hero .pm-subtitle{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .pm-tl{font-size:15px;color:#1a1d2e;line-height:1.8}
+  .pm-tl p{margin-bottom:8px}
+  .pm-tl p:last-child{margin-bottom:0}
+  .pm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px}
+  @media (max-width:800px){.pm-grid{grid-template-columns:1fr}}
+  .pm-section{background:var(--card);border:1px solid var(--border);border-left:3px solid #043B72;border-radius:10px;padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .pm-section h3{font-size:15px;font-weight:700;color:#043B72;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pm-section ul{list-style:none;padding:0;margin:0}
+  .pm-section li{font-size:13.5px;color:#2d3148;line-height:1.75;margin-bottom:6px;padding-left:12px;position:relative}
+  .pm-section li::before{content:'·';position:absolute;left:0;color:#043B72;font-weight:700}
+  .pm-section li:last-child{margin-bottom:0}
+  .pm-section .pm-num{font-weight:600;color:#1a1d2e}
+  .pm-section .pm-up{color:#d92b2b;font-weight:600}
+  .pm-section .pm-dn{color:#1a5fb4;font-weight:600}
+  .pm-section .pm-note{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+  .pm-footer{font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;text-align:center}
+</style>
+
+<div class="pm-hero">
+  <h2>PM Story — 포트폴리오 매니저 브리프</h2>
+  <div class="pm-subtitle">2026-08-31 (월) · 지역·자산군별 요지 + 핵심 수치 · W36 1/5 영업일 · 8월 마지막 영업일</div>
+  <div class="pm-tl">
+    <p><strong>Top-line:</strong> 주말 미·이란 무력충돌로 유가가 급등하며 리스크오프로 출발, 코스피는 장중 <span class="pm-dn">−3.5%</span> 급락을 딛고 <span class="pm-num">6,820.02</span>(<span class="pm-up">+0.46%</span>)로 V자 반등. 미국은 에너지 독주 속 <span class="pm-dn">−0.33%</span> 소폭 하락했으나 8월은 상승 마감(S&amp;P500 MTD <span class="pm-up">+2.62%</span>).</p>
+    <p><strong>Key drivers:</strong> 미국·이란 충돌 재점화·호르무즈 공급 우려 → WTI <span class="pm-up">+3.49%</span>($86.31); 삼성전자 HBM4 공개·반도체 저가매수 → 코스피 V자; 유가 급등 → 미 에너지 섹터 <span class="pm-up">+2.04%</span> 독주.</p>
+    <p><strong>Watch:</strong> 중동 확전 여부(호르무즈), 주 후반 미 고용보고서(9월 인하 경로), 독일·유로존 CPI, 코스피 장중 변동성(진폭 4%p 초과).</p>
+  </div>
+</div>
+
+<div class="pm-grid">
+  <div class="pm-section">
+    <h3>🇰🇷 한국</h3>
+    <ul>
+      <li>KOSPI <span class="pm-num">6,820.02</span> <span class="pm-up">+0.46%</span> · MTD <span class="pm-up">+3.40%</span> · YTD <span class="pm-up">+58.25%</span> (장중 저가 6,547.76, <span class="pm-dn">−3.5%</span> 후 V자)</li>
+      <li>KOSDAQ <span class="pm-num">834.29</span> <span class="pm-dn">−0.49%</span> · MTD <span class="pm-up">+15.91%</span> (8월 중소형·성장주 강세, YTD <span class="pm-dn">−11.77%</span>)</li>
+      <li>주도주: 삼성전자 <span class="pm-num">260,000</span> <span class="pm-up">+1.17%</span>(HBM4 공개)·SK하이닉스 <span class="pm-num">1,674,000</span> <span class="pm-up">+1.27%</span> — 반도체 저가매수가 반등 견인</li>
+      <li>USD/KRW <span class="pm-num">1,366.99</span> <span class="pm-up">−0.63%</span>(원화 강세) · MTD <span class="pm-up">−3.83%</span> → 외국인 수급 환경 우호</li>
+      <li>KR 3Y <span class="pm-num">3.838%</span>(<span class="pm-dn">+5.0bp</span>)·10Y <span class="pm-num">4.053%</span>(<span class="pm-dn">+3.2bp</span>), 금리 상승 압력</li>
+    </ul>
+    <div class="pm-note">지정학 갭다운을 실적·기술 모멘텀 대장주로 되돌린 복원력 재확인</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌐 매크로</h3>
+    <ul>
+      <li>WTI <span class="pm-num">$86.31</span> <span class="pm-up">+3.49%</span> · YTD <span class="pm-up">+50.58%</span> — 미·이란 충돌·호르무즈 공급 우려로 지정학 프리미엄 집중</li>
+      <li>금 <span class="pm-num">$4,497.3</span> <span class="pm-up">+0.43%</span>(MTD <span class="pm-up">+9.73%</span>)·은 <span class="pm-num">$67.21</span> <span class="pm-up">+0.31%</span>(MTD <span class="pm-up">+16.32%</span>)·구리 <span class="pm-num">6.689</span> <span class="pm-up">+1.94%</span></li>
+      <li>DXY <span class="pm-num">99.41</span> <span class="pm-dn">−0.27%</span> · MTD <span class="pm-dn">−0.39%</span> — 8월 완만한 약달러</li>
+      <li>주 후반 미 고용보고서·독일/유로존 CPI 대기 — 9월 통화정책 기대의 분수령</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🌏 아시아 및 중국</h3>
+    <ul>
+      <li>Nikkei225 <span class="pm-num">66,311.93</span> <span class="pm-dn">−0.14%</span>(MTD <span class="pm-up">+3.03%</span>)·Shanghai <span class="pm-num">3,986.30</span> <span class="pm-up">+0.86%</span>(MTD <span class="pm-up">+4.02%</span>)·HSI <span class="pm-num">25,566.99</span> <span class="pm-dn">−0.07%</span></li>
+      <li>반도체 후공정·장비 차익실현: ASE테크 <span class="pm-dn">−5.96%</span>·어드반테스트 <span class="pm-dn">−4.48%</span>·디스코 <span class="pm-dn">−2.07%</span></li>
+      <li>중국 반도체 자립주 강세: 캄브리콘 <span class="pm-up">+6.26%</span>·하이곤 <span class="pm-up">+3.43%</span>; EV BYD <span class="pm-dn">−5.17%</span> 약세</li>
+      <li>USD/JPY <span class="pm-num">159.74</span> <span class="pm-up">−0.18%</span>·USD/CNY <span class="pm-num">6.719</span> <span class="pm-up">−0.03%</span> — 아시아 통화 소폭 강세</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇺🇸 미국</h3>
+    <ul>
+      <li>S&amp;P500 <span class="pm-num">7,686.14</span> <span class="pm-dn">−0.33%</span>(MTD <span class="pm-up">+2.62%</span>)·NASDAQ <span class="pm-num">26,370.89</span> <span class="pm-dn">−0.12%</span>(MTD <span class="pm-up">+3.93%</span>)·Russell2K <span class="pm-num">2,956.45</span> <span class="pm-dn">−0.54%</span></li>
+      <li>에너지 독주: 셰브런 <span class="pm-up">+2.12%</span>·엑슨모빌 <span class="pm-up">+2.71%</span> → SPDR Energy <span class="pm-up">+2.04%</span>; 유틸리티 <span class="pm-dn">−1.17%</span>·산업재 <span class="pm-dn">−1.13%</span>·커뮤니케이션 <span class="pm-dn">−1.35%</span> 약세</li>
+      <li>엔비디아 <span class="pm-num">220.78</span> <span class="pm-up">+1.48%</span>로 기술주 방어(SPDR Tech <span class="pm-up">+0.44%</span>); 마이크로소프트 <span class="pm-dn">−1.22%</span>·애플 <span class="pm-dn">−0.89%</span></li>
+      <li>VIX <span class="pm-num">14.92</span> (<span class="pm-dn">+3.4%</span>) — 지정학 헤드라인에도 낮은 변동성 레짐 유지</li>
+    </ul>
+    <div class="pm-note">'전면 위험회피'가 아닌 '공급충격發 섹터 재배치'로 소화</div>
+  </div>
+
+  <div class="pm-section">
+    <h3>🇪🇺 유럽</h3>
+    <ul>
+      <li>STOXX50 <span class="pm-num">6,420.16</span> <span class="pm-dn">−1.01%</span>·DAX <span class="pm-num">26,258.11</span> <span class="pm-dn">−1.17%</span>(역내 최약세)·CAC40 <span class="pm-num">8,334.50</span> <span class="pm-dn">−0.79%</span></li>
+      <li>FTSE100 <span class="pm-num">10,824.26</span> 휴장 — 영국 여름 은행 공휴일, 얇은 거래</li>
+      <li>독일 CPI 발표 대기 + 유가·금리 부담 → 역내 동반 약세</li>
+      <li>EUR/USD <span class="pm-num">1.162</span> <span class="pm-up">+0.26%</span>·GBP/USD <span class="pm-num">1.355</span> <span class="pm-up">+0.07%</span> — 약달러에 소폭 강세</li>
+    </ul>
+  </div>
+
+  <div class="pm-section">
+    <h3>💵 채권</h3>
+    <ul>
+      <li>US 2Y <span class="pm-num">3.732%</span>(<span class="pm-dn">+0.2bp</span>)·10Y <span class="pm-num">4.758%</span>(<span class="pm-dn">+3.8bp</span>)·30Y <span class="pm-num">5.249%</span>(<span class="pm-dn">+4.3bp</span>), 10Y-2Y <span class="pm-num">+102.6bp</span></li>
+      <li>KR 3Y <span class="pm-num">3.838%</span>(<span class="pm-dn">+5.0bp</span>)·10Y <span class="pm-num">4.053%</span>(<span class="pm-dn">+3.2bp</span>)·CD91D <span class="pm-num">3.12%</span>(<span class="pm-up">−1.0bp</span>), 10-3 스프레드 <span class="pm-num">21.5bp</span></li>
+      <li>크레딧: HYG <span class="pm-num">79.81</span> <span class="pm-up">+0.09%</span>·LQD <span class="pm-num">106.21</span> <span class="pm-dn">−0.13%</span>·TLT <span class="pm-num">82.52</span> <span class="pm-dn">−0.43%</span>·EMB <span class="pm-num">94.77</span> <span class="pm-dn">−0.13%</span></li>
+    </ul>
+    <div class="pm-note">유가발 금리 상승에 미 커브 소폭 베어스팁, 하이일드는 안정 유지</div>
+  </div>
+</div>
+
+<div class="pm-footer">
+  PM Story 는 Market Story 를 지역·자산군별로 재편집한 매니저용 브리프입니다. 상세 내러티브는 Market Story, 고객 설명은 CS Story 탭을 참고하세요.
+</div>
+
+</div><!-- /tab-pm -->
+
+<!-- ══════ TAB 5: MACRO ══════ -->
+<div id="tab-macro" class="tab-panel">
+
+<div class="macro-section">
+    <h2>W35 2026 핵심 이벤트 리뷰 (2026-08-24 ~ 08-28)</h2>
+    <p style="color:#64748b; font-size:14px; margin:-6px 0 14px;">
+      주중 <b>엔비디아 블로우아웃 실적</b>(8/26)이 반도체·순환매 랠리를 촉발했고, 주 후반 <b>워시 신임 의장 잭슨홀 데뷔</b>(8/27~28)와 <b>7월 PCE</b>(8/28)가 인하 기대를 되돌리며 귀금속·반도체를 눌렀습니다.
+    </p>
+    <div class="macro-cards">
+
+      <div class="macro-card">
+        <div class="macro-date">08/26 (수)</div>
+        <div class="macro-title">💾 엔비디아 실적·가이던스 서프라이즈 (장 마감 후)</div>
+        <div class="macro-values">
+          엔비디아 8/27 <span class="hl-up">+8.74%</span> 급등 · 내년 매출 가이던스 시장 예상 약 2배
+        </div>
+        <div class="macro-explain">
+          세계 최대 AI 반도체 기업 엔비디아가 시장 예상을 크게 웃도는 실적과 내년 전망을 발표했습니다. 이 '블로우아웃' 실적이 글로벌 반도체 반등에 불을 붙였고, 한국에서는 반도체를 넘어 <b>전력기기·원전·2차전지</b>로 순환매가 확산되며 8/27 코스피가 장중 7,000선에 다가섰습니다. 다만 8/27 미국은 11개 업종 중 10개가 하락해 랠리의 폭이 좁았습니다.
+        </div>
+        <div class="macro-reaction">시장 반응: 8/27 나스닥 +1.57%·코스피 +1.53%. 그러나 좁은 브레드스가 이튿날 되돌림의 빌미가 됐습니다.</div>
+      </div>
+
+      <div class="macro-card">
+        <div class="macro-date">08/27~28 (목·금)</div>
+        <div class="macro-title">🏛️ 잭슨홀 심포지엄 — 워시 신임 연준 의장 데뷔 연설</div>
+        <div class="macro-values">
+          케빈 워시(Kevin Warsh) 신임 의장 첫 기조연설(8/28) · 인하 기대 후퇴
+        </div>
+        <div class="macro-explain">
+          연준이 매년 여는 잭슨홀 심포지엄(8/27~29)에서 파월의 뒤를 이은 케빈 워시 신임 의장이 첫 기조연설에 나섰습니다. 시장에 선반영돼 있던 '9월 인하' 기대가 이 연설과 7월 PCE를 소화하며 일부 되돌려졌고, 그 결과 달러와 국채 금리가 오르며 위험선호가 후퇴했습니다.
+        </div>
+        <div class="macro-reaction">시장 반응: 8/28 달러 +0.57%·미 10년물 4.72%, 금 −3.24%·은 −4.25% 급락, 반도체 되돌림에 코스피 −1.79%.</div>
+      </div>
+
+      <div class="macro-card">
+        <div class="macro-date">08/28 (금)</div>
+        <div class="macro-title">🇺🇸 7월 PCE 물가 발표 — 연준이 가장 중시하는 물가지표</div>
+        <div class="macro-values">
+          귀금속·반도체 되돌림 촉발 · DXY <span class="hl-up">+0.57%</span>
+        </div>
+        <div class="macro-explain">
+          PCE(개인소비지출 물가)는 연준이 통화정책 판단에 가장 중시하는 물가지표입니다. 잭슨홀 연설과 함께 이 지표를 소화하며 시장의 인하 기대가 후퇴했고, 이자를 낳지 않는 금·은이 자산 중 가장 큰 낙폭을 보였습니다.
+        </div>
+        <div class="macro-reaction">시장 반응: 금 주간 −2.60%·은 −3.42%, WTI 주간 −4.04%(미·이란 휴전 협상 병행).</div>
+      </div>
+
+      <div class="macro-card">
+        <div class="macro-date">08/26 (수)</div>
+        <div class="macro-title">🇰🇷 SK이노베이션 SKIET 흡수합병 발표 — 개별 이벤트</div>
+        <div class="macro-values">
+          SK이노베이션 8/26 <span class="hl-down">−11.04%</span> 급락
+        </div>
+        <div class="macro-explain">
+          거시지표는 아니지만 주중 개별 이슈로, SK이노베이션이 적자 자회사 SKIET(분리막) 흡수합병을 발표하며 급락했습니다. 한편 웨스팅하우스 지분투자 보도(주 초반)는 원전·건설주 순환매의 출발점이 됐습니다.
+        </div>
+        <div class="macro-reaction">시장 반응: 원전·전력 테마는 주중 강세, SK이노베이션은 합병 이슈로 개별 약세.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .macro-evt-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);margin-bottom:20px}
+    .macro-evt-table th{background:var(--accent2);color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:600}
+    .macro-evt-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    .macro-evt-table tr:last-child td{border-bottom:none}
+    .macro-evt-table tr:hover td{background:var(--card2)}
+    .macro-imp-high{color:var(--up);font-weight:700}
+    .macro-imp-med{color:var(--warn);font-weight:600}
+    .macro-imp-low{color:var(--muted)}
+  </style>
+
+  <div class="macro-section">
+    <h2>📆 다음 주(W36) 주요 매크로 캘린더 (8/31~9/4) — 주말 기준 예정</h2>
+    <p style="color:#64748b; font-size:14px; margin:-6px 0 14px;">
+      잭슨홀·PCE로 9월 인하 기대가 후퇴한 가운데, W36은 <b>9월 FOMC 직전 마지막 고용·물가 지표 주간</b>입니다. 특히 <b>9/4 미 8월 고용보고서</b>가 인하/동결 판단의 분수령입니다. (예정 일정 — 실제 발표 결과가 아닌 관찰 포인트)
+    </p>
+    <table class="macro-evt-table">
+      <thead>
+        <tr><th>날짜</th><th>지역</th><th>이벤트</th><th>예상/성격</th><th>중요도</th><th>한 줄 설명</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>8/31 (월)</td><td>🇺🇸🇰🇷</td><td>미 시카고 PMI(8월)·한국 산업생산(7월)</td><td>—</td><td><span class="macro-imp-low">★</span></td><td>월말 지역 경기 속보로 한 주의 문을 엽니다.</td></tr>
+        <tr><td>9/1 (화)</td><td>🇺🇸</td><td><strong>미 ISM 제조업 PMI(8월)</strong></td><td>경기 방향</td><td><span class="macro-imp-high">★★★</span></td><td>제조업 확장/위축의 분수령. 50 위아래가 경기 판단 기준입니다.</td></tr>
+        <tr><td>9/1 (화)</td><td>🇰🇷</td><td>한국 8월 수출입(무역수지)</td><td>반도체 수출</td><td><span class="macro-imp-med">★★</span></td><td>반도체 수출 모멘텀과 한국 경기의 바로미터입니다.</td></tr>
+        <tr><td>9/2 (수)</td><td>🇺🇸</td><td>미 ADP 민간고용(8월)·JOLTS 구인(7월)</td><td>고용 프리뷰</td><td><span class="macro-imp-med">★★</span></td><td>금요일 NFP에 앞선 노동시장 속보입니다.</td></tr>
+        <tr><td>9/2 (수)</td><td>🇰🇷</td><td>한국 8월 소비자물가(CPI)</td><td>—</td><td><span class="macro-imp-med">★★</span></td><td>한국은행 금리 경로를 가늠하는 물가 지표입니다.</td></tr>
+        <tr><td>9/3 (목)</td><td>🇺🇸</td><td><strong>미 ISM 서비스업 PMI(8월)</strong>·신규 실업수당</td><td>—</td><td><span class="macro-imp-high">★★★</span></td><td>미 경제의 3분의 2를 차지하는 서비스 경기와 고용 둔화를 확인합니다.</td></tr>
+        <tr><td>9/4 (금)</td><td>🇺🇸</td><td><strong>미 8월 비농업고용(NFP)·실업률</strong></td><td>W36 최대 이벤트</td><td><span class="macro-imp-high">★★★</span></td><td>9월 FOMC 인하/동결 판단의 핵심. 고용 강세면 인하 기대 추가 후퇴, 약세면 재확산.</td></tr>
+      </tbody>
+    </table>
+
+    <div style="font-size:13px;color:var(--muted);margin-top:10px;">
+      <strong>W36 최대 변수:</strong> ① <strong>9/4 미 고용보고서(NFP)</strong>가 잭슨홀·PCE 이후 후퇴한 9월 인하 기대를 되살릴지 vs 더 눌러앉힐지 ② 9/1 ISM 제조업·9/3 ISM 서비스업 PMI가 경기 둔화/견조를 확인할지 ③ <strong>엔비디아發 반도체 좁은 랠리</strong>가 브레드스 확산으로 이어질지 vs 차익실현이 지속될지 ④ 8/27 CAC40 급락의 <strong>프랑스發 정치·재정 리스크</strong>가 유럽 전반으로 확산될지 ⑤ 한국 8월 수출(9/1)·CPI(9/2)가 반도체 모멘텀과 한은 경로에 주는 신호.
+    </div>
+  </div>
+
+</div><!-- /tab-macro -->
+
+<!-- ══════ TAB 6: SOURCES ══════ -->
+<div id="tab-sources" class="tab-panel">
+
+  <div class="sources-header">
+    <h2>참조 출처 — 2026-08-31 일간</h2>
+    <div class="sources-sub">본 보고서 작성에 참조된 뉴스 및 데이터 소스 목록입니다.</div>
+  </div>
+
+  <div class="sources-section">
+    <h3>🌏 아시아 세션</h3>
+    <ul class="sources-list">
+      <li><a href="https://en.sedaily.com/finance/2026/08/31/kospi-closes-up-046-percent-at-682002" target="_blank">KOSPI Closes Up 0.46% at 6,820.02</a> — <span class="source-meta">Seoul Economic Daily · 2026-08-31</span></li>
+      <li><a href="https://en.sedaily.com/finance/2026/08/31/kosdaq-closes-down-049-percent-at-83429" target="_blank">KOSDAQ Closes Down 0.49% at 834.29</a> — <span class="source-meta">Seoul Economic Daily · 2026-08-31</span></li>
+      <li><a href="https://www.asiae.co.kr/en/article/2026083116043999477" target="_blank">KOSPI Closes Slightly Higher Above 6,800, KOSDAQ Ends Slightly Lower</a> — <span class="source-meta">The Asia Business Daily · 2026-08-31</span></li>
+      <li><a href="https://247wallst.com/cards/china-exposure-now-splits-by-market-not-by-country-shangha-hsi-market-bell-01m1bdgx0692yq554hh1hb3d9c" target="_blank">Hang Seng Closes Down 0.22% While Shanghai Rises 0.86%</a> — <span class="source-meta">24/7 Wall St. · 2026-08-31</span></li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>🇪🇺 유럽 세션</h3>
+    <ul class="sources-list">
+      <li><a href="https://www.marketscreener.com/news/european-stocks-ease-as-u-s-iran-strikes-fuel-oil-rally-ce7858dcdc8efe26" target="_blank">Europe stocks edge lower as oil jumps; monthly gain in sight</a> — <span class="source-meta">MarketScreener · 2026-08-31</span></li>
+      <li><a href="https://www.fxstreet.com/news/wti-oil-appreciates-beyond-8550-as-tensions-rise-in-iran-202608311008" target="_blank">WTI Oil appreciates beyond $85.50 as tensions rise in Iran</a> — <span class="source-meta">FXStreet · 2026-08-31</span></li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>🇺🇸 미국 세션</h3>
+    <ul class="sources-list">
+      <li><a href="https://finance.yahoo.com/markets/live/stock-market-today-monday-august-31-dow-sp-500-nasdaq-113851714.html" target="_blank">Stock market today: Dow, S&amp;P 500, Nasdaq slip but cap winning month for stocks</a> — <span class="source-meta">Yahoo Finance · 2026-08-31</span></li>
+      <li><a href="https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-aug-31-2026" target="_blank">Stock Market Today (Aug. 31, 2026): Russell 2000, S&amp;P 500 fall to start week as Middle East conflict drags on</a> — <span class="source-meta">TheStreet · 2026-08-31</span></li>
+      <li><a href="https://oilprice.com/Energy/Oil-Prices/Oil-Prices-Surge-as-US-and-Iran-Exchange-Strikes.html" target="_blank">Oil Prices Surge as U.S. and Iran Exchange Strikes</a> — <span class="source-meta">OilPrice.com · 2026-08-31</span></li>
+      <li><a href="https://finance.yahoo.com/markets/article/energy-stocks-lead-in-subdued-final-trading-day-of-august-utilities-under-pressure-alphacheck-142014111.html" target="_blank">Energy stocks lead in subdued final trading day of August, utilities under pressure</a> — <span class="source-meta">Yahoo Finance / AlphaCheck · 2026-08-31</span></li>
+    </ul>
+  </div>
+
+  <div class="sources-section">
+    <h3>📊 데이터 소스</h3>
+    <ul class="sources-list">
+      <li>history/market_data.csv — RDS mkt100_market_daily</li>
+      <li>history/macro_indicators.csv — FRED · ECOS</li>
+      <li>output/summary/2026-08/2026-08-31_data.json — generate.py 산출 메트릭</li>
+    </ul>
+  </div>
+
+</div><!-- /tab-sources -->
+
+<div class="ai-disclaimer">⚠️ 본 보고서는 AI가 자동 생성한 참고 자료이며, 투자 권유가 아닙니다. 수치·해석에 오류가 포함될 수 있으므로 투자 판단 시 반드시 원본 데이터를 확인하시기 바랍니다.</div>
+<div class="footer">Daily Market Summary | AI auto-generated | 2026-08-31</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+  // 차트 리사이즈 (탭 전환 후)
+  if(id==='data') setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+}
+Chart.defaults.color='#7c8298';
+Chart.defaults.borderColor='#e8eaf0';
+Chart.defaults.font.family="'Spoqa Han Sans Neo','Spoqa Han Sans',sans-serif";
+Chart.defaults.font.size=11;
+const UP='#d92b2b',DN='#1a5fb4',AC='#F58220',WN='#CB6015',MU='#b0b4c4',GD='#b8860b';
+function bc(d){return d.map(v=>v>0?UP:v<0?DN:MU)}
+
+// Equity bar
+new Chart(document.getElementById('eqChart'),{
+  type:'bar',
+  data:{labels:["Shanghai", "KOSPI", "FTSE100", "NIFTY50", "TWSE", "HSI", "NASDAQ", "Nikkei225", "S&P500", "KOSDAQ", "Russell2K", "CAC40", "STOXX50", "DAX"],datasets:[{data:[0.86, 0.46, 0.0, 0.0, 0.0, -0.07, -0.12, -0.14, -0.33, -0.49, -0.54, -0.79, -1.01, -1.17],backgroundColor:bc([0.86, 0.46, 0.0, 0.0, 0.0, -0.07, -0.12, -0.14, -0.33, -0.49, -0.54, -0.79, -1.01, -1.17]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600',size:11}}}}}
+});
+
+// Stocks bar
+new Chart(document.getElementById('stChart'),{
+  type:'bar',
+  data:{labels:["Tesla", "NVIDIA", "Samsung", "Broadcom", "TSMC", "Apple", "META", "Microsoft", "Alphabet", "Amazon"],datasets:[{data:[5.51, 1.48, 1.17, 0.42, -0.53, -0.89, -0.98, -1.22, -2.09, -2.5],backgroundColor:bc([5.51, 1.48, 1.17, 0.42, -0.53, -0.89, -0.98, -1.22, -2.09, -2.5]),borderRadius:4,barPercentage:.6}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600',size:11}}}}}
+});
+
+// Scatter: daily vs weekly
+new Chart(document.getElementById('scatterChart'),{
+  type:'scatter',
+  data:{
+    datasets:[
+      {label:'Equity',data:[{"x": -0.79, "y": -0.79, "label": "CAC40", "cat": "equity"}, {"x": -1.17, "y": -1.17, "label": "DAX", "cat": "equity"}, {"x": 0.07, "y": 0.0, "label": "FTSE100", "cat": "equity"}, {"x": -0.07, "y": -0.07, "label": "HSI", "cat": "equity"}, {"x": -0.49, "y": -0.49, "label": "KOSDAQ", "cat": "equity"}, {"x": 0.46, "y": 0.46, "label": "KOSPI", "cat": "equity"}, {"x": -0.12, "y": -0.12, "label": "NASDAQ", "cat": "equity"}, {"x": -0.66, "y": 0.0, "label": "NIFTY50", "cat": "equity"}, {"x": -0.14, "y": -0.14, "label": "Nikkei225", "cat": "equity"}, {"x": -0.54, "y": -0.54, "label": "Russell2K", "cat": "equity"}, {"x": -0.33, "y": -0.33, "label": "S&P500", "cat": "equity"}, {"x": -1.01, "y": -1.01, "label": "STOXX50", "cat": "equity"}, {"x": 0.86, "y": 0.86, "label": "Shanghai", "cat": "equity"}, {"x": 1.66, "y": 0.0, "label": "TWSE", "cat": "equity"}],backgroundColor:AC+'aa',pointRadius:6},
+      {label:'MSCI',data:[{"x": -0.25, "y": -0.25, "label": "MSCI ACWI", "cat": "msci"}, {"x": -0.18, "y": -0.18, "label": "MSCI EM", "cat": "msci"}, {"x": -0.31, "y": -0.31, "label": "MSCI EMEA", "cat": "msci"}, {"x": 0.72, "y": 0.72, "label": "MSCI LATAM", "cat": "msci"}, {"x": -0.29, "y": -0.29, "label": "MSCI World", "cat": "msci"}],backgroundColor:'#8B5CF6aa',pointRadius:6},
+      {label:'Stocks',data:[{"x": -2.09, "y": -2.09, "label": "Alphabet", "cat": "stocks"}, {"x": -2.5, "y": -2.5, "label": "Amazon", "cat": "stocks"}, {"x": -0.89, "y": -0.89, "label": "Apple", "cat": "stocks"}, {"x": 0.42, "y": 0.42, "label": "Broadcom", "cat": "stocks"}, {"x": -0.98, "y": -0.98, "label": "META", "cat": "stocks"}, {"x": -1.22, "y": -1.22, "label": "Microsoft", "cat": "stocks"}, {"x": 1.48, "y": 1.48, "label": "NVIDIA", "cat": "stocks"}, {"x": 1.17, "y": 1.17, "label": "Samsung", "cat": "stocks"}, {"x": -0.53, "y": -0.53, "label": "TSMC", "cat": "stocks"}, {"x": 5.51, "y": 5.51, "label": "Tesla", "cat": "stocks"}],backgroundColor:'#043B72aa',pointRadius:6},
+      {label:'Commodity',data:[{"x": -0.87, "y": -0.87, "label": "Brent", "cat": "commodity"}, {"x": 1.94, "y": 1.94, "label": "Copper", "cat": "commodity"}, {"x": 0.43, "y": 0.43, "label": "Gold", "cat": "commodity"}, {"x": 1.42, "y": 1.42, "label": "Nat Gas", "cat": "commodity"}, {"x": 0.31, "y": 0.31, "label": "Silver", "cat": "commodity"}, {"x": 3.49, "y": 3.49, "label": "WTI", "cat": "commodity"}],backgroundColor:WN+'aa',pointRadius:6}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{boxWidth:8}},
+      tooltip:{callbacks:{label:c=>c.raw.label+' (W:'+c.raw.x.toFixed(1)+'%, D:'+c.raw.y.toFixed(1)+'%)'}}
+    },
+    scales:{
+      x:{title:{display:true,text:'Weekly %',color:'#7c8298'},grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},
+      y:{title:{display:true,text:'Daily %',color:'#7c8298'},grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}}
+    }
+  }
+});
+
+// Commodity YTD
+new Chart(document.getElementById('cmChart'),{
+  type:'bar',
+  data:{labels:["Brent", "Copper", "Gold", "Nat Gas", "Silver", "WTI"],datasets:[{data:[45.73, 16.21, 3.11, -19.04, -5.37, 50.58],backgroundColor:bc([45.73, 16.21, 3.11, -19.04, -5.37, 50.58]),borderRadius:4,barPercentage:.55}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#ecedf2'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}}}
+});
+</script>
+</body>
+</html>
