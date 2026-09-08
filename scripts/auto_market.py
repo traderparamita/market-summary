@@ -39,6 +39,18 @@ GITHUB_PAGES = "https://traderparamita.github.io/market-summary"
 
 KST = ZoneInfo("Asia/Seoul")
 
+# 비대화형(headless) 자동 실행 지시 — 두 persist prompt 앞에 공통 삽입.
+# /market-full 스킬은 대상일이 공휴일이면 사용자에게 "생성할지" 되묻는데,
+# headless 에서는 답할 사람이 없어 그대로 멈춘다(2026-09-07 미 노동절 사고).
+# 아래 지시로 공휴일에도 되묻지 말고 휴장 사실만 반영해 진행하도록 강제한다.
+NONINTERACTIVE_DIRECTIVE = (
+    "[비대화형 실행] 이 실행은 사람이 없는 자동(headless) 실행이다. "
+    "어떤 경우에도 사용자에게 확인을 되묻거나 응답을 기다리지 말고 끝까지 스스로 진행하라. "
+    "대상일이 주말이거나 미국·한국 공휴일이어도 절대 중단·질문하지 말고, "
+    "해당 시장의 휴장 사실을 보고서(세션·서사)에 반영한 뒤 그대로 생성·배포하라. "
+    "유일한 중단 예외: 대상일이 오늘(KST) 이후의 미래 날짜인 경우에만 생성하지 말고 중단하라. "
+)
+
 # nvm 기본 노드 버전의 claude 경로 (launchd는 nvm PATH를 모름)
 NVM_NODE_DEFAULT = Path.home() / ".nvm" / "alias" / "default"
 CLAUDE_CANDIDATES = [
@@ -79,10 +91,21 @@ def prev_business_day() -> str:
     return _prev_biz_util(today).isoformat()
 
 
+def _report_exists(date_str: str) -> bool:
+    """해당 일간 보고서 메인 HTML 이 이미 생성돼 있는지."""
+    return (ROOT / "output" / "summary" / date_str[:7] / f"{date_str}.html").exists()
+
+
 def should_skip() -> bool:
-    """월요일·일요일은 스킵 (토요일이 금요일 보고서 담당)."""
+    """화~토는 정상 실행. 월·일은 원칙적으로 스킵(토요일이 금요일 보고서 담당)하되,
+    담당 전 영업일 보고서가 아직 없으면(예: 토 18:50 실행 누락 → 일 catch-up) 스킵하지
+    않고 백필한다. StartWhenAvailable 로 늦게 뜬 catch-up 이 자가 스킵해 보고서가
+    영구 유실되던 문제(2026-09-05 사고) 방지."""
     wd = datetime.now(KST).date().weekday()
-    return wd in (0, 6)  # 0=월, 6=일
+    if wd not in (0, 6):  # 화~토
+        return False
+    # 월(0)·일(6): 담당 전 영업일 보고서가 이미 있으면 스킵, 없으면 백필 위해 실행
+    return _report_exists(prev_business_day())
 
 
 # ─────────────────────────────────────────────────────────────
@@ -181,6 +204,7 @@ def _run_claude(prompt: str, persist_prompt: str, label: str, timeout: int = 360
 def run_market_full(date_str: str) -> bool:
     """Part A: 데이터 수집 + Market Story (Step 0 ~ Step 3 + 3-E)."""
     persist_prompt = (
+        NONINTERACTIVE_DIRECTIVE +
         "/market-full (Part A): generate.py 가 출력하는 '[Step 1~2 완료]' 또는 'Done!' 은 "
         "데이터 단계만 끝난 신호이다. 반드시 Step 3 (Market Story, Sources 주입 포함) → "
         "Step 3-E (Catalysts) → Step 4/6 (주간·월간 Dashboard 파일 존재 확인) 을 완수한 뒤 "
@@ -198,6 +222,7 @@ def run_market_full(date_str: str) -> bool:
 def run_market_full_b(date_str: str) -> bool:
     """Part B: CS·PM·Stocks → 주간·월간 Story → 수치 검증 → git push (Step 3-B ~ Step 9)."""
     persist_prompt = (
+        NONINTERACTIVE_DIRECTIVE +
         "/market-full-b (Part B): Part A 에서 생성된 _story.html 을 기반으로 "
         "Step 3-B(CS) → 3-C(PM) → 3-D(Stocks) 를 순서대로 완수하라. "
         "이후 캘린더 체크로 마지막 영업일 여부를 확인해 Step 5/7(주간·월간 Story) 실행 여부를 결정하고, "
