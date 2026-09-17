@@ -47,15 +47,11 @@ scripts/
 ├── windows/                          # Windows Task Scheduler 자동화
 │   ├── run_auto_market.ps1
 │   ├── run_ocr_story.ps1
-│   ├── run_collect_weekly.ps1
-│   ├── run_asia_weekly.ps1
 │   ├── run_daily_research.ps1        # 월~금 18:50 KST 테마 리서치 래퍼 (DailyResearch 태스크 Disabled)
 │   ├── market_summary_task.xml       # 토 18:50 + 화~금 06:50
 │   ├── market_ocr_task.xml           # (레거시 — 2026-07-25 자동화 제거, setup 등록 목록 제외)
-│   ├── securities_reports_task.xml   # 토 19:30
-│   ├── asia_weekly_task.xml          # 토 20:00
 │   ├── daily_research_task.xml       # 월~금 18:50 (Disabled)
-│   └── setup_windows_tasks.ps1       # 4개 태스크 일괄 등록 (Daily·WeeklyCollect·AsiaWeekly·DailyResearch; OCR 제외)
+│   └── setup_windows_tasks.ps1       # 태스크 일괄 등록 (Daily·DailyResearch; OCR·WeeklyCollect·AsiaWeekly 제외)
 └── macos/                            # macOS launchd (레거시 참고용)
 
 db/

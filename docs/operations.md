@@ -6,16 +6,16 @@
 
 ## 1. 자동화 개요
 
-네 개의 Windows Task Scheduler 태스크가 백그라운드로 동작한다. 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`.
+일간 보고서는 EC2 크론이 실행한다(2026-09-17 이관). Windows Task Scheduler 태스크 정의는 `scripts/windows/*.xml`, PS1 래퍼는 `scripts/windows/run_*.ps1`로 남아 있다.
 
 | 태스크 | 스크립트 | 스케줄 (KST) | 역할 | 상태 |
 |--------|----------|-------------|------|------|
-| `MarketSummary-Daily` | `scripts/auto_market.py` | 토 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ✅ Active |
-| `MarketSummary-WeeklyCollect` | `scripts/collect_weekly.py` | 토 19:30 | 증권 + PRISM + 다이제스트 + Index + Fund Index + push | ✅ Active |
-| `MarketSummary-AsiaWeekly` | `scripts/generate_asia_weekly.py` | 토 20:00 | 아시아 주간 브리프 스켈레톤 + 데이터 자동 생성 (Story는 Claude 수동) | ✅ Active |
+| `MarketSummary-Daily` | `scripts/auto_market.py` | 토 18:50 + 화~금 06:50 | 일간 + (마지막 영업일) 주간/월간 보고서 | ⏸️ Disabled (2026-09-17, EC2로 이관) |
 | `MarketSummary-DailyResearch` | `scripts/generate_research.py` | 월~금 18:50 | 당일 Naver 테마 수익률 기반 일간 테마 리서치 자동 생성 | ⏸️ Disabled (2026-07-07) |
 
 > **주말 잡 요일 변경 (2026-07-25)**: 금요일 보고서 + 주간/월간 + 증권 수집 + 아시아 주간 3개 잡을 **일요일 → 토요일**로 앞당김. `auto_market.should_skip()`도 월·토 스킵 → **월·일 스킵**으로 함께 수정(토요일에 실제로 돌게). 토요일 저녁이면 금요일 미국장 마감(토 05:00 KST경) 후라 데이터가 확보돼 있어 문제없음.
+
+> **주간 잡 폐지 (2026-09-17)**: `MarketSummary-WeeklyCollect`(토 19:30, `collect_weekly.py`)와 `MarketSummary-AsiaWeekly`(토 20:00, `generate_asia_weekly.py`)를 Windows에서 해제하고 등록 목록·XML·PS1 래퍼를 삭제했다. PRISM·증권사 PDF 원문은 anthillia 크론이 EC2에서 S3(`prism/`, `miraeasset-securities/`)로 계속 올린다. 두 스크립트는 저장소에 남아 있어 필요하면 수동 실행 가능.
 
 > `MarketSummary-OCR` (`scripts/generate_ocr_story.py`)는 2026-07-25 자동화에서 제거됨. Task Scheduler에는 이미 등록돼 있지 않았고, `setup_windows_tasks.ps1`의 재등록 목록에서도 제외했다. `_ocr.html` 생성이 다시 필요하면 스크립트를 수동 실행.
 
@@ -28,15 +28,12 @@
 ```
 ─ 토요일 ────────────────────────────────────────
 18:50 → auto_market.py        (금요일 보고서 = 일/주/월 + RDS drift 검증)
-19:30 → collect_weekly.py     (주간 증권사 수집 + PRISM + Digest + Index + Fund + push)
-20:00 → generate_asia_weekly  (아시아 주간 브리프 스켈레톤)
 
 ─ 일요일 ────────────────────────────────────────
 (자동화 없음)
 
 ─ 월요일 ────────────────────────────────────────
 18:50 → generate_research.py  (당일 테마 리서치 → output/research/daily/)
-  + (수동) Asia Weekly Story 본문 작성 → `/asia-weekly` 또는 자연어 트리거
 
 ─ 화·수·목·금 ──────────────────────────────────
 06:50 → auto_market.py (전 영업일 보고서)
@@ -80,18 +77,13 @@ claude --dangerously-skip-permissions -p "/market-full 2026-05-08"
 
 가장 흔한 케이스. 다음 영업일 직전(보통 일/월요일 저녁 또는 화요일 출근 전)에 발견.
 
-**복구 절차** — 두 워크플로우를 순서대로 수동 실행:
+**복구 절차** — 토요일 워크플로우를 수동 실행:
 
 ```bash
 # (1) 토 18:50 워크플로우 — 금요일 보고서 + 주간/월간
 # Claude Code CLI 안에서 슬래시 커맨드로 실행:
 /market-full 2026-05-08
-
-# (2) 토 19:30 워크플로우 — 증권/PRISM/디지스트/Index
-.venv/bin/python scripts/collect_weekly.py
 ```
-
-순서를 지켜야 하는 이유: `collect_weekly.py`는 git push로 끝나는데, market-full이 먼저 push 한 변경분이 충돌하지 않도록 분리 실행.
 
 `/market-full`은 두 블록(A: Market Summary, B: Sector-Country)으로 나뉘며 블록 A 후 블록 B 실패해도 market-summary는 이미 배포된 상태.
 
@@ -183,8 +175,7 @@ logs/
 ├── auto_market.log              # Task Scheduler 자동 실행 (전체 stdout/err)
 ├── market-full-YYYY-MM-DD.log   # /market-full Step별 진행 상태
 ├── ocr_story.log                # OCR Story 생성
-├── verify_numbers.log           # 수치 검증 누적 로그
-└── securities_reports.log       # 토요일 19:30 워크플로우
+└── verify_numbers.log           # 수치 검증 누적 로그
 ```
 
 ### 4.2 주요 마커 검색
@@ -207,7 +198,6 @@ grep "✗\|위반 없음" logs/verify_numbers.log | tail -10
 - Step 0 시작 알림 (`notify_telegram.py --start`)
 - Step 9 일간/주간 완료 알림 (`--weekly` / `--monthly` 플래그)
 - Step 13 Sector-Country 완료 알림 (`--sc-complete`)
-- `collect_weekly.py` 종료 알림 (개인 + 그룹 동시 발송)
 
 알림이 안 오면 자동화 누락을 의심.
 
@@ -276,9 +266,6 @@ grep "✗\|위반 없음" logs/verify_numbers.log | tail -10
 /market-full 2026-05-06   # 5/5 어린이날 휴장
 /market-full 2026-05-07
 /market-full 2026-05-08
-
-# 마지막에 collect_weekly.py
-.venv/bin/python scripts/collect_weekly.py
 ```
 
 각 `/market-full` 실행마다 git push가 발생하므로 push 충돌은 없다.

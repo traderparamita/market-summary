@@ -1,5 +1,6 @@
 # setup_windows_tasks.ps1
-# Windows 작업 스케줄러에 Market Summary 자동화 4개 태스크를 등록한다.
+# Windows 작업 스케줄러에 Market Summary 자동화 태스크를 등록한다.
+# (WeeklyCollect·AsiaWeekly는 2026-09-17 폐지 — 목록에서 제외)
 # 관리자 권한 없이 현재 사용자 세션에서 실행 가능 (LogonType: InteractiveToken).
 #
 # 사용법:
@@ -11,8 +12,6 @@ $ROOT = "c:\Users\user\Desktop\kosmos\market-summary"
 
 $TASKS = @(
     @{ Name = "MarketSummary-Daily";          XML = "$ROOT\scripts\windows\market_summary_task.xml" },
-    @{ Name = "MarketSummary-WeeklyCollect";  XML = "$ROOT\scripts\windows\securities_reports_task.xml" },
-    @{ Name = "MarketSummary-AsiaWeekly";     XML = "$ROOT\scripts\windows\asia_weekly_task.xml" },
     @{ Name = "MarketSummary-DailyResearch";  XML = "$ROOT\scripts\windows\daily_research_task.xml" }
 )
 
@@ -55,13 +54,11 @@ Get-ScheduledTask | Where-Object { $_.TaskName -like "MarketSummary-*" } | ForEa
 
 Write-Host ""
 if ($allOk) {
-    Write-Host "완료: 4개 태스크 모두 등록됨." -ForegroundColor Green
+    Write-Host "완료: $($TASKS.Count)개 태스크 모두 등록됨." -ForegroundColor Green
 } else {
     Write-Host "일부 태스크 등록 실패. 위 오류를 확인하세요." -ForegroundColor Red
 }
 Write-Host ""
 Write-Host "수동 실행 테스트:"
 Write-Host "  schtasks /Run /TN MarketSummary-Daily"
-Write-Host "  schtasks /Run /TN MarketSummary-WeeklyCollect"
-Write-Host "  schtasks /Run /TN MarketSummary-AsiaWeekly"
 Write-Host "  schtasks /Run /TN MarketSummary-DailyResearch"

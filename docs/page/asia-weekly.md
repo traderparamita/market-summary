@@ -41,5 +41,6 @@
 
 ## 자동화
 
-`MarketSummary-AsiaWeekly` 태스크가 매주 토요일 20:00 KST 호출 (collect_weekly 30분 마진).  
-데이터 준비만 자동, Story 본문은 Claude 수동.
+자동 스케줄 없음 — Windows `MarketSummary-AsiaWeekly` 태스크(토 20:00)는 2026-09-17 폐지.  
+필요할 때 수동 실행: `/asia-weekly YYYY-MM-DD` (스켈레톤 `scripts/generate_asia_weekly.py` + Story 작성).  
+주의: 생성 스크립트는 `history/market_data.csv`를 직접 읽으므로, CSV가 오래됐으면 먼저 `.venv/bin/python rds_loader.py --download`로 RDS에서 새로 받는다.
