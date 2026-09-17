@@ -19,7 +19,7 @@
 
 > `MarketSummary-OCR` (`scripts/generate_ocr_story.py`)는 2026-07-25 자동화에서 제거됨. Task Scheduler에는 이미 등록돼 있지 않았고, `setup_windows_tasks.ps1`의 재등록 목록에서도 제외했다. `_ocr.html` 생성이 다시 필요하면 스크립트를 수동 실행.
 
-월·일은 Daily 실행 안 함 (auto_market.should_skip). DailyResearch는 월~금 매일.
+월·일은 Daily 크론이 없다. `auto_market.should_skip()`은 요일과 무관하게 **대상일(전 영업일) 보고서가 이미 완성돼 있으면**(Story·CS·PM·Stocks placeholder 없음) 스킵한다 — 추석 같은 연휴에 실행이 모두 같은 대상일을 가리켜도 한 번만 생성된다(2026-09-17). 미완성이면 다시 실행해 백필한다. DailyResearch는 월~금 매일.
 
 > **EC2 병행 운영 (2026-06~)**: Anthillia EC2 (54.180.225.122)가 06:30 KST에 `generate.py`를 실행해 데이터 수집 + RDS upsert를 선행한다. 로컬이 06:50에 시작할 때 RDS가 이미 채워진 상태. EC2는 `MALife-AI/market-summary` (private repo)로 push, 로컬은 `traderparamita/market-summary` (GitHub Pages)로 push — 별도 레포라 충돌 없음.
 

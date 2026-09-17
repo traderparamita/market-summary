@@ -91,21 +91,39 @@ def prev_business_day() -> str:
     return _prev_biz_util(today).isoformat()
 
 
-def _report_exists(date_str: str) -> bool:
-    """해당 일간 보고서 메인 HTML 이 이미 생성돼 있는지."""
-    return (ROOT / "output" / "summary" / date_str[:7] / f"{date_str}.html").exists()
+# Part B 까지 끝나야 채워지는 Story 탭 placeholder.
+# MACRO_EVENTS_PLACEHOLDER 는 주 중간 영업일에 정상적으로 남을 수 있어 완성 판정에서 뺀다.
+_STORY_PLACEHOLDERS = (
+    "STORY_CONTENT_PLACEHOLDER",
+    "CS_STORY_PLACEHOLDER",
+    "PM_STORY_PLACEHOLDER",
+    "STOCKS_STORY_PLACEHOLDER",
+)
+
+
+def _report_complete(date_str: str) -> bool:
+    """해당 일간 보고서가 Story 탭까지 완성돼 있는지.
+
+    메인 HTML 은 Part A 초반(generate.py)에 바로 생기므로 존재 여부만으로는
+    Part B 실패분을 완성으로 오판한다. Story placeholder 가 하나라도 남아 있으면 미완성.
+    """
+    path = ROOT / "output" / "summary" / date_str[:7] / f"{date_str}.html"
+    if not path.exists():
+        return False
+    html = path.read_text(encoding="utf-8", errors="replace")
+    return not any(ph in html for ph in _STORY_PLACEHOLDERS)
 
 
 def should_skip() -> bool:
-    """화~토는 정상 실행. 월·일은 원칙적으로 스킵(토요일이 금요일 보고서 담당)하되,
-    담당 전 영업일 보고서가 아직 없으면(예: 토 18:50 실행 누락 → 일 catch-up) 스킵하지
-    않고 백필한다. StartWhenAvailable 로 늦게 뜬 catch-up 이 자가 스킵해 보고서가
-    영구 유실되던 문제(2026-09-05 사고) 방지."""
-    wd = datetime.now(KST).date().weekday()
-    if wd not in (0, 6):  # 화~토
-        return False
-    # 월(0)·일(6): 담당 전 영업일 보고서가 이미 있으면 스킵, 없으면 백필 위해 실행
-    return _report_exists(prev_business_day())
+    """대상일(전 영업일) 보고서가 이미 완성돼 있으면 요일과 무관하게 스킵.
+
+    - 연휴: 추석(2026-09-24~26)처럼 연휴 중 실행이 모두 같은 대상일을 가리키면
+      첫 실행만 생성하고 나머지는 스킵 → 같은 보고서 중복 생성·push·S3 덮어쓰기·Telegram 방지.
+    - 월·일 catch-up: 토 18:50 실행이 누락·실패해 금요일 보고서가 미완성이면 스킵하지 않고
+      백필한다 (2026-09-05 사고 대응 유지).
+    - 수동 날짜 지정 실행(main 인자)은 이 판정을 거치지 않는다.
+    """
+    return _report_complete(prev_business_day())
 
 
 # ─────────────────────────────────────────────────────────────
@@ -349,7 +367,7 @@ def main() -> None:
         date_str = sys.argv[1]          # 수동 지정 (테스트용)
     else:
         if should_skip():
-            print("월요일/일요일입니다. 실행을 건너뜁니다.")
+            print(f"{prev_business_day()} 보고서가 이미 완성돼 있어 실행을 건너뜁니다.")
             return
         date_str = prev_business_day()  # 전 영업일 자동 계산
 
