@@ -1,6 +1,8 @@
-"""scripts/sync_summary_s3.py — output/summary/ 변경분을 S3에 증분 업로드
+"""scripts/sync_summary_s3.py — output/ 변경분을 S3에 증분 업로드
 
-git diff HEAD~1..HEAD 로 변경된 output/summary/ 파일만 업로드.
+git diff HEAD~1..HEAD 로 변경된 output/ 하위 파일을 업로드.
+summary 뿐 아니라 research·securities·prism·fund·pm·catalysts·assets·index.html 까지
+전부 미러링한다 (anthillia/mlifefund.com 이 S3 에서 그대로 가져간다).
 auto_market.py의 git push 성공 직후 호출된다.
 
 Usage:
@@ -31,7 +33,8 @@ import os
 S3_BUCKET  = os.getenv("S3_BUCKET_NAME", "mai-life-fund-documents-533370893966-ap-northeast-2-an")
 S3_PREFIX  = "market-summary"
 S3_REGION  = "ap-northeast-2"
-SUMMARY_DIR = ROOT / "output" / "summary"
+OUTPUT_DIR  = ROOT / "output"
+SUMMARY_DIR = OUTPUT_DIR / "summary"
 
 CONTENT_TYPES = {
     ".html": "text/html; charset=utf-8",
@@ -42,6 +45,12 @@ CONTENT_TYPES = {
     ".png":  "image/png",
     ".ico":  "image/x-icon",
 }
+
+
+def _skip(path: Path) -> bool:
+    """업로드 제외 — 숨김파일(.DS_Store 등)·__pycache__."""
+    rel = path.relative_to(OUTPUT_DIR)
+    return any(part.startswith(".") or part == "__pycache__" for part in rel.parts)
 
 
 def _s3_key(local_path: Path) -> str:
@@ -66,7 +75,7 @@ def _upload(s3, files: list[Path]) -> tuple[int, int]:
 
 
 def files_from_git_diff() -> list[Path]:
-    """직전 커밋 대비 변경된 output/summary/ 파일 목록."""
+    """직전 커밋 대비 변경된 output/ 하위 파일 목록."""
     try:
         r = subprocess.run(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
@@ -75,9 +84,9 @@ def files_from_git_diff() -> list[Path]:
         paths = []
         for line in r.stdout.splitlines():
             line = line.strip()
-            if line.startswith("output/summary/"):
+            if line.startswith("output/"):
                 p = ROOT / line
-                if p.is_file():
+                if p.is_file() and not _skip(p):
                     paths.append(p)
         return paths
     except Exception as e:
@@ -104,7 +113,7 @@ def files_for_date(date_str: str) -> list[Path]:
 
 
 def files_all() -> list[Path]:
-    return [f for f in SUMMARY_DIR.rglob("*") if f.is_file()]
+    return [f for f in OUTPUT_DIR.rglob("*") if f.is_file() and not _skip(f)]
 
 
 def main() -> int:
