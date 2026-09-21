@@ -79,6 +79,14 @@ NAVER_FALLBACK = {
     "^IXIC":      "NAS@IXIC",      # NASDAQ
 }
 
+# 국내 지수 → Naver 모바일 증권 국내 지수 코드 (위 NAVER_FALLBACK 은 해외 지수 전용 API).
+# Yahoo(^KS11·^KQ11)가 한국 지수 일봉을 하루 이상 누락하고 FDR 도 같은 날짜를 못 주는 경우가 있어
+# (2026-09-21: 다음 날 오전까지 9/21 행 없음 → 보고서가 금요일 종가로 발행) 마지막 대체 경로로 쓴다.
+NAVER_KR_FALLBACK = {
+    "^KS11": "KOSPI",
+    "^KQ11": "KOSDAQ",
+}
+
 # 티커 → 시장 코드 (holidays 라이브러리 키). data_status 판정용.
 # 매핑이 없는 티커는 휴일 판별을 건너뛴다 (commodity, FX, multi-region ETF 등).
 TICKER_MARKET = {
@@ -383,6 +391,49 @@ INDICATOR_CODES.update(_STOCKS_INDICATOR_CODES)
 
 # ── Core functions ───────────────────────────────────────────────
 
+def _fetch_via_naver_kr(index_code, target_date, start_date=None, page_size=20, max_pages=5):
+    """Naver 모바일 증권 API 로 국내 지수(KOSPI·KOSDAQ) 일봉 수집.
+
+    Returns pd.DataFrame(index=date, columns=[Open,High,Low,Close]) or None. 거래량은 제공되지 않는다.
+    """
+    import pandas as pd
+
+    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"}
+    rows = []
+    for page in range(1, max_pages + 1):
+        url = f"https://m.stock.naver.com/api/index/{index_code}/price?pageSize={page_size}&page={page}"
+        r = requests.get(url, headers=headers, timeout=10)
+        if r.status_code != 200:
+            break
+        data = r.json()
+        if not data:
+            break
+        rows.extend(data)
+        # start_date 이전까지 확보되면 더 안 가져옴
+        if start_date is not None:
+            try:
+                oldest = min(dt.datetime.strptime(d["localTradedAt"], "%Y-%m-%d").date() for d in data)
+                if oldest <= start_date:
+                    break
+            except Exception:
+                pass
+
+    if not rows:
+        return None
+
+    df = pd.DataFrame(rows)
+    df["date_parsed"] = pd.to_datetime(df["localTradedAt"], format="%Y-%m-%d")
+    df = df.set_index("date_parsed").sort_index()
+    df = df[~df.index.duplicated(keep="last")]
+    df = df.rename(columns={"openPrice": "Open", "highPrice": "High", "lowPrice": "Low", "closePrice": "Close"})
+    for col in ["Open", "High", "Low", "Close"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col].astype(str).str.replace(",", "", regex=False), errors="coerce")
+    df = df.dropna(subset=["Close"])
+    df = df[df.index.date <= target_date]
+    return df if not df.empty else None
+
+
 def _fetch_via_naver(naver_code, target_date, start_date=None, max_pages=3):
     """Naver Finance worldDayListJson API 로 글로벌 지수 일봉 수집.
 
@@ -684,6 +735,21 @@ def fetch_data(start_date=None, end_date=None):
                             print(f"  [NAVER] {name}: {nv_metrics['close']:.2f} ({nv_metrics['daily']:+.2f}%) via {naver_code}")
                 except Exception as ne:
                     print(f"  [NAVER WARN] {name}: {ne}")
+
+            # Fallback 4: Naver 국내 지수 (KOSPI·KOSDAQ)
+            if _is_stale(metrics) and ticker in NAVER_KR_FALLBACK:
+                kr_code = NAVER_KR_FALLBACK[ticker]
+                try:
+                    kr_df = _fetch_via_naver_kr(kr_code, target, range_start)
+                    if kr_df is not None and not kr_df.empty:
+                        kr_metrics = calc_metrics(kr_df, target, market_code=market_code)
+                        if kr_metrics and kr_metrics.get("data_status") == "ok":
+                            metrics = kr_metrics
+                            used_df = kr_df
+                            used_source = "Naver"
+                            print(f"  [NAVER-KR] {name}: {kr_metrics['close']:.2f} ({kr_metrics['daily']:+.2f}%) via {kr_code}")
+                except Exception as ke:
+                    print(f"  [NAVER-KR WARN] {name}: {ke}")
 
             if metrics is None:
                 continue
